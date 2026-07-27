@@ -1,0 +1,262 @@
+<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco" #vContent>
+  <div class="contenido">
+    <app-loader></app-loader>
+    <nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+    <main class="contenidoPagina">
+      <div class="listas_ps revanecer">
+        <div id="listaClientes" class="lista-div lista-divNoFlex row">
+          <h4 class="col-12">{{'comi' | translate}}</h4>
+
+          <div class="col-12">
+            <div class="col-12">
+              <a (click)="comisiones_monitor_general();" class="btn btnGuardar btnBlueHead bg-blue-600">
+                <i class="fa-solid fa-rotate" style="margin-left: 5px;"></i>&nbsp;{{'list_updt' | translate}}
+              </a>
+            </div>
+            <div class="col-12 col-sm-9 col-md-3 col-lg-20col-xl-2 col-xxl-20"></div>
+          </div>
+
+          <div class="col-12" *ngIf="view_monitor_comi == true">
+            <div class="card card_main col-12 row">
+              <h6 class="header-black">{{'reem' | translate}}</h6>
+              <p-table #monitorListComi [value]="list_comisiones_monitor" [globalFilterFields]="searchComi"
+                dataKey="id" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]">
+                <ng-template #caption>
+                  <div class="flex">
+                    <p-iconfield iconPosition="left" class="ml-auto">
+                      <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                      <input pInputText type="text"
+                        (input)="monitorListComi.filterGlobal($event.target.value, 'contains')"
+                        placeholder="{{'bus_car' | translate}}" />
+                    </p-iconfield>
+                  </div>
+                </ng-template>
+                <ng-template #header>
+                  <tr>
+                    <th class="ultimo"></th>
+                    <th class="ultimo"></th>
+                    <th class="ultimo"></th>
+                    <th pSortableColumn="folio_comision">Folio&nbsp;<p-sortIcon field="folio_comision" /></th>
+                    <th pSortableColumn="comision_proyecto">{{'proy' | translate}}&nbsp;<p-sortIcon
+                        field="comision_proyecto" /></th>
+                    <th pSortableColumn="usuario_comision">{{'employ' | translate}}&nbsp;<p-sortIcon
+                        field="usuario_comision" /></th>
+                    <th pSortableColumn="reem_folio">{{'reem_single' | translate}}&nbsp;<p-sortIcon
+                        field="reem_folio" /></th>
+                    <th pSortableColumn="reem_emisorPers">{{'aplicante' | translate}}&nbsp;<p-sortIcon
+                        field="reem_emisorPers" /></th>
+                    <th pSortableColumn="nombreRecPersVH">{{'ssic_menu_vhn' | translate}}&nbsp;<p-sortIcon
+                        field="nombreRecPersVH" /></th>
+                    <th pSortableColumn="nombreRecPersEGR">{{'ssic_menu_egr' | translate}}&nbsp;<p-sortIcon
+                        field="nombreRecPersEGR" /></th>
+                    <th pSortableColumn="reem_importe">{{'total_import' | translate}}&nbsp;<p-sortIcon
+                        field="reem_importe" /></th>
+                    <th pSortableColumn="importe_autorizado_inicial_format"
+                      style="padding-left: 5px;padding-right: 5px;">{{'total_refund_auth' | translate}}&nbsp;<p-sortIcon
+                        field="importe_autorizado_inicial_format" /></th>
+                    <th pSortableColumn="reem_tipo_cambio">{{'mon_tipo_cambio' | translate}}&nbsp;<p-sortIcon
+                        field="reem_tipo_cambio" /></th>
+                    <th pSortableColumn="reem_importe_convert">{{'reem_result' | translate}}&nbsp;<p-sortIcon
+                        field="reem_importe_convert" /></th>
+                    <th pSortableColumn="importe_autorizado_final" style="padding-left: 5px;padding-right: 5px;">
+                      {{'total_refund_auth_converse' | translate}}&nbsp;<p-sortIcon field="importe_autorizado_final" />
+                    </th>
+                    <th pSortableColumn="ordp_folio">{{'ordens_pag' | translate}}&nbsp;<p-sortIcon field="ordp_folio" />
+                    </th>
+                    <th pSortableColumn="fecha_respuesta_pago_tentativa" style="width: 350px!important;">
+                      {{'ord_pay_ftent' | translate}}&nbsp;<p-sortIcon field="fecha_respuesta_pago_tentativa" /></th>
+                    <th pSortableColumn="fecha_respuesta_pago_ord_auth">{{'ord_pay_fauth' | translate}}&nbsp;<p-sortIcon
+                        field="fecha_respuesta_pago_ord_auth" /></th>
+                    <th pSortableColumn="respuesta_pago_done_fecha" style="width: 150px!important;">{{'pag_date' |
+                      translate}}&nbsp;<p-sortIcon field="respuesta_pago_done_fecha" /></th>
+                  </tr>
+                </ng-template>
+                <ng-template #body let-mComi>
+                  <tr>
+                    <td class="ultimo">
+                      <a class="btn bg-blue-600"
+                        routerLink="/sos_inside/contabilidad/comisiones_info/{{mComi.token_comision_main}}"><i
+                          class="fa-solid fa-info"></i></a>
+                    </td>
+                    <td class="ultimo">
+                      <a class="btn bg-blue-600" [ngClass]="mComi.nivel_dos.length == 0 ? 'disabled' : ''"
+                        [attr.disabled]="mComi.nivel_dos.length == 0 ? true : null"
+                        [attr.aria-disabled]="mComi.nivel_dos.length == 0 ? true : null"
+                        (click)="mComi.nivel_dos.length > 0 && verArbol(mComi);">
+                        <i class="fa-solid fa-folder-tree"
+                          style="width: 25px !important;height: 25px !important;line-height: 25px !important;font-size: 15px;text-align: center;"></i>
+                      </a>
+                    </td>
+                    <td>
+                      <a class="btn bg-blue-600" [ngClass]="mComi.pagos_realizados.length == 0 ? 'disabled' : ''"
+                        [attr.disabled]="mComi.pagos_realizados.length == 0 ? true : null"
+                        [attr.aria-disabled]="mComi.pagos_realizados.length == 0 ? true : null"
+                        (click)="mComi.pagos_realizados.length > 0 && verPagos(mComi);">
+                        <i class="fa-solid fa-money-check-dollar"
+                          style="width: 25px !important;height: 25px !important;line-height: 25px !important;font-size: 15px;text-align: center;"></i>
+                      </a>
+                    </td>
+                    <td>{{mComi.folio_comision}}</td>
+                    <td>{{mComi.comision_proyecto}}</td>
+                    <td class="name">{{mComi.usuario_comision}}</td>
+                    <td>{{mComi.reem_folio+" "+mComi.reem_date_reg}}</td>
+                    <td>{{mComi.reem_emisorPers+" ("+mComi.reem_emisorEmp+")"}}</td>
+
+                    <td *ngIf="mComi.nombreRecPersVH == null">N/A</td>
+                    <td *ngIf="mComi.nombreRecPersVH != null" [style]="mComi.reem_soli_auth_vhm_style">
+                      {{mComi.soli_reem_auth_vhm+"/"+mComi.soli_reem_list+" ("+mComi.nombreRecPersVH+" -
+                      "+mComi.name_receptor+")"}}
+                      <div class="chip" style="display: flex;justify-content: start;align-items: center;">
+                        <p [class]="mComi.btnp_horas_auth_vh_color" style="width: 25px!important;margin-right: 3px;">
+                          <i [class]="mComi.btnp_horas_auth_vh_icon"></i>
+                        </p>{{mComi.fecha_respuesta_auth_vh+" "+mComi.time_respuesta_auth_vh}}
+                      </div>
+                    </td>
+
+                    <td *ngIf="mComi.nombreRecPersEGR == null">N/A</td>
+                    <td *ngIf="mComi.nombreRecPersEGR != null" [style]="mComi.reem_soli_auth_egr_style">
+                      {{mComi.soli_reem_auth_egr+"/"+mComi.soli_reem_list+" ("+mComi.nombreRecPersEGR+" -
+                      "+mComi.name_receptor+")"}}
+                      <div class="chip" style="display: flex;justify-content: start;align-items: center;">
+                        <p [class]="mComi.btnp_horas_auth_egr_color" style="width: 25px!important;margin-right: 3px;">
+                          <i [class]="mComi.btnp_horas_auth_egr_icon"></i>
+                        </p>{{mComi.fecha_respuesta_auth_egr+" "+mComi.time_respuesta_auth_egr}}
+                      </div>
+                    </td>
+
+                    <td class="td_importes">{{mComi.reem_importe}}</td>
+                    <td class="td_importes"
+                      *ngIf="mComi.importe_autorizado_inicial_format == '$0' && mComi.orden_moneda_inicial_autorizada_name == '---'">
+                      $0.00 MXN</td>
+                    <td class="td_importes"
+                      *ngIf="mComi.importe_autorizado_inicial_format != '$0' && mComi.orden_moneda_inicial_autorizada_name != '---'">
+                      {{mComi.importe_autorizado_inicial_format+" "+mComi.orden_moneda_inicial_autorizada_name}}</td>
+
+                    <td class="td_importes">{{mComi.reem_tipo_cambio}}</td>
+                    <td class="td_importes">{{mComi.reem_importe_convert}}</td>
+                    <td class="td_importes"
+                      *ngIf="mComi.importe_autorizado_final == '$0' && mComi.orden_moneda_final_autorizada_name == '---'">
+                      $0.00 MXN</td>
+                    <td class="td_importes"
+                      *ngIf="mComi.importe_autorizado_final != '$0' && mComi.orden_moneda_final_autorizada_name != '---'">
+                      {{mComi.importe_autorizado_final+" "+mComi.orden_moneda_final_autorizada_name}}</td>
+
+                    <td class="td_importes">{{mComi.ordp_folio+" "}}{{'fecha_reg' | translate}}{{"
+                      "+mComi.ordp_fecha_reg}}</td>
+                    <td
+                      *ngIf="mComi.fecha_respuesta_pago_tentativa == null && mComi.time_respuesta_pago_tentativa == null">
+                      {{'undefined' | translate}}</td>
+                    <td
+                      *ngIf="mComi.fecha_respuesta_pago_tentativa != null && mComi.time_respuesta_pago_tentativa != null && mComi.respuesta_pago_done_fecha != null">
+                      {{mComi.fecha_respuesta_pago_tentativa}}</td>
+                    <td
+                      *ngIf="mComi.fecha_respuesta_pago_tentativa != null && mComi.time_respuesta_pago_tentativa != null && mComi.respuesta_pago_done_fecha == null">
+                      <div class="chip" style="display: flex;justify-content: start;align-items: center;">
+                        <p [class]="mComi.time_respuesta_pago_tent_color"
+                          style="width: 25px!important;margin-right: 3px;">
+                          <i [class]="mComi.time_respuesta_pago_tent_icon"></i>
+                        </p>{{mComi.fecha_respuesta_pago_tentativa+" "+mComi.time_respuesta_pago_tentativa}}
+                      </div>
+                    </td>
+
+                    <td *ngIf="mComi.fecha_respuesta_pago_ord_auth != null">{{mComi.fecha_respuesta_pago_ord_auth}}</td>
+                    <td *ngIf="mComi.fecha_respuesta_pago_ord_auth == null">{{'undefined' | translate}}</td>
+
+                    <td *ngIf="mComi.respuesta_pago_done_fecha != null">
+                      <div class="chip" style="display: flex;justify-content: start;align-items: center;">
+                        <p [class]="mComi.respuesta_pago_done_color" style="width: 25px!important;margin-right: 3px;">
+                          <i [class]="mComi.respuesta_pago_done_icon"></i>
+                        </p>{{mComi.respuesta_pago_done_fecha}}
+                      </div>
+                    </td>
+                    <td *ngIf="mComi.respuesta_pago_done_fecha == null">{{'undefined' | translate}}</td>
+                  </tr>
+                  <tr *ngIf="mComi === registroSelectedArbol">
+                    <td colspan="5">
+                      <p-tree [value]="mComi.arbol_nivel_dos" styleClass="w-full md:w-[30rem]" selectionMode="single" />
+                    </td>
+                  </tr>
+                  <tr *ngIf="mComi === registroSelectedPagos">
+                    <td colspan="8">
+                      <div class="col-12" *ngFor="let lPay of mComi.pagos_realizados">
+                        <div class="col-12 card card_roboto">
+                          <div class="col-12 row card-content card_content_inside">
+                            <div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2 explain">
+                              <h6 class="title">folio</h6>
+                              <h6 class="content">{{lPay.pagos_folio}}</h6>
+                            </div>
+                            <div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2 explain">
+                              <h6 class="title">{{'pag_date' | translate}}</h6>
+                              <h6 class="content">{{lPay.pagos_f_reg}}</h6>
+                            </div>
+                            <div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2 explain">
+                              <h6 class="title">{{'observ' | translate}}</h6>
+                              <h6 class="content">{{lPay.pagos_obser}}</h6>
+                            </div>
+                            <div class="col-12 col-sm-2 col-md-3 col-lg-2 col-xl-2 col-xxl-2 explain">
+                              <h6 class="title">{{'total_import' | translate}}</h6>
+                              <h6 class="content">{{lPay.pagos_monto+" "+lPay.pagos_monco}}</h6>
+                            </div>
+                            <div class="col-12 col-sm-5 col-md-3 col-lg-2 col-xl-2 col-xxl-2 explain">
+                              <h6 class="title">{{'pag_realiza_pers' | translate}}</h6>
+                              <h6 class="content">{{lPay.pagos_persp}}</h6>
+                            </div>
+                            <div class="col-12 col-sm-5 col-md-3 col-lg-2 col-xl-2 col-xxl-2 explain">
+                              <h6 class="title">{{'auth_by' | translate}}</h6>
+                              <h6 class="content">{{lPay.pagos_persa+" "}}{{'date_autho_riza' | translate}}{{"
+                                "+lPay.pagos_fauth}}</h6>
+                            </div>
+                          </div>
+                        </div>
+                        <p-table [value]="lPay.pagos_anexos">
+                          <ng-template pTemplate="header">
+                  <tr>
+                    <th style="text-align: right;" pSortableColumn="name_documento">
+                      <i class="fa-solid fa-file"></i>&nbsp;{{'doc_an' | translate}}&nbsp;<p-sortIcon
+                        field="name_documento" />
+                    </th>
+                    <th class="ultimo"></th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-doc>
+                  <tr>
+                    <td style="text-align: right;">{{ doc.name_documento }}</td>
+                    <td class="ultimo"><a class="btn btn_extend text-bg-primary rounded-4"
+                        (click)="viewDocumentoLink(doc.url_doc);"><i class="fa-solid fa-globe"></i></a></td>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                  <tr>
+                    <td colspan="2" class="text-center py-4">
+                      <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                      <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                        {{'no_rows' | translate}}
+                      </p>
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
+            </td>
+            </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="19" class="text-center py-4">
+                  <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                  <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                    {{'no_rows' | translate}}
+                  </p>
+                </td>
+              </tr>
+            </ng-template>
+            </p-table>
+          </div>
+        </div>
+      </div>
+  </div>
+  </main>
+  <app-footer-inside></app-footer-inside>
+</div>
+</div>

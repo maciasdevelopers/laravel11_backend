@@ -1,0 +1,143 @@
+<div class="col-12 row">
+  <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+    <label for="estMovFinanCaja" class="activeInput">No. caja</label>
+    <p-select [options]="catalogoCajas" id="estMovFinanCaja" name="estMovFinanCaja" [(ngModel)]="objectCaja" optionLabel="caja_folio" [filter]="true" [showClear]="true"
+      appendTo="body" filterBy="caja_folio,caja_alias" [placeholder]="'opt_select' | translate" class="w-full md:w-56" (onChange)="selectCaja($event.value);">
+      <ng-template #selectedItem let-scja>
+        <div class="flex items-center gap-2">
+          <div>{{scja.caja_folio+' '+scja.caja_alias}}</div>
+        </div>
+      </ng-template>
+      <ng-template let-cja #item>
+        <div class="flex items-center gap-2">
+          <div>{{cja.caja_folio+' '+cja.caja_alias}}</div>
+        </div>
+      </ng-template>
+    </p-select>
+  </div>
+  <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+    <label for="estMovFinanPeriodoCaja" class="activeInput">Periodo</label>
+    <p-datepicker id="estMovFinanPeriodoCaja" name="estMovFinanPeriodoCaja" [(ngModel)]="rangoPeriodoMovimientos" appendTo="body" dateFormat="dd/mm/yy" 
+      placeholder="dd/mm/aaaa" selectionMode="range" (onSelect)="lista_estado_caja_periodo();"/>
+  </div>
+  <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3" style="display: flex !important; justify-content: start!important; margin-top: 5px!important;align-items: end;padding-left: 0;">
+    <a class="btn btn_extend text-bg-success rounded-3" [ngClass]="!validaCajaMovimPeriod ? 'disabled' : ''" [attr.disabled]="!validaCajaMovimPeriod ? true : null"
+      [attr.aria-disabled]="!validaCajaMovimPeriod ? true : null" (click)="verMovimientosCaja();">
+      <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+    </a>
+  </div>
+</div>
+
+@if (alias_caja != '') {
+  <div class="col-12" style="display: flex;justify-content: end;padding: 0!important;margin-top: 20px!important;">
+    <a class="btn btn_extend bg-red-700" style="height: 25px !important; margin-right: 5px!important;" (click)="descargarPdfEstadoCaja();">
+      descargar&nbsp;<i class="fa-solid fa-file-pdf"></i>
+    </a>
+    <a class="btn btn_extend bg-green-600 descarga_lista_excel" style="height: 25px !important;" (click)="descargarExcelEstadoCuentaCaja();">
+      descargar&nbsp;<i class="fa-solid fa-file-excel"></i>
+    </a>
+  </div>
+  <div class="report-container grid p-3 bg-white border-bottom-1 border-300 row" id="reporte_estado_cuent_caja" #reporte_estado_cuent_caja>
+    <div class="col-6">
+      <span class="estado_cuenta text-gray-600 uppercase font-bold m-0">Estado de cuenta</span>
+      <div class="mt-4">
+        <span class="block font-bold text-sm">Caja</span>
+        <span class="text-xl font-mono">{{alias_caja}}</span>
+      </div>
+    </div>
+    <div class="col-6 p-3 border-round">
+      <h3 class="text-sm uppercase border-bottom-1 border-400 pb-1">Resumen de Saldo</h3>
+
+      <div class="flex justify-content-between py-1">
+        <span>Saldo inicial</span>
+        <span class="font-mono">{{movimientos_saldo_inicial+" "+moneda_movimientos}}</span><!--{{saldoInicial | currency}}-->
+      </div>
+      <div class="flex justify-content-between py-1 text-green-600">
+        <span>Depósitos y adiciones</span>
+        <span class="font-mono">+ {{movimientos_deposito_caja+" "+moneda_movimientos}}</span><!--{{movimientos_deposito_caja | currency}}-->
+      </div>
+      <div class="flex justify-content-between py-1 text-red-600">
+        <span>Retiros y deducciones</span>
+        <span class="font-mono">- {{movimientos_retiro_caja+" "+moneda_movimientos}}</span><!--{{movimientos_retiro_caja | currency}}-->
+      </div>
+      <div class="flex justify-content-between py-2 mt-2 border-top-1 font-bold text-lg">
+        <span>Saldo final</span>
+        <span>{{saldo_caja+" "+moneda_movimientos}}</span><!--{{saldo_caja | currency}}-->
+      </div>
+
+    </div>
+    <div class="col-12">
+      <div class="bg-orange-100 p-2 mb-3">
+        <h3 class="m-0 text-sm uppercase orange-800">Registro de movimientos</h3>
+      </div>
+
+      <p-table #listCuentBanc [value]="cajaMovimientos" dataKey="id" styleClass="p-datatable-sm custom-extract-table"
+        [globalFilterFields]="['folio_movimiento','fecha_movimiento','documento_anterior_asociado','parte_relacionada','mov_monto_debe_format','mov_monto_haber_format','mov_monto_saldo_format']">
+        <ng-template #caption>
+          <div class="flex">
+            <p-iconfield iconPosition="left" class="ml-auto">
+              <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+              <input pInputText type="text" (input)="listCuentBanc.filterGlobal($event.target.value, 'contains')"
+                placeholder="{{'bus_car' | translate}}" />
+            </p-iconfield>
+          </div>
+        </ng-template>
+        <ng-template #header>
+          <tr>
+            <th pSortableColumn="folio_movimiento">folio&nbsp;<p-sortIcon field="folio_movimiento"/></th>
+            <th pSortableColumn="fecha_movimiento">{{'fecha_cont' | translate}}&nbsp;<p-sortIcon field="fecha_movimiento"/></th>
+            <th pSortableColumn="concepto_movimiento">{{'concept' | translate}}&nbsp;<p-sortIcon field="concepto_movimiento"/></th>
+            <th pSortableColumn="documento_anterior_asociado">{{'doc_ant' | translate}}&nbsp;<p-sortIcon field="documento_anterior_asociado"/></th>
+            <th pSortableColumn="parte_relacionada">Parte relacionada&nbsp;<p-sortIcon field="parte_relacionada"/></th>
+            <th pSortableColumn="mov_monto_debe_format">debe&nbsp;(+)&nbsp;<p-sortIcon field="mov_monto_debe_format"/></th>
+            <th pSortableColumn="mov_monto_haber_format">haber&nbsp;(-)&nbsp;<p-sortIcon field="mov_monto_haber_format"/></th>
+            <th pSortableColumn="mov_monto_saldo_format">saldo&nbsp;(=)&nbsp;<p-sortIcon field="mov_monto_saldo_format" /></th>
+          </tr>
+        </ng-template>
+        <ng-template #body let-estCuent>
+          <tr>
+            <td>{{estCuent.folio_movimiento}}</td>
+            <td>{{ estCuent.fecha_movimiento | date: 'yyyy-MM-dd' }}</td>
+            <td class="name">{{estCuent.concepto_movimiento}}</td>
+            <td class="name">{{estCuent.documento_anterior_asociado}}</td>
+            <td class="name">{{estCuent.parte_relacionada}}</td>
+            
+            @if (estCuent.mov_monto_debe_format !== '') {
+              <td class="td_importes">{{estCuent.mov_monto_debe_format}}</td>
+            } @else {
+              <td></td> 
+            }
+            
+            @if (estCuent.mov_monto_haber_format !== '') {
+              <td class="td_importes">{{estCuent.mov_monto_haber_format}}</td>
+            } @else {
+              <td></td> 
+            }
+
+            <td class="td_importes">{{estCuent.mov_monto_saldo_format}}</td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="footer">
+          <tr>
+            <td class="td_importes" colspan="5"><strong>Totales</strong></td>
+            <td class="td_importes"><strong>{{movimientos_deposito_caja+" "+moneda_movimientos}}<!--{{ totalDebe | currency:'MXN':'symbol' }}--></strong></td>
+            <td class="td_importes"><strong>{{movimientos_retiro_caja+" "+moneda_movimientos}}<!--{{ totalHaber | currency:'MXN':'symbol' }}--></strong></td>
+            <td class="td_importes"><strong>{{saldo_caja+" "+moneda_movimientos}}<!--{{ totalSaldo | currency:'MXN':'symbol' }}--></strong></td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="8" class="text-center py-4">
+              <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+              <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                {{'no_rows' | translate}}
+              </p>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+} @else {
+  <p>{{'opt_select' | translate}}</p>
+}

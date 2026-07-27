@@ -1,0 +1,223 @@
+<p-table #odgen id="tabla_ord_disper_gral" [value]="ordenes_disper_general" [globalFilterFields]="searchPagoGeneral"
+  showGridlines [resizableColumns]="true" [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }"
+  [rowsPerPageOptions]="[10,20,30,50,100]">
+  <ng-template #caption>
+    <div class="flex" style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;" ngbDropdown>
+      <a class="btn btn_extend" [ngClass]="indicadorDisperNomOrdGral == 'hoy' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_ord_gral_dispersion('hoy');">
+        <i class="fa-solid fa-calendar-days"></i>&nbsp;Hoy
+      </a>
+      <a class="btn btn_extend"
+        [ngClass]="indicadorDisperNomOrdGral == 'esta_semana' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_ord_gral_dispersion('esta_semana');">
+        <i class="fa-solid fa-calendar-days"></i>&nbsp;Esta semana
+      </a>
+      <a class="btn btn_extend" [ngClass]="indicadorDisperNomOrdGral == 'este_mes' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_ord_gral_dispersion('este_mes');">
+        <i class="fa-solid fa-calendar-days"></i>&nbsp;Este mes
+      </a>
+      <a class="btn btn_extend"
+        [ngClass]="indicadorDisperNomOrdGral == 'mes_anterior' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_ord_gral_dispersion('mes_anterior');">
+        <i class="fa-solid fa-arrow-left"></i>&nbsp;mes anterior
+      </a>
+      <a id="menuDropDispNominaGral" class="btn btn_extend"
+        [ngClass]="indicadorDisperNomOrdGral == 'otras_fechas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" ngbDropdownToggle>
+        <i class="fa-solid fa-list-ul"></i>&nbsp;otras fechas
+      </a>
+      <div class="dropdown-menu-end menu-despegable" ngbDropdownMenu="menuDropDispNominaGral" style="padding: 0!important; margin: 0!important; width: max-content!important; max-height: 400px; overflow-y: auto;">
+        <div class="col-12 input-group">
+          <label for="disper_otras_fechas" class="activeInput">Periodo de fechas</label>
+          <p-datepicker id="disper_otras_fechas" name="disper_otras_fechas" [(ngModel)]="rangoPeriodoNomGralOrd" appendTo="body" dateFormat="dd/mm/yy" placeholder="dd/mm/aaaa" selectionMode="range" (onSelect)="ver_ord_gral_dispersion('otras_fechas');" />
+        </div>
+      </div>
+      <a class="btn btn_extend" [ngClass]="indicadorDisperNomOrdGral == 'all_partidas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_ord_gral_dispersion('all_partidas');">
+        <i class="fa-solid fa-list-ul"></i>&nbsp;todos los registros
+      </a>
+      <p-iconfield iconPosition="left" class="ml-auto">
+        <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+        <input pInputText type="text" (input)="odgen.filterGlobal($event.target.value, 'contains')"
+          placeholder="{{'bus_car' | translate}}" />
+      </p-iconfield>
+    </div>
+  </ng-template>
+  <ng-template #header>
+    <tr>
+      <th rowspan="2" class="ultimo"></th>
+      <th rowspan="2" class="ultimo"></th>
+      <th rowspan="2" class="ultimo"></th>
+      <th rowspan="2" pResizableColumn pSortableColumn="folio_ordenPago">folio&nbsp;<p-sortIcon field="folio_ordenPago" /></th>
+      <th rowspan="2" pResizableColumn pSortableColumn="fecha_contabilizacion_orden_pago">{{'fecha_cont_pay_order' | translate}}&nbsp;<p-sortIcon field="fecha_contabilizacion_orden_pago" /></th>
+      <th rowspan="2" pResizableColumn pSortableColumn="factura_relacionada_string">{{'doc_ant' | translate}}&nbsp;<p-sortIcon field="factura_relacionada_string" /></th>
+      <th rowspan="2" pResizableColumn pSortableColumn="fecha_contabilizacion_doc_anterior">{{'fecha_cont_doc_ant' | translate}}&nbsp;<p-sortIcon field="fecha_contabilizacion_doc_anterior" /></th>
+      <th rowspan="2" pResizableColumn pSortableColumn="orden_emisor_emp">{{'company_name' | translate}}&nbsp;<p-sortIcon field="orden_emisor_emp" /></th>
+      <th rowspan="2" pResizableColumn pSortableColumn="autorizacion_pay">{{'autho_riza' | translate}}&nbsp;<p-sortIcon field="autorizacion_pay" /></th>
+      <th rowspan="2" pResizableColumn pSortableColumn="fecha_autorizacion_pay">{{'date_autho_riza' | translate}}&nbsp;<p-sortIcon field="fecha_autorizacion_pay" /></th>
+      <th colspan="11" pResizableColumn>{{'payed' | translate}}</th>
+      <th rowspan="2" style="padding-left: 5px;padding-right: 5px;" pResizableColumn pSortableColumn="importe_total_inicial">{{'total_refund' | translate}}&nbsp;<p-sortIcon field="importe_total_inicial" /></th>
+      <th rowspan="2" style="padding-left: 5px;padding-right: 5px;" pResizableColumn pSortableColumn="importe_autorizado_inicial_format">{{'total_refund_auth' | translate}}&nbsp;<p-sortIcon field="importe_autorizado_inicial_format" /></th>
+      <th rowspan="2" style="padding-left: 5px;padding-right: 5px;" pResizableColumn pSortableColumn="importe_autorizado_final">{{'total_refund_auth_converse' | translate}}&nbsp;<p-sortIcon field="importe_autorizado_final" /></th>
+      <th rowspan="2" style="padding-left: 5px;padding-right: 5px;" pResizableColumn pSortableColumn="debe_format">DEBE&nbsp;<p-sortIcon field="debe_format" /></th>
+      <!--cancelacion cancel_buy-->
+      <th colspan="4">Cancelaci&oacute;n de orden de pago</th>
+    </tr>
+    <tr>
+      <th pResizableColumn pSortableColumn="pago_anticipado">{{'prepayment' | translate}}&nbsp;<p-sortIcon field="pago_anticipado" /></th>
+      <th class="ultimo"></th>
+      <th class="noneView"></th>
+      <th pResizableColumn pSortableColumn="pago_realizado_folio">folio&nbsp;<p-sortIcon field="pago_realizado_folio" /></th>
+      <th pResizableColumn pSortableColumn="pago_realizado_fecha_contabilizacion">{{'fecha_cont' | translate}}&nbsp;<p-sortIcon field="pago_realizado_fecha_contabilizacion" /></th>
+      <th pResizableColumn pSortableColumn="pago_realizado_proveedor_name">{{'prov' | translate}}&nbsp;<p-sortIcon field="pago_realizado_proveedor_name" /></th>
+      <th pResizableColumn pSortableColumn="pago_realizado_acreedor_name">{{'acree_name' | translate}}&nbsp;<p-sortIcon field="pago_realizado_acreedor_name" /></th>
+      <th pResizableColumn pSortableColumn="pago_realizado_forma_pago_vinculada">{{'f_pago' | translate}}&nbsp;<p-sortIcon field="pago_realizado_forma_pago_vinculada" /></th>
+      <th pResizableColumn pSortableColumn="pago_realizado_forma_metodo_pago_cfdi">{{'f_m_pago_cfdi' | translate}}&nbsp;<p-sortIcon field="pago_realizado_forma_metodo_pago_cfdi" /></th>
+      <th pResizableColumn pSortableColumn="pago_realizado_monto">{{'total_import' | translate}}&nbsp;<p-sortIcon field="pago_realizado_monto" /></th>
+      <th pResizableColumn pSortableColumn="pago_realizado_tipo_cambio">{{'mon_tipo_cambio' | translate}}&nbsp;<p-sortIcon field="pago_realizado_tipo_cambio" /></th>
+      <th pResizableColumn pSortableColumn="pago_realizado_observaciones">{{'observ' | translate}}&nbsp;<p-sortIcon field="pago_realizado_observaciones" /></th>
+      <!--cancelacion cancel_buy-->
+      <th class="ultimo"></th>
+      <th pSortableColumn="pago_orden_cancel_fecha_cont">fecha de cancelaci&oacute;n&nbsp;<p-sortIcon field="pago_orden_cancel_fecha_cont" /></th>
+      <th pSortableColumn="pago_orden_cancel_user">cancela&nbsp;<p-sortIcon field="pago_orden_cancel_user" /></th>
+      <th pSortableColumn="pago_orden_cancel_comentarios">{{'observ' | translate}}&nbsp;<p-sortIcon field="pago_orden_cancel_comentarios" /></th>
+    </tr>
+  </ng-template>
+  <ng-template #body let-disp_ord_item>
+    <tr>
+      <td class="ultimo">
+        <a class="btn bg-blue-600" 
+          [ngSwitch]="disp_ord_item.factura_relacionada_typo"
+          [class.disabled]="disp_ord_item.factura_relacionada_typo === '---'" 
+          [attr.disabled]="disp_ord_item.factura_relacionada_typo === '---' ? true : null"
+          [attr.aria-disabled]="disp_ord_item.factura_relacionada_typo === '---' ? 'true' : null" 
+          (click)="desglose_facturaSeleccionada(disp_ord_item)">
+          <i class="fa-solid fa-info"></i>
+        </a>
+      </td>
+      <td class="ultimo">
+        <a class="btn bg-red-700" [ngClass]="disp_ord_item.factura_relacionada_typo == '---' ? 'disabled' : ''"
+          [attr.disabled]="disp_ord_item.factura_relacionada_typo == '---' ? true : null"
+          [attr.aria-disabled]="disp_ord_item.factura_relacionada_typo == '---' ? true : null"
+          [attr.target]="disp_ord_item.factura_relacionada_typo != '---' ? '_blank' : null"
+          [attr.href]="disp_ord_item.factura_relacionada_typo != '---' ? (disp_ord_item.factura_relacionada_typo == 'compras' ? 'https://downloads.sos-mexico.com.mx/compras_pdf/'+disp_ord_item.factura_relacionada_token : 
+            (disp_ord_item.factura_relacionada_typo == 'ventas' ? 'https://downloads.sos-mexico.com.mx/ventas_pdf/'+disp_ord_item.factura_relacionada_token : 'https://downloads.sos-mexico.com.mx/reembolso_pdf/'+disp_ord_item.factura_relacionada_token)) : null">
+          <i class="fa-solid fa-file-pdf"></i>
+        </a>
+      </td>
+      <td class="ultimo">
+        <a class="btn rounded-3" [ngClass]="auth_rechaz_ord_pago(disp_ord_item.token_ordenPago)"
+          [attr.disabled]="disp_ord_item.orden_bloqueada || disp_ord_item.status_pago ? true : null"
+          [attr.aria-disabled]="disp_ord_item.orden_bloqueada || disp_ord_item.status_pago ? true : null"
+          (click)="!disp_ord_item.orden_bloqueada && !disp_ord_item.status_pago && (!disp_ord_item.autorizacion_pay ? autorizar_orden_pago(disp_ord_item) : desautorizar_orden_pago(disp_ord_item));">
+          <i class="fa-solid" [ngClass]="!disp_ord_item.autorizacion_pay ? 'fa-file-shield' : 'fa-xmark'"></i>
+        </a>
+      </td>
+      <td>{{disp_ord_item.folio_ordenPago}}</td>
+      <td>{{disp_ord_item.fecha_contabilizacion_orden_pago}}</td>
+      <td class="name">{{disp_ord_item.factura_relacionada_string}}</td>
+      <td>{{disp_ord_item.fecha_contabilizacion_doc_anterior}}</td>
+      <td>{{disp_ord_item.orden_emisor_emp}}</td>
+      <!--<td>{{disp_ord_item.autorizacion__pay == true ? ['yes_auth' | translate] : ['not_auth' | translate]}}</td>-->
+      <td>{{disp_ord_item.autorizacion_pay_text}}</td>
+      <td>{{disp_ord_item.fecha_autorizacion_pay}}</td>
+      <td class="td_importes">{{disp_ord_item.pago_anticipado}}</td>
+      <td class="noneView">{{disp_ord_item.status_pago_date}}</td>
+      <td class="ultimo">
+        <p class="btn text-bg-success rounded-3" [ngClass]="disp_ord_item.status_pago == true ? 'disabled' : ''"
+          [attr.disabled]="disp_ord_item.status_pago == true ? true : null"
+          [attr.aria-disabled]="disp_ord_item.status_pago == true ? true : null"
+          style="width: 100%!important;border-radius: 25px!important;padding: 3px;">
+          <i class="fa-solid fa-check-double"></i>{{disp_ord_item.status_pago_date}}
+        </p>
+      </td>
+      <td>{{disp_ord_item.pago_realizado_folio}}</td>
+      <td>{{disp_ord_item.pago_realizado_fecha_contabilizacion}}</td>
+      <td class="name">{{disp_ord_item.pago_realizado_proveedor_name}}</td>
+      <td class="name">{{disp_ord_item.pago_realizado_acreedor_name}}</td>
+      <td class="name">{{disp_ord_item.pago_realizado_forma_pago_vinculada}}</td>
+      <td class="name">{{disp_ord_item.pago_realizado_forma_metodo_pago_cfdi}}</td>
+      <td class="td_importes">{{disp_ord_item.pago_realizado_monto}}</td>
+      <td class="td_importes">{{disp_ord_item.pago_realizado_tipo_cambio}}</td>
+      <td class="name">{{disp_ord_item.pago_realizado_observaciones}}</td>
+
+      <td class="td_importes">{{disp_ord_item.importe_total_inicial}}</td>
+      <td class="td_importes">{{disp_ord_item.importe_autorizado_inicial_format}}</td>
+      <td class="td_importes">{{disp_ord_item.importe_autorizado_final}}</td>
+      <td class="td_importes">{{disp_ord_item.debe_format}}</td>
+
+      <td class="ultimo">
+        @if (disp_ord_item.op_cancel) {
+          <a class="btn btn_extend bg-gray-700" disabled aria-disabled="true">
+            <i class="fa-solid fa-clock-rotate-left"></i>&nbsp;Orden de pago cancelada
+          </a>
+        } @else {
+          @if (disp_ord_item.factura_relacionada_typo == 'nominas') {
+            <a class="btn btn_extend text-bg-danger rounded-3" (click)="orden_dispersion_efectivo_realizado_openform_cancelacion(disp_ord_item);">
+              <i class="fa-solid fa-clock-rotate-left"></i>&nbsp;Solicitar cancelaci&oacute;n
+            </a>
+          } @else {
+            <a class="btn btn_extend text-bg-danger rounded-3" (click)="orden_dispersion_especie_realizado_openform_cancelacion(disp_ord_item);">
+              <i class="fa-solid fa-clock-rotate-left"></i>&nbsp;Solicitar cancelaci&oacute;n
+            </a>
+          }
+        }
+      </td>
+      <td>{{disp_ord_item.pago_orden_cancel_fecha_cont}}</td>
+      <td>{{disp_ord_item.pago_orden_cancel_user}}</td>
+      <td>{{disp_ord_item.pago_orden_cancel_comentarios}}</td>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td colspan="25" class="text-center py-4">
+        <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+        <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+          {{'no_rows' | translate}}
+        </p>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+
+@if (factura_relacionada_token != '' && factura_relacionada_typo != '') {
+  <fnzs_op_detalle_factura_informative [factura_token]="factura_relacionada_token" [factura_typo]="factura_relacionada_typo"></fnzs_op_detalle_factura_informative>
+}
+
+<p-dialog header="Cancelaci&oacute;n de dispersión de nomina en efectivo {{cancelacion_orden_dispers_efectivo_folio}}" class="window_cancelacion" 
+  [(visible)]="orden_dispers_efectivo_window_cancelacion" [modal]="true" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  @if (viewNewCancelacionDispersEfectivoForm) {
+    <form class="formCancelPago" #formCancelPago="ngForm" name="formCancelPago" enctype="multipart/form-data" (ngSubmit)="validaRegistroCancelacionDispersionEfectivo && orden_dispersion_efectivo_solicitar_cancelacion(formCancelPago);">
+      <div class="col-12 input-group">
+        <label class="activeInput" for="cancelPayFechaCont">{{'fecha_cont' | translate}}</label>
+        <input id="cancelPayFechaCont" name="cancelPayFechaCont" type="date" (change)="cancel_fecha_contabilizacion_efectivo($event.target);">
+      </div>
+      <div class="col-12 input-group" style="margin-bottom: 10px!important;">
+        <label class="activeInput" for="cancelPayObservaciones">{{'observ' | translate}}</label>
+        <textarea id="cancelPayObservaciones" name="cancelPayObservaciones" class="validate" (keyup)="keyupObservacionCancelacion_efectivo($event.target);"></textarea>
+      </div>
+      <div class="col-12" style="display: flex !important;justify-content: end!important;margin-top: 5px!important;">
+        <button class="btn btn_extend text-bg-success rounded-3" [ngClass]="!validaRegistroCancelacionDispersionEfectivo ? 'disabled' : ''" 
+          [attr.disabled]="!validaRegistroCancelacionDispersionEfectivo ? true : null" [attr.aria-disabled]="!validaRegistroCancelacionDispersionEfectivo ? true : null">
+          <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+        </button>
+      </div>
+    </form>
+  }
+</p-dialog>
+
+<p-dialog header="Cancelaci&oacute;n de dispersión de nomina en especie {{cancelacion_orden_dispers_especie_folio}}" class="window_cancelacion" 
+  [(visible)]="orden_dispers_especie_window_cancelacion" [modal]="true" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  @if (viewNewCancelacionDispersEspecieForm) {
+    <form class="formCancelPago" #formCancelPago="ngForm" name="formCancelPago" enctype="multipart/form-data" (ngSubmit)="validaRegistroCancelacionDispersionEspecie && orden_dispersion_especie_solicitar_cancelacion(formCancelPago);">
+      <div class="col-12 input-group">
+        <label class="activeInput" for="cancelPayFechaCont">{{'fecha_cont' | translate}}</label>
+        <input id="cancelPayFechaCont" name="cancelPayFechaCont" type="date" (change)="cancel_fecha_contabilizacion_especie($event.target);">
+      </div>
+      <div class="col-12 input-group" style="margin-bottom: 10px!important;">
+        <label class="activeInput" for="cancelPayObservaciones">{{'observ' | translate}}</label>
+        <textarea id="cancelPayObservaciones" name="cancelPayObservaciones" class="validate" (keyup)="keyupObservacionCancelacion_especie($event.target);"></textarea>
+      </div>
+      <div class="col-12" style="display: flex !important;justify-content: end!important;margin-top: 5px!important;">
+        <button class="btn btn_extend text-bg-success rounded-3" [ngClass]="!validaRegistroCancelacionDispersionEspecie ? 'disabled' : ''" 
+          [attr.disabled]="!validaRegistroCancelacionDispersionEspecie ? true : null" [attr.aria-disabled]="!validaRegistroCancelacionDispersionEspecie ? true : null">
+          <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+        </button>
+      </div>
+    </form>
+  }
+</p-dialog>

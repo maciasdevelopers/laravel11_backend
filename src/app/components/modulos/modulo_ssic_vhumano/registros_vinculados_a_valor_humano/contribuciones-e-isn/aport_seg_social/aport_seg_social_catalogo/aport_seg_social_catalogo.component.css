@@ -1,0 +1,14 @@
+.bloque {border: 1px solid #ccc; }
+.bloque-header {
+  margin: 0;
+  padding: 5px;
+  background-color: #e7e7ea !important;
+  color: #353535 !important;
+  height: 25px!important;
+  text-align: left!important;
+  text-transform: none!important;
+}
+.grid-container { padding: 0!important; }
+.full-width { grid-column: 1 / -1; }
+table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }

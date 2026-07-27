@@ -1,0 +1,206 @@
+<form class="row formDataDispositivo" #formDataDispositivo="ngForm" autocomplete="off"
+  (ngSubmit)="regDispositivo(formDataDispositivo);" *ngIf="viewFormulario">
+  <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+    <label class="activeInput">Tipo de dispositivo</label>
+    <select name="tipoDispositivo" (change)="validaTipoDisp($event.target);">
+      <option value="" disabled selected>{{'opt_select' | translate}}</option>
+      <option *ngFor="let lisTipo of arrayTipoDips" value="{{lisTipo.token_tipo_disp}}">{{lisTipo.tipo}}
+      </option>
+    </select>
+  </div>
+  <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+    <label class="activeInput">Alias</label>
+    <input class="validate" name="aliasDispositivo" type="text" required (keyup)="validaAliasDisp($event.target);">
+  </div>
+  <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+    <label class="activeInput">No. serie</label>
+    <input class="validate" name="serieDispositivo" type="text" required (keyup)="validaSerie($event.target);">
+  </div>
+  <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+    <label class="activeInput">Vigencia</label>
+    <input class="datepicker validate" name="vigenciaDispositivo" type="month" required
+      (change)="validaVigencia($event.target);">
+  </div>
+
+  <div class="col-12 row" style="padding: 0;padding-top: 5px;padding-bottom: 5px;">
+    <p-panel header="Vincular a una caja" [toggleable]="true">
+      <div class="col-12" style="margin-top: 15px;">
+        <p-table id="tabla_productos_list_general" #dt [value]="arrayCajaMonedero" dataKey="id" [paginator]="true"
+          [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]" [globalFilterFields]="['nombre']">
+          <ng-template #header>
+            <tr>
+              <th pSortableColumn="caja_folio">Caja&nbsp;<p-sortIcon field="caja_folio" /></th>
+              <th pSortableColumn="establecimiento">Establecimiento&nbsp;<p-sortIcon field="establecimiento" /></th>
+              <th pSortableColumn="folio_compra">folio de compra&nbsp;<p-sortIcon field="folio_compra" />Vigencia</th>
+              <th class="ultimo"></th>
+            </tr>
+          </ng-template>
+          <ng-template #body let-caj>
+            <tr>
+              <td>{{caj.caja_folio+" "+caj.caja_alias}}</td>
+              <td>{{caj.establecimiento}}</td>
+              <td></td>
+              <td>
+                <div class="form-check radio_check">
+                  <input class="form-check-input" type="radio" name="caja_select"
+                    (click)="selectCajaDisp(caj.token_caja);">
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="4" class="text-center py-4">
+                <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                  {{'no_rows' | translate}}
+                </p>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </p-panel>
+  </div>
+
+  <div class="col-12 row" style="padding: 0;padding-bottom: 5px;">
+    <p-panel header="Vincular a una cuenta bancaria" [toggleable]="true">
+      <div class="col-12" style="margin-top: 15px;">
+        <p-table id="tabla_productos_list_general" #dt [value]="listaCuentasBancarias" dataKey="id" [paginator]="true"
+          [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]" [globalFilterFields]="['nombre']">
+          <ng-template #header>
+            <tr>
+              <th pSortableColumn="folio_cuenta">folio&nbsp;<p-sortIcon field="folio_cuenta" /></th>
+              <th pSortableColumn="banco_nombre_comercial">banco&nbsp;<p-sortIcon field="banco_nombre_comercial" /></th>
+              <th class="ultimo" pSortableColumn="cuenta_bancaria">cuenta&nbsp;<p-sortIcon field="cuenta_bancaria" />
+              </th>
+              <th class="ultimo"></th>
+            </tr>
+          </ng-template>
+          <ng-template #body let-cuent>
+            <tr>
+              <td>{{cuent.folio_cuenta}}</td>
+              <td>{{cuent.banco_clave+' '+cuent.banco_nombre_comercial}}</td>
+              <td>
+                <a class="btn btn_extend bg-blue-600" (click)="functCuentaNumber(cuent.token_cuenta);">
+                  {{cuent.cuenta_bancaria}}&nbsp;<i class="fa-solid"
+                    [ngClass]="cuent.cuenta_view ? 'fa-user-clock' : 'fa-eye'"></i>&nbsp;{{cuent.cuenta_view ? "
+                  "+cuent.cuenta_time : ""}}
+                </a>
+              </td>
+              <td>
+                <div class="form-check radio_check">
+                  <input class="form-check-input" type="radio" name="cuenta_bancaria_selected"
+                    (click)="selectCuentaDisp(cuent.token_cuenta);">
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="4" class="text-center py-4">
+                <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                  {{'no_rows' | translate}}
+                </p>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </p-panel>
+  </div>
+
+  <div class="col-12 row" style="padding: 0;padding-bottom: 5px;">
+    <p-panel header="Vincular a una cuenta de monedero Electr&oacute;nico" [toggleable]="true">
+      <div class="col-12" style="margin-top: 15px;">
+        <p-table id="tabla_productos_list_general" #dt [value]="arrayMonederoElectro" dataKey="id" [paginator]="true"
+          [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]" [globalFilterFields]="['nombre']">
+          <ng-template #header>
+            <tr>
+              <th pSortableColumn="monedero">Cuenta&nbsp;<p-sortIcon field="monedero" /></th>
+              <th pSortableColumn="monedero">Vigencia&nbsp;<p-sortIcon field="monedero" /></th>
+              <th class="ultimo"></th>
+            </tr>
+          </ng-template>
+          <ng-template #body let-mon>
+            <tr>
+              <td>{{mon.monedero+" - "+mon.cuenta}}</td>
+              <td></td>
+              <td>
+                <div class="form-check radio_check">
+                  <input class="form-check-input" type="radio" name="monedero_selected"
+                    (click)="selectMonederoDisp(mon.token_cuentaMon);">
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="3" class="text-center py-4">
+                <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                  {{'no_rows' | translate}}
+                </p>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </p-panel>
+  </div>
+
+  <div class="col-12 row" style="padding: 0;padding-bottom: 5px;">
+    <p-panel header="Asignar a un personal responsable" [toggleable]="true">
+      <div class="col-12" style="margin-top: 15px;">
+        <p-table id="tabla_productos_list_general" #dt [value]="arrayPersonal" dataKey="id" [paginator]="true"
+          [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]" [globalFilterFields]="['nombre']">
+          <ng-template #header>
+            <tr>
+              <th pSortableColumn="folio">Folio&nbsp;<p-sortIcon field="folio" /></th>
+              <th pSortableColumn="nombre_completo">Responsable&nbsp;<p-sortIcon field="nombre_completo" /></th>
+              <th class="ultimo"></th>
+            </tr>
+          </ng-template>
+          <ng-template #body let-pers>
+            <tr>
+              <td>{{pers.folio}}</td>
+              <td>{{pers.nombre_completo}}</td>
+              <td>
+                <div class="form-check radio_check">
+                  <input class="form-check-input" type="radio" name="empleado_selected"
+                    (click)="selectResponsDisp(pers.token_empleado_vhum);">
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="3" class="text-center py-4">
+                <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                  {{'no_rows' | translate}}
+                </p>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </p-panel>
+  </div>
+
+  <p-divider />
+  <div class="col-12 row">
+    <div class="col-12 col-sm-12 col-md-6 col-lg-8 col-xl-8 col-xxl-9"></div>
+    <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3"
+      style="display: flex !important;justify-content: end!important;">
+      <p-confirmpopup />
+      <button class="btn btn_extend text-bg-success rounded-3" type="submit" name="btnAltaProducto2"
+        [ngClass]="!validaDispRegistro ? 'disabled' : ''" [attr.disabled]="!validaDispRegistro ? true : null"
+        [attr.aria-disabled]="!validaDispRegistro ? true : null">
+        <i class="fa-solid fa-floppy-disk"
+          style="height: 15px!important;line-height: 15px!important;width: 15px!important;font-size: small!important;"></i>&nbsp;{{'sav_cam'
+        | translate}}</button>
+    </div>
+  </div>
+</form>

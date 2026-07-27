@@ -1,0 +1,69 @@
+.listas_ps{
+  width: 100%;
+  padding: 5px;
+  transition-property: all;
+  transition-duration: 0.2s;
+  transition-timing-function: ease-in;
+}
+
+.listas_ps .lista-div,
+.listas_ps .fmAlta{
+  min-height: calc(100vh - 135px)!important;
+  width: 100%;
+  border-radius: 8px;
+  padding: 1%;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
+.listas_ps .lista-divNoFlex{
+  display: block!important;
+}
+
+.listas_ps form{
+  width: 100%;
+  margin: 10px;
+  display: contents;
+}
+
+.listas_ps form .data-reg{
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+
+/*Estructura general 140-*/
+.listas_ps h4,
+.listas_ps h5,
+.listas_ps h6 {
+  width: 100%;
+  color: #353535;
+  text-align: center;
+  margin: 3px;
+  height: auto;
+  text-transform: uppercase;
+  font-family: ubuntu, FontAwesome;
+  font-family: sans-serif, FontAwesome;
+}
+
+.listas_ps div.cabecera{
+  background-color: #d3d3d3;
+  border-radius: 8px;
+  color: #353535;
+}
+
+.listas_ps span.error{
+  height: 20px;
+  line-height: 20px;
+  width: 100%;
+  border-radius: 5px;
+  background-color: #D32F2F!important;
+  color: #fff!important;
+  padding-left: 1%;
+  padding-right: 1%;
+}

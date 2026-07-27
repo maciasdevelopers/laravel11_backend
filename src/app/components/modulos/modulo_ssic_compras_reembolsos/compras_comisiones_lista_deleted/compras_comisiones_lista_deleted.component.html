@@ -1,0 +1,140 @@
+@if (!permiso_consulta) {
+  <h6 class="access_denied">{{'perm_denied' | translate}}</h6>
+} @else {
+  <p-table #listComisionesDeshabilitadas [value]="array_comisiones_deshabilitadas" [globalFilterFields]="comi_disabled_search" [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]">
+    <ng-template #caption>
+      <div class="flex">
+        <p-iconfield iconPosition="left" class="ml-auto">
+          <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+          <input pInputText type="text" (input)="listComisionesDeshabilitadas.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+        </p-iconfield>
+      </div>
+    </ng-template>
+    <ng-template #header>
+      <tr>
+        <th class="ultimo"></th>
+        <th pSortableColumn="folio_comision">folio&nbsp;<p-sortIcon field="folio_comision" /></th>
+        <th pSortableColumn="comision_proyecto">{{'proy' | translate}}&nbsp;<p-sortIcon field="comision_proyecto" /></th>
+        <th pSortableColumn="usuario_comision">{{'comi_sionado' | translate}}&nbsp;<p-sortIcon field="usuario_comision" /></th>
+        <th pSortableColumn="especificaciones">{{'observ' | translate}}&nbsp;<p-sortIcon field="especificaciones" /></th>
+        <th pSortableColumn="fecha_programada">{{'comi_date' | translate}}&nbsp;<p-sortIcon field="fecha_programada" /></th>
+        <th pSortableColumn="duracion">{{'comi_time' | translate}}&nbsp;<p-sortIcon field="duracion" /></th>
+        <th pSortableColumn="recibe_dinero">Recibe dinero&nbsp;<p-sortIcon field="recibe_dinero" /></th>
+        <th pSortableColumn="comi_tiempo_respuesta">{{'resp_time' | translate}}&nbsp;<p-sortIcon field="comi_tiempo_respuesta" /></th>
+        <th pSortableColumn="valor_humano">{{'comi_valida_vhum' | translate}}&nbsp;<p-sortIcon field="valor_humano" /></th>
+        <th pSortableColumn="egresos">{{'comi_valida_eegr' | translate}}&nbsp;<p-sortIcon field="egresos" /></th>
+        <th pSortableColumn="ubicacion_display_name">{{'ubica_loca' | translate}}&nbsp;<p-sortIcon field="ubicacion_display_name" /></th>
+        <th pSortableColumn="concluida_fecha">{{'complete' | translate}}&nbsp;<p-sortIcon field="concluida_fecha" /></th>
+        <th pSortableColumn="fecha_delete_comission">{{'f_delete' | translate}}&nbsp;<p-sortIcon field="fecha_delete_comission" /></th>
+        <th class="ultimo"></th>
+      </tr>
+    </ng-template>
+    <ng-template #body let-dcomi>
+      <tr>
+        <td class="ultimo">
+          <a class="btn bg-blue-600" (click)="ver_desglose_comision(dcomi.token_comision_main);">
+            <i class="fa-solid fa-info"></i>
+          </a>
+        </td>
+        <td>{{dcomi.folio_comision}}</td>
+        <td>{{dcomi.comision_proyecto}}</td>
+        <td>{{dcomi.comisionado}}</td>
+        <td>{{dcomi.especificaciones}}</td>
+        <td>{{dcomi.fecha_programada}}</td>
+        <td>{{dcomi.duracion}}</td>
+        <td>{{!dcomi.recibe_dinero ? ['no' | translate] : ['yes' | translate]+" "+dcomi.dinero_recibido+" "+dcomi.comision_moneda_name}}</td>
+        <td>{{dcomi.comi_tiempo_respuesta+" horas"}}</td>
+        <td>{{!dcomi.valor_humano ? ['no' | translate] : ['yes' | translate]}}</td>
+        <td>{{!dcomi.egresos ? ['no' | translate] : ['yes' | translate]}}</td>
+        <td>{{dcomi.ubicacion_display_name != '' ? dcomi.ubicacion_display_name : dcomi.ubicacion_colonia+', '+dcomi.ubicacion_municipio+', '+dcomi.ubicacion_codigo_postal+', '+dcomi.ubicacion_estado}}</td>
+        <td>{{'yes' | translate}} {{dcomi.concluida_fecha}}</td>
+        <td>{{dcomi.fecha_delete_comission}}</td>
+        <td class="ultimo">
+          <a class="btn btn_extend text-bg-success rounded-3" (click)="rehabilitarComission(dcomi.token_comision_main);">
+            <i class="fa-solid fa-trash-arrow-up"></i>&nbsp;{{'restore_row' | translate}}
+          </a>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="15" class="text-center py-4">
+          <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+          <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+            {{'no_rows' | translate}}
+          </p>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+}
+
+<p-dialog header="COMISION SELECCIONADA: {{folio_comision}}" [(visible)]="comi_viewModal" [modal]="true" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  @for (detcomi of arrayComisionDetalle; track $index) {
+    <div class="col-12 explain">
+      <h6 class="title">{{'Esta comisión no se puede editar por que fue eliminada'}}</h6>
+    </div>
+    <div class="col-12 explain">
+      <h6 class="title">folio</h6>
+      <h6 class="content">{{detcomi.folio_comision}}</h6>
+    </div>
+    <div class="col-12 explain">
+      <h6 class="title">{{'fecha_reg' | translate}}</h6>
+      <h6 class="content">{{detcomi.fecha_comision}}</h6>
+    </div>
+    <div class="col-12 explain">
+      <h6 class="title">{{'proy' | translate}}</h6>
+      <h6 class="content">{{detcomi.comision_proyecto}}</h6>
+    </div>
+    <div class="col-12 explain">
+      <h6 class="title">{{'comi_sionado' | translate}}</h6>
+      <h6 class="content">{{detcomi.comisionado_name}}</h6>
+    </div>
+    <div class="col-12 explain">
+      <h6 class="title">{{'observ' | translate}}</h6>
+      <h6 class="content">{{detcomi.especificaciones}}</h6>
+    </div>
+    <div class="col-12 explain">
+      <h6 class="title">{{'comi_date' | translate}}</h6>
+      <h6 class="content">{{detcomi.fecha_programada_html}}</h6>
+    </div>
+    <div class="col-12 explain">
+      <h6 class="title">{{'comi_time' | translate}}</h6>
+      <h6 class="content">{{detcomi.duracion}}</h6>
+    </div>
+    <p-divider />
+    <div class="col-12 explain">
+      <h6 class="title">{{'comi_recibe_dinero' | translate}}</h6>
+      <h6 class="content">{{detcomi.recibe_dinero ? ['yes' | translate] : 'No'}}</h6>
+    </div>
+    @if (detcomi.recibe_dinero) {
+      <div class="col-12 explain">
+        <h6 class="title">{{'total_import' | translate}}</h6>
+        <h6 class="content">{{detcomi.dinero_recibido}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">{{'mon_name' | translate}}</h6>
+        <h6 class="content">{{detcomi.comision_moneda_name}}</h6>
+      </div>
+    }
+    <p-divider />
+    <div class="col-12 explain">
+      <h6 class="title">{{'comi_valida_vhum' | translate}}</h6>
+      <h6 class="content">{{detcomi.valor_humano ? ['yes' | translate] : 'No'}}</h6>
+    </div>
+    <p-divider />
+    <div class="col-12 explain">
+      <h6 class="title">{{'comi_valida_eegr' | translate}}</h6>
+      <h6 class="content">{{detcomi.egresos ? ['yes' | translate] : 'No'}}</h6>
+    </div>
+    <p-divider />
+    <div class="col-12 explain">
+      <h6 class="title">{{'complete' | translate}}</h6>
+      <h6 class="content">{{!detcomi.concluida_bool ? 'No' : ['yes' | translate]+" "+detcomi.concluida_fecha}}</h6>
+    </div>
+    <div class="col-12 explain">
+      <h6 class="title">{{'ubica_loca' | translate}}</h6>
+      <h6 class="content">{{detcomi.ubicacion_display_name != '' ? detcomi.ubicacion_display_name : detcomi.ubicacion_colonia+', '+detcomi.ubicacion_municipio+', '+detcomi.ubicacion_codigo_postal+', '+detcomi.ubicacion_estado}}</h6>
+    </div>
+  }
+</p-dialog>

@@ -1,0 +1,46 @@
+              <div class="col-12">
+
+
+                <div class="col-12 row" style="padding: 0;display: contents;">
+                  <div class="table_new_task_one col-12" style="padding: 5px!important;margin: 0!important;">
+                    <!--<table class="white centered table_show_register" style="min-width: 100%!important;width: max-content!important;">-->
+                    <table class="white centered table_show_register" style="min-width: 100%!important;margin: 0!important;">
+                      <thead>
+                        <tr>
+                          <th class="ultimo ultimo-buttons"></th>
+                          <th class="ultimo ultimo-buttons"></th>
+                          <th class="ultimo ultimo-buttons"></th>
+                          <th class="ultimo ultimo-buttons"></th>
+                          <th class="ultimo ultimo-buttons"></th>
+                          <th class="ultimo ultimo-buttons"></th>
+                          <th>{{'tar_name' | translate}}</th>
+                          <th>{{'tar_desc' | translate}}</th>
+                          <th>{{'fecha_fin' | translate}}</th>
+                          <th>{{'tar_manager' | translate}}</th>
+                          <th class="ultimo ultimo-buttons"></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr *ngFor="let rowtar of proy.tarea_list | paginate:{id:'pageTar',itemsPerPage:10,currentPage:pageTar};index as iTar">
+                          
+                          
+                          
+                          <td>{{proy.nombre_lider}}</td>
+                          <!--proy_teamwork-->
+                          <td class="ultimo ultimo-buttons">
+                            <a *ngIf="proy.creat_lider == 'CR'" class="btn waves-effect btn_extend waves-light red darken-2"
+                              (click)="eliminarTarea(proy.token_proyecto,rowtar.token_tarea);">
+                              <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                            </a>
+
+                            <a *ngIf="proy.creat_lider != 'CR'" disabled class="btn waves-effect btn_extend waves-light red darken-2">
+                              <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                            </a>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <paginado-controles class="paginador" id="pageTar" (pageChange)="pageTar = $event" (click)="componentes();" previousLabel="{{'prev' | translate}}" nextLabel="{{'next' | translate}}"></paginado-controles>
+              </div>

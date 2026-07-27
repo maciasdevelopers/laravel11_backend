@@ -1,0 +1,11 @@
+ul.collection_postales{border-radius: 8px;padding: 0;}
+ul.collection_postales li.list-group-item{padding: 5px;color: #353535;font-family: 'roboto_medium';}
+ul.collection_postales li.list-group-item div.busqueda h6{padding: 0;margin: 0;height: 30px;line-height: 30px;font-family: 'roboto_bold';}
+ul.collection_postales li.list-group-item div.busqueda div.field_buscar{padding: 0;margin: 0;}
+ul.collection_postales li.itemFor p{background-color: #1e88e5;margin-bottom: 3px;color: white;padding-left: 3px;border-radius: 25px;cursor: pointer;}
+ul.collection_postales li.itemColoniaSeleted{background-color: #353535;color: white;}
+
+div.explain{padding: 0;display: flex;margin: 0;flex-wrap: wrap;justify-content: flex-start;align-items: center;align-content: center;}
+div.explain h6{font-size: 11px;text-align: left;color: #353535;white-space: break-spaces !important;}
+div.explain h6.title{width: max-content;}
+div.explain h6.content{margin: 0;margin-bottom: 2px;font-family: roboto_cr, FontAwesome;width: max-content;}

@@ -1,0 +1,226 @@
+<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco" #vContent>
+	<div class="contenido"><app-loader></app-loader>
+		<nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+		<div class="contenidoPagina">
+			<div class="listas_ps revanecer">
+				<div id="listaServicios" class="lista-div lista-divNoFlex row">
+					<h4 class="col-12">CATALOGO DE PROMOCIONES</h4>
+					<div class="col-12">
+						<div class="btn-group lista_botones col" role="group" aria-label="Basic example">
+							<a class="btn btn_extend bg-indigo-600" routerLink="../altadedescuentos"><i class="fa-solid fa-plus"></i>&nbsp;Registrar nueva promoci&oacute;n</a>
+							<a class="btn btn_extend bg-indigo-600" (click)="listasPromociones();listasDesactPromociones();"><i class="fa-solid fa-rotate"></i>&nbsp;{{'list_updt' | translate}}</a>
+							<a class="btn btn_extend bg-indigo-600" data-bs-toggle="modal" data-bs-target="#windowPromocionesEliminadas" (click)="listasDeletedPromociones();"><i class="fa-solid fa-trash"></i>&nbsp;Promociones eliminadas</a>
+						</div>
+					</div>
+
+					<p-tabs value="0">
+						<p-tablist>
+							<p-tab value="0" (click)="listasPromociones();">Promociones vigentes</p-tab>
+							<p-tab value="1" (click)="listasDesactPromociones();">Promociones deshabilitadas</p-tab>
+						</p-tablist>
+						<p-tabpanels>
+							<p-tabpanel value="0">
+								<div class="col-12 row" *ngIf="view_lista_promociones == true" style="padding:0!important;">
+									<table id="table_ing_promociones_true" class="display nowrap mdl-data-table white centered" style="width:100%!important;margin:0!important;">
+                    <thead>
+                      <tr>
+                        <th>Folio</th>
+                        <th>Alias</th>
+                        <th>{{'concept' | translate}}</th>
+                        <th class="ultimo"></th>
+                        <th class="ultimo"></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let listaPromo of arrayPromociones; index as i">
+                        <td>{{listaPromo.folio}}</td>
+                        <td>{{listaPromo.alias}}</td>
+                        <td>{{listaPromo.concepto}}</td>
+                        <td>
+                          <a class="btn bg-blue-600" data-bs-toggle="modal" data-bs-target="#windowInfoPromocion" (click)="functViewPromocion(listaPromo.token_promocion);"><i class="fa-solid fa-info"></i></a>
+                        </td>
+                        <td>
+                          <a (click)="eliminaPromocion(listaPromo.token_promocion);" class="btn btn_extend text-bg-danger rounded-3">
+                            <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                          </a>
+                        </td>
+                      </tr>
+                    </tbody>
+									</table>
+								</div>
+							</p-tabpanel>
+							<p-tabpanel value="1">
+								<div class="col-12 row" *ngIf="view_lista_promociones_deshabilitadas == true" style="padding:0!important;">
+									<table id="table_ing_promociones_disabled" class="display nowrap mdl-data-table white centered" style="width:100%!important;margin:0!important;">
+                    <thead>
+                      <tr>
+                        <th>Folio</th>
+                        <th>Alias</th>
+                        <th>{{'f_delete' | translate}}</th>
+                        <th class="ultimo"></th>
+                        <th class="ultimo"></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let listaPromoDSact of arrayPromocionesdesact; index as i">
+                        <td class="noneView">{{listaPromoDSact.token_promocion}}</td>
+                        <td>{{listaPromoDSact.folio}}</td>
+                        <td>{{listaPromoDSact.alias}}</td>
+                        <td>{{listaPromoDSact.concepto}}</td>
+                        <td>
+                          <a class="btn bg-blue-600" data-bs-toggle="modal" data-bs-target="#windowInfoPromocion" (click)="functViewPromocion(listaPromoDSact.token_promocion);"><i class="fa-solid fa-info"></i></a>
+                        </td>
+                        <td>
+                          <a class="btn btn_extend text-bg-danger rounded-3" (click)="eliminaPromocion(listaPromoDSact.token_promocion);">
+                            <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                          </a>
+                        </td>
+                      </tr>
+                    </tbody>
+									</table>
+								</div>
+							</p-tabpanel>
+						</p-tabpanels>
+					</p-tabs>
+
+          <div class="modal fade bd-example-modal-lg" id="windowInfoPromocion" tabindex="-1" role="dialog" aria-labelledby="windowInfoPromocionLabel" aria-hidden="true">
+            <div class="modal-dialog modal-fullscreen" style="margin: 1%;width: 98%!important;">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="windowInfoPromocionLabel">INFORMACI&Oacute;N DE PROMOCION REGISTRADA</h1>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: transparent !important;"></button>
+                </div>
+                <div class="modal-body">
+                  <div class="col-12">
+                    <div class="col-12" *ngFor="let prm of datosDetallePromo">
+                      <div class="col-12">
+                        <div class="col-12 explain">
+                          <h6 class="title">Folio registrado</h6>
+                          <h6 class="content">{{prm.folio_promocion}}</h6>
+                        </div>
+                        <div class="col-12 explain">
+                          <h6 class="title">{{prm.status_activacion == true ? '* Última activación' : '* Última desactivación'}}</h6>
+                          <h6 class="content">
+                            <a class="btn btn_extend bg-blue-600" placement="top" [attr.tooltip]="prm.status_activacion == true ? 'Detener promoción' : 'Habilitar promoción'"
+													  	(click)="prm.status_activacion == true ? desactivaPromocion($event.target,prm.token_promocion) : activaPromocion($event.target,prm.token_promocion);">
+													  	{{prm.fecha_activacion+" "}}<i style="width: 10%!important;" class="fas" [ngClass]="prm.status_activacion == true ? 'fa-ban' : 'fa-bell'"></i>
+													  </a>
+                          <!-- placement="top" tooltip="retenciones"-->
+                          </h6>
+                        </div>
+                        <div class="col-12 explain">
+                          <h6 class="title">* Alias</h6>
+                          <input (keyup)="aliasServPromo($event.target);" value="{{prm.alias_promocion}}" class="validate" name="aliasPromocion" type="text">
+                        </div>
+                        <div class="col-12 explain">
+                          <h6 class="title">* Concepto</h6>
+                          <input class="validate" [ngClass]="promocionesModelo.alias == '' ? 'disabled' : ''" [attr.disabled]="promocionesModelo.alias == '' ? true : null" [attr.aria-disabled]="promocionesModelo.alias == '' ? true : null"
+                            value="{{prm.concepto_promocion}}" name="conceptoPromocion" type="text" (keyup)="promocionesModelo.alias != '' && conceptoServPromo($event.target);">
+                        </div>
+                        <div class="col-12 explain">
+                          <h6 class="title">* Aplicación</h6>
+                          <select class="validate" [ngClass]="promocionesModelo.concepto == '' ? 'disabled' : ''" [attr.disabled]="promocionesModelo.concepto == '' ? true : null" [attr.aria-disabled]="promocionesModelo.concepto == '' ? true : null"
+                            (change)="cuotaPorcServPromo($event.target);" name="selectCotaPorcPromocion">
+														<option value="" disabled selected>SELECIONA UNA OPCION</option>
+														<option value="cuota" [attr.disabled]="prm.cuo_porc == false ? true : null" [attr.selected]="prm.cuo_porc == false ? true : null">Cuota</option>
+														<option value="porcentaje" [attr.disabled]="prm.cuo_porc == true ? true : null" [attr.selected]="prm.cuo_porc == true ? true : null">Porcentaje</option>
+													</select>
+                        </div>
+                        <div class="col-12 explain">
+                          <h6 class="title">* Monto de aplicación</h6>
+                          <h6 class="content">{{prm.cuo_porc == false ? '$'+prm.cantidad_base : prm.cantidad_base+'%'}}</h6>
+                          <input class="validate" [ngClass]="promocionesModelo.aplicacion == '' ? 'disabled' : ''" [attr.disabled]="promocionesModelo.aplicacion == '' ? true : null"  [attr.aria-disabled]="promocionesModelo.aplicacion == '' ? true : null"
+                            value="{{prm.cantidad_base}}" type="number" name="cantidadBasePromocion" (keyup)="promocionesModelo.aplicacion != '' && cantidadBaseKeyUp($event.target);">
+                        </div>
+                        <div class="col-12 explain">
+                          <h6 class="title">* Tipo de descuento</h6>
+                          <select class="validate" [ngClass]="promocionesModelo.monto == '' ? 'disabled' : ''" [attr.disabled]="promocionesModelo.monto == '' ? true : null" [attr.aria-disabled]="promocionesModelo.monto == '' ? true : null" 
+                            (change)="tipoDescuentoServPromo($event.target);" name="selectTipo" name="selectTipoPromocion">
+														<option >{{'opt_select' | translate}}</option>
+														<option value="eventual"  [attr.disabled]="prm.aplicacion == 'eventual' ? true : null" [attr.selected]="prm.aplicacion == 'eventual' ? true : null">Eventual</option>
+														<option value="pIndeterminado"  [attr.disabled]="prm.aplicacion == 'pIndeterminado' ? true : null" [attr.selected]="prm.aplicacion == 'pIndeterminado' ? true : null">Periodo Indeterminado</option>
+														<option value="pDeterminado"  [attr.disabled]="prm.aplicacion == 'pDeterminado' ? true : null" [attr.selected]="prm.aplicacion == 'pDeterminado' ? true : null">Periodo Determinado</option>
+													</select>
+                        </div>
+                        <div class="col-12 explain">
+                          <h6 class="title">* Inicia descuento</h6>
+                          <h6 class="content">{{prm.periodo_inicio == '' ? '---' : prm.periodo_inicio}}</h6>
+                          <input class="datepicker" [ngClass]="promocionesModelo.tipo == '' || promocionesModelo.tipo == 'eventual' ? 'disabled' : ''" [attr.disabled]="promocionesModelo.tipo == '' || promocionesModelo.tipo == 'eventual' ? true : null" 
+                            [attr.aria-disabled]="promocionesModelo.tipo == '' || promocionesModelo.tipo == 'eventual' ? true : null" value="{{prm.periodo_inicio}}" name="fechaInicioDesc" type="date"
+                            (change)="(promocionesModelo.tipo != '' && promocionesModelo.tipo != 'eventual') && fechaInicioServPromo($event.target);">
+                        </div>
+                        <div class="col-12 explain">
+                          <h6 class="title">* Termina descuento</h6>
+                          <h6 class="content">{{prm.periodo_fin == '' ? '---' : prm.periodo_fin}}</h6>
+													<input class="datepicker" [ngClass]="promocionesModelo.tipo == '' || promocionesModelo.tipo != 'pDeterminado' ? 'disabled' : ''" [attr.disabled]="promocionesModelo.tipo == '' || promocionesModelo.tipo != 'pDeterminado' ? true : null" 
+                            [attr.aria-disabled]="promocionesModelo.tipo == '' || promocionesModelo.tipo != 'pDeterminado' ? true : null" value="{{prm.periodo_fin}}" name="fechaFinDesc" type="date" 
+                            (keyup)="(promocionesModelo.tipo != '' && promocionesModelo.tipo == 'pDeterminado') && fechaFinServPromo($event.target);">
+                        </div>
+                        <div class="col-12 row" style="border-top: solid 1px lightgray!important;padding:10px!important;">
+                          <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9"></div>
+                          <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3">
+                            <a class="btn btnRow text-bg-success rounded-3" [ngClass]="!validaBtnUpdatePromo() ? 'disabled' : ''" [attr.disabled]="!validaBtnUpdatePromo() ? true : null" 
+                              [attr.aria-disabled]="!validaBtnUpdatePromo() ? true : null" (click)="validaBtnUpdatePromo() && updatePromocion($event.target,prm.token_promocion);"><!--promocionesModelo.fecha_inicia > promocionesModelo.fecha_termina-->
+															<i class="fas fa-sign-in-alt"></i>
+														</a>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-12"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div>
+              </div>
+            </div>
+          </div>
+
+					<div class="modal fade bd-example-modal-lg" id="windowPromocionesEliminadas" tabindex="-1" role="dialog" aria-labelledby="windowPromocionesEliminadasLabel" aria-hidden="true">
+						<div class="modal-dialog modal-fullscreen" style="margin: 1%;width: 98%!important;">
+							<div class="modal-content">
+								<div class="modal-header">
+									<h1 class="modal-title fs-5 bg-blue-ModalTitle" id="windowPromocionesEliminadasLabel">Descuentos eliminados</h1>
+									<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: transparent !important;"></button>
+								</div>
+								<div class="modal-body">
+									<div class="col-12 row" *ngIf="view_lista_promociones_eliminadas == true" style="padding:0!important;">
+										<table id="table_ing_promociones_false" class="display nowrap mdl-data-table white centered" style="width:100%!important;margin:0!important;">
+                      <thead>
+                        <tr>
+                          <th>Folio</th>
+                          <th>Alias</th>
+                          <th>{{'f_delete' | translate}}</th>
+                          <th class="ultimo"></th>
+                          <th class="ultimo"></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr *ngFor="let listaPromodel of arrayPromocionesdelete; index as i">
+                          <td>{{listaPromodel.folio}}</td>
+                          <td>{{listaPromodel.alias}}</td>
+                          <td>{{listaPromodel.concepto}}</td>
+                          <td>
+                            <a class="btn btn_extend text-bg-success rounded-3" (click)="restauraPromocion(listaPromodel.token_promocion);">
+                              <i class="fa-solid fa-trash-arrow-up"></i>&nbsp;{{'restore_row' | translate}}
+                            </a>
+                          </td>
+                          <td>
+                            <a class="btn btn_extend text-bg-danger rounded-3" (click)="eliminaPermPromocion(listaPromodel.token_promocion);">
+                              <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                            </a>
+                          </td>
+                        </tr>
+                      </tbody>
+										</table>
+									</div>
+								</div>
+								<div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

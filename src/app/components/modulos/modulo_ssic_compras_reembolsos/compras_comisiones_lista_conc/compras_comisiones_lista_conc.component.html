@@ -1,0 +1,427 @@
+@if (!permiso_consulta) {
+  <h6 class="access_denied">{{'perm_denied' | translate}}</h6>
+} @else {
+  <p-table #comiConc [value]="array_comisiones_concluidas" [globalFilterFields]="comi_cconc_search" [paginator]="true"
+    [rows]="10" [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]">
+    <ng-template #caption>
+      <div class="flex" style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;" ngbDropdown>
+        <a class="btn btn_extend" [ngClass]="indicadorComiConc == 'hoy' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="lista_comisiones_concluidas('hoy');">
+          <i class="fa-solid fa-calendar-days"></i>&nbsp;Hoy
+        </a>
+        <a class="btn btn_extend" [ngClass]="indicadorComiConc == 'esta_semana' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="lista_comisiones_concluidas('esta_semana');">
+          <i class="fa-solid fa-calendar-days"></i>&nbsp;Esta semana
+        </a>
+        <a class="btn btn_extend" [ngClass]="indicadorComiConc == 'este_mes' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="lista_comisiones_concluidas('este_mes');">
+          <i class="fa-solid fa-calendar-days"></i>&nbsp;Este mes
+        </a>
+        <a class="btn btn_extend" [ngClass]="indicadorComiConc == 'mes_anterior' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="lista_comisiones_concluidas('mes_anterior');">
+          <i class="fa-solid fa-arrow-left"></i>&nbsp;mes anterior
+        </a>
+        <a id="menuDropComiConc" class="btn btn_extend" [ngClass]="indicadorComiConc == 'otras_fechas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" ngbDropdownToggle>
+          <i class="fa-solid fa-list-ul"></i>&nbsp;otras fechas
+        </a>
+        <div class="dropdown-menu-end menu-despegable" ngbDropdownMenu="menuDropComiConc" style="padding: 0!important; margin: 0!important; width: max-content!important; max-height: 400px; overflow-y: auto;">
+          <div class="col-12 input-group">
+            <label for="comi_conc_otras_fechas" class="activeInput">Periodo de fechas</label>
+            <p-datepicker id="comi_conc_otras_fechas" name="comi_conc_otras_fechas" [(ngModel)]="rangoPeriodoComiConc" appendTo="body" dateFormat="dd/mm/yy"
+              placeholder="dd/mm/aaaa" selectionMode="range" (onSelect)="lista_comisiones_concluidas('otras_fechas')" />
+          </div>
+        </div>
+        <a class="btn btn_extend" [ngClass]="indicadorComiConc == 'all_partidas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="lista_comisiones_concluidas('all_partidas');">
+          <i class="fa-solid fa-list-ul"></i>&nbsp;todos los registros
+        </a>
+        <p-iconfield iconPosition="left" class="ml-auto">
+          <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+          <input pInputText type="text" (input)="comiConc.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+        </p-iconfield>
+      </div>
+    </ng-template>
+    <ng-template #header>
+      <tr>
+        <th class="ultimo"></th>
+        <th pSortableColumn="folio_comision">folio&nbsp;<p-sortIcon field="folio_comision" /></th>
+        <th pSortableColumn="comision_proyecto">{{'proy' | translate}}&nbsp;<p-sortIcon field="comision_proyecto" /></th>
+        <th pSortableColumn="usuario_comision">{{'comi_sionado' | translate}}&nbsp;<p-sortIcon field="usuario_comision" /></th>
+        <th pSortableColumn="especificaciones">{{'observ' | translate}}&nbsp;<p-sortIcon field="especificaciones" /></th>
+        <th pSortableColumn="fecha_programada">{{'comi_date' | translate}}&nbsp;<p-sortIcon field="fecha_programada" /></th>
+        <th pSortableColumn="duracion">{{'comi_time' | translate}}&nbsp;<p-sortIcon field="duracion" /></th>
+        <th pSortableColumn="recibe_dinero">Recibe dinero&nbsp;<p-sortIcon field="recibe_dinero" /></th>
+        <th pSortableColumn="comi_tiempo_respuesta">{{'resp_time' | translate}}&nbsp;<p-sortIcon field="comi_tiempo_respuesta" /></th>
+        <th pSortableColumn="valor_humano">{{'comi_valida_vhum' | translate}}&nbsp;<p-sortIcon field="valor_humano" /></th>
+        <th pSortableColumn="egresos">{{'comi_valida_eegr' | translate}}&nbsp;<p-sortIcon field="egresos" /></th>
+        <th pSortableColumn="ubicacion_display_name">{{'ubica_loca' | translate}}&nbsp;<p-sortIcon field="ubicacion_display_name" /></th>
+        <th pSortableColumn="concluida_fecha">{{'complete' | translate}}&nbsp;<p-sortIcon field="concluida_fecha" /></th>
+        <th class="ultimo"></th>
+      </tr>
+    </ng-template>
+    <ng-template #body let-lcomi>
+      <tr class="trlink">
+        <td class="ultimo">
+          <a class="btn bg-blue-600" (click)="ver_desglose_comision(lcomi.token_comision_main);">
+            <i class="fa-solid fa-info"></i>
+          </a>
+        </td>
+        <td>{{lcomi.folio_comision}}</td>
+        <td class="name">{{lcomi.comision_proyecto}}</td>
+        <td class="name">{{lcomi.comisionado}}</td>
+        <td class="name">{{lcomi.especificaciones}}</td>
+        <td>{{lcomi.fecha_programada}}</td>
+        <td>{{lcomi.duracion}}</td>
+        <td>{{!lcomi.recibe_dinero ? ['no' | translate] : ['yes' | translate]+" "+lcomi.dinero_recibido+" "+lcomi.comision_moneda_name}}</td>
+        <td>{{lcomi.comi_tiempo_respuesta+" horas"}}</td>
+        <td>{{!lcomi.valor_humano ? ['no' | translate] : ['yes' | translate]}}</td>
+        <td>{{!lcomi.egresos ? ['no' | translate] : ['yes' | translate]}}</td>
+        <td class="name">{{lcomi.ubicacion_display_name != '' ? lcomi.ubicacion_display_name : lcomi.ubicacion_colonia+', '+lcomi.ubicacion_municipio+', '+lcomi.ubicacion_codigo_postal+', '+lcomi.ubicacion_estado}}</td>
+        <td>{{'yes' | translate}} {{lcomi.concluida_fecha}}</td>
+        <td class="ultimo">
+          <a class="btn btn_extend text-bg-success rounded-3"
+            (click)="solicita_apertura_comi(lcomi.token_comision_main);">
+            <i class="fa-solid fa-folder-open"></i>&nbsp;reabrir comisi&oacute;n
+          </a>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="14" class="text-center py-4">
+          <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+          <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+            {{'no_rows' | translate}}
+          </p>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+}
+
+<p-dialog header="COMISION SELECCIONADA: {{folio_comision}}" [(visible)]="comi_viewModal" [modal]="true" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  @for (detcomi of arrayComisionDetalle; track $index) {
+    <p-tabs value="0" scrollable>
+      <p-tablist>
+        <p-tab value="0">Datos generales</p-tab>
+        <p-tab value="1">reembolsos relacionados</p-tab>
+      </p-tablist>
+      <p-tabpanels>
+        <p-tabpanel value="0">
+          @if (permiso_editar && detcomi.comision_relaciones_total == 0) {
+            <form class="row" id="form_reem_new_soli" [formGroup]="formInfoRecibida" name="form_reem_new_soli" (ngSubmit)="onUpdateComisionSolicitud()">
+              <div class="col-12 col-sm-6 col-md-6 col-lg-8 col-xl-8 col-xxl-8 input-group">
+                <label class="activeInput">{{'proy' | translate}}</label>
+                <input class="validate" name="comi_proyecto" id="comi_proyecto" type="text" [value]="comi_proyecto" (keyup)="keyupComisionUpdate_proyecto($event.target);">
+              </div>
+  
+              <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-4 input-group">
+                <label class="activeInput">{{'comi_sionado' | translate}}</label>
+                <p-select [options]="arrayComisionados" id="comi_sionado_opcion_conc" name="comi_sionado_opcion_conc" formControlName="comisionado_token" optionValue="comisionado_token" optionLabel="comisionado_nombre"
+                  [filter]="true" filterBy="comisionado_nombre" appendTo="body" [showClear]="true" [placeholder]="'opt_select' | translate" class="w-full md:w-56" (onChange)="keyupComisionUpdate_empleado($event.value);">
+                  <ng-template #selectedItem let-selectedOption>
+                    <div class="flex items-center gap-2">
+                      <div>{{selectedOption.comisionado_folio+" "+selectedOption.comisionado_nombre}}</div>
+                    </div>
+                  </ng-template>
+                  <ng-template let-prov #item>
+                    <div class="flex items-center gap-2">
+                      <div>{{prov.comisionado_folio+" "+prov.comisionado_nombre}}</div>
+                    </div>
+                  </ng-template>
+                </p-select>
+              </div>
+  
+              <div class="col-12 input-group text_area_field">
+                <label class="activeInput">{{'observ' | translate}}</label>
+                <textarea name="comi_large_observ" id="comi_large_observ" class="validate" [value]="comi_especificaciones" (keyup)="keyupComisionUpdate_observaciones($event.target);"></textarea>
+              </div>
+  
+              <div class="col-12 col-sm-6 col-md-6 col-lg-3 col-xl-3 col-xxl-3 input-group">
+                <label class="activeInput">{{'comi_date' | translate}}</label>
+                <input class="validate" name="comi_date_salida" id="comi_date_salida" type="date" [value]="comi_fecha_salida" (change)="keyupComisionUpdate_fechaSalida($event.target);">
+              </div>
+  
+              <div class="col-12 col-sm-6 col-md-6 col-lg-3 col-xl-3 col-xxl-3 input-group">
+                <label class="activeInput">{{'comi_time' | translate}}</label>
+                <input class="validate" name="comi_time_duracion" id="comi_time_duracion" type="number" [value]="comi_time_duracion" (keyup)="keyupComisionUpdate_tiempoDuracion($event.target);">
+              </div>
+              <p-divider />
+              <div class="col-12 row" style="padding:0!important;">
+                <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain" style="margin: 0!important;">
+                  <h6 class="title">{{'comi_recibe_dinero' | translate}}</h6>
+                </div>
+                <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                  <label class="form-check-label" for="flexSwitchCheckReverse">No</label>
+                  <input class="form-check-input" type="checkbox" [checked]="comi_recibe_dinero" (click)="keyupComisionUpdate_recibeDinero($event.target);">
+                  <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                </div>
+                <div class="col-12 row" [ngClass]="!comi_recibe_dinero ? 'noneView' : ''" style="padding:0!important;">
+                  <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input-group">
+                    <label class="activeInput">{{'total_import' | translate}}</label>
+                    <input class="validate" name="comi_dinero_recibido" id="comi_dinero_recibido" type="number" min="1"
+                      max="100000000000000" [ngClass]="!comi_recibe_dinero ? 'disabled' : ''"
+                      [attr.disabled]="!comi_recibe_dinero ? true : null"
+                      [attr.aria-disabled]="!comi_recibe_dinero ? true : null" [value]="comi_dinero_recibido"
+                      (keyup)="keyupComisionUpdate_dineroRecibido($event.target);">
+                  </div>
+                  <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input-group">
+                    <label for="exampleFormControlInput1" class="activeInput">{{'mon_name' | translate}}</label>
+                    <p-select [options]="catalogo_monedas_api" id="selectedMonedaCode" optionLabel="_filtro_busqueda" [filter]="true" filterBy="_filtro_busqueda" 
+                      [showClear]="true" [placeholder]="comi_moneda" class="w-full md:w-56" (onChange)="keyupComisionUpdate_moneda($event.value);">
+                      <ng-template #selectedItem let-selectedOption>
+                        <div class="flex items-center gap-2">
+                          <div>{{selectedOption.code+" "+selectedOption.langEN}}</div>
+                        </div>
+                      </ng-template>
+                      <ng-template let-mon #item>
+                        <div class="flex items-center gap-2">
+                          <div>{{mon.code+" "+mon.langEN}}</div>
+                        </div>
+                      </ng-template>
+                    </p-select>
+                  </div>
+                </div>
+              </div>
+              <p-divider />
+              <div class="col-12 row" style="padding:0!important;">
+                <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain" style="margin: 0!important;">
+                  <h6 class="title">{{'comi_valida_vhum' | translate}}</h6>
+                </div>
+                <div
+                  class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                  <label class="form-check-label" for="flexSwitchCheckReverse"> {{'comi_valida_vhum' | translate}} No</label>
+                  <input class="form-check-input" type="checkbox" [checked]="comi_califica_vhum" (click)="keyupComisionUpdate_califica_vhum($event.target);" />
+                  <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                </div>
+              </div>
+              <p-divider />
+              <div class="col-12 explain" style="margin: 0!important;">
+                <h6 class="title">{{'ubica_loca' | translate}}</h6>
+                <h6 class="content">{{comi_ubicacion_completa}}</h6>
+              </div>
+  
+              <div class="col-12 row" style="padding: 0;">
+                <ul class="list-group collection_postales" style="margin-top: 0;">
+                  <li class="list-group-item">
+                    <div class="busqueda row">
+                      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6"
+                        style="display: flex;justify-content: flex-start;margin: auto;padding: 0;height: 30px;line-height: 30px;">
+                        <h6>C&oacute;digo postal: </h6>
+                      </div>
+                      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6 field_buscar">
+                        <input class="validate" type="text" placeholder="{{'bus_car' | translate}}" (keyup)="buscaCodPostalDipomex($event.target);">
+                      </div>
+                    </div>
+                  </li>
+                  <li class="list-group-item">Estado: {{dipomex_cod_postal_estado}}</li>
+                  <li class="list-group-item">Municipio: {{dipomex_cod_postal_municipio}}</li>
+                  <li class="list-group-item">C&oacute;digo postal: {{dipomex_cod_postal_cp}}</li>
+                  <li class="list-group-item" [ngClass]="dipomex_cod_postal_colonias.length > 0 ? 'itemFor' : ''">Colonias: {{dipomex_cod_postal_colonias.length === 0 ? '---' : ''}}
+                    @for (col of dipomex_cod_postal_colonias; track $index) {
+                      <p (click)="seleccionaColoniaCPDipomex(col);">{{col}}</p>
+                    }
+                  </li>
+                  @if (dipomex_cod_postal_colonia_vinculada != '') {
+                    <li class="list-group-item itemColoniaSeleted">Colonia seleccionada: {{dipomex_cod_postal_colonia_vinculada}}</li>
+                  }
+                </ul>
+
+                @if (dipomex_cod_postal_cp != '' && dipomex_cod_postal_cp == ('unk_nown' | translate)) {
+                  <table class="centered responsive-table">
+                    <thead>
+                      <tr>
+                        <th>Estado</th>
+                        <th>Municipio</th>
+                        <th>C&oacute;digo postal</th>
+                        <th>Colonia</th>
+                        <th class="ultimo"></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td><input id="newDipoMexEstado" class="validate" type="text" (keyup)="keyupCPostal_EstName($event.target);"></td>
+                        <td><input id="newDipoMexMunicipio" class="validate" type="text" (keyup)="keyupCPostal_Municipio($event.target);"></td>
+                        <td><input id="newDipoMexCP" class="validate" type="text" (keyup)="keyupCPostal_CP($event.target);"></td>
+                        <td><input id="newDipoMexColonia" class="validate" type="text" (keyup)="keyupCPostal_Colonia($event.target);"></td>
+                        <td class="ultimo">
+                          <a class="btn btnGuardar btnRow text-bg-success rounded-3"
+                            [ngClass]="!validaCPNew ? 'disabled' : ''" [attr.disabled]="!validaCPNew ? true : null"
+                            [attr.aria-disabled]="!validaCPNew ? true : null" (click)="validaCPNew && addListPostal();">
+                            <i class="fa-solid fa-floppy-disk"></i>
+                          </a>
+                        </td>
+                      </tr>
+                      @for (newCP of listnewdireccionNac; track $index; let pos = $index) {
+                        <tr>
+                          <td>{{newCP.estado}}</td>
+                          <td>{{newCP.municipio}}</td>
+                          <td>{{newCP.codigo_postal}}</td>
+                          <td>{{newCP.colonia}}</td>
+                          <td class="ultimo">
+                            <a class="btn btnGuardar btnRow text-bg-danger rounded-3" (click)="deleteListCPostal(pos);">
+                              <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                            </a>
+                          </td>
+                        </tr>
+                      }
+                    </tbody>
+                  </table>
+                }
+              </div>
+              <p-divider />
+              <div class="col-12" style="display: flex !important;justify-content: end!important;">
+                <button class="btn btn_extend text-bg-success rounded-3" type="submit"
+                  [ngClass]="!comi_to_vali_update(detcomi.token_comision_main) ? 'disabled' : ''"
+                  [attr.disabled]="!comi_to_vali_update(detcomi.token_comision_main) ? true : null"
+                  [attr.aria-disabled]="!comi_to_vali_update(detcomi.token_comision_main) ? true : null">
+                  <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+                </button>
+              </div>
+            </form>
+          } @else {
+            <div class="col-12 explain">
+              <h6 class="title">{{comi_update_bloqueado}}</h6>
+            </div>
+            <div class="col-12 explain">
+              <h6 class="title">folio</h6>
+              <h6 class="content">{{detcomi.folio_comision}}</h6>
+            </div>
+            <div class="col-12 explain">
+              <h6 class="title">{{'fecha_reg' | translate}}</h6>
+              <h6 class="content">{{detcomi.fecha_comision}}</h6>
+            </div>
+            <div class="col-12 explain">
+              <h6 class="title">{{'proy' | translate}}</h6>
+              <h6 class="content">{{detcomi.comision_proyecto}}</h6>
+            </div>
+            <div class="col-12 explain">
+              <h6 class="title">{{'comi_sionado' | translate}}</h6>
+              <h6 class="content">{{detcomi.comisionado_name}}</h6>
+            </div>
+            <div class="col-12 explain">
+              <h6 class="title">{{'observ' | translate}}</h6>
+              <h6 class="content">{{detcomi.especificaciones}}</h6>
+            </div>
+            <div class="col-12 explain">
+              <h6 class="title">{{'comi_date' | translate}}</h6>
+              <h6 class="content">{{detcomi.fecha_programada_html}}</h6>
+            </div>
+            <div class="col-12 explain">
+              <h6 class="title">{{'comi_time' | translate}}</h6>
+              <h6 class="content">{{detcomi.duracion}}</h6>
+            </div>
+            <p-divider />
+            <div class="col-12 explain">
+              <h6 class="title">{{'comi_recibe_dinero' | translate}}</h6>
+              <h6 class="content">{{detcomi.recibe_dinero ? ['yes' | translate] : 'No'}}</h6>
+            </div>
+            @if (detcomi.recibe_dinero) {
+              <div class="col-12 explain">
+                <h6 class="title">{{'total_import' | translate}}</h6>
+                <h6 class="content">{{detcomi.dinero_recibido}}</h6>
+              </div>
+              <div class="col-12 explain">
+                <h6 class="title">{{'mon_name' | translate}}</h6>
+                <h6 class="content">{{detcomi.comision_moneda_name}}</h6>
+              </div>
+            }
+            <p-divider />
+            <div class="col-12 explain">
+              <h6 class="title">{{'comi_valida_vhum' | translate}}</h6>
+              <h6 class="content">{{detcomi.valor_humano ? ['yes' | translate] : 'No'}}</h6>
+            </div>
+            <p-divider />
+            <div class="col-12 explain">
+              <h6 class="title">{{'comi_valida_eegr' | translate}}</h6>
+              <h6 class="content">{{detcomi.egresos ? ['yes' | translate] : 'No'}}</h6>
+            </div>
+            <p-divider />
+            <div class="col-12 explain">
+              <h6 class="title">{{'complete' | translate}}</h6>
+              <h6 class="content">{{!detcomi.concluida_bool ? 'No' : ['yes' | translate]+" "+detcomi.concluida_fecha}}
+              </h6>
+            </div>
+            <div class="col-12 explain">
+              <h6 class="title">{{'ubica_loca' | translate}}</h6>
+              <h6 class="content">{{detcomi.ubicacion_display_name != '' ? detcomi.ubicacion_display_name : detcomi.ubicacion_colonia+', '+detcomi.ubicacion_municipio+', '+detcomi.ubicacion_codigo_postal+', '+detcomi.ubicacion_estado}}</h6>
+            </div>
+          }
+        </p-tabpanel>
+        <p-tabpanel value="1">
+          @for (comi_rel of arrayReembolsosVinculados; track $index) {
+            <div class="col-12 explain">
+              <h6 class="title">folio</h6>
+              <h6 class="content">{{comi_rel.folio_reem}}</h6>
+            </div>
+            <div class="col-12 explain">
+              <h6 class="title">{{'fecha_reg' | translate}}</h6>
+              <h6 class="content">{{comi_rel.fecha_solicitud}}</h6>
+            </div>
+            <div class="col-12 explain">
+              <h6 class="title">{{'company_name' | translate}}</h6>
+              <h6 class="content">{{comi_rel.emisor_company}}</h6>
+            </div>
+            <div class="col-12 explain">
+              <h6 class="title">{{'aplicante' | translate}}</h6>
+              <h6 class="content">{{comi_rel.nombreEmiPers}}</h6>
+            </div>
+            <div class="col-12 explain">
+              <h6 class="title">{{'receptor' | translate}}</h6>
+              <h6 class="content">{{comi_rel.nombreReceptorPers_vh+""+comi_rel.nombreReceptorPers_egr}}</h6>
+            </div>
+            <div class="col-12 explain">
+              <h6 class="title">REEMBOLSADO</h6>
+              <h6 class="content">{{comi_rel.total_reembolsado}}</h6>
+            </div>
+            <div class="col-12 explain">
+              <h6 class="title">RESTANTE</h6>
+              <h6 class="content">{{comi_rel.total_restante}}</h6>
+            </div>
+            <div class="col-12 explain">
+              <h6 class="title">Total</h6>
+              <h6 class="content">{{comi_rel.total_importe}}</h6>
+            </div>
+  
+            <p-table [value]="comi_rel.soliReem" [tableStyle]="{ 'min-width': '50rem' }">
+              <ng-template #header>
+                <tr>
+                  <th pSortableColumn="folio_solicitud">folio / fecha solicitud&nbsp;<p-sortIcon field="folio_solicitud" /></th>
+                  <th pSortableColumn="fecha_gasto_html">{{'date_gasto' | translate}}&nbsp;<p-sortIcon field="fecha_gasto_html" /></th>
+                  <th pSortableColumn="ticket_gasto">{{'ticket_gasto' | translate}}&nbsp;<p-sortIcon field="ticket_gasto" /></th>
+                  <th pSortableColumn="pagado_a">{{'pay_to' | translate}}&nbsp;<p-sortIcon field="pagado_a" /></th>
+                  <th pSortableColumn="fpago_forma">{{'f_pago' | translate}}&nbsp;<p-sortIcon field="fpago_forma" /></th>
+                  <th pSortableColumn="moneda_origen_codigo">{{'mon_name' | translate}}&nbsp;<p-sortIcon field="moneda_origen_codigo" /></th>
+                  <th pSortableColumn="importe_requerido_info">{{'total_refund' | translate}}&nbsp;<p-sortIcon field="importe_requerido_info" /></th>
+                  <th pSortableColumn="tipo_cambio_format">{{'mon_tipo_cambio' | translate}}&nbsp;<p-sortIcon field="tipo_cambio_format" /></th>
+                  <th pSortableColumn="reem_importe_resultante">{{'total_refund_converse' | translate}}&nbsp;<p-sortIcon field="reem_importe_resultante" /></th>
+                  <th pSortableColumn="observaciones">{{'observ' | translate}}&nbsp;<p-sortIcon field="observaciones" />
+                  </th>
+                </tr>
+              </ng-template>
+              <ng-template #body let-rSoli>
+                <tr>
+                  <td>{{rSoli.folio_solicitud}}</td>
+                  <td>{{rSoli.fecha_gasto_html}}</td>
+                  <td>{{rSoli.ticket_gasto}}</td>
+                  <td>{{rSoli.pagado_a == 'prov' ? ['prov' | translate]+" : "+rSoli.rfc_prov+" "+rSoli.proveedor : ['gen_pub' | translate]}}</td>
+                  <td>{{rSoli.fpago_clave+" "+rSoli.fpago_forma}}</td>
+                  <td>{{rSoli.moneda_origen_codigo}}</td>
+                  <td class="td_importes">{{rSoli.importe_requerido_info}}</td>
+                  <td class="td_importes">{{rSoli.tipo_cambio_format}}</td>
+                  <td class="td_importes">{{rSoli.reem_importe_resultante}}</td>
+                  <td class="name">{{rSoli.observaciones}}</td>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td colspan="10" class="text-center py-4">
+                    <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                    <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                      {{'no_rows' | translate}}
+                    </p>
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+          }
+        </p-tabpanel>
+      </p-tabpanels>
+    </p-tabs>
+  }
+</p-dialog>

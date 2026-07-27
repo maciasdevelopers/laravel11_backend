@@ -1,0 +1,173 @@
+<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco" #vContent>
+  <div class="contenido">
+    <app-loader></app-loader>
+    <nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+    <main class="contenidoPagina">
+      <div class="listas_ps revanecer">
+        <div class="lista-div lista-divNoFlex row">
+					<h4>{{'reem_list' | translate}}</h4>
+          <div class="col-12 row-main tabs-content" *ngIf="vhum_privilegio_consulta == true">
+
+						<p-tabs value="0">
+							<p-tablist>
+								<p-tab value="0" (click)="reembolsos_lista_general();">{{'reem_gen_list' | translate}}</p-tab>
+								<p-tab value="1" (click)="reembolsos_lista_pendientes();">{{'reem_pend_list' | translate}}</p-tab>
+                <p-tab value="2" (click)="reembolsos_lista_concluidos();">{{'reem_term_list' | translate}}</p-tab>
+							</p-tablist>
+							<p-tabpanels>
+								<p-tabpanel value="0">
+                  <div class="col-12 row">
+                    <table id="vhum_table_lista_reem_general" class="display nowrap white centered" style="width:100%!important;margin:0!important;">
+                      <thead>
+                        <tr>
+                          <th class="ultimo"></th>
+                          <th>folio</th>
+                          <th>{{'comi' | translate}}</th>
+                          <th>{{'comi_folio' | translate}}</th>
+                          <th>solicitudes</th>
+                          <th>{{'aplicante' | translate}}</th>
+                          <th>{{'company_name' | translate}}</th>
+                          <th>{{'fecha_reg' | translate}}</th>
+                          <th>{{'total_import' | translate}}</th>
+                          <th>{{'mon_tipo_cambio' | translate}}</th>
+                          <th>{{'reem_result' | translate}}</th>
+                          <th class="ultimo"></th>
+                        </tr>
+                      </thead>
+                      <tbody><!--[style]="lreem.reem_soli_auth_style"-->
+                        <tr *ngFor="let lreem of reembolsos_list_general" class="trlink" tooltipPosition="top" placeholder="Top" [pTooltip]="lreem.comision">
+                          <td class="ultimo"><a class="btn bg-blue-600" routerLink="../reembolso_detalle/{{lreem.token_reem}}"><i class="fa-solid fa-info"></i></a></td>
+                          <td>{{lreem.folio_reem}}</td>
+                          <td style="max-width: 150px;overflow-y: overlay;font-size: smaller;text-align: left;">{{lreem.comision_proyecto}}</td>
+                          <td>{{lreem.comision_folio}}</td>
+                          <td><div class="progress_main"><div class="progress progress_content"><div class="determinate percentaje" [style]="'width: '+lreem.reem_soli_auth_style">
+                              <span>{{lreem.reem_soli_all_auth+"/"+lreem.reem_soli_all}}</span>
+                            </div></div>&nbsp;{{lreem.reem_soli_auth_style}}</div>
+                          </td>
+                          <td class="name">{{lreem.nombreEmiPers}}</td>
+                          <td>{{lreem.name_emisor}}</td>
+                          <td>{{lreem.date_solicitud}}</td>
+                          <td class="td_importes">{{lreem.importe_total+" "+lreem.moneda_entrante}}</td>
+                          <td class="td_importes">{{lreem.total_tipo_cambio}}</td>
+                          <td class="td_importes">{{lreem.total_reem_saliente+" "+lreem.moneda_saliente}}</td>
+                          <td class="ultimo">
+                            <p style="margin: 0!important;width: auto;border-radius: 25px;padding-left: 5px;padding-right: 5px;text-transform: math-auto;" class="btn btn_extend bg-indigo-600">
+                              <i class="fa-solid fa-file" style="width: 25px !important;height: 25px !important;line-height: 25px !important;font-size: 15px;text-align: center;"></i>&nbsp;{{'files_uploaded' | translate}}:&nbsp;{{lreem.total_evd}}
+                            </p>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </p-tabpanel>
+								<p-tabpanel value="1">
+                  <div class="col-12 row" *ngIf="reembolsos_pendientes_bool == true">
+                    <table id="vhum_table_lista_reem_pendientes" class="display nowrap white centered" style="width:100%!important;margin:0!important;">
+                      <thead>
+                        <tr>
+                          <th class="ultimo"></th>
+                          <th>folio</th>
+                          <th>{{'comi' | translate}}</th>
+                          <th>{{'comi_folio' | translate}}</th>
+                          <th>solicitudes</th>
+                          <th>{{'aplicante' | translate}}</th>
+                          <th>{{'company_name' | translate}}</th>
+                          <th>{{'fecha_reg' | translate}}</th>
+                          <th>{{'total_import' | translate}}</th>
+                          <th>{{'mon_tipo_cambio' | translate}}</th>
+                          <th>{{'reem_result' | translate}}</th>
+                          <th class="ultimo"></th>
+                        </tr>
+                      </thead>
+                      <tbody><!--[style]="lreem.reem_soli_auth_style"-->
+                        <tr *ngFor="let lreem of reembolsos_list_pendientes" class="trlink" tooltipPosition="top" placeholder="Top" [pTooltip]="lreem.comision">
+                          <td class="ultimo"><a class="btn bg-blue-600" routerLink="../reembolso_detalle/{{lreem.token_reem}}"><i class="fa-solid fa-info"></i></a></td>
+                          <td>{{lreem.folio_reem}}</td>
+                          <td style="max-width: 150px;overflow-y: overlay;font-size: smaller;text-align: left;">{{lreem.comision_proyecto}}</td>
+                          <td>{{lreem.comision_folio}}</td>
+                          <td><div class="progress_main"><div class="progress progress_content"><div class="determinate percentaje" [style]="'width: '+lreem.reem_soli_auth_style">
+                              <span>{{lreem.reem_soli_all_auth+"/"+lreem.reem_soli_all}}</span>
+                            </div></div>&nbsp;{{lreem.reem_soli_auth_style}}</div>
+                          </td>
+                          <td class="name">{{lreem.nombreEmiPers}}</td>
+                          <td>{{lreem.name_emisor}}</td>
+                          <td>{{lreem.date_solicitud}}</td>
+                          <td class="td_importes">{{lreem.importe_total+" "+lreem.moneda_entrante}}</td>
+                          <td class="td_importes">{{lreem.total_tipo_cambio}}</td>
+                          <td class="td_importes">{{lreem.total_reem_saliente+" "+lreem.moneda_saliente}}</td>
+                          <td class="ultimo">
+                            <p style="margin: 0!important;width: auto;border-radius: 25px;padding-left: 5px;padding-right: 5px;text-transform: math-auto;" class="btn btn_extend bg-indigo-600">
+                              <i class="fa-solid fa-file" style="width: 25px !important;height: 25px !important;line-height: 25px !important;font-size: 15px;text-align: center;"></i>&nbsp;{{'files_uploaded' | translate}}:&nbsp;{{lreem.total_evd}}
+                            </p>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </p-tabpanel>
+                <p-tabpanel value="2">
+                  <div class="col-12 row" *ngIf="reembolsos_concluidos_bool == true">
+                    <table id="vhum_table_lista_reem_terminadas" class="display nowrap white centered" style="width:100%!important;margin:0!important;">
+                      <thead>
+                        <tr>
+                          <th class="ultimo"></th>
+                          <th>folio</th>
+                          <th>{{'comi' | translate}}</th>
+                          <th>{{'comi_folio' | translate}}</th>
+                          <th>solicitudes</th>
+                          <th>{{'aplicante' | translate}}</th>
+                          <th>{{'company_name' | translate}}</th>
+                          <th>{{'fecha_reg' | translate}}</th>
+                          <th>{{'total_import' | translate}}</th>
+                          <th>{{'mon_tipo_cambio' | translate}}</th>
+                          <th>{{'reem_result' | translate}}</th>
+                          <th class="ultimo"></th>
+                        </tr>
+                      </thead>
+                      <tbody><!--[style]="lreem.reem_soli_auth_style"-->
+                        <tr *ngFor="let lreem of reembolsos_list_concluidos" class="trlink" tooltipPosition="top" placeholder="Top" [pTooltip]="lreem.comision">
+                          <td class="ultimo"><a class="btn bg-blue-600" routerLink="../reembolso_detalle/{{lreem.token_reem}}"><i class="fa-solid fa-info"></i></a></td>
+                          <td>{{lreem.folio_reem}}</td>
+                          <td style="max-width: 150px;overflow-y: overlay;font-size: smaller;text-align: left;">{{lreem.comision_proyecto}}</td>
+                          <td>{{lreem.comision_folio}}</td>
+                          <td><div class="progress_main"><div class="progress progress_content"><div class="determinate percentaje" [style]="'width: '+lreem.reem_soli_auth_style">
+                              <span>{{lreem.reem_soli_all_auth+"/"+lreem.reem_soli_all}}</span>
+                            </div></div>&nbsp;{{lreem.reem_soli_auth_style}}</div>
+                          </td>
+                          <td class="name">{{lreem.nombreEmiPers}}</td>
+                          <td>{{lreem.name_emisor}}</td>
+                          <td>{{lreem.date_solicitud}}</td>
+                          <td class="td_importes">{{lreem.importe_total+" "+lreem.moneda_entrante}}</td>
+                          <td class="td_importes">{{lreem.total_tipo_cambio}}</td>
+                          <td class="td_importes">{{lreem.total_reem_saliente+" "+lreem.moneda_saliente}}</td>
+                          <td class="ultimo">
+                            <p style="margin: 0!important;width: auto;border-radius: 25px;padding-left: 5px;padding-right: 5px;text-transform: math-auto;" class="btn btn_extend bg-indigo-600">
+                              <i class="fa-solid fa-file" style="width: 25px !important;height: 25px !important;line-height: 25px !important;font-size: 15px;text-align: center;"></i>&nbsp;{{'files_uploaded' | translate}}:&nbsp;{{lreem.total_evd}}
+                            </p>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </p-tabpanel>
+							</p-tabpanels>
+						</p-tabs>
+
+          </div>
+          <div class="col-12" *ngIf="vhum_privilegio_consulta == false">
+            <div class="alert div_alert_pass">
+              <ul class="list-group">
+                <li style="text-align: center;text-transform: uppercase;font-size: 25px;font-weight: bold;">¡Permiso de consulta denegado!</li>
+                <li style="display: flex;justify-content: center;">
+                  <a class="btn btnGuardar waves-light" style="border-radius: 8px !important;" (click)="solicitarPermisoConsulta();"><i class="fa-solid fa-paper-plane"></i> solicitar permiso</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+    <app-footer-inside></app-footer-inside>
+  </div>
+</div>

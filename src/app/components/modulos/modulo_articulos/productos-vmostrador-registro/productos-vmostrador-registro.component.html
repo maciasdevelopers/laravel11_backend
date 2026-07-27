@@ -1,0 +1,94 @@
+<div class="col-12 row">
+  <form class="row formAddProdCat" #formAddProdCat="ngForm" autocomplete="off" enctype="multipart/form-data" (ngSubmit)="registraProducto(formAddProdCat);">
+    <div class="col-12 input-group col-12 concepto">
+      <label for="producto_regCat" id="lblProducto" class="activeInput">Concepto / Descripci&oacute;n</label>
+      <input class="validate" name="producto_regCat" type="text" required (keyup)="keyupProdConcepto($event.target);">
+    </div>
+    <div class="input-group col-12 col-sm-12 col-md-12 col-lg-4 col-xl-4 col-xxl-4">
+      <label for="stockmax_regCat" id="lblStockmax" class="activeInput">Precio sin impuestos</label>
+      <input id="textStockmax" class="validate" name="stockmax_regCat" type="number" (keyup)="keyupPrecioAplicableProd($event.target);">
+    </div>
+    <div class="input-group col-12 col-sm-12 col-md-12 col-lg-4 col-xl-4 col-xxl-4">
+      <label for="unidadDeMedidaDeSalida" class="activeInput">Unidad de medida de salida</label>
+      <p-select [options]="unidadMedidaCatalogoApi" id="unidadDeMedidaDeSalida" name="unidadDeMedidaDeSalida"optionLabel="categoria" [filter]="true" filterBy="categoria" 
+        [showClear]="true" optionValue="simbolo" appendTo="body" [placeholder]="'opt_select' | translate" class="w-full md:w-56" (onChange)="keyupUnidadMedidaSalidaApiProd($event.value);">
+        <ng-template #selectedItem let-selectedmedU>
+          <div class="flex items-center gap-2">
+            <div>{{selectedmedU.simbolo+" ("+selectedmedU.categoria+")"}}</div>
+          </div>
+        </ng-template>
+        <ng-template let-medU #item>
+          <div class="flex items-center gap-2">
+            <div>{{medU.simbolo+" ("+medU.categoria+")"}}</div>
+          </div>
+        </ng-template>
+      </p-select>
+    </div>
+    <div class="input-group col-12 col-sm-12 col-md-12 col-lg-4 col-xl-4 col-xxl-4">
+      <label for="monedasProducto" class="activeInput">{{'mon_name' | translate}}</label>
+      <p-select [options]="catalogoMonedasApi" id="monedasProducto" name="monedasProducto" optionLabel="_filtro_busqueda" [filter]="true" filterBy="_filtro_busqueda" 
+        [showClear]="true" optionValue="code" [placeholder]="'opt_select' | translate" class="w-full md:w-56" (onChange)="keyupValidateMonedaApi($event.value);">
+        <ng-template #selectedItem let-selectedOption>
+          <div class="flex items-center gap-2"><div>{{selectedOption.code+" "+selectedOption.langEN}}</div></div>
+        </ng-template>
+        <ng-template let-mon #item>
+          <div class="flex items-center gap-2"><div>{{mon.code+" "+mon.langEN}}</div></div>
+        </ng-template>
+      </p-select>
+    </div>
+    <p-divider/>
+    <div class="col-12 explain">
+      <h6 class="title col-12" style="text-align: center;">Identificaci&oacute;n &uacute;nica del producto</h6>
+      <div class="col-12">
+        <ul class="list-group list_opciones">
+          <li class="list-group-item row">
+            <div class="input-group col-12 col-sm-12 col-md-12 col-lg-4 col-xl-4 col-xxl-4" style="margin: 0!important;">
+              <datalist id="dataListClaves"><option value="GS1"><option value="SKU"><option value="UPC"></datalist>
+              <label class="activeInput">Est&aacute;ndar de identificaci&oacute;n</label>
+              <input id="claveNewAlta" class="claveAltaProdProv validate" list="dataListClaves" name="txtAbrevClienteProyecto" (keyup)="keyupListaClaveInternaClaveNew($event.target);" type="text">
+            </div>
+
+            <div class="input-group col-12 col-sm-12 col-md-12 col-lg-4 col-xl-4 col-xxl-4" style="margin: 0!important;">
+              <label class="activeInput">C&oacute;digo de identificaci&oacute;n</label>
+              <input id="claveInterna" class="claveAltaProdProv validate" name="txtClienteProyecto" type="text" (keyup)="keyupListaClaveInternaValorNew($event.target);">
+            </div>
+
+            <div class="input-group col-12 col-sm-12 col-md-12 col-lg-4 col-xl-4 col-xxl-4" style="margin: 0!important;display: flex;justify-content: space-between;flex-direction: column-reverse;">
+              <a class="btn btn_extend text-bg-success rounded-3" [ngClass]="new_clave_registro == '' || new_clave_valor == '' ? 'disabled' : ''" style="margin-bottom: 5px!important;"
+                [attr.disabled]="new_clave_registro == '' || new_clave_valor == '' ? true : null" [attr.aria-disabled]="new_clave_registro == '' || new_clave_valor == '' ? true : null"
+                (click)="(new_clave_registro != '' && new_clave_valor != '') && agregaClave();">
+                <i class="fa-solid fa-plus"></i>&nbsp;{{'btn_add' | translate}}
+              </a>
+            </div>
+          </li>
+          @for (cpa of listaClaveProd; track $index; let position = $index) {
+            <li class="list-group-item">
+              <div style="display: flex;justify-content: space-between;align-items: center;">{{cpa.clave_name}}
+                <p style="margin:0!important;margin-left:10px!important;margin-right:10px!important;font-family:roboto_cr,FontAwesome;" 
+                  id="pClaveCaract{{position}}">{{cpa.valor_name}}</p>
+                <a class="btn btn_extend text-bg-danger rounded-3 secondary-content" (click)="eliminaClave(position);"><i class="fa-solid fa-eraser" style="font-size: small!important;"></i></a>
+              </div>
+            </li>
+          }
+        </ul>
+      </div>
+    </div>
+    <p-divider/>
+    <div class="col-12 row">
+      <div class="col-12 col-sm-12 col-md-6 col-lg-8 col-xl-8 col-xxl-9"></div>
+			<div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3" style="display: flex !important;justify-content: end!important;">
+        <button class="btn btn_extend text-bg-success rounded-3" type="submit" name="btnAltaProducto2" [ngClass]="!validaRegistroProd ? 'disabled' : ''" [attr.disabled]="!validaRegistroProd ? true : null" 
+          [attr.aria-disabled]="!validaRegistroProd ? true : null">
+          <i class="fa-solid fa-floppy-disk" style="height: 15px!important;line-height: 15px!important;width: 15px!important;font-size: small!important;"></i>&nbsp;{{'sav_cam' | translate}}
+        </button>
+        @if (progressBarRegistro) {
+          <div class="demo-container">
+            <div class="progress-bar">
+              <div class="progress-bar-value"></div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </form>
+</div>

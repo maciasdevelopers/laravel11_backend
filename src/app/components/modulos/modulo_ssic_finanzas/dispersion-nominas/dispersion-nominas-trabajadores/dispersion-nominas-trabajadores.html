@@ -1,0 +1,191 @@
+<p-table #empleadosCat [value]="catalogo_trabajadores_list" showGridlines [resizableColumns]="true"
+  [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }"
+  [rowsPerPageOptions]="[10,20,30,50,100]"
+  [globalFilterFields]="['folio_empleado','paterno','materno','nombres','rfc','nomina','pagado','deuda']">
+  <ng-template #caption>
+    <div class="flex" style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;" ngbDropdown>
+      <a class="btn btn_extend" [ngClass]="indicadorDisperOrdTrabajadores == 'hoy' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="lista_catalogo_trabajadores('hoy');">
+        <i class="fa-solid fa-calendar-days"></i>&nbsp;Hoy
+      </a>
+      <a class="btn btn_extend" [ngClass]="indicadorDisperOrdTrabajadores == 'esta_semana' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="lista_catalogo_trabajadores('esta_semana');">
+        <i class="fa-solid fa-calendar-days"></i>&nbsp;Esta semana
+      </a>
+      <a class="btn btn_extend" [ngClass]="indicadorDisperOrdTrabajadores == 'este_mes' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="lista_catalogo_trabajadores('este_mes');">
+        <i class="fa-solid fa-calendar-days"></i>&nbsp;Este mes
+      </a>
+      <a class="btn btn_extend" [ngClass]="indicadorDisperOrdTrabajadores == 'mes_anterior' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="lista_catalogo_trabajadores('mes_anterior');">
+        <i class="fa-solid fa-arrow-left"></i>&nbsp;mes anterior
+      </a>
+      <a id="menuDropDispNominaTrabajadores" class="btn btn_extend"
+        [ngClass]="indicadorDisperOrdTrabajadores == 'otras_fechas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" ngbDropdownToggle>
+        <i class="fa-solid fa-list-ul"></i>&nbsp;otras fechas
+      </a>
+      <div class="dropdown-menu-end menu-despegable" ngbDropdownMenu="menuDropDispNominaTrabajadores" style="padding: 0!important; margin: 0!important; width: max-content!important; max-height: 400px; overflow-y: auto;">
+        <div class="col-12 input-group">
+          <label for="trabajadores_dispersion_otras_fechas" class="activeInput">Periodo de fechas</label>
+          <p-datepicker id="trabajadores_dispersion_otras_fechas" name="trabajadores_dispersion_otras_fechas" [(ngModel)]="rangoPeriodoDisperOrdTrabajadores" appendTo="body" dateFormat="dd/mm/yy" placeholder="dd/mm/aaaa" selectionMode="range" 
+            (onSelect)="lista_catalogo_trabajadores('otras_fechas');" />
+        </div>
+      </div>
+      <a class="btn btn_extend" [ngClass]="indicadorDisperOrdTrabajadores == 'all_partidas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="lista_catalogo_trabajadores('all_partidas');">
+        <i class="fa-solid fa-list-ul"></i>&nbsp;todos los registros
+      </a>
+      <a class="btn btn_extend bg-green-600 descarga_lista_excel" style="height: 25px !important;"><!-- (click)="descarga_excel_pagos();"-->
+        descargar&nbsp;<i class="fa-solid fa-file-excel"></i>
+      </a>
+      <p-iconfield iconPosition="left" class="ml-auto">
+        <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+        <input pInputText type="text" (input)="empleadosCat.filterGlobal($event.target.value, 'contains')"
+          placeholder="{{'bus_car' | translate}}" />
+      </p-iconfield>
+    </div>
+  </ng-template>
+  <ng-template #header>
+    <tr>
+      <th class="ultimo"></th>
+      <th pResizableColumn pSortableColumn="folio_empleado">folio&nbsp;<p-sortIcon field="folio_empleado" /></th>
+      <th pResizableColumn pSortableColumn="paterno">{{'surname' | translate}}&nbsp;<p-sortIcon field="paterno" /></th>
+      <th pResizableColumn pSortableColumn="materno">{{'maternal_surname' | translate}}&nbsp;<p-sortIcon field="materno" /></th>
+      <th pResizableColumn pSortableColumn="nombres">{{'personal_name' | translate}}&nbsp;<p-sortIcon field="nombres" /></th>
+      <th pResizableColumn pSortableColumn="rfc">{{'rfc_company' | translate}}&nbsp;<p-sortIcon field="rfc" /></th>
+      <th pResizableColumn pSortableColumn="nomina">N&oacute;mina acumulada&nbsp;<p-sortIcon field="nomina" /></th>
+      <th pResizableColumn pSortableColumn="pagado">Monto dispersado&nbsp;<p-sortIcon field="pagado" /></th>
+      <th pResizableColumn pSortableColumn="deuda">Monto por dispersar&nbsp;<p-sortIcon field="deuda" /></th>
+    </tr>
+  </ng-template>
+  <ng-template #body let-worker>
+    <tr>
+      <td class="ultimo">
+        <a class="btn bg-blue-600" (click)="verDetalleEmpleado(worker.token_empleado_vhum);">
+          <i class="fa-solid fa-info"></i>
+        </a>
+      </td>
+      <td>{{worker.folio_empleado}}</td>
+      <td class="name">{{worker.paterno}}</td>
+      <td class="name">{{worker.materno}}</td>
+      <td class="name">{{worker.nombres}}</td>
+      <td class="name">{{worker.rfc}}</td>
+      <td class="td_importes">{{worker.nomina}}</td>
+      <td class="td_importes">{{worker.pagado}}</td>
+      <td class="td_importes">{{worker.deuda}}</td>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td colspan="9" class="text-center py-4">
+        <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+        <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+          {{'no_rows' | translate}}
+        </p>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<p-dialog header="Informaci&oacute;n del trabajador" [(visible)]="trabajador_detail_ver" [modal]="true"
+  [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  @for (trab_info of trabajador_detail; track trab_info.id; let i = $index) {
+    <div class="col-12 explain">
+      <h6 class="title">Folio</h6>
+      <h6 class="content">{{trab_info.folio_empleado}}</h6>
+    </div>
+    @if (trab_info.rfc != '') {
+    <div class="col-12 explain">
+      <h6 class="title">RFC con Homoclave</h6>
+      <h6 class="content">{{trab_info.rfc}}</h6>
+    </div>
+    }
+    <div class="col-12 explain">
+      <h6 class="title">Nombre</h6>
+      <h6 class="content">{{trab_info.nombre_completo}}</h6>
+    </div>
+    @if (trab_info.cuenta_contable) {
+      <div class="col-12 explain">
+        <h6 class="title">Cuenta contable</h6>
+        <h6 class="content">{{trab_info.cuenta_contable}}</h6>
+      </div>
+    }
+    <div class="col-12 explain">
+      <h6 class="title">Monto por dispersar</h6>
+      <h6 class="content">{{trab_info.acr_total_saldo}}</h6>
+    </div>
+    <div class="col-12" style="padding: 0!important;margin-top: 5px!important;">
+      <div class="col-12 explain">
+        <h6 class="title">Desglose de pagos</h6>
+      </div>
+      <p-table #acrEstCuenta [value]="trab_info.estado_de_cuenta" [tableStyle]="{ 'min-width': '50rem' }"
+        [globalFilterFields]="search_acreedor_estado_de_cuenta">
+        <ng-template #caption>
+          <div class="flex"
+            style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;">
+            <a class="btn btn_extend bg-green-600 descarga_lista_excel" style="margin-right:5px!important;"
+              (click)="descarga_excel_trab_estado_cuenta(trab_info.estado_de_cuenta);">descargar
+              <i class="fa-solid fa-file-excel"></i>
+            </a>
+            <p-iconfield iconPosition="left" class="ml-auto" style="margin:0!important;">
+              <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+              <input pInputText type="text" (input)="acrEstCuenta.filterGlobal($event.target.value, 'contains')"
+                placeholder="{{'bus_car' | translate}}" />
+            </p-iconfield>
+          </div>
+        </ng-template>
+        <ng-template #header>
+          <tr>
+            <th pResizableColumn pSortableColumn="folio_e_cuenta">folio&nbsp;<p-sortIcon field="folio_e_cuenta" /></th>
+            <th pResizableColumn pSortableColumn="fecha_contabilizacion">{{'fecha_cont' | translate}}&nbsp;<p-sortIcon field="fecha_contabilizacion" /></th>
+            <th pResizableColumn pSortableColumn="cancelacion_doc_anterior">{{'doc_ant' | translate}}&nbsp;<p-sortIcon field="cancelacion_doc_anterior" /></th>
+            <th pResizableColumn pSortableColumn="forma_pago_vinculada">{{'f_pago' | translate}}&nbsp;<p-sortIcon field="forma_pago_vinculada" /></th>
+            <th pResizableColumn pSortableColumn="f_m_pago_cfdi">{{'f_m_pago_cfdi' | translate}}&nbsp;<p-sortIcon field="f_m_pago_cfdi" /></th>
+            <th pResizableColumn pSortableColumn="observacionesPago">{{'observ' | translate}}&nbsp;<p-sortIcon field="observacionesPago" /></th>
+            <th pResizableColumn pSortableColumn="monto_pago">{{'total_import' | translate}}&nbsp;<p-sortIcon field="monto_pago" /></th>
+            <th pResizableColumn pSortableColumn="tipo_cambio_movimiento">{{'mon_tipo_cambio' | translate}}&nbsp;<p-sortIcon field="tipo_cambio_movimiento" /></th>
+            <th pResizableColumn pSortableColumn="estado_cuenta_debe_format">debe&nbsp;(+)&nbsp;<p-sortIcon field="estado_cuenta_debe_format" /></th>
+            <th pResizableColumn pSortableColumn="estado_cuenta_haber_format">haber&nbsp;(-)&nbsp;<p-sortIcon field="estado_cuenta_haber_format" /></th>
+            <th pResizableColumn pSortableColumn="estado_cuenta_saldo_format">saldo&nbsp;(=)&nbsp;<p-sortIcon field="estado_cuenta_saldo_format" /></th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-payDone let-i="rowIndex">
+          <tr>
+            <td class="name">{{payDone.folio_e_cuenta}}</td>
+            <td>{{payDone.fecha_contabilizacion}}</td>
+            <td>{{payDone.cancelacion_doc_anterior}}</td>
+            <td>{{payDone.forma_pago_vinculada}}</td>
+            <td>{{payDone.f_m_pago_cfdi}}</td>
+            <td>{{payDone.observacionesPago}}</td>
+            <td class="td_importes">{{payDone.monto_pago}}</td>
+            <td class="td_importes">{{payDone.tipo_cambio_movimiento}}</td>
+            <td class="td_importes">{{payDone.estado_cuenta_debe_format}}</td>
+            <td class="td_importes">{{payDone.estado_cuenta_haber_format}}</td>
+            <td class="td_importes">{{payDone.estado_cuenta_saldo_format}}</td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="11" class="text-center py-4">
+              <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+              <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                {{'no_rows' | translate}}
+              </p>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="footer">
+          <tr>
+            <td class="td_importes" colspan="8"><strong>Totales</strong></td>
+            <td class="td_importes">
+              <strong>{{trab_info.acr_total_debe}}</strong>
+            </td>
+            <td class="td_importes">
+              <strong>{{trab_info.acr_total_haber}}</strong>
+            </td>
+            <td class="td_importes">
+              <strong>{{trab_info.acr_total_saldo}}</strong>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  } @empty {
+    <div>No hay elementos</div>
+  }
+</p-dialog>

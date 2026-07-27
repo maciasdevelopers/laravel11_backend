@@ -1,0 +1,107 @@
+.buscador {
+	width: 100%;
+	height: 35px;
+	margin: 0;
+	padding-left: 5px;
+	padding-right: 5px;
+}
+
+.buscador .content {
+  display: flex;
+	flex-wrap: wrap;
+	flex-direction: row;
+	justify-items: center;
+	justify-content: flex-end;
+	align-items: center;
+	align-content: center;
+}
+
+.buscador .content_black {
+	background-color: #353535;
+}
+
+.buscador .content .row_buscador {
+	margin: 0 !important;
+	padding: 1px !important;
+	display: flex;
+	justify-content: end;
+}
+
+.buscador .content .row_buscador input.datasearch{
+  padding: 10px 16px;
+  border: 1px solid #ccc!important;
+  border-radius: 20px!important;
+  width: 100%;
+  max-width: 300px;
+  font-size: 14px;
+  transition: 0.3s ease;
+  box-shadow: none;
+  outline: none;
+	text-align: left!important;
+}
+
+.buscador .content .row_buscador input.datasearch:focus {
+  border-color: #66afe9;
+  box-shadow: 0 0 5px rgba(102, 175, 233, 0.6);
+}
+
+.buscador .content_white .row_buscador input {
+	background-color: rgba(0, 0, 0, 0.5) !important;
+	color: #e7e7ea !important;
+}
+
+.buscador .content_white .row_buscador input::placeholder {
+	color: #e7e7ea !important;
+}
+
+div.buscador_proyectos{
+	width: 100%;
+	background-color: rgba(67, 67, 67, 0.3) !important;
+	width: 100%;
+	min-height: 35px;
+	height: auto;
+	max-height: 90px;
+	margin: 1px;
+	align-content: center;
+	padding: 5px;
+	border-radius: 8px;
+}
+
+div.buscador_proyectos select{
+	border-radius: 25px !important;
+	padding: 5px !important;
+	text-transform: inherit;
+	font-family: 'roboto_cr' !important;
+	height: 25px !important;
+	line-height: 25px !important;
+	padding: 0 !important;
+}
+
+div.buscador_proyectos select.teal_darken_2{background-color: #00796b!important;color: white!important;}
+div.buscador_proyectos select.light_blue_darken_4{background-color: #01579b!important;color: white!important;}
+div.buscador_proyectos select.grey_darken_4{background-color: #212121!important;color: white!important;}
+div.buscador_proyectos select.green_darken_4{background-color: #1b5e20!important;color: white!important;}
+div.buscador_proyectos select.orange_darken_1{background-color: #fb8c00!important;color: #353535!important;}
+div.buscador_proyectos select.red_darken_4{background-color: #b71c1c!important;color: white!important;}
+div.buscador_proyectos select.grey_darken_1{background-color: #757575!important;color: white!important;}
+
+div.buscador_proyectos a{
+	margin: 0!important;
+}
+
+div.buscador_proyectos a i{
+	font-size: 10px;
+	height: 25px;
+	width: 20px;
+	line-height: 25px;
+}
+
+@media screen and (max-width: 600px) {
+	.buscador {
+		height: auto!important;
+	}
+
+	.buscador .content .row_buscador input {
+		border-radius: 4px 4px 8px 8px !important;
+	}
+}

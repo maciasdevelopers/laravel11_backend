@@ -1,0 +1,354 @@
+<p-table #reemAuthGral [value]="reembolsos_list_autorizados" [globalFilterFields]="reem_auth_search" dataKey="id" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]">
+  <ng-template #caption>
+    <div class="flex" style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;" ngbDropdown>
+      <a class="btn btn_extend" [ngClass]="indicadorReemList == 'hoy' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="reembolsos_lista_terminados('hoy');">
+        <i class="fa-solid fa-calendar-days"></i>&nbsp;Hoy
+      </a>
+      <a class="btn btn_extend" [ngClass]="indicadorReemList == 'esta_semana' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="reembolsos_lista_terminados('esta_semana');">
+        <i class="fa-solid fa-calendar-days"></i>&nbsp;Esta semana
+      </a>
+      <a class="btn btn_extend" [ngClass]="indicadorReemList == 'este_mes' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="reembolsos_lista_terminados('este_mes');">
+        <i class="fa-solid fa-calendar-days"></i>&nbsp;Este mes
+      </a>
+      <a class="btn btn_extend" [ngClass]="indicadorReemList == 'mes_anterior' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="reembolsos_lista_terminados('mes_anterior');">
+        <i class="fa-solid fa-arrow-left"></i>&nbsp;mes anterior
+      </a>
+      <a id="menuDropreemAuth" class="btn btn_extend" [ngClass]="indicadorReemList == 'otras_fechas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" ngbDropdownToggle>
+        <i class="fa-solid fa-list-ul"></i>&nbsp;otras fechas
+      </a>
+      <div class="dropdown-menu-end menu-despegable" ngbDropdownMenu="menuDropreemAuth" style="padding: 0!important; margin: 0!important; width: max-content!important; max-height: 400px; overflow-y: auto;">
+        <div class="col-12 input-group">
+          <label for="reem_auth_otras_fechas" class="activeInput">Periodo de fechas</label>
+          <p-datepicker id="reem_auth_otras_fechas" name="reem_auth_otras_fechas" [(ngModel)]="rangoPeriodoReemList" appendTo="body" dateFormat="dd/mm/yy"
+            placeholder="dd/mm/aaaa" selectionMode="range" (onSelect)="reembolsos_lista_terminados('otras_fechas')" />
+        </div>
+      </div>
+      <a class="btn btn_extend" [ngClass]="indicadorReemList == 'all_partidas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="reembolsos_lista_terminados('all_partidas');">
+        <i class="fa-solid fa-list-ul"></i>&nbsp;todos los registros
+      </a>
+      <p-iconfield iconPosition="left" class="ml-auto">
+        <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+        <input pInputText type="text" (input)="reemAuthGral.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+      </p-iconfield>
+    </div>
+  </ng-template>
+  <ng-template #header>
+    <tr>
+      <th rowspan="2" pSortableColumn="folio_solicitud">folio&nbsp;<p-sortIcon field="folio_solicitud" /></th>
+      <th rowspan="2" pSortableColumn="comision_proyecto">{{'comi' | translate}}&nbsp;<p-sortIcon field="comision_proyecto" /></th>
+      <th rowspan="2" pSortableColumn="nombreEmiPers">{{'aplicante' | translate}}&nbsp;<p-sortIcon field="nombreEmiPers" /></th>
+      <th rowspan="2" pSortableColumn="name_emisor">{{'company_name' | translate}}&nbsp;<p-sortIcon field="name_emisor" /></th>
+      <th rowspan="2" pSortableColumn="fecha_gasto_html">{{'date_gasto' | translate}}&nbsp;<p-sortIcon field="fecha_gasto_html" /></th>
+      <th rowspan="2" pSortableColumn="ticket_gasto">{{'ticket_gasto' | translate}}&nbsp;<p-sortIcon field="ticket_gasto" /></th>
+      <th rowspan="2" pSortableColumn="pagado_a">{{'pay_to' | translate}}&nbsp;<p-sortIcon field="pagado_a" /></th>
+      <th colspan="4" pSortableColumn="prov_folio">{{'prov' | translate}}&nbsp;<p-sortIcon field="prov_folio" /></th>
+      <th rowspan="2" pSortableColumn="fpago_forma">{{'f_pago' | translate}}&nbsp;<p-sortIcon field="fpago_forma" /></th>
+      <th rowspan="2" pSortableColumn="moneda_code">{{'mon_name' | translate}}&nbsp;<p-sortIcon field="moneda_code" /></th>
+      <th rowspan="2" pSortableColumn="importe_requ_info_entr_format">{{'total_refund' | translate}}&nbsp;<p-sortIcon field="importe_requ_info_entr_format" /></th>
+      <th rowspan="2" pSortableColumn="tipo_cambio_soli_format">{{'mon_tipo_cambio' | translate}}&nbsp;<p-sortIcon field="tipo_cambio_soli_format" /></th>
+      <th rowspan="2" pSortableColumn="importe_requ_info_sali_format">{{'total_refund_converse' | translate}}&nbsp;<p-sortIcon field="importe_requ_info_sali_format" /></th>
+      <th rowspan="2" pSortableColumn="observaciones">{{'observ' | translate}}&nbsp;<p-sortIcon field="observaciones" /></th>
+      <th rowspan="2"><i class="fa-solid fa-file"></i>&nbsp;{{'files_uploaded' | translate}}</th>
+      <th rowspan="2" class="ultimo"></th>
+      <th rowspan="2">{{'payed' | translate}}</th>
+      <th rowspan="2">{{'auth_by' | translate}} {{'ssic_menu_vhn' | translate}}</th>
+      <th rowspan="2">{{'auth_by' | translate}} {{'ssic_menu_egr' | translate}}</th>
+      <th rowspan="2" class="ultimo"></th>
+    </tr>
+    <tr>
+      <th pResizableColumn pSortableColumn="folio">folio&nbsp;<p-sortIcon field="folio" /></th>
+      <th pResizableColumn pSortableColumn="nombre">{{'prov' | translate}} &nbsp;<p-sortIcon field="nombre" /></th>
+      <th pResizableColumn pSortableColumn="nombre_comercial">{{'comercial_name' | translate}} &nbsp;<p-sortIcon field="nombre_comercial" /></th>
+      <th pResizableColumn pSortableColumn="rfc_prov">rfc&nbsp;<p-sortIcon field="rfc_prov" /></th>
+    </tr>
+  </ng-template>
+  <ng-template #body let-lreem let-i="rowIndex">
+    <tr>
+      <td>{{lreem.folio_reem+"-"+lreem.folio_solicitud}}</td>
+      <td class="name">{{lreem.comision_folio+" "+lreem.comision_proyecto}}</td>
+      <td class="name">{{lreem.nombreEmiPers}}</td>
+      <td>{{lreem.company}}</td>
+      <td>{{lreem.fecha_gasto_html}}</td>
+      <td>{{lreem.ticket_gasto}}</td>
+
+      <td>{{(lreem.pagado_a == 'prov' ? 'prov' : 'gen_pub') | translate}}</td>
+      <td class="name">{{lreem.prov_folio}}</td>
+      <td class="name">{{lreem.prov_name}}</td>
+      <td class="name">{{lreem.prov_nombre_comercial}}</td>
+      <td class="name">{{lreem.prov_rfc}}</td>
+
+      <td>{{lreem.fpago_clave+" "+lreem.fpago_forma}}</td>
+      <td>{{lreem.moneda_code}}</td>
+      <td class="td_importes">{{lreem.importe_requ_info_entr_format}}</td>
+      <td class="td_importes">{{lreem.tipo_cambio_soli_format}}</td>
+      <td class="td_importes">{{lreem.importe_requ_info_sali_format}}</td>
+      <td class="name">{{lreem.observaciones}}</td>
+      <td>
+        <a class="btn btn_extend bg-indigo-600"
+          [ngClass]="lreem.xmlFacturaContent.length == 0 && lreem.pdfFacturaContent.length == 0 && lreem.anexos.length == 0 ? 'disabled' : ''"
+          [attr.disabled]="lreem.xmlFacturaContent.length == 0 && lreem.pdfFacturaContent.length == 0 && lreem.anexos.length == 0 ? true : null"
+          [attr.aria-disabled]="lreem.xmlFacturaContent.length == 0 && lreem.pdfFacturaContent.length == 0 && lreem.anexos.length == 0 ? true : null"
+          (click)="(lreem.xmlFacturaContent.length > 0 || lreem.pdfFacturaContent.length > 0 || lreem.anexos.length > 0) && verDocumentosAdjuntos(lreem);">
+          <i class="fa-solid fa-file"></i>&nbsp;{{'files_uploaded' | translate}}&nbsp;{{lreem.xmlFacturaContent.length +
+          lreem.pdfFacturaContent.length + lreem.anexos.length}}
+        </a>
+      </td>
+      <td class="ultimo">
+        <a class="btn btn_extend text-bg-success rounded-3"
+          [ngClass]="!disabled_autorizados_btn_auth_vinc(lreem.token_solicitud_reem) ? 'disabled' : ''"
+          [attr.disabled]="!disabled_autorizados_btn_auth_vinc(lreem.token_solicitud_reem) ? true : null"
+          style="border-radius: 25px!important;"
+          [attr.aria-disabled]="!disabled_autorizados_btn_auth_vinc(lreem.token_solicitud_reem) ? true : null"
+          (click)="disabled_autorizados_btn_auth_vinc(lreem.token_solicitud_reem) && abreModalReemComprasVincular(lreem.token_solicitud_reem);">
+          <i class="fa-solid fa-cart-shopping"></i>&nbsp;Vinculaci&oacute;n a compras
+        </a>
+      </td>
+      <td>{{lreem.terminado ? ['yes' | translate] : 'No'}}</td>
+      <td>{{lreem.autorizacion_vh == 'A' ? ['yes_auth' | translate]+" ("+lreem.fecha_registro_auth_vh+")" : 'No'}}</td>
+      <td>{{lreem.max_auth_egr ? ['yes_auth' | translate]+" "+lreem.fecha_registro_auth_egr+" - "+lreem.hora_registro_auth_egr: 'No'}}</td>
+      <td class="ultimo">
+        <a class="btn btn_extend bg-yellow-500" [ngClass]="lreem.auth_egr_list_array.length == 0 ? 'disabled' : ''"
+          [attr.disabled]="lreem.auth_egr_list_array.length == 0 ? true : null"
+          [attr.aria-disabled]="lreem.auth_egr_list_array.length == 0 ? true : null"
+          (click)="lreem.auth_egr_list_array.length > 0 && verHistorial(lreem.token_solicitud_reem);">
+          <i class="fa-solid fa-list-check"
+            [attr.style]="lreem.auth_egr_list_array.length > 0 ? 'color: #353535!important;' : ''"></i>&nbsp;Listado de autorizaciones
+        </a>
+      </td>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td colspan="23" class="text-center py-4">
+        <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+        <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+          {{'no_rows' | translate}}
+        </p>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<p-dialog header="Documentos adjuntos {{folio_reembolso_main}} solicitud {{folio_reembolso_solicitud}}" [(visible)]="viewModalDocumentosAdjuntos" 
+  [modal]="true" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  @for (byid of reembolsoPerfilDocumentosAdjuntos; track $index) {
+    <div class="rounded flex flex-col">
+      <ul class="list-group">
+        @for (xml of byid.xmlFacturaContent; track $index) {
+          <li class="list-group-item" style="display: flex;justify-content: center;align-content: space-between;padding: 5px!important;">
+            {{xml.name_documento}}
+            <a class="btn btn_extend text-bg-primary rounded-4" style="margin-left: 5px!important;"
+              (click)="viewDocumentoBrowser(xml.url);"><i class="fa-solid fa-globe"></i></a>
+          </li>
+        }
+        @for (pdf of byid.pdfFacturaContent; track $index) {
+          <li class="list-group-item" style="display: flex;justify-content: center;align-content: space-between;padding: 5px!important;">
+            {{pdf.name_documento}}
+            <a class="btn btn_extend text-bg-primary rounded-4" style="margin-left: 5px!important;"
+              (click)="viewDocumentoBrowser(pdf.url);"><i class="fa-solid fa-globe"></i></a>
+          </li>
+        }
+        @for (doc of byid.anexos; track $index) {
+          <li class="list-group-item" style="display: flex;justify-content: center;align-content: space-between;padding: 5px!important;">
+            {{doc.name_documento}}
+            <a class="btn btn_extend text-bg-primary rounded-4" style="margin-left: 5px!important;"
+              (click)="viewDocumentoBrowser(doc.url);"><i class="fa-solid fa-globe"></i></a>
+          </li>
+        }
+      </ul>
+    </div>
+  }
+</p-dialog>
+
+<p-dialog header="Vinculación a compras {{folio_reembolso_main}} solicitud {{folio_reembolso_solicitud}}" [(visible)]="viewModalCompraVinculacion" [modal]="true" [style]="{ width: '50rem' }"
+  [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  @for (byid of reembolsoPerfilCompraVinculacion; track $index) {
+    <div class="col-12">
+      @if (byid.compras_vinculadas.length > 0) {
+        <div class="col-12 explain">
+          <h6 class="title">{{byid.compras_vinculadas_total}}</h6>
+        </div>
+        <p-table #buyVincReem [value]="byid.compras_vinculadas" dataKey="id" [resizableColumns]="true" responsiveLayout="stack"
+          [globalFilterFields]="['folio_compra','proveedor_folio','proveedor_name','cfdi_comprobante_total','cfdi_comprobante_tipo_de_comprobante','cfdi_complementoUUID']">
+          <ng-template #caption>
+            <div class="flex">
+              <p-iconfield iconPosition="left" class="ml-auto">
+                <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                <input pInputText type="text" (input)="buyVincReem.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+              </p-iconfield>
+            </div>
+          </ng-template>
+          <ng-template #header>
+            <tr>
+              <th pSortableColumn="folio_compra">Folio de compra&nbsp;<p-sortIcon field="folio_compra" /></th>
+              <th pSortableColumn="proveedor_name">{{'prov' | translate}}&nbsp;<p-sortIcon field="proveedor_name" /></th>
+              <th pSortableColumn="cfdi_comprobante_total">Total&nbsp;<p-sortIcon field="cfdi_comprobante_total" /></th>
+              <th pSortableColumn="cfdi_comprobante_tipo_de_comprobante">Tipo de comprobante&nbsp;<p-sortIcon field="cfdi_comprobante_tipo_de_comprobante" /></th>
+              <th pSortableColumn="cfdi_complementoUUID">UUID&nbsp;<p-sortIcon field="cfdi_complementoUUID" /></th>
+            </tr>
+          </ng-template>
+          <ng-template #body let-buyVinc>
+            <tr>
+              <td>{{buyVinc.folio_compra}}</td>
+              <td>{{buyVinc.proveedor_folio+" "+buyVinc.proveedor_name}}</td>
+              <td>{{buyVinc.cfdi_comprobante_total}}</td>
+              <td>{{buyVinc.cfdi_comprobante_tipo_de_comprobante}}</td>
+              <td>{{buyVinc.cfdi_complementoUUID}}</td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="5" class="text-center py-4">
+                <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                  {{'no_rows' | translate}}
+                </p>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+        <p-divider />
+        <div class="col-12 explain">
+          <h6 class="title">Cancelaci&oacute;n de compras a reembolsos</h6>
+        </div>
+        <div class="col-12 input-group" style="margin-bottom: 10px!important;">
+          <label for="stockmin_regCat" id="lblStockmin" class="activeInput">Aclaraciones de solicitud</label>
+          <textarea class="validate" name="large_descript" (keyup)="keyupObservaReemComprasUNVincular($event.target,byid.token_solicitud_reem);"></textarea>
+        </div>
+        <div class="col-12" style="display: flex !important;justify-content: end!important;">
+          <a class="btn btn_extend text-bg-success rounded-3" type="submit" name="btnAltaProducto2"
+            [ngClass]="byid.soli_cancela_vinc_comentarios == '' ? 'disabled' : ''"
+            [attr.disabled]="byid.soli_cancela_vinc_comentarios == '' ? true : null"
+            [attr.aria-disabled]="byid.soli_cancela_vinc_comentarios == '' ? true : null"
+            (click)="byid.soli_cancela_vinc_comentarios != '' && solicitaDesvuinculacionReembolso(byid,byid.compras_vinculadas[0]['token_compras']);">
+            <i class="fa-solid fa-floppy-disk" style="height: 15px!important;line-height: 15px!important;width: 15px!important;font-size: small!important;"></i>&nbsp;{{'sav_cam' | translate}}
+          </a>
+        </div>
+      } @else {
+        <p-table #reemAuthbuyVinc [value]="byid.compras_vincular" dataKey="id" [resizableColumns]="true" responsiveLayout="stack"
+          [globalFilterFields]="['folio_compra','fecha_contabilizacion','proveedor_folio','proveedor_name','cfdi_comprobante_total','cfdi_comprobante_tipo_de_comprobante','cfdi_complementoUUID','token_compras','token_solicitud_reem','compra_observaciones']">
+          <ng-template #caption>
+            <div class="flex" style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;" ngbDropdown>
+              <a class="btn btn_extend" [ngClass]="indicadorBuyVinc == 'hoy' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_solicitudes_cancelacion(byid,'hoy');">
+                <i class="fa-solid fa-calendar-days"></i>&nbsp;Hoy
+              </a>
+              <a class="btn btn_extend" [ngClass]="indicadorBuyVinc == 'esta_semana' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_solicitudes_cancelacion(byid,'esta_semana');">
+                <i class="fa-solid fa-calendar-days"></i>&nbsp;Esta semana
+              </a>
+              <a class="btn btn_extend" [ngClass]="indicadorBuyVinc == 'este_mes' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_solicitudes_cancelacion(byid,'este_mes');">
+                <i class="fa-solid fa-calendar-days"></i>&nbsp;Este mes
+              </a>
+              <a class="btn btn_extend" [ngClass]="indicadorBuyVinc == 'mes_anterior' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_solicitudes_cancelacion(byid,'mes_anterior');">
+                <i class="fa-solid fa-arrow-left"></i>&nbsp;mes anterior
+              </a>
+              <a id="menuDropRAbuyVinc" class="btn btn_extend" [ngClass]="indicadorBuyVinc == 'otras_fechas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" ngbDropdownToggle>
+                <i class="fa-solid fa-list-ul"></i>&nbsp;otras fechas
+              </a>
+              <div class="dropdown-menu-end menu-despegable" ngbDropdownMenu="menuDropRAbuyVinc" style="padding: 0!important; margin: 0!important; width: max-content!important; max-height: 400px; overflow-y: auto;">
+                <div class="col-12 input-group">
+                  <label for="reem_auth_buy_vinc_otras_fechas" class="activeInput">Periodo de fechas</label>
+                  <p-datepicker id="reem_auth_buy_vinc_otras_fechas" name="reem_auth_buy_vinc_otras_fechas" [(ngModel)]="rangoPeriodoBuyVinc" appendTo="body" dateFormat="dd/mm/yy"
+                    placeholder="dd/mm/aaaa" selectionMode="range" (onSelect)="ver_solicitudes_cancelacion(byid,'otras_fechas')" />
+                </div>
+              </div>
+              <a class="btn btn_extend" [ngClass]="indicadorBuyVinc == 'all_partidas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_solicitudes_cancelacion(byid,'all_partidas');">
+                <i class="fa-solid fa-list-ul"></i>&nbsp;todos los registros
+              </a>
+              <p-iconfield iconPosition="left" class="ml-auto">
+                <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                <input pInputText type="text" (input)="reemAuthbuyVinc.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+              </p-iconfield>
+            </div>
+          </ng-template>
+          <ng-template #header>
+            <tr>
+              <th pSortableColumn="folio_compra">Folio de compra&nbsp;<p-sortIcon field="folio_compra" /></th>
+              <th>{{'fecha_cont' | translate}}</th>
+              <th pSortableColumn="proveedor_name">{{'prov' | translate}}&nbsp;<p-sortIcon field="proveedor_name" /></th>
+              <th pSortableColumn="cfdi_comprobante_total">Total&nbsp;<p-sortIcon field="cfdi_comprobante_total" /></th>
+              <th pSortableColumn="cfdi_comprobante_tipo_de_comprobante">Tipo de comprobante&nbsp;<p-sortIcon field="cfdi_comprobante_tipo_de_comprobante" /></th>
+              <th pSortableColumn="cfdi_complementoUUID">UUID&nbsp;<p-sortIcon field="cfdi_complementoUUID" /></th>
+              <th>{{'observ' | translate}}</th>
+              <th class="ultimo"></th>
+            </tr>
+          </ng-template>
+          <ng-template #body let-buyVinc>
+            <tr>
+              <td>{{buyVinc.folio_compra}}</td>
+              <td>{{buyVinc.fecha_contabilizacion}}</td>
+              <td>{{buyVinc.proveedor_folio+" "+buyVinc.proveedor_name}}</td>
+              <td class="td_importes">{{buyVinc.cfdi_comprobante_total}}</td>
+              <td class="td_importes">{{buyVinc.cfdi_comprobante_tipo_de_comprobante}}</td>
+              <td>{{buyVinc.cfdi_complementoUUID}}</td>
+              <td>
+                <textarea class="validate" rows="5" cols="30" [ngStyle]="{width: '300px',height: '40px',textAlign: 'left'}" (keyup)="input_observaciones_c_vincular($event.target,buyVinc.token_compras);"></textarea>
+              </td>
+              <td class="ultimo">
+                <a class="btn btn_extend text-bg-success rounded-3"
+                  [ngClass]="buyVinc.compra_observaciones == '' ? 'disabled' : ''"
+                  [attr.disabled]="buyVinc.compra_observaciones == '' ? true : null"
+                  [attr.aria-disabled]="buyVinc.compra_observaciones == '' ? true : null"
+                  (click)="buyVinc.compra_observaciones != '' && vincularReembolsoACompraYPagarAAcreedor(byid.token_reem,byid.token_solicitud_reem,buyVinc.token_compras,buyVinc.compra_observaciones);">
+                  <i class="fa-solid fa-file"></i>&nbsp;Vincular compra
+                </a>
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="8" class="text-center py-4">
+                <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                  {{'no_rows' | translate}}
+                </p>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      }
+    </div>
+  }
+</p-dialog>
+
+<p-dialog header="Listado de autorizaciones {{folio_reembolso_main}} solicitud {{folio_reembolso_solicitud}}" [(visible)]="viewModalListadoDeAutorizaciones" [modal]="true" [style]="{ width: '50rem' }"
+  [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  @for (byid of reembolsoPerfilAutorizaciones; track $index) {
+    <p-table #authEgrList [value]="byid.auth_egr_list_array" [globalFilterFields]="['autorizacion_egr','registro_auth_egr','comentarios']" dataKey="id" [paginator]="true"
+      [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]">
+      <ng-template #caption>
+        <div class="flex">
+          <p-iconfield iconPosition="left" class="ml-auto">
+            <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+            <input pInputText type="text" (input)="authEgrList.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+          </p-iconfield>
+        </div>
+      </ng-template>
+      <ng-template #header>
+        <tr>
+          <th>No.</th>
+          <th pSortableColumn="autorizacion_egr">{{'auth' | translate}}&nbsp;<p-sortIcon field="autorizacion_egr" /></th>
+          <th pSortableColumn="registro_auth_egr">{{'fecha_reg' | translate}}&nbsp;<p-sortIcon field="registro_auth_egr" /></th>
+          <th pSortableColumn="comentarios">{{'observ' | translate}}&nbsp;<p-sortIcon field="comentarios" /></th>
+        </tr>
+      </ng-template>
+      <ng-template #body let-pAuth let-rowIndex="rowIndex">
+        <tr>
+          <td>{{rowIndex+1}}</td>
+          <td>{{(pAuth.autorizacion_egr == 'A' ? 'yes_auth' : 'not_auth') | translate}}</td>
+          <td>{{pAuth.registro_auth_egr}}</td>
+          <td>{{pAuth.comentarios}}</td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="4" class="text-center py-4">
+            <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+            <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+              {{'no_rows' | translate}}
+            </p>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  }
+</p-dialog>

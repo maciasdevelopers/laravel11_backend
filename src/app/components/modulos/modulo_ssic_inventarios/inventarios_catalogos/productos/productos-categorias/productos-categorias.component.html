@@ -1,0 +1,20 @@
+<div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-3 col-xxl-3 row">
+  <div class="p-grid p-ai-center p-mb-3  row" style="margin-bottom: 5px!important;">
+    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-5 col-xxl-5 input-group">
+      <label>Clasificaci&oacute;n</label>
+      <input type="text" pInputText [(ngModel)]="clasificacion" (keyup)="new_clasificacion($event.target);"/>
+    </div>
+    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-5 col-xxl-5 input-group">
+      <label>Subclasificación</label>
+      <input type="text" pInputText [(ngModel)]="subclasificacion" (keyup)="new_subclasificacion($event.target);"/>
+    </div>
+    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-2 col-xxl-2" style="display: flex !important;justify-content: end!important;padding-top: 20px!important;">
+      <button pButton class="btn btn_extend text-bg-success rounded-3" (click)="agregarRegistro()">
+        <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+      </button>
+    </div>
+  </div>
+  
+  <!-- Árbol de clasificación/subclasificación -->
+  <p-tree [value]="listaCategoriasProductos" selectionMode="single"></p-tree>
+</div>

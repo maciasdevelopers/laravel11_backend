@@ -1,0 +1,1368 @@
+<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco" #vContent>
+  <div class="contenido">
+    <app-loader></app-loader>
+    <header class="sticky-top">
+      <nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+    </header>
+    <main class="contenidoPagina">
+      <div class="listas_ps revanecer">
+        <div class="lista-div lista-divNoFlex row">
+          <h4>CAT&Aacute;LOGO DE USUARIOS</h4>
+          <p-tabs value="0">
+            <p-tablist>
+              <p-tab value="0"><i class="fa-solid fa-list"></i>&nbsp;Cat&aacute;logo de usuarios</p-tab>
+              <p-tab value="1"><i class="fa-solid fa-plus"></i>&nbsp;Registro de usuarios</p-tab>
+            </p-tablist>
+            <p-tabpanels>
+              <p-tabpanel value="0">
+                <div class="buscador row" style="margin-top: 10px!important">
+                  <div class="content">
+                    <div class="col-12 col-sm-6 col-md-3 col-lg-2 row_buscador btn-group lista_botones" role="group"
+                      aria-label="Basic example">
+                      <a class="btn btn_extend bg-indigo-600" (click)="listando_catalogo_de_usuarios();">
+                        <i class="fa-solid fa-rotate" style="margin-left: 5px;"></i>&nbsp;{{'list_updt' | translate}}
+                      </a>
+                    </div>
+                    <div class="col-12 col-sm-6 col-md-3 col-lg-2 row_buscador">
+                      <input class="datasearch" type="text" [(ngModel)]="usuarios_catalogo_search" autocomplete="on"
+                        placeholder="{{'bus_car' | translate}}">
+                    </div>
+                  </div>
+                </div>
+                <!--[value]="usuarios_catalogo | filter:usuarios_catalogo_search"-->
+                <p-table [value]="usuarios_catalogo" showGridlines [resizableColumns]="true" columnResizeMode="expand" [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]">
+                  <ng-template #header>
+                    <tr>
+                      <th class="ultimo"></th>
+                      <th>folio</th>
+                      <th>Alias</th>
+                      <th class="ultimo"></th>
+                      <!--<th>Apellido Materno</th>-->
+                      <!--<th>Nombre(s)</th>-->
+                      <!--<th>{{'email' | translate}}</th>-->
+                    </tr>
+                  </ng-template>
+                  <ng-template #body let-user let-editing="editing">
+                    <tr>
+                      <td class="ultimo">
+                        <a class="btn bg-blue-600" (click)="desgloseUsuario(user.usuario_token)">
+                          <i class="fa-solid fa-info"></i>
+                        </a>
+                        <p-dialog header="Información del usuario {{user.usuario_folio}}"
+                          [(visible)]="user.verModalUsuario" [modal]="true" [style]="{ width: '50rem' }"
+                          [maximizable]="true" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }">
+                          <div class="col-12 row" *ngFor="let info_usuario of user.desglose_info">
+                            <p-tabs value="0" scrollable>
+                              <p-tablist>
+                                <p-tab value="0">solicitud de permisos</p-tab>
+                                <p-tab value="1">Acceso a m&oacute;dulos</p-tab>
+                                <p-tab value="2">{{'ssic_menu_ing' | translate}}</p-tab>
+                                <p-tab value="3">{{'ssic_menu_egr' | translate}}</p-tab>
+                                <p-tab value="4">{{'ssic_menu_fnzs' | translate}}</p-tab>
+                                <p-tab value="5">{{'ssic_menu_vhn' | translate}}</p-tab>
+                                <p-tab value="6">{{'ssic_menu_con' | translate}}</p-tab>
+                                <p-tab value="7">{{'ssic_menu_tec' | translate}}</p-tab>
+                              </p-tablist>
+                              <p-tabpanels>
+                                <p-tabpanel value="0">
+                                  <div class="buscador row" style="margin-top: 10px!important">
+                                    <div class="content">
+                                      <div class="col-12 col-sm-6 col-md-3 col-lg-2 row_buscador"></div>
+                                      <div class="col-12 col-sm-6 col-md-3 col-lg-2 row_buscador">
+                                        <input class="datasearch" type="text"
+                                          [(ngModel)]="usuarios_permisos_solicitud_search" autocomplete="on"
+                                          placeholder="{{'bus_car' | translate}}">
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <!-- [value]="info_usuario.permisos_solicitud | filter:usuarios_permisos_solicitud_search"-->
+                                  <p-table [value]="info_usuario.permisos_solicitud"
+                                    [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]">
+                                    <ng-template #header>
+                                      <tr>
+                                        <th>folio</th>
+                                        <th>{{'fecha_reg' | translate}}</th>
+                                        <th>m&oacute;dulo</th>
+                                        <th>{{'perm' | translate}}</th>
+                                        <th>{{'observ' | translate}}</th>
+                                        <th class="ultimo"></th>
+                                      </tr>
+                                    </ng-template>
+                                    <ng-template #body let-soli_perm>
+                                      <tr>
+                                        <td>{{soli_perm.folio_permiso}}</td>
+                                        <td>{{soli_perm.date_registro}}</td>
+                                        <td>{{soli_perm.extend_modulo}}</td>
+                                        <td>{{soli_perm.extend_permiso | translate}}</td>
+                                        <td>{{soli_perm.observaciones}}</td>
+                                        <td>
+                                          <a class="btn bg-blue-600">
+                                            <i class="fa-solid fa-eye"></i>
+                                          </a>
+                                        </td>
+                                      </tr>
+                                    </ng-template>
+                                    <ng-template pTemplate="emptymessage">
+                                      <tr>
+                                        <td colspan="6" class="text-center py-4">
+                                          <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                                          <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                            {{'no_rows' | translate}}
+                                          </p>
+                                        </td>
+                                      </tr>
+                                    </ng-template>
+                                  </p-table>
+                                </p-tabpanel>
+                                <p-tabpanel value="1">
+                                  <div class="col-12 card card_main">
+                                    <div class="card-content">
+                                      <span class="card-title">Acceso a m&oacute;dulos</span>
+                                      <div class="inside">
+                                        <div class="col-12 row" style="border-top: solid 2px lightgray!important;padding: 0 !important;">
+                                          <div class="col-12 col-sm-8 col-md-3 col-lg-2 col-xl-2 col-xxl-2 explain">
+                                            <h6 class="title">SSIC</h6>
+                                          </div>
+                                          <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                            <label class="form-check-label">{{'no' | translate}}</label>
+                                            <input class="form-check-input" type="checkbox" (click)="userAccesoModuloSsic(info_usuario.emp_token,info_usuario.user_token,info_usuario.inside_ssic);" [checked]="info_usuario.inside_ssic">
+                                            <label class="form-check-label">{{'yes' | translate}}</label>
+                                          </div>
+                                        </div>
+                                        <div class="col-12 row" style="border-top: solid 2px lightgray!important;padding: 0 !important;">
+                                          <div class="col-12 col-sm-8 col-md-3 col-lg-2 col-xl-2 col-xxl-2 explain">
+                                            <h6 class="title">Descarga de xml</h6>
+                                          </div>
+                                          <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                            <label class="form-check-label">{{'no' | translate}}</label>
+                                            <input class="form-check-input" type="checkbox" (click)="userAccesoModuloDescargaXml(info_usuario.emp_token,info_usuario.user_token,info_usuario.outside_descarga_xml);" [checked]="info_usuario.outside_descarga_xml">
+                                            <label class="form-check-label">{{'yes' | translate}}</label>
+                                          </div>
+                                        </div>
+                                        <div class="col-12 row" style="border-top: solid 2px lightgray!important;padding: 0 !important;">
+                                          <div class="col-12 col-sm-8 col-md-3 col-lg-2 col-xl-2 col-xxl-2 explain">
+                                            <h6 class="title">Log&iacute;stica</h6>
+                                          </div>
+                                          <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                            <label class="form-check-label">{{'no' | translate}}</label>
+                                            <input class="form-check-input" type="checkbox" (click)="userAccesoModuloLogistica(info_usuario.emp_token,info_usuario.user_token,info_usuario.outside_logistica);" [checked]="info_usuario.outside_logistica">
+                                            <label class="form-check-label">{{'yes' | translate}}</label>
+                                          </div>
+                                        </div>
+                                        <div class="col-12 row" style="border-top: solid 2px lightgray!important;padding: 0 !important;">
+                                          <div class="col-12 col-sm-8 col-md-3 col-lg-2 col-xl-2 col-xxl-2 explain">
+                                            <h6 class="title">Compras</h6>
+                                          </div>
+                                          <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                            <label class="form-check-label">{{'no' | translate}}</label>
+                                            <input class="form-check-input" type="checkbox" (click)="userAccesoModuloCompras(info_usuario.emp_token,info_usuario.user_token,info_usuario.outside_compras);" [checked]="info_usuario.outside_compras">
+                                            <label class="form-check-label">{{'yes' | translate}}</label>
+                                          </div>
+                                        </div>
+                                        <div class="col-12 row" style="border-top: solid 2px lightgray!important;padding: 0 !important;">
+                                          <div class="col-12 col-sm-8 col-md-3 col-lg-2 col-xl-2 col-xxl-2 explain">
+                                            <h6 class="title">Proyectos</h6>
+                                          </div>
+                                          <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                            <label class="form-check-label">{{'no' | translate}}</label>
+                                            <input class="form-check-input" type="checkbox" (click)="userAccesoModuloProyectos(info_usuario.emp_token,info_usuario.user_token,info_usuario.outside_proyectos);" [checked]="info_usuario.outside_proyectos">
+                                            <label class="form-check-label">{{'yes' | translate}}</label>
+                                          </div>
+                                        </div>
+                                        <div class="col-12 row" style="border-top: solid 2px lightgray!important;padding: 0 !important;">
+                                          <div class="col-12 col-sm-8 col-md-3 col-lg-2 col-xl-2 col-xxl-2 explain">
+                                            <h6 class="title">Terceros</h6>
+                                          </div>
+                                          <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                            <label class="form-check-label">{{'no' | translate}}</label>
+                                            <input class="form-check-input" type="checkbox" (click)="userAccesoModuloTerceros(info_usuario.emp_token,info_usuario.user_token,info_usuario.outside_terceros);" [checked]="info_usuario.outside_terceros">
+                                            <label class="form-check-label">{{'yes' | translate}}</label>
+                                          </div>
+                                        </div>
+                                        <div class="col-12 row" style="padding: 0 !important;" *ngIf="info_usuario.outside_terceros">
+                                          <div class="col-12 row" style="padding: 0 !important;">
+                                            <div class="col-12 col-sm-8 col-md-3 col-lg-2 col-xl-2 col-xxl-2 explain" style="padding-left: 20px!important;">
+                                              <h6 class="title">Asociados</h6>
+                                            </div>
+                                            <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                              <label class="form-check-label">{{'no' | translate}}</label>
+                                              <input class="form-check-input" type="checkbox" (click)="userAccesoModuloTercerosAssociates(info_usuario.emp_token,info_usuario.user_token,info_usuario.outside_terceros_associates);" [checked]="info_usuario.outside_terceros_associates">
+                                              <label class="form-check-label">{{'yes' | translate}}</label>
+                                            </div>
+                                          </div>
+                                          <div class="col-12 row" style="padding: 0 !important;">
+                                            <div class="col-12 col-sm-8 col-md-3 col-lg-2 col-xl-2 col-xxl-2 explain" style="padding-left: 20px!important;">
+                                              <h6 class="title">Clientes</h6>
+                                            </div>
+                                            <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                              <label class="form-check-label">{{'no' | translate}}</label>
+                                              <input class="form-check-input" type="checkbox" (click)="userAccesoModuloTercerosClientes(info_usuario.emp_token,info_usuario.user_token,info_usuario.outside_terceros_clientes);" [checked]="info_usuario.outside_terceros_clientes">
+                                              <label class="form-check-label">{{'yes' | translate}}</label>
+                                            </div>
+                                          </div>
+                                          <div class="col-12 row" style="padding: 0 !important;">
+                                            <div class="col-12 col-sm-8 col-md-3 col-lg-2 col-xl-2 col-xxl-2 explain" style="padding-left: 20px!important;">
+                                              <h6 class="title">Proveedores</h6>
+                                            </div>
+                                            <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                              <label class="form-check-label">{{'no' | translate}}</label>
+                                              <input class="form-check-input" type="checkbox" (click)="userAccesoModuloTercerosProveedores(info_usuario.emp_token,info_usuario.user_token,info_usuario.outside_terceros_proveedores);" [checked]="info_usuario.outside_terceros_proveedores">
+                                              <label class="form-check-label">{{'yes' | translate}}</label>
+                                            </div>
+                                          </div>
+                                          <div class="col-12 row" style="padding: 0 !important;">
+                                            <div class="col-12 col-sm-8 col-md-3 col-lg-2 col-xl-2 col-xxl-2 explain" style="padding-left: 20px!important;">
+                                              <h6 class="title">Empleados</h6>
+                                            </div>
+                                            <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                              <label class="form-check-label">{{'no' | translate}}</label>
+                                              <input class="form-check-input" type="checkbox" (click)="userAccesoModuloTercerosEmpleados(info_usuario.emp_token,info_usuario.user_token,info_usuario.outside_terceros_empleados);" [checked]="info_usuario.outside_terceros_empleados">
+                                              <label class="form-check-label">{{'yes' | translate}}</label>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </p-tabpanel>
+                                <p-tabpanel value="2">
+                                  <div class="col-12 row" style="padding: 0;" *ngFor="let cfing of info_usuario.conf_ingresos">
+                                    <div class="col-12 explain">
+                                      <h6 class="title">Permisos para ingresos</h6>
+                                    </div>
+                                    <div class="col-12 row">
+                                      <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain" style="margin: 0!important;">
+                                        <h6 class="title">Acceso</h6>
+                                      </div>
+                                      <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                        <label class="form-check-label" for="flexSwitchCheckReverse">{{'no' | translate}}</label>
+                                        <input class="form-check-input" type="checkbox" [checked]="cfing.acceso_ingr_cpc" (click)="userIngresosPermAcceso(info_usuario.emp_token,info_usuario.user_token,cfing.acceso_ingr_cpc);">
+                                        <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                                      </div>
+                                    </div>
+                                    <p-divider />
+                                    <div class="col-12 row">
+                                      <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain" style="margin: 0!important;">
+                                        <h6 class="title">Jerarqu&iacute;a</h6>
+                                      </div>
+                                      <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                        <label class="form-check-label" for="flexSwitchCheckReverse">D</label>
+                                        <input class="form-check-input" type="checkbox" [checked]="cfing.jerarquia == 'P'" (click)="userIngresosPermJerarquia(info_usuario.emp_token,info_usuario.user_token,cfing.jerarquia);">
+                                        <label class="form-check-label" for="flexSwitchCheckReverse">P</label>
+                                      </div>
+                                    </div>
+                                    <p-divider />
+                                    <div class="col-12 row">
+                                      <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain" style="margin: 0!important;">
+                                        <h6 class="title">CREAR</h6>
+                                      </div>
+                                      <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                        <label class="form-check-label" for="flexSwitchCheckReverse">{{'no' | translate}}</label>
+                                        <input class="form-check-input" type="checkbox" [checked]="cfing.bool_ingr_perm_crear == 'permitido'" (click)="userIngresosPermCrear(info_usuario.emp_token,info_usuario.user_token,cfing.bool_ingr_perm_crear);">
+                                        <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                                      </div>
+                                    </div>
+                                    <p-divider />
+                                    <div class="col-12 row">
+                                      <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain" style="margin: 0!important;">
+                                        <h6 class="title">Editar/actualizar</h6>
+                                      </div>
+                                      <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                        <label class="form-check-label" for="flexSwitchCheckReverse">{{'no' | translate}}</label>
+                                        <input class="form-check-input" type="checkbox" [checked]="cfing.bool_ingr_perm_editar == 'permitido'" (click)="userIngresosPermEditar(info_usuario.emp_token,info_usuario.user_token,cfing.bool_ingr_perm_editar);">
+                                        <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                                      </div>
+                                    </div>
+                                    <p-divider />
+                                    <div class="col-12 row">
+                                      <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain" style="margin: 0!important;">
+                                        <h6 class="title">Consulta</h6>
+                                      </div>
+                                      <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                        <label class="form-check-label" for="flexSwitchCheckReverse">{{'no' | translate}}</label>
+                                        <input class="form-check-input" type="checkbox" [checked]="cfing.bool_ingr_perm_consulta == 'permitido'" (click)="userIngresosPermConsultar(info_usuario.emp_token,info_usuario.user_token,cfing.bool_ingr_perm_consulta);">
+                                        <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                                      </div>
+                                    </div>
+                                    <p-divider />
+                                    <div class="col-12 row">
+                                      <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain" style="margin: 0!important;">
+                                        <h6 class="title">Eliminaci&oacute;n</h6>
+                                      </div>
+                                      <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                        <label class="form-check-label" for="flexSwitchCheckReverse">{{'no' | translate}}</label>
+                                        <input class="form-check-input" type="checkbox" [checked]="cfing.bool_ingr_perm_elimina == 'permitido'" (click)="userIngresosPermEliminar(info_usuario.emp_token,info_usuario.user_token,cfing.bool_ingr_perm_elimina);">
+                                        <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                                      </div>
+                                    </div>
+                                    <p-divider />
+                                    <div class="col-12 row">
+                                      <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain" style="margin: 0!important;">
+                                        <h6 class="title">Ver / descargar / eliminar documentos</h6>
+                                      </div>
+                                      <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                        <label class="form-check-label" for="flexSwitchCheckReverse">{{'no' | translate}}</label>
+                                        <input class="form-check-input" type="checkbox" [checked]="cfing.bool_ingr_perm_ver_docs == 'permitido'" (click)="userIngresosPermVerDocs(info_usuario.emp_token,info_usuario.user_token,cfing.bool_ingr_perm_ver_docs);">
+                                        <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                                      </div>
+                                    </div>
+                                    <p-divider />
+                                    <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6">
+                                      <ul class="list-group">
+                                        <li class="list-group-item">
+                                          <div class="col-12 row">
+                                            <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain" style="margin: 0!important;">
+                                              <h6 class="title">Cat&aacute;logos</h6>
+                                            </div>
+                                            <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                              <label class="form-check-label" for="flexSwitchCheckReverse">{{'no' | translate}}</label>
+                                              <input class="form-check-input" type="checkbox" [checked]="cfing.bool_ingr_catalogos == 'permitido'" (click)="userIngresosPermAcceso(info_usuario.emp_token,info_usuario.user_token,cfing.acceso_ingr_cpc);">
+                                              <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                                            </div>
+                                          </div>
+                                        </li>
+                  
+                                        <li class="list-group-item">
+                                          <div class="col-12 row">
+                                            <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain" style="margin: 0!important;">
+                                              <h6 class="title">Mercancias</h6>
+                                            </div>
+                                            <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                              <label class="form-check-label" for="flexSwitchCheckReverse">{{'no' | translate}}</label>
+                                              <input class="form-check-input" type="checkbox" [disabled]="cfing.bool_ingr_catalogos == 'denegado'" [checked]="cfing.bool_ingr_catalogos == 'permitido' && cfing.bool_ingr_cat_merc == 'permitido'" (click)="userIngresosPermAcceso(info_usuario.emp_token,info_usuario.user_token,cfing.acceso_ingr_cpc);">
+                                              <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                                            </div>
+                                          </div>
+                                          <p-divider />
+                                          <div class="col-12 row">
+                                            <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain" style="margin: 0!important;">
+                                              <h6 class="title">Servicios</h6>
+                                            </div>
+                                            <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                              <label class="form-check-label" for="flexSwitchCheckReverse">{{'no' | translate}}</label>
+                                              <input class="form-check-input" type="checkbox" [disabled]="cfing.bool_ingr_catalogos == 'denegado'" [checked]="cfing.bool_ingr_catalogos == 'permitido' && cfing.bool_ingr_cat_serv == 'permitido'" (click)="userIngresosPermAcceso(info_usuario.emp_token,info_usuario.user_token,cfing.acceso_ingr_cpc);">
+                                              <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                                            </div>
+                                          </div>
+                                          <p-divider />
+                                          <div class="col-12 row">
+                                            <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain" style="margin: 0!important;">
+                                              <h6 class="title">Lista de precios</h6>
+                                            </div>
+                                            <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                              <label class="form-check-label" for="flexSwitchCheckReverse">{{'no' | translate}}</label>
+                                              <input class="form-check-input" type="checkbox" [disabled]="cfing.bool_ingr_catalogos == 'denegado'" [checked]="cfing.bool_ingr_catalogos == 'permitido' && cfing.bool_ingr_cat_prec == 'permitido'" (click)="userIngresosPermAcceso(info_usuario.emp_token,info_usuario.user_token,cfing.acceso_ingr_cpc);">
+                                              <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                                            </div>
+                                          </div>
+                                        </li>
+                  
+                                        <li class="list-group-item">
+                                          <div class="col-12 row">
+                                            <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain" style="margin: 0!important;">
+                                              <h6 class="title">Descuentos</h6>
+                                            </div>
+                                            <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                              <label class="form-check-label" for="flexSwitchCheckReverse">{{'no' | translate}}</label>
+                                              <input class="form-check-input" type="checkbox" [disabled]="cfing.bool_ingr_catalogos == 'denegado'" [checked]="cfing.bool_ingr_catalogos == 'permitido' && cfing.bool_ingr_cat_desc == 'permitido'" (click)="userIngresosPermAcceso(info_usuario.emp_token,info_usuario.user_token,cfing.acceso_ingr_cpc);">
+                                              <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                                            </div>
+                                          </div>
+                                          <p-divider />
+                                          <div class="col-12 row">
+                                            <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain" style="margin: 0!important;">
+                                              <h6 class="title">Promociones</h6>
+                                            </div>
+                                            <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                              <label class="form-check-label" for="flexSwitchCheckReverse">{{'no' | translate}}</label>
+                                              <input class="form-check-input" type="checkbox" [disabled]="cfing.bool_ingr_catalogos == 'denegado'" [checked]="cfing.bool_ingr_catalogos == 'permitido' && cfing.bool_ingr_cat_prom == 'permitido'" (click)="userIngresosPermAcceso(info_usuario.emp_token,info_usuario.user_token,cfing.acceso_ingr_cpc);">
+                                              <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                                            </div>
+                                          </div>
+                                          <p-divider />
+                                          <div class="col-12 row">
+                                            <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain" style="margin: 0!important;">
+                                              <h6 class="title">Impuestos</h6>
+                                            </div>
+                                            <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                              <label class="form-check-label" for="flexSwitchCheckReverse">{{'no' | translate}}</label>
+                                              <input class="form-check-input" type="checkbox" [disabled]="cfing.bool_ingr_catalogos == 'denegado'" [checked]="cfing.bool_ingr_catalogos == 'permitido' && cfing.bool_ingr_cat_impu == 'permitido'" (click)="userIngresosPermAcceso(info_usuario.emp_token,info_usuario.user_token,cfing.acceso_ingr_cpc);">
+                                              <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                                            </div>
+                                          </div>
+                                          <p-divider />
+                                          <div class="col-12 row">
+                                            <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain" style="margin: 0!important;">
+                                              <h6 class="title">Clientes</h6>
+                                            </div>
+                                            <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                              <label class="form-check-label" for="flexSwitchCheckReverse">{{'no' | translate}}</label>
+                                              <input class="form-check-input" type="checkbox" [disabled]="cfing.bool_ingr_catalogos == 'denegado'" [checked]="cfing.bool_ingr_catalogos == 'permitido' && cfing.bool_ingr_cat_clie == 'permitido'" (click)="userIngresosPermAcceso(info_usuario.emp_token,info_usuario.user_token,cfing.acceso_ingr_cpc);">
+                                              <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                                            </div>
+                                          </div>
+                                        </li>
+                                      </ul>
+                                    </div>
+                                    <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6">
+                                      <ul class="list-group">
+                                        <li class="list-group-item" style="display: flex;justify-content: space-between;">
+                                          <div class="col-12 row">
+                                            <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain" style="margin: 0!important;">
+                                              <h6 class="title">Ventas</h6>
+                                            </div>
+                                            <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                              <label class="form-check-label" for="flexSwitchCheckReverse">{{'no' | translate}}</label>
+                                              <input class="form-check-input" type="checkbox" [checked]="cfing.bool_ingr_ventas == 'permitido'" (click)="userIngresosPermAcceso(info_usuario.emp_token,info_usuario.user_token,cfing.acceso_ingr_cpc);">
+                                              <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                                            </div>
+                                          </div>
+                                        </li>
+                  
+                                        <li class="list-group-item">
+                                          <div class="col-12 row">
+                                            <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain" style="margin: 0!important;">
+                                              <h6 class="title">Pedidos</h6>
+                                            </div>
+                                            <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                              <label class="form-check-label" for="flexSwitchCheckReverse">{{'no' | translate}}</label>
+                                              <input class="form-check-input" type="checkbox" [disabled]="cfing.bool_ingr_ventas == 'denegado'" [checked]="cfing.bool_ingr_ventas == 'permitido' && cfing.bool_ingr_vent_ped == 'permitido'" (click)="userIngresosPermAcceso(info_usuario.emp_token,info_usuario.user_token,cfing.acceso_ingr_cpc);">
+                                              <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                                            </div>
+                                          </div>
+                                          <p-divider />
+                  
+                                          <div class="col-12 row">
+                                            <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain" style="margin: 0!important;">
+                                              <h6 class="title">Ventas</h6>
+                                            </div>
+                                            <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                              <label class="form-check-label" for="flexSwitchCheckReverse">{{'no' | translate}}</label>
+                                              <input class="form-check-input" type="checkbox" [disabled]="cfing.bool_ingr_ventas == 'denegado'" [checked]="cfing.bool_ingr_ventas == 'permitido' && cfing.bool_ingr_vent_dir == 'permitido'" (click)="userIngresosPermAcceso(info_usuario.emp_token,info_usuario.user_token,cfing.acceso_ingr_cpc);">
+                                              <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                                            </div>
+                                          </div>
+                                          <p-divider />
+                  
+                                          <div class="col-12 row">
+                                            <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain" style="margin: 0!important;">
+                                              <h6 class="title">Seguimiento de ventas</h6>
+                                            </div>
+                                            <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                              <label class="form-check-label" for="flexSwitchCheckReverse">{{'no' | translate}}</label>
+                                              <input class="form-check-input" type="checkbox" [disabled]="cfing.bool_ingr_ventas == 'denegado'" [checked]="cfing.bool_ingr_ventas == 'permitido' && cfing.bool_ingr_vent_seg == 'permitido'" (click)="userIngresosPermAcceso(info_usuario.emp_token,info_usuario.user_token,cfing.acceso_ingr_cpc);">
+                                              <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                                            </div>
+                                          </div>
+                                          <p-divider />
+                                        </li>
+                                        <li class="list-group-item">
+                                          <div class="col-12 row">
+                                            <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain" style="margin: 0!important;">
+                                              <h6 class="title">Devoluciones</h6>
+                                            </div>
+                                            <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                              <label class="form-check-label" for="flexSwitchCheckReverse">{{'no' | translate}}</label>
+                                              <input class="form-check-input" type="checkbox" [disabled]="cfing.bool_ingr_ventas == 'denegado'" [checked]="cfing.bool_ingr_ventas == 'permitido' && cfing.bool_ingr_vent_dev == 'permitido'" (click)="userIngresosPermAcceso(info_usuario.emp_token,info_usuario.user_token,cfing.acceso_ingr_cpc);">
+                                              <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                                            </div>
+                                          </div>
+                                          <p-divider />
+                                          <div class="col-12 row">
+                                            <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain" style="margin: 0!important;">
+                                              <h6 class="title">Facturaci&oacute;n</h6>
+                                            </div>
+                                            <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                              <label class="form-check-label" for="flexSwitchCheckReverse">{{'no' | translate}}</label>
+                                              <input class="form-check-input" type="checkbox" [disabled]="cfing.bool_ingr_ventas == 'denegado'" [checked]="cfing.bool_ingr_ventas == 'permitido' && cfing.bool_ingr_vent_fac == 'permitido'" (click)="userIngresosPermAcceso(info_usuario.emp_token,info_usuario.user_token,cfing.acceso_ingr_cpc);">
+                                              <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                                            </div>
+                                          </div>
+                                        </li>
+                                      </ul>
+                                    </div>
+                                  </div>
+                                </p-tabpanel>
+                                <p-tabpanel value="3">
+                                  <div class="col-12 row" style="padding: 0;" *ngFor="let cfegr of info_usuario.conf_egresos">
+                                    <div class="col-12 explain">
+                                      <h6 class="title">Permisos para egresos</h6>
+                                    </div>
+                                    <div class="col-12 row">
+                                      <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain" style="margin: 0!important;">
+                                        <h6 class="title">Acceso</h6>
+                                      </div>
+                                      <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                        <label class="form-check-label" for="flexSwitchCheckReverse">{{'no' | translate}}</label>
+                                        <input class="form-check-input" type="checkbox" [checked]="cfegr.acceso_eegr_cpp"
+                                          (click)="userEgresosPermAcceso(info_usuario.emp_token,info_usuario.user_token,cfegr.acceso_eegr_cpp);">
+                                        <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                                      </div>
+                                    </div>
+                                    <p-divider />
+                                    <div class="col-12 row">
+                                      <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain" style="margin: 0!important;">
+                                        <h6 class="title">Jerarqu&iacute;a</h6>
+                                      </div>
+                                      <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                        <label class="form-check-label" for="flexSwitchCheckReverse">D</label>
+                                        <input class="form-check-input" type="checkbox" [checked]="cfegr.jerarquia == 'P'" (click)="userEgresosPermJerarquia(info_usuario.emp_token,info_usuario.user_token,cfegr.jerarquia);">
+                                        <label class="form-check-label" for="flexSwitchCheckReverse">P</label>
+                                      </div>
+                                    </div>
+                                    <p-divider />
+                                    <div class="col-12 row">
+                                      <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain" style="margin: 0!important;">
+                                        <h6 class="title">CREAR</h6>
+                                      </div>
+                                      <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                        <label class="form-check-label" for="flexSwitchCheckReverse">{{'no' | translate}}</label>
+                                        <input class="form-check-input" type="checkbox" [checked]="cfegr.bool_eegr_perm_crear == 'permitido'" (click)="userEgresosPermCrear(info_usuario.empresa_token,info_usuario.usuario_token,cfegr.bool_eegr_perm_crear);">
+                                        <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                                      </div>
+                                    </div>
+                                    <p-divider />
+                                    <div class="col-12 row">
+                                      <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain" style="margin: 0!important;">
+                                        <h6 class="title">Editar/actualizar</h6>
+                                      </div>
+                                      <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                        <label class="form-check-label" for="flexSwitchCheckReverse">{{'no' | translate}}</label>
+                                        <input class="form-check-input" type="checkbox" [checked]="cfegr.bool_eegr_perm_editar == 'permitido'" (click)="userEgresosPermEditar(info_usuario.emp_token,info_usuario.user_token,cfegr.bool_eegr_perm_editar);">
+                                        <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                                      </div>
+                                    </div>
+                                    <p-divider />
+                                    <div class="col-12 row">
+                                      <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain" style="margin: 0!important;">
+                                        <h6 class="title">Consulta</h6>
+                                      </div>
+                                      <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                        <label class="form-check-label" for="flexSwitchCheckReverse">{{'no' | translate}}</label>
+                                        <input class="form-check-input" type="checkbox" [checked]="cfegr.bool_eegr_perm_consulta == 'permitido'" (click)="userEgresosPermConsultar(info_usuario.emp_token,info_usuario.user_token,cfegr.bool_eegr_perm_consulta);">
+                                        <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                                      </div>
+                                    </div>
+                                    <p-divider />
+                                    <div class="col-12 row">
+                                      <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain" style="margin: 0!important;">
+                                        <h6 class="title">Eliminaci&oacute;n</h6>
+                                      </div>
+                                      <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                        <label class="form-check-label" for="flexSwitchCheckReverse">{{'no' | translate}}</label>
+                                        <input class="form-check-input" type="checkbox" [checked]="cfegr.bool_eegr_perm_elimina == 'permitido'" (click)="userEgresosPermEliminar(info_usuario.emp_token,info_usuario.user_token,cfegr.bool_eegr_perm_elimina);">
+                                        <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                                      </div>
+                                    </div>
+                                    <p-divider />
+                                    <div class="col-12 row">
+                                      <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain" style="margin: 0!important;">
+                                        <h6 class="title">Ver / descargar / eliminar documentos</h6>
+                                      </div>
+                                      <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                        <label class="form-check-label" for="flexSwitchCheckReverse">{{'no' | translate}}</label>
+                                        <input class="form-check-input" type="checkbox" [checked]="cfegr.bool_eegr_perm_ver_docs == 'permitido'" (click)="userEgresosPermVerDocs(info_usuario.emp_token,info_usuario.user_token,cfegr.bool_eegr_perm_ver_docs);">
+                                        <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                                      </div>
+                                    </div>
+                                    <p-divider />
+                                    <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6">
+                                      <ul class="list-group">
+                                        <li class="list-group-item">
+                                          <div class="col-12 row">
+                                            <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain" style="margin: 0!important;">
+                                              <h6 class="title">Cat&aacute;logos</h6>
+                                            </div>
+                                            <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                              <label class="form-check-label" for="flexSwitchCheckReverse">{{'no' | translate}}</label>
+                                              <input class="form-check-input" type="checkbox" [checked]="cfegr.bool_eegr_catalogos == 'permitido'" (click)="userEgresosPermAcceso(info_usuario.emp_token,info_usuario.user_token,cfegr.acceso_egr_cpp);">
+                                              <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                                            </div>
+                                          </div>
+                                        </li>
+                  
+                                        <li class="list-group-item">
+                                          <div class="col-12 row">
+                                            <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain" style="margin: 0!important;">
+                                              <h6 class="title">Productos</h6>
+                                            </div>
+                                            <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                              <label class="form-check-label" for="flexSwitchCheckReverse">{{'no' | translate}}</label>
+                                              <input class="form-check-input" type="checkbox" [disabled]="cfegr.bool_eegr_catalogos == 'denegado'" [checked]="cfegr.bool_eegr_catalogos == 'permitido' && cfegr.bool_eegr_cat_prod == 'permitido'" (click)="userEgresosPermAcceso(info_usuario.emp_token,info_usuario.user_token,cfegr.acceso_egr_cpp);">
+                                              <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                                            </div>
+                                          </div>
+                                          <p-divider />
+                                          <div class="col-12 row">
+                                            <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain" style="margin: 0!important;">
+                                              <h6 class="title">Servicios</h6>
+                                            </div>
+                                            <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                              <label class="form-check-label" for="flexSwitchCheckReverse">{{'no' | translate}}</label>
+                                              <input class="form-check-input" type="checkbox" [disabled]="cfegr.bool_eegr_catalogos == 'denegado'" [checked]="cfegr.bool_eegr_catalogos == 'permitido' && cfegr.bool_eegr_cat_serv == 'permitido'" (click)="userEgresosPermAcceso(info_usuario.emp_token,info_usuario.user_token,cfegr.acceso_egr_cpp);">
+                                              <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                                            </div>
+                                          </div>
+                                          <p-divider />
+                                          <div class="col-12 row">
+                                            <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain" style="margin: 0!important;">
+                                              <h6 class="title">Activos fijos</h6>
+                                            </div>
+                                            <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                              <label class="form-check-label" for="flexSwitchCheckReverse">{{'no' | translate}}</label>
+                                              <input class="form-check-input" type="checkbox" [disabled]="cfegr.bool_eegr_catalogos == 'denegado'" [checked]="cfegr.bool_eegr_catalogos == 'permitido' && cfegr.bool_eegr_cat_actf == 'permitido'" (click)="userEgresosPermAcceso(info_usuario.emp_token,info_usuario.user_token,cfegr.acceso_egr_cpp);">
+                                              <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                                            </div>
+                                          </div>
+                                        </li>
+                  
+                                        <li class="list-group-item">
+                                          <div class="col-12 row">
+                                            <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain" style="margin: 0!important;">
+                                              <h6 class="title">Activos intangibles</h6>
+                                            </div>
+                                            <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                              <label class="form-check-label" for="flexSwitchCheckReverse">{{'no' | translate}}</label>
+                                              <input class="form-check-input" type="checkbox" [disabled]="cfegr.bool_eegr_catalogos == 'denegado'" [checked]="cfegr.bool_eegr_catalogos == 'permitido' && cfegr.bool_eegr_cat_acti == 'permitido'" (click)="userEgresosPermAcceso(info_usuario.emp_token,info_usuario.user_token,cfegr.acceso_egr_cpp);">
+                                              <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                                            </div>
+                                          </div>
+                                          <p-divider />
+                                          <div class="col-12 row">
+                                            <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain" style="margin: 0!important;">
+                                              <h6 class="title">Proveedores</h6>
+                                            </div>
+                                            <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                              <label class="form-check-label" for="flexSwitchCheckReverse">{{'no' | translate}}</label>
+                                              <input class="form-check-input" type="checkbox" [disabled]="cfegr.bool_eegr_catalogos == 'denegado'" [checked]="cfegr.bool_eegr_catalogos == 'permitido' && cfegr.bool_eegr_cat_prov == 'permitido'" (click)="userEgresosPermAcceso(info_usuario.emp_token,info_usuario.user_token,cfegr.acceso_egr_cpp);">
+                                              <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                                            </div>
+                                          </div>
+                                          <p-divider />
+                                          <div class="col-12 row">
+                                            <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain" style="margin: 0!important;">
+                                              <h6 class="title">Establecimientos</h6>
+                                            </div>
+                                            <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                              <label class="form-check-label" for="flexSwitchCheckReverse">{{'no' | translate}}</label>
+                                              <input class="form-check-input" type="checkbox" [disabled]="cfegr.bool_eegr_catalogos == 'denegado'" [checked]="cfegr.bool_eegr_catalogos == 'permitido' && cfegr.bool_eegr_cat_esta == 'permitido'" (click)="userEgresosPermAcceso(info_usuario.emp_token,info_usuario.user_token,cfegr.acceso_egr_cpp);">
+                                              <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                                            </div>
+                                          </div>
+                                        </li>
+                                      </ul>
+                                    </div>
+                                    <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6">
+                                      <ul class="list-group">
+                                        <li class="list-group-item">
+                                          <div class="col-12 row">
+                                            <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain" style="margin: 0!important;">
+                                              <h6 class="title">Compras</h6>
+                                            </div>
+                                            <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                              <label class="form-check-label" for="flexSwitchCheckReverse">{{'no' | translate}}</label>
+                                              <input class="form-check-input" type="checkbox" [checked]="cfegr.bool_eegr_compras == 'permitido'" (click)="userEgresosPermAcceso(info_usuario.emp_token,info_usuario.user_token,cfegr.acceso_egr_cpp);">
+                                              <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                                            </div>
+                                          </div>
+                                        </li>
+                  
+                                        <li class="list-group-item">
+                                          <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3">
+                                            <h6 class="title">Requisiciones</h6>
+                                            <div class="form-check form-switch form-check-reverse switch_primario">
+                                              <label class="form-check-label">{{'no' | translate}}</label>
+                                              <input class="form-check-input" type="checkbox" [disabled]="cfegr.bool_eegr_compras == 'denegado'" [checked]="cfegr.bool_eegr_compras == 'permitido' && cfegr.bool_eegr_comp_req == 'permitido'">
+                                              <label class="form-check-label">{{'yes' | translate}}</label>
+                                            </div>
+                                          </div>
+                                          <p-divider />
+                                          <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3">
+                                            <h6 class="title">Cotizaciones</h6>
+                                            <div class="form-check form-switch form-check-reverse switch_primario">
+                                              <label class="form-check-label">{{'no' | translate}}</label>
+                                              <input class="form-check-input" type="checkbox" [disabled]="cfegr.bool_eegr_compras == 'denegado'" [checked]="cfegr.bool_eegr_compras == 'permitido' && cfegr.bool_eegr_comp_cot == 'permitido'">
+                                              <label class="form-check-label">{{'yes' | translate}}</label>
+                                            </div>
+                                          </div>
+                                        </li>
+                                        <li class="list-group-item">
+                                          <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3">
+                                            <h6 class="title">Compra directa</h6>
+                                            <div class="form-check form-switch form-check-reverse switch_primario">
+                                              <label class="form-check-label">{{'no' | translate}}</label>
+                                              <input class="form-check-input" type="checkbox" [disabled]="cfegr.bool_eegr_compras == 'denegado'" [checked]="cfegr.bool_eegr_compras == 'permitido' && cfegr.bool_eegr_comp_dir == 'permitido'">
+                                              <label class="form-check-label">{{'yes' | translate}}</label>
+                                            </div>
+                                          </div>
+                                          <p-divider />
+                                          <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3">
+                                            <h6 class="title">Seguimiento de compra</h6>
+                                            <div class="form-check form-switch form-check-reverse switch_primario">
+                                              <label class="form-check-label">{{'no' | translate}}</label>
+                                              <input class="form-check-input" type="checkbox" [disabled]="cfegr.bool_eegr_compras == 'denegado'" [checked]="cfegr.bool_eegr_compras == 'permitido' && cfegr.bool_eegr_comp_seg == 'permitido'">
+                                              <label class="form-check-label">{{'yes' | translate}}</label>
+                                            </div>
+                                          </div>
+                                        </li>
+                  
+                                      </ul>
+                                    </div>
+                                  </div>
+                                </p-tabpanel>
+                                <p-tabpanel value="4">
+                                  <div class="col-12 row" style="padding: 0;" *ngFor="let cfnzs of info_usuario.conf_finanzas">
+                                    <div class="col-12 explain">
+                                      <h6 class="title">Permisos para finanzas</h6>
+                                    </div>
+                                    <div class="col-12 row">
+                                      <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain" style="margin: 0!important;">
+                                        <h6 class="title">Acceso</h6>
+                                      </div>
+                                      <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                        <label class="form-check-label" for="flexSwitchCheckReverse">{{'no' | translate}}</label>
+                                        <input class="form-check-input" type="checkbox" (click)="userFinanzasPermAcceso(info_usuario.emp_token,info_usuario.user_token,cfnzs.acceso_fnzs);" [checked]="cfnzs.acceso_fnzs">
+                                        <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                                      </div>
+                                    </div>
+                                    <p-divider />
+                                    <div class="col-12 row">
+                                      <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain" style="margin: 0!important;">
+                                        <h6 class="title">Jerarquía</h6>
+                                      </div>
+                                      <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                        <label class="form-check-label" for="flexSwitchCheckReverse">D</label>
+                                        <input class="form-check-input" type="checkbox" (click)="userFinanzasPermJerarquia(info_usuario.emp_token,info_usuario.user_token,cfnzs.jerarquia);" [checked]="cfnzs.jerarquia == 'P'">
+                                        <label class="form-check-label" for="flexSwitchCheckReverse">P</label>
+                                      </div>
+                                    </div>
+                                    <p-divider />
+                                    <div class="col-12 row">
+                                      <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain" style="margin: 0!important;">
+                                        <h6 class="title">CREAR</h6>
+                                      </div>
+                                      <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                        <label class="form-check-label" for="flexSwitchCheckReverse">{{'no' | translate}}</label>
+                                        <input class="form-check-input" type="checkbox" (click)="userFinanzasPermCrear(info_usuario.emp_token,info_usuario.user_token,cfnzs.bool_fnzs_perm_crear);" [checked]="cfnzs.bool_fnzs_perm_crear == 'permitido'">
+                                        <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                                      </div>
+                                    </div>
+                                    <p-divider />
+                                    <div class="col-12 row">
+                                      <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain" style="margin: 0!important;">
+                                        <h6 class="title">Editar/actualizar</h6>
+                                      </div>
+                                      <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                        <label class="form-check-label" for="flexSwitchCheckReverse">{{'no' | translate}}</label>
+                                        <input class="form-check-input" type="checkbox" (click)="userFinanzasPermEditar(info_usuario.emp_token,info_usuario.user_token,cfnzs.bool_fnzs_perm_editar);" [checked]="cfnzs.bool_fnzs_perm_editar == 'permitido'">
+                                        <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                                      </div>
+                                    </div>
+                  
+                                    <p-divider />
+                                    <div class="col-12 row">
+                                      <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain" style="margin: 0!important;">
+                                        <h6 class="title">Consulta</h6>
+                                      </div>
+                                      <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                        <label class="form-check-label" for="flexSwitchCheckReverse">{{'no' | translate}}</label>
+                                        <input class="form-check-input" type="checkbox" (click)="userFinanzasPermConsultar(info_usuario.emp_token,info_usuario.user_token,cfnzs.bool_fnzs_perm_consulta);" [checked]="cfnzs.bool_fnzs_perm_consulta == 'permitido'">
+                                        <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                                      </div>
+                                    </div>
+                                    <p-divider />
+                                    <div class="col-12 row">
+                                      <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain" style="margin: 0!important;">
+                                        <h6 class="title">Eliminación</h6>
+                                      </div>
+                                      <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                        <label class="form-check-label" for="flexSwitchCheckReverse">{{'no' | translate}}</label>
+                                        <input class="form-check-input" type="checkbox" (click)="userFinanzasPermEliminar(info_usuario.emp_token,info_usuario.user_token,cfnzs.bool_fnzs_perm_elimina);" [checked]="cfnzs.bool_fnzs_perm_elimina == 'permitido'">
+                                        <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                                      </div>
+                                    </div>
+                                    <p-divider />
+                                    <div class="col-12 row">
+                                      <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain" style="margin: 0!important;">
+                                        <h6 class="title">Ver / descargar / eliminar documentos</h6>
+                                      </div>
+                                      <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                        <label class="form-check-label" for="flexSwitchCheckReverse">{{'no' | translate}}</label>
+                                        <input class="form-check-input" type="checkbox" (click)="userFinanzasPermVerDocs(info_usuario.emp_token,info_usuario.user_token,cfnzs.bool_fnzs_perm_ver_docs);" [checked]="cfnzs.bool_fnzs_perm_ver_docs == 'permitido'">
+                                        <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                                      </div>
+                                    </div>
+                  
+                                    <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6">
+                                      <ul class="list-group">
+                                        <li class="list-group-item" style="display: flex;justify-content: space-between;">
+                                          Catalogos
+                                          <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                            <label class="form-check-label">{{'no' | translate}}</label>
+                                            <input class="form-check-input" type="checkbox" [checked]="cfnzs.bool_fnzs_catalogos == 'permitido'">
+                                            <label class="form-check-label">{{'yes' | translate}}</label>
+                                          </div>
+                                        </li>
+                  
+                                        <li class="list-group-item">
+                                          <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3">
+                                            <h6 class="title">Cuentas bancarias</h6>
+                                            <div class="form-check form-switch form-check-reverse switch_primario">
+                                              <label class="form-check-label">{{'no' | translate}}</label>
+                                              <input class="form-check-input" type="checkbox" [disabled]="cfnzs.bool_fnzs_catalogos == 'denegado'" [checked]="cfnzs.bool_fnzs_catalogos == 'permitido' && cfnzs.bool_fnzs_cat_cban == 'permitido'">
+                                              <label class="form-check-label">{{'yes' | translate}}</label>
+                                            </div>
+                                          </div>
+                                          <p-divider />
+                                          <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3">
+                                            <h6 class="title">Caja</h6>
+                                            <div class="form-check form-switch form-check-reverse switch_primario">
+                                              <label class="form-check-label">{{'no' | translate}}</label>
+                                              <input class="form-check-input" type="checkbox" [disabled]="cfnzs.bool_fnzs_catalogos == 'denegado'" [checked]="cfnzs.bool_fnzs_catalogos == 'permitido' && cfnzs.bool_fnzs_cat_caja == 'permitido'">
+                                              <label class="form-check-label">{{'yes' | translate}}</label>
+                                            </div>
+                                          </div>
+                                          <p-divider />
+                                          <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3">
+                                            <h6 class="title">Monederos electr&oacute;nicos</h6>
+                                            <div class="form-check form-switch form-check-reverse switch_primario">
+                                              <label class="form-check-label">{{'no' | translate}}</label>
+                                              <input class="form-check-input" type="checkbox" [disabled]="cfnzs.bool_fnzs_catalogos == 'denegado'" [checked]="cfnzs.bool_fnzs_catalogos == 'permitido' && cfnzs.bool_fnzs_cat_moel == 'permitido'">
+                                              <label class="form-check-label">{{'yes' | translate}}</label>
+                                            </div>
+                                          </div>
+                                          <p-divider />
+                                          <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3">
+                                            <h6 class="title">Dispositivos electr&oacute;nicos</h6>
+                                            <div class="form-check form-switch form-check-reverse switch_primario">
+                                              <label class="form-check-label">{{'no' | translate}}</label>
+                                              <input class="form-check-input" type="checkbox" [disabled]="cfnzs.bool_fnzs_catalogos == 'denegado'" [checked]="cfnzs.bool_fnzs_catalogos == 'permitido' && cfnzs.bool_fnzs_cat_disp == 'permitido'">
+                                              <label class="form-check-label">{{'yes' | translate}}</label>
+                                            </div>
+                                          </div>
+                                        </li>
+                                      </ul>
+                                    </div>
+                  
+                                    <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6">
+                                      <ul class="list-group">
+                                        <li class="list-group-item">
+                                          <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3">
+                                            <h6 class="title">Control de movimientos bancarios</h6>
+                                            <div class="form-check form-switch form-check-reverse switch_primario">
+                                              <label class="form-check-label">{{'no' | translate}}</label>
+                                              <input class="form-check-input" type="checkbox" [checked]="cfnzs.bool_fnzs_cmov_ban ==  'permitido'">
+                                              <label class="form-check-label">{{'yes' | translate}}</label>
+                                            </div>
+                                          </div>
+                                          <p-divider />
+                                          <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3">
+                                            <h6 class="title">Control de movimientos en efectivo</h6>
+                                            <div class="form-check form-switch form-check-reverse switch_primario">
+                                              <label class="form-check-label">{{'no' | translate}}</label>
+                                              <input class="form-check-input" type="checkbox" [checked]="cfnzs.bool_fnzs_cmov_efe ==  'permitido'">
+                                              <label class="form-check-label">{{'yes' | translate}}</label>
+                                            </div>
+                                          </div>
+                                          <p-divider />
+                                          <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3">
+                                            <h6 class="title">Ordenes de pago</h6>
+                                            <div class="form-check form-switch form-check-reverse switch_primario">
+                                              <label class="form-check-label">{{'no' | translate}}</label>
+                                              <input class="form-check-input" type="checkbox" [checked]="cfnzs.bool_fnzs_paym_ord ==  'permitido'">
+                                              <label class="form-check-label">{{'yes' | translate}}</label>
+                                            </div>
+                                          </div>
+                                        </li>
+                                        <li class="list-group-item">
+                                          <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3">
+                                            <h6 class="title">Ajustes y cuentas propias</h6>
+                                            <div class="form-check form-switch form-check-reverse switch_primario">
+                                              <label class="form-check-label">{{'no' | translate}}</label>
+                                              <input class="form-check-input" type="checkbox" [checked]="cfnzs.bool_fnzs_cuen_aju ==  'permitido'">
+                                              <label class="form-check-label">{{'yes' | translate}}</label>
+                                            </div>
+                                          </div>
+                                          <p-divider />
+                                          <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3">
+                                            <h6 class="title">Información bancaria</h6>
+                                            <div class="form-check form-switch form-check-reverse switch_primario">
+                                              <label class="form-check-label">{{'no' | translate}}</label>
+                                              <input class="form-check-input" type="checkbox" [checked]="cfnzs.bool_fnzs_info_ban ==  'permitido'">
+                                              <label class="form-check-label">{{'yes' | translate}}</label>
+                                            </div>
+                                          </div>
+                                        </li>
+                                      </ul>
+                                    </div>
+                                  </div>
+                                </p-tabpanel>
+                                <p-tabpanel value="5">
+                                  <div class="col-12 row" style="padding: 0;" *ngFor="let cvhum of info_usuario.conf_valor_humano">
+                                    <div class="col-12 row" style="border-top: solid 2px lightgray!important;padding: 0 !important;">
+                                      <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain">
+                                        <h6 class="title" style="margin: 0!important;">Acceso</h6>
+                                      </div>
+                                      <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                        <label class="form-check-label">{{'no' | translate}}</label>
+                                        <input class="form-check-input" type="checkbox" (click)="userValorHumanoPermAcceso(info_usuario.emp_token,info_usuario.user_token,cvhum.acceso_vhum);" [checked]="cvhum.acceso_vhum">
+                                        <label class="form-check-label">{{'yes' | translate}}</label>
+                                      </div>
+                                    </div>
+                                    <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3">
+                                      <h6 class="title">Jerarquía</h6>
+                                      <div class="form-check form-switch form-check-reverse switch_primario">
+                                        <label class="form-check-label">D</label>
+                                        <input class="form-check-input" type="checkbox" (click)="userValorHumanoPermJerarquia(info_usuario.emp_token,info_usuario.user_token,cvhum.jerarquia);" [checked]="cvhum.jerarquia == 'P'">
+                                        <label class="form-check-label">P</label>
+                                      </div>
+                                    </div>
+                                    <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3">
+                                      <h6 class="title">CREAR</h6>
+                                      <div class="form-check form-switch form-check-reverse switch_primario">
+                                        <label class="form-check-label">{{'no' | translate}}</label>
+                                        <input class="form-check-input" type="checkbox" (click)="userValorHumanoPermCrear(info_usuario.emp_token,info_usuario.user_token,cvhum.bool_vhum_perm_crear);" [checked]="cvhum.bool_vhum_perm_crear == 'permitido'">
+                                        <label class="form-check-label">{{'yes' | translate}}</label>
+                                      </div>
+                                    </div>
+                                    <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3">
+                                      <h6 class="title">Editar/actualizar</h6>
+                                      <div class="form-check form-switch form-check-reverse switch_primario">
+                                        <label class="form-check-label">{{'no' | translate}}</label>
+                                        <input class="form-check-input" type="checkbox" (click)="userValorHumanoPermEditar(info_usuario.emp_token,info_usuario.user_token,cvhum.bool_vhum_perm_editar);" [checked]="cvhum.bool_vhum_perm_editar == 'permitido'">
+                                        <label class="form-check-label">{{'yes' | translate}}</label>
+                                      </div>
+                                    </div>
+                  
+                                    <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3">
+                                      <h6 class="title">Consulta</h6>
+                                      <div class="form-check form-switch form-check-reverse switch_primario">
+                                        <label class="form-check-label">{{'no' | translate}}</label>
+                                        <input class="form-check-input" type="checkbox" (click)="userValorHumanoPermConsultar(info_usuario.emp_token,info_usuario.user_token,cvhum.bool_vhum_perm_consulta);" [checked]="cvhum.bool_vhum_perm_consulta == 'permitido'">
+                                        <label class="form-check-label">{{'yes' | translate}}</label>
+                                      </div>
+                                    </div>
+                                    <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3">
+                                      <h6 class="title">Eliminaci&oacute;n</h6>
+                                      <div class="form-check form-switch form-check-reverse switch_primario">
+                                        <label class="form-check-label">{{'no' | translate}}</label>
+                                        <input class="form-check-input" type="checkbox"
+                                          (click)="userValorHumanoPermEliminar(info_usuario.emp_token,info_usuario.user_token,cvhum.bool_vhum_perm_elimina);"
+                                          [checked]="cvhum.bool_vhum_perm_elimina == 'permitido'">
+                                        <label class="form-check-label">{{'yes' | translate}}</label>
+                                      </div>
+                                    </div>
+                                    <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3">
+                                      <h6 class="title tooltipped" data-position="top" data-tooltip="Ver / descargar / eliminar">
+                                        documentos
+                                      </h6>
+                                      <div class="form-check form-switch form-check-reverse switch_primario">
+                                        <label class="form-check-label">{{'no' | translate}}</label>
+                                        <input class="form-check-input" type="checkbox" (click)="userValorHumanoPermVerDocs(info_usuario.emp_token,info_usuario.user_token,cvhum.bool_vhum_perm_ver_docs);" [checked]="cvhum.bool_vhum_perm_ver_docs == 'permitido'">
+                                        <label class="form-check-label">{{'yes' | translate}}</label>
+                                      </div>
+                                    </div>
+                  
+                                    <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6">
+                                      <ul class="list-group">
+                                        <li class="list-group-item" style="display: flex;justify-content: space-between;">
+                                          Catalogos
+                                          <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                            <label class="form-check-label">{{'no' | translate}}</label>
+                                            <input class="form-check-input" type="checkbox" [checked]="cvhum.bool_vhum_reembolsos ==  'permitido'">
+                                            <label class="form-check-label">{{'yes' | translate}}</label>
+                                          </div>
+                                        </li>
+                  
+                                        <li class="list-group-item">
+                                          <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3">
+                                            <h6 class="title">Reembolsos</h6>
+                                            <div class="form-check form-switch form-check-reverse switch_primario">
+                                              <label class="form-check-label">{{'no' | translate}}</label>
+                                              <input class="form-check-input" type="checkbox" [disabled]="cvhum.bool_vhum_catalogos == 'denegado'" [checked]="cvhum.bool_vhum_reembolsos ==  'permitido'">
+                                              <label class="form-check-label">{{'yes' | translate}}</label>
+                                            </div>
+                                          </div>
+                                          <p-divider />
+                                          <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3">
+                                            <h6 class="title">Justificaci&oacute;n de gastos
+                                            </h6>
+                                            <div class="form-check form-switch form-check-reverse switch_primario">
+                                              <label class="form-check-label">{{'no' | translate}}</label>
+                                              <input class="form-check-input" type="checkbox" [disabled]="cvhum.bool_cont_catalogos == 'denegado'" [checked]="cvhum.bool_vhum_justificaciones ==  'permitido'">
+                                              <label class="form-check-label">{{'yes' | translate}}</label>
+                                            </div>
+                                          </div>
+                                          <p-divider />
+                                          <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3">
+                                            <h6 class="title">Reportes</h6>
+                                            <div class="form-check form-switch form-check-reverse switch_primario">
+                                              <label class="form-check-label">{{'no' | translate}}</label>
+                                              <input class="form-check-input" type="checkbox" [disabled]="cvhum.bool_cont_catalogos == 'denegado'" [checked]="cvhum.bool_vhum_reportes ==  'permitido'">
+                                              <label class="form-check-label">{{'yes' | translate}}</label>
+                                            </div>
+                                          </div>
+                                        </li>
+                                      </ul>
+                                    </div>
+                                  </div>
+                                </p-tabpanel>
+                                <p-tabpanel value="6">
+                                  <div class="col-12 row" style="padding: 0;" *ngFor="let ccont of info_usuario.conf_contabilidad">
+                                    <div class="col-12 row" style="border-top: solid 2px lightgray!important;padding: 0 !important;">
+                                      <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain">
+                                        <h6 class="title" style="margin: 0!important;">Acceso</h6>
+                                      </div>
+                                      <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                        <label class="form-check-label">{{'no' | translate}}</label>
+                                        <input class="form-check-input" type="checkbox" (click)="userContabilidadPermAcceso(info_usuario.emp_token,info_usuario.user_token,ccont.acceso_cont);" [checked]="ccont.acceso_cont">
+                                        <label class="form-check-label">{{'yes' | translate}}</label>
+                                      </div>
+                                    </div>
+                                    <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3">
+                                      <h6 class="title">Jerarquía</h6>
+                                      <div class="form-check form-switch form-check-reverse switch_primario">
+                                        <label class="form-check-label">D</label>
+                                        <input class="form-check-input" type="checkbox" (click)="userContabilidadPermJerarquia(info_usuario.emp_token,info_usuario.user_token,ccont.jerarquia);" [checked]="ccont.jerarquia == 'P'">
+                                        <label class="form-check-label">P</label>
+                                      </div>
+                                    </div>
+                                    <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3">
+                                      <h6 class="title">CREAR</h6>
+                                      <div class="form-check form-switch form-check-reverse switch_primario">
+                                        <label class="form-check-label">{{'no' | translate}}</label>
+                                        <input class="form-check-input" type="checkbox" (click)="userContabilidadPermCrear(info_usuario.emp_token,info_usuario.user_token,ccont.bool_cont_perm_crear);" [checked]="ccont.bool_cont_perm_crear == 'permitido'">
+                                        <label class="form-check-label">{{'yes' | translate}}</label>
+                                      </div>
+                                    </div>
+                                    <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3">
+                                      <h6 class="title">Editar/actualizar</h6>
+                                      <div class="form-check form-switch form-check-reverse switch_primario">
+                                        <label class="form-check-label">{{'no' | translate}}</label>
+                                        <input class="form-check-input" type="checkbox" (click)="userContabilidadPermEditar(info_usuario.emp_token,info_usuario.user_token,ccont.bool_cont_perm_editar);" [checked]="ccont.bool_cont_perm_editar == 'permitido'">
+                                        <label class="form-check-label">{{'yes' | translate}}</label>
+                                      </div>
+                                    </div>
+                  
+                                    <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3">
+                                      <h6 class="title">Consulta</h6>
+                                      <div class="form-check form-switch form-check-reverse switch_primario">
+                                        <label class="form-check-label">{{'no' | translate}}</label>
+                                        <input class="form-check-input" type="checkbox" (click)="userContabilidadPermConsultar(info_usuario.emp_token,info_usuario.user_token,ccont.bool_cont_perm_consulta);" [checked]="ccont.bool_cont_perm_consulta == 'permitido'">
+                                        <label class="form-check-label">{{'yes' | translate}}</label>
+                                      </div>
+                                    </div>
+                                    <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3">
+                                      <h6 class="title">Eliminaci&oacute;n</h6>
+                                      <div class="form-check form-switch form-check-reverse switch_primario">
+                                        <label class="form-check-label">{{'no' | translate}}</label>
+                                        <input class="form-check-input" type="checkbox" (click)="userContabilidadPermEliminar(info_usuario.emp_token,info_usuario.user_token,ccont.bool_cont_perm_elimina);" [checked]="ccont.bool_cont_perm_elimina == 'permitido'">
+                                        <label class="form-check-label">{{'yes' | translate}}</label>
+                                      </div>
+                                    </div>
+                                    <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3">
+                                      <h6 class="title tooltipped" data-position="top" data-tooltip="Ver / descargar / eliminar">
+                                        documentos
+                                      </h6>
+                                      <div class="form-check form-switch form-check-reverse switch_primario">
+                                        <label class="form-check-label">{{'no' | translate}}</label>
+                                        <input class="form-check-input" type="checkbox" (click)="userContabilidadPermVerDocs(info_usuario.emp_token,info_usuario.user_token,ccont.bool_cont_perm_ver_docs);" [checked]="ccont.bool_cont_perm_ver_docs == 'permitido'">
+                                        <label class="form-check-label">{{'yes' | translate}}</label>
+                                      </div>
+                                    </div>
+                  
+                                    <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6">
+                                      <ul class="list-group">
+                                        <li class="list-group-item" style="display: flex;justify-content: space-between;">
+                                          Catalogos
+                                          <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                            <label class="form-check-label">{{'no' | translate}}</label>
+                                            <input class="form-check-input" type="checkbox" [checked]="ccont.bool_cont_catalogos ==  'permitido'">
+                                            <label class="form-check-label">{{'yes' | translate}}</label>
+                                          </div>
+                                        </li>
+                  
+                                        <li class="list-group-item">
+                                          <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3">
+                                            <h6 class="title">Catalogo de cuentas</h6>
+                                            <div class="form-check form-switch form-check-reverse switch_primario">
+                                              <label class="form-check-label">{{'no' | translate}}</label>
+                                              <input class="form-check-input" type="checkbox" [disabled]="ccont.bool_cont_catalogos == 'denegado'" [checked]="ccont.bool_cont_catalogos == 'permitido' && ccont.bool_cont_cat_cuentas ==  'permitido'">
+                                              <label class="form-check-label">{{'yes' | translate}}</label>
+                                            </div>
+                                          </div>
+                                          <p-divider />
+                                          <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3">
+                                            <h6 class="title">Estados Financieros</h6>
+                                            <div class="form-check form-switch form-check-reverse switch_primario">
+                                              <label class="form-check-label">{{'no' | translate}}</label>
+                                              <input class="form-check-input" type="checkbox" [disabled]="ccont.bool_cont_catalogos == 'denegado'" [checked]="ccont.bool_cont_catalogos == 'permitido' && ccont.bool_cont_estados_fin ==  'permitido'">
+                                              <label class="form-check-label">{{'yes' | translate}}</label>
+                                            </div>
+                                          </div>
+                                          <p-divider />
+                                          <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3">
+                                            <h6 class="title">Reportes</h6>
+                                            <div class="form-check form-switch form-check-reverse switch_primario">
+                                              <label class="form-check-label">{{'no' | translate}}</label>
+                                              <input class="form-check-input" type="checkbox" [disabled]="ccont.bool_cont_catalogos == 'denegado'" [checked]="ccont.bool_cont_catalogos == 'permitido' && ccont.bool_cont_reportes ==  'permitido'">
+                                              <label class="form-check-label">{{'yes' | translate}}</label>
+                                            </div>
+                                          </div>
+                                        </li>
+                                      </ul>
+                                    </div>
+                                  </div>
+                                </p-tabpanel>
+                                <p-tabpanel value="7">
+                                  <div class="col-12 row" style="padding: 0;" *ngFor="let cteci of info_usuario.conf_tec_info">
+                                    <div class="col-12 card card_main">
+                                      <div class="card-content">
+                                        <span class="card-title">Permisos para tecnolog&iacute;as de la informaci&oacute;n</span>
+                                        <div class="inside">
+                                          <!-- Acceso y Jerarquía -->
+                                          <div class="col-12 row" style="border-top: solid 2px lightgray!important;padding: 0 !important;">
+                                            <div class="col-12 col-sm-8 col-md-3 col-lg-2 col-xl-2 col-xxl-2 explain">
+                                              <h6 class="title">Acceso</h6>
+                                            </div>
+                                            <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                              <label class="form-check-label">{{'no' | translate}}</label>
+                                              <input class="form-check-input" type="checkbox" (click)="userTecInfoPermAcceso(info_usuario.emp_token,info_usuario.user_token,cteci.acceso_teci);" [checked]="cteci.acceso_teci">
+                                              <label class="form-check-label">{{'yes' | translate}}</label>
+                                            </div>
+                                          </div>
+                  
+                                          <div class="col-12 row" style="border-top: solid 2px lightgray!important;padding: 0 !important;">
+                                            <div class="col-12 col-sm-8 col-md-3 col-lg-2 col-xl-2 col-xxl-2 explain">
+                                              <h6 class="title">Jerarqu&iacute;a</h6>
+                                            </div>
+                                            <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                              <label class="form-check-label">D</label>
+                                              <input class="form-check-input" type="checkbox" (click)="userTecInfoPermJerarquia(info_usuario.emp_token,info_usuario.user_token,cteci.jerarquia);" [checked]="cteci.jerarquia == 'P'">
+                                              <label class="form-check-label">P</label>
+                                            </div>
+                                          </div>
+                  
+                                          <!-- Permisos CRUD -->
+                                          <div class="col-12 row" style="border-top: solid 2px lightgray!important;padding: 0 !important;">
+                                            <div class="col-12 col-sm-8 col-md-3 col-lg-2 col-xl-2 col-xxl-2 explain">
+                                              <h6 class="title">CREAR</h6>
+                                            </div>
+                                            <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                              <label class="form-check-label">{{'no' | translate}}</label>
+                                              <input class="form-check-input" type="checkbox" (click)="userTecInfoPermCrear(info_usuario.emp_token,info_usuario.user_token,cteci.bool_teci_perm_crear);" [checked]="cteci.bool_teci_perm_crear == 'permitido'">
+                                              <label class="form-check-label">{{'yes' | translate}}</label>
+                                            </div>
+                                          </div>
+
+                                          <div class="col-12 row" style="border-top: solid 2px lightgray!important;padding: 0 !important;">
+                                            <div class="col-12 col-sm-8 col-md-3 col-lg-2 col-xl-2 col-xxl-2 explain">
+                                              <h6 class="title">Editar/actualizar</h6>
+                                            </div>
+                                            <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                              <label class="form-check-label">{{'no' | translate}}</label>
+                                              <input class="form-check-input" type="checkbox" (click)="userTecInfoPermEditar(info_usuario.emp_token,info_usuario.user_token,cteci.bool_teci_perm_editar);" [checked]="cteci.bool_teci_perm_editar == 'permitido'">
+                                              <label class="form-check-label">{{'yes' | translate}}</label>
+                                            </div>
+                                          </div>
+
+                                          <div class="col-12 row" style="border-top: solid 2px lightgray!important;padding: 0 !important;">
+                                            <div class="col-12 col-sm-8 col-md-3 col-lg-2 col-xl-2 col-xxl-2 explain">
+                                              <h6 class="title">Consulta</h6>
+                                            </div>
+                                            <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                              <label class="form-check-label">{{'no' | translate}}</label>
+                                              <input class="form-check-input" type="checkbox" (click)="userTecInfoPermConsultar(info_usuario.emp_token,info_usuario.user_token,cteci.bool_teci_perm_consulta);" [checked]="cteci.bool_teci_perm_consulta == 'permitido'">
+                                              <label class="form-check-label">{{'yes' | translate}}</label>
+                                            </div>
+                                          </div>
+
+                                          <div class="col-12 row" style="border-top: solid 2px lightgray!important;padding: 0 !important;">
+                                            <div class="col-12 col-sm-8 col-md-3 col-lg-2 col-xl-2 col-xxl-2 explain">
+                                              <h6 class="title">Eliminaci&oacute;n</h6>
+                                            </div>
+                                            <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                              <label class="form-check-label">{{'no' | translate}}</label>
+                                              <input class="form-check-input" type="checkbox" (click)="userTecInfoPermEliminar(info_usuario.emp_token,info_usuario.user_token,cteci.bool_teci_perm_elimina);" [checked]="cteci.bool_teci_perm_elimina == 'permitido'">
+                                              <label class="form-check-label">{{'yes' | translate}}</label>
+                                            </div>
+                                          </div>
+
+                                          <div class="col-12 row" style="border-top: solid 2px lightgray!important;padding: 0 !important;">
+                                            <div class="col-12 col-sm-8 col-md-3 col-lg-2 col-xl-2 col-xxl-2 explain">
+                                              <h6 class="title">Ver / descargar / eliminar documentos</h6>
+                                            </div>
+                                            <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                              <label class="form-check-label">{{'no' | translate}}</label>
+                                              <input class="form-check-input" type="checkbox" (click)="userTecInfoPermVerDocs(info_usuario.emp_token,info_usuario.user_token,cteci.bool_teci_perm_ver_docs);" [checked]="cteci.bool_teci_perm_ver_docs == 'permitido'">
+                                              <label class="form-check-label">{{'yes' | translate}}</label>
+                                            </div>
+                                          </div>
+
+                                          <!-- Funcionalidades adicionales -->
+                                          <div class="col-12 row" style="border-top: solid 2px lightgray!important;padding: 0 !important;">
+                                            <div class="col-12 col-sm-8 col-md-3 col-lg-2 col-xl-2 col-xxl-2 explain">
+                                              <h6 class="title">Apps complementarias</h6>
+                                            </div>
+                                            <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                              <label class="form-check-label">{{'no' | translate}}</label>
+                                              <input class="form-check-input" type="checkbox" (click)="userTecInfoPermAppsComplementarias(info_usuario.emp_token,info_usuario.user_token,cteci.bool_teci_apps_complement);" [checked]="cteci.bool_teci_apps_complement == 'permitido'">
+                                              <label class="form-check-label">{{'yes' | translate}}</label>
+                                            </div>
+                                          </div>
+
+                                          <div class="col-12 row" style="border-top: solid 2px lightgray!important;padding: 0 !important;">
+                                            <div class="col-12 col-sm-8 col-md-3 col-lg-2 col-xl-2 col-xxl-2 explain">
+                                              <h6 class="title">Soporte</h6>
+                                            </div>
+                                            <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                              <label class="form-check-label">{{'no' | translate}}</label>
+                                              <input class="form-check-input" type="checkbox" (click)="userTecInfoPermSoporte(info_usuario.emp_token,info_usuario.user_token,cteci.bool_teci_soporte);" [checked]="cteci.bool_teci_soporte == 'permitido'">
+                                              <label class="form-check-label">{{'yes' | translate}}</label>
+                                            </div>
+                                          </div>
+
+                                          <div class="col-12 row" style="border-top: solid 2px lightgray!important;padding: 0 !important;">
+                                            <div class="col-12 col-sm-8 col-md-3 col-lg-2 col-xl-2 col-xxl-2 explain">
+                                              <h6 class="title">Comunicaci&oacute;n</h6>
+                                            </div>
+                                            <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                              <label class="form-check-label">{{'no' | translate}}</label>
+                                              <input class="form-check-input" type="checkbox" (click)="userTecInfoPermComunicacion(info_usuario.emp_token,info_usuario.user_token,cteci.bool_teci_comunicacion);" [checked]="cteci.bool_teci_comunicacion == 'permitido'">
+                                              <label class="form-check-label">{{'yes' | translate}}</label>
+                                            </div>
+                                          </div>
+
+                                          <div class="col-12 row" style="border-top: solid 2px lightgray!important;padding: 0 !important;">
+                                            <div class="col-12 col-sm-8 col-md-3 col-lg-2 col-xl-2 col-xxl-2 explain">
+                                              <h6 class="title">Publicaciones</h6>
+                                            </div>
+                                            <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                              <label class="form-check-label">{{'no' | translate}}</label>
+                                              <input class="form-check-input" type="checkbox" (click)="userTecInfoPermPublicaciones(info_usuario.emp_token,info_usuario.user_token,cteci.bool_teci_publicaciones);" [checked]="cteci.bool_teci_publicaciones == 'permitido'">
+                                              <label class="form-check-label">{{'yes' | translate}}</label>
+                                            </div>
+                                          </div>
+                                          <div class="col-12 row" style="border-top: solid 2px lightgray!important;padding: 0 !important;">
+                                            <div class="col-12 col-sm-8 col-md-3 col-lg-2 col-xl-2 col-xxl-2 explain">
+                                              <h6 class="title">Soporte</h6>
+                                            </div>
+                                            <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                              <label class="form-check-label">{{'no' | translate}}</label>
+                                              <input class="form-check-input" type="checkbox" (click)="userTecInfoPermSoporte(info_usuario.emp_token,info_usuario.user_token,cteci.bool_teci_soporte);" [checked]="cteci.bool_teci_soporte == 'permitido'">
+                                              <label class="form-check-label">{{'yes' | translate}}</label>
+                                            </div>
+                                          </div>
+
+                                          <div class="col-12 row" style="border-top: solid 2px lightgray!important;padding: 0 !important;">
+                                            <div class="col-12 col-sm-8 col-md-3 col-lg-2 col-xl-2 col-xxl-2 explain">
+                                              <h6 class="title">Comunicaci&oacute;n</h6>
+                                            </div>
+                                            <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                              <label class="form-check-label">{{'no' | translate}}</label>
+                                              <input class="form-check-input" type="checkbox" (click)="userTecInfoPermComunicacion(info_usuario.emp_token,info_usuario.user_token,cteci.bool_teci_comunicacion);" [checked]="cteci.bool_teci_comunicacion == 'permitido'">
+                                              <label class="form-check-label">{{'yes' | translate}}</label>
+                                            </div>
+                                          </div>
+
+                                          <div class="col-12 row" style="border-top: solid 2px lightgray!important;padding: 0 !important;">
+                                            <div class="col-12 col-sm-8 col-md-3 col-lg-2 col-xl-2 col-xxl-2 explain">
+                                              <h6 class="title">Publicaciones</h6>
+                                            </div>
+                                            <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                              <label class="form-check-label">{{'no' | translate}}</label>
+                                              <input class="form-check-input" type="checkbox" (click)="userTecInfoPermPublicaciones(info_usuario.emp_token,info_usuario.user_token,cteci.bool_teci_publicaciones);" [checked]="cteci.bool_teci_publicaciones == 'permitido'">
+                                              <label class="form-check-label">{{'yes' | translate}}</label>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </p-tabpanel>
+                              </p-tabpanels>
+                            </p-tabs>
+                          </div>
+                        </p-dialog>
+                      </td>
+                      <td>{{user.usuario_folio}}</td>
+                      <td>{{user.usuario_alias}}</td>
+                      <td class="ultimo">
+                        <a class="btn btn_extend"
+                          [ngClass]="!user.usuario_has_pass ? 'text-bg-success rounded-3' : 'text-bg-danger rounded-3'"
+                          (click)="!user.usuario_has_pass ? generaCodigosAccessAndPass(user.usuario_token) : revocarCodigosAccessAndPass(user.usuario_token);">
+                          <i class="fa-solid" [ngClass]="!user.usuario_has_pass ? 'fa-pen-to-square' : 'fa-eraser'"></i>&nbsp;
+                          {{!user.usuario_has_pass ? 'Generar credenciales' : 'Revocar credenciales'}}
+                        </a>
+                      </td>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="emptymessage">
+                    <tr>
+                      <td colspan="4" class="text-center py-4">
+                        <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                        <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                          {{'no_rows' | translate}}
+                        </p>
+                      </td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+              </p-tabpanel>
+              <p-tabpanel value="1">
+                <div class="col-12 row">
+                  <!-- Sección: Datos Personales -->
+                  <div class="col-12 explain">
+                    <h6 class="title">Datos Personales</h6>
+                  </div>
+                  <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6 input-group">
+                    <label for="user_paterno" class="form-label activeInput font-semibold mb-1">Apellido Paterno <span class="obligatorio">*</span></label>
+                    <input pInputText type="text" id="user_paterno" name="user_paterno" [(ngModel)]="new_user_paterno" [ngClass]="new_user_paterno ? (isPaternoValid ? 'correcto' : 'error') : ''" placeholder="Mínimo 4 caracteres" class="w-full"/>
+                  </div>
+                  <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6 input-group">
+                    <label for="user_materno" class="form-label activeInput font-semibold mb-1">Apellido Materno <span class="obligatorio">*</span></label>
+                    <input pInputText type="text" id="user_materno" name="user_materno" [(ngModel)]="new_user_materno" [ngClass]="new_user_materno ? (isMaternoValid ? 'correcto' : 'error') : ''" placeholder="Mínimo 4 caracteres" class="w-full"/>
+                  </div>
+                  <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6 input-group">
+                    <label for="user_nombres" class="form-label activeInput font-semibold mb-1">Nombre(s) <span class="obligatorio">*</span></label>
+                    <input pInputText type="text" id="user_nombres" name="user_nombres" [(ngModel)]="new_user_nombres" [ngClass]="new_user_nombres ? (isNombresValid ? 'correcto' : 'error') : ''" placeholder="Mínimo 3 caracteres" class="w-full" />
+                  </div>
+                  <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6 input-group">
+                    <label for="user_email" class="form-label activeInput font-semibold mb-1">{{'email' | translate}} <span class="obligatorio">*</span></label>
+                    <input pInputText type="email" id="user_email" name="user_email" [(ngModel)]="new_user_email" [ngClass]="new_user_email ? (isEmailValid ? 'correcto' : 'error') : ''" placeholder="correo@ejemplo.com" style="text-transform: lowercase!important;" class="w-full" />
+                  </div>
+                  <p-divider />
+                  <div class="col-12 explain">
+                    <h6 class="title">Asignaci&oacute;n Laboral y Empresas</h6>
+                  </div>
+                  <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6 input-group">
+                    <label class="form-label activeInput font-semibold mb-1">{{'company_name' | translate}} <span class="obligatorio">*</span></label>
+                    <p-multiselect [options]="catalogo_general_empresas" [(ngModel)]="new_user_empresas_vinculadas" optionLabel="company_name" placeholder="{{'opt_select' | translate}}" [maxSelectedLabels]="3" styleClass="w-full" [invalid]="new_user_empresas_vinculadas && new_user_empresas_vinculadas.length === 0" />
+                  </div>
+                  <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6 input-group">
+                    <label class="form-label activeInput font-semibold mb-1">Área <span class="obligatorio">*</span></label>
+                    <p-select [options]="list_areas_user" id="selectedAreaUser" optionLabel="areaemp" [filter]="true" filterBy="areaemp" [showClear]="true" [placeholder]="'opt_select' | translate" styleClass="w-full" (onChange)="selectAreasUsuario($event.value);" [invalid]="new_user_area === ''" />
+                  </div>
+                  <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6 input-group">
+                    <label class="form-label activeInput font-semibold mb-1">Cargo <span class="obligatorio">*</span></label>
+                    <p-select [options]="list_cargos_user" id="selectedCargoUser" optionLabel="cargo_nombre" [filter]="true" filterBy="cargo_nombre" [showClear]="true" [placeholder]="'opt_select' | translate" styleClass="w-full" (onChange)="selectCargoUsuario($event.value);" [invalid]="new_user_cargo === ''" />
+                  </div>
+                  <p-divider />
+                  <div class="col-12 row" style="display: flex;justify-content: end;">
+                    <a class="btn btn_extend text-bg-success rounded-3" [ngClass]="!valida_registro_usuario ? 'disabled' : ''"
+                      [attr.disabled]="!valida_registro_usuario ? true : null" [attr.aria-disabled]="!valida_registro_usuario ? true : null"
+                      (click)="valida_registro_usuario && registraUsuario();">
+                      <i class="fa-solid fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+                    </a>
+                  </div>
+                </div>
+              </p-tabpanel>
+            </p-tabpanels>
+          </p-tabs>
+        </div>
+      </div>
+    </main>
+    <app-footer-inside></app-footer-inside>
+  </div>
+</div>

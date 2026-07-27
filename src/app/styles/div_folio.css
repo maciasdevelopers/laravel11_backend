@@ -1,0 +1,33 @@
+.listas_ps .info{
+    width: 15%;
+    display: flex;
+}
+
+.listas_ps .info p{
+    height: 30px;
+    line-height: 30px;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    text-align: center;
+    vertical-align: middle;
+    font-family: ubuntu, FontAwesome;
+    color: #fff;
+}
+
+.listas_ps .info .titulo{
+    width: 30%;
+    background: #353535;
+    border-radius: 8px 0 0 8px;
+}
+
+.listas_ps .info .registro{
+    background-color: #e7e7ea;
+    width: 70%;
+    color: #353535;
+    border-radius: 0 8px 8px 0;
+}
+
+.listas_ps .info .registro p{
+    color: #353535;
+}

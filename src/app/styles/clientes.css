@@ -1,0 +1,72 @@
+.card-verifRfc div.card{
+	background-color: rgba(53,53,53,0.9);
+	min-height: 35vh;
+	height: auto;
+	border-radius: 8px;
+	margin: 0;
+}
+
+.card-verifRfc div.card .card-header{
+	height: 30px;
+}
+
+.card-verifRfc div.card .card-header h6{
+	margin: 0!important;
+	border-radius: 8px 8px 0 0!important;
+  height: 30px;
+  background-color: green;
+  color: #fff;
+  font-weight: 100;
+  font-size: 15pt;
+  font-weight: bold;
+  font-family: monospace;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.card-verifRfc div.card .card-content{
+  padding:10px!important;height: 100%;background-color: transparent;
+}
+
+.card-verifRfc div.card .card-content .botones a{
+  width: 100%;
+	border-radius: 8px;
+  background-color: transparent!important;
+  height: 30vh;
+  display: flex;
+  flex-wrap: wrap;
+	justify-content: center;
+}
+
+.card-verifRfc div.card .card-content .botones a:hover{
+  background-color: rgba(0,0,0,0.5)!important;
+}
+
+.card-verifRfc div.card .card-content .botones a i{
+  width: 100%;
+  height: 85%;
+  justify-content: center;
+  display: flex;
+  align-items: center;
+  font-size: 10vh;
+}
+
+@media screen and (max-width: 600px) {
+  .card-verifRfc div.card .card-content .botones a{
+    width: 100%;border-radius: 8px;
+    background-color: transparent!important;
+    height: 15vh;
+    display: flex;
+    flex-wrap: wrap;
+	}
+
+	.card-verifRfc div.card .card-content .botones a i{
+    width: 100%;
+    height: 70%;
+    justify-content: center;
+    display: flex;
+    align-items: center;
+    font-size: 5vh;
+	}
+}

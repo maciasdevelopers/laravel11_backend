@@ -1,0 +1,40 @@
+<div class="col-12 row">
+	<div class="col-12 col-sm-1 col-md-1 col-lg-2 col-xl-2 col-xxl-2"></div>
+	<div class="col-12 col-sm-10 col-md-10 col-lg-8 col-xl-8 col-xxl-8 form">
+		<form id="formAddAImp" class="formAddAImp" name="formAddAImp" method="post" enctype="multipart/form-data">
+			<div class="divRegImpuesto row">
+				<div class="col-12 row">
+					<div class="input-group col-12">
+						<label for="producto_regCat" id="lblProducto" class="activeInput">* Alias</label>
+						<input class="validate" name="producto_regCat" type="text" required (keyup)="keyupPuntoVentaAlias($event.target);" (keypress)="onKeyPressAlfa($event);">
+					</div>
+					<div class="input-group col-12" style="margin-top: 5px;">
+						<label for="producto_regCat" id="lblProducto" class="activeInput">Establecimiento</label>
+						<input class="validate" name="direccionEstablecimExt" type="text" (keyup)="keyupPuntoVentaNombre($event.target);" (keypress)="onKeyPressAlfa($event);">
+					</div>
+					<div class="input-group col-12" style="margin-top: 5px;">
+						<label for="producto_regCat" id="lblProducto" class="activeInput">Responsable</label>
+						<input class="validate" name="direccionEstablecimExt" type="text" (keyup)="keyupPuntoVentaResponsable($event.target);" (keypress)="onKeyPressAlfa($event);">
+					</div>
+					<div class="input-group col-12" style="margin-top: 5px;">
+						<label for="producto_regCat" id="lblProducto" class="activeInput">{{'observ' | translate}}</label>
+						<textarea id="reem_large_observ" class="validate" (keyup)="keyupPuntoVentaObservaciones($event.target);" (keypress)="onKeyPressAlfa($event);"></textarea>
+					</div>
+
+					<div class="col-12 col-sm-3 col-md-3 col-lg-4 col-xl-4 col-xxl-4"></div>
+					<div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-4">
+						<a *ngIf="validateToRegistro == false" class="btn btnRow text-bg-success rounded-3 disabled" disabled aria-disabled="true">
+							<i class="fa-regular fa-floppy-disk" style="height: 15px!important;line-height: 15px!important;width: 15px!important;font-size: small!important;"></i>&nbsp; {{'sav_cam' | translate}}
+						</a>
+						<a *ngIf="validateToRegistro == true" class="btn btnRow text-bg-success rounded-3" 
+							(click)="registrarPuntoVenta();">
+							<i class="fa-regular fa-floppy-disk" style="height: 15px!important;line-height: 15px!important;width: 15px!important;font-size: small!important;"></i>&nbsp; {{'sav_cam' | translate}}
+						</a>
+					</div>
+					<div class="col-12 col-sm-3 col-md-3 col-lg-4 col-xl-4 col-xxl-4"></div>
+				</div>
+			</div>
+		</form>
+	</div>
+	<div class="col-12 col-sm-1 col-md-1 col-lg-2 col-xl-2 col-xxl-2"></div>
+</div>

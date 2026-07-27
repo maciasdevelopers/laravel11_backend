@@ -1,0 +1,124 @@
+<p-table #buyProgramedList [value]="arrayComprasProgramadas" [globalFilterFields]="searchComprasProgramadas"
+  [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]">
+  <ng-template #caption>
+    <div class="flex" style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;" ngbDropdown>
+      <a class="btn btn_extend" [ngClass]="indicadorComprasProgramadas == 'hoy' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="verComprasPeriodicas('hoy');">
+        <i class="fa-solid fa-calendar-days"></i>&nbsp;Hoy
+      </a>
+      <a class="btn btn_extend" [ngClass]="indicadorComprasProgramadas == 'esta_semana' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="verComprasPeriodicas('esta_semana');">
+        <i class="fa-solid fa-calendar-days"></i>&nbsp;Esta semana
+      </a>
+      <a class="btn btn_extend" [ngClass]="indicadorComprasProgramadas == 'este_mes' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="verComprasPeriodicas('este_mes');">
+        <i class="fa-solid fa-calendar-days"></i>&nbsp;Este mes
+      </a>
+      <a class="btn btn_extend" [ngClass]="indicadorComprasProgramadas == 'mes_anterior' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="verComprasPeriodicas('mes_anterior');">
+        <i class="fa-solid fa-arrow-left"></i>&nbsp;mes anterior
+      </a>
+      <a id="menuDropBuyRangos" class="btn btn_extend" [ngClass]="indicadorComprasProgramadas == 'otras_fechas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" ngbDropdownToggle>
+        <i class="fa-solid fa-list-ul"></i>&nbsp;otras fechas
+      </a>
+      <div class="dropdown-menu-end menu-despegable" ngbDropdownMenu="menuDropBuyRangos" style="padding: 0!important; margin: 0!important; width: max-content!important; max-height: 400px; overflow-y: auto;">
+        <div class="col-12 input-group">
+          <label for="buy_otras_fechas" class="activeInput">Periodo de fechas</label>
+          <p-datepicker id="buy_otras_fechas" name="buy_otras_fechas" [(ngModel)]="rangoPeriodoComprasProgramadas" appendTo="body" dateFormat="dd/mm/yy" 
+            placeholder="dd/mm/aaaa" selectionMode="range" (onSelect)="verComprasPeriodicas('otras_fechas');" />
+        </div>
+      </div>
+      <a class="btn btn_extend" [ngClass]="indicadorComprasProgramadas == 'all_partidas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="verComprasPeriodicas('all_partidas');">
+        <i class="fa-solid fa-list-ul"></i>&nbsp;todos los registros
+      </a>
+      <p-iconfield iconPosition="left" class="ml-auto">
+        <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+        <input pInputText type="text" (input)="buyProgramedList.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+      </p-iconfield>
+    </div>
+  </ng-template>
+  <ng-template #header>
+    <tr>
+      <th rowspan="2" pSortableColumn="folio_compra">folio de compra&nbsp;<p-sortIcon field="folio_compra" />producto/servicio</th>
+      <th colspan="7">periodicidad de compra</th>
+      <th colspan="7">&uacute;ltima compra registrada</th>
+      <th rowspan="2">{{'prov' | translate}}</th>
+      <th rowspan="2">importe</th>
+      <th rowspan="2" class="ultimo"></th>
+      <th rowspan="2" class="ultimo"></th>
+      <th rowspan="2" class="ultimo"></th>
+    </tr>
+    <tr>
+      <th pSortableColumn="periodicidadCompra">periodicidad de compra&nbsp;<p-sortIcon field="periodicidadCompra" /></th>
+      <th pSortableColumn="repeticionPeriodo">Iteracion de pago&nbsp;<p-sortIcon field="repeticionPeriodo" /></th>
+      <th pSortableColumn="tipoPeriodo">Periodo&nbsp;<p-sortIcon field="tipoPeriodo" /></th>
+      <th pSortableColumn="fechaFinPeriodo">Fecha de termino&nbsp;<p-sortIcon field="fechaFinPeriodo" /></th>
+      <th pSortableColumn="tipo_variabilidad">Variabilidad de importe&nbsp;<p-sortIcon field="tipo_variabilidad" /></th>
+      <th pSortableColumn="importe_minimo">Importe m&iacute;nimo&nbsp;<p-sortIcon field="importe_minimo" /></th>
+      <th pSortableColumn="importe_maximo">Importe m&aacute;ximo&nbsp;<p-sortIcon field="importe_maximo" /></th>
+      <!--compra-->
+      <th pSortableColumn="folio_compra">folio&nbsp;<p-sortIcon field="folio_compra" /></th>
+      <th pSortableColumn="fecha_registro_compra">{{'fecha_reg' | translate}}&nbsp;<p-sortIcon field="fecha_registro_compra" /></th>
+      <th pSortableColumn="forma_pago">{{'f_pago' | translate}}&nbsp;<p-sortIcon field="forma_pago" /></th>
+      <th pSortableColumn="metodo_pago">{{'m_pago' | translate}}&nbsp;<p-sortIcon field="metodo_pago" /></th>
+      <th pSortableColumn="recibeFactura">recibe Factura&nbsp;<p-sortIcon field="recibeFactura" /></th>
+      <th pSortableColumn="compra_moneda">{{'currency' | translate}}&nbsp;<p-sortIcon field="compra_moneda" /></th>
+      <th pSortableColumn="compra_a_credito">compra a cr&eacute;dito&nbsp;<p-sortIcon field="compra_a_credito" /></th>
+    </tr>
+  </ng-template>
+  <ng-template #body let-cBuy>
+    <tr>
+      <td>{{cBuy.folio_prod+" "+cBuy.producto}}</td>
+      <td>{{cBuy.periodicidadCompra}}</td>
+      <td>{{cBuy.repeticionPeriodo}}</td>
+      <td>{{cBuy.tipoPeriodo}}</td>
+      <td>{{cBuy.fechaFinPeriodo}}</td>
+      <td>{{cBuy.tipo_variabilidad}}</td>
+      <td>{{cBuy.importe_minimo}}</td>
+      <td>{{cBuy.importe_maximo}}</td>
+
+      <td>{{cBuy.folio_compra}}</td>
+      <td>{{cBuy.fecha_registro_compra}}</td>
+      <td>{{cBuy.forma_pago}}</td>
+      <td>{{cBuy.metodo_pago}}</td>
+      <td>{{cBuy.recibeFactura === true ? 'Antes' : 'Despues'}}</td>
+      <td>{{cBuy.compra_moneda}}</td>
+      <td>{{cBuy.compra_a_credito}}</td>
+
+      <td>{{cBuy.proveedor_folio+" "+cBuy.proveedor_nombre}}</td>
+      <td>{{cBuy.importe_total_compra}}</td>
+      <td>
+        <!--<a class="btn btn_extend bg-blue-600" [ngClass]="cBuy.facturaXml == '' && cBuy.facturaPdf == '' ? 'disabled' : ''" 
+          [attr.disabled]="cBuy.facturaXml == '' && cBuy.facturaPdf == '' ? true : null" 
+          [attr.aria-disabled]="cBuy.facturaXml == '' && cBuy.facturaPdf == '' ? true : null" (click)="(cBuy.facturaXml != '' || cBuy.facturaPdf != '') && abreSeccionFacturas(cBuy);">
+          <i class="fa-solid fa-angle-down" style="width: 25px !important;height: 25px !important;line-height: 25px !important;font-size: 15px;text-align: center;"></i> {{'file_list_open' | translate}}
+        </a>-->
+      </td>
+      <td>
+        <a class="btn btn_extend bg-blue-600" [ngClass]="cBuy.evidenciaSAT == '' ? 'disabled' : ''"
+          [attr.disabled]="cBuy.evidenciaSAT == '' ? true : null"
+          [attr.aria-disabled]="cBuy.evidenciaSAT == '' ? true : null"
+          [attr.target]="cBuy.evidenciaSAT != '' ? '_blank' : ''"
+          [attr.href]="cBuy.evidenciaSAT != '' ? cBuy.urlEvdSAT : ''">
+          <i class="fa-solid fa-globe"
+            style="width: 25px !important;height: 25px !important;line-height: 25px !important;font-size: 15px;text-align: center;"></i>
+          {{cBuy.evidenciaSAT}}
+        </a>
+      </td>
+      <td>
+        <a class="btn btn_extend text-bg-success rounded-3" [ngClass]="cBuy.status_autorizacion ? 'disabled' : ''"
+          [attr.disabled]="cBuy.status_autorizacion ? true : null"
+          [attr.disabled]="cBuy.status_autorizacion ? true : null"
+          (click)="!cBuy.status_autorizacion && autorizaCompra(cBuy.token_compras);">
+          <i class="fa-solid fa-check-double"></i>&nbsp;Autorizar compra
+        </a>
+      </td>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td colspan="20" class="text-center py-4">
+        <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+        <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+          {{'no_rows' | translate}}
+        </p>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>

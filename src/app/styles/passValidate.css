@@ -1,0 +1,94 @@
+.alert{
+  background-color: #6d1300!important;
+  border-radius: 8px;
+  padding: 5px;
+  color: #e7e7ea;
+  font-size: medium;
+}
+
+.div_alert_pass{
+  width: 100%!important;
+}
+
+.strengthPrimera,
+.strengthConfirmacion{
+  height: 10px;
+  border-radius: 8px!important;
+  width: 100%;
+  margin-top: 10px;
+  display: block;
+  background-color: #ccc;
+}
+
+.strengthPrimera span,
+.strengthConfirmacion span{
+  display: block;
+  height: 10px;
+  border-radius: 8px;
+  transition: all 500ms ease;
+}
+
+.strength-0 span {
+  background-color: red;
+  width: 5%;
+}
+.strength-1 span {
+  background-color: orangered;
+  width: 25%;
+}
+.strength-2 span {
+  background-color: orange;
+  width: 50%;
+}
+.strength-3 span {
+  background-color: yellowgreen;
+  width: 75%;
+}
+.strength-4 span {
+  background-color: green;
+  width: 100%;
+}
+
+.btnPass{
+  width: 25px!important;
+  margin-top: 18px;
+  line-height: 30px;
+  border-radius: 50%;
+  padding: 0;
+  z-index: 0;
+}
+
+.eqpass{
+  height: 20px;
+  line-height: 20px;
+  margin-bottom: 5px;
+  border-radius: 8px;
+  font-family: ubuntu, FontAwesome;
+
+  font-size: 11px;
+  text-align: left;
+  color: #353535;
+  white-space: break-spaces !important;
+}
+
+.lastValidate{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.lastValidate a{
+  margin: 0;
+}
+
+.progressResetPass{
+  width: 92%;
+  left: 0;
+  margin-top: 25px;
+  height: 10px;
+  border-radius: 8px;
+}
+
+.progressResetPass .determinate{
+  background-color: #0d6efd;
+}

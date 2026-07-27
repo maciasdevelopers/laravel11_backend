@@ -1,0 +1,21 @@
+nav.nav-bread{
+  height: 30px!important; 
+  background-color: transparent!important; 
+  box-shadow: none!important; 
+}
+
+nav.nav-bread div{
+  height: 30px!important;  
+}
+
+nav.nav-bread div a{
+  margin: 0!important; 
+  top: 0!important; 
+  position: absolute!important; 
+  height: 30px!important; 
+  line-height: 30px!important; 
+  background-color: #353535!important; 
+  padding-left: 10px!important; 
+  padding-right: 10px!important; 
+  border-radius: 25px!important;
+}

@@ -1,0 +1,428 @@
+.descarga_lista_excel{
+	font-family: roboto_cr;
+	border-radius: 25px;
+	margin-right: 5px!important;
+	height: 30px!important;
+}
+
+.descarga_lista_excel i{
+	margin-left: 5px!important;
+}
+
+.proximos {
+	background-color: #388e3c !important;
+	color: #fff !important;
+	font-weight: bold;
+}
+
+.porvencer {
+	background-color: #ff9800 !important;
+	color: #fff !important;
+	font-weight: bold;
+}
+
+.vencidos {
+	background-color: #d32f2f !important;
+	color: #fff !important;
+	font-weight: bold;
+}
+
+.semaforoOrden {
+	height: auto;
+	background-color: #d3d3d3;
+	border-radius: 8px;
+	display: flex;
+	justify-content: center;
+	flex-wrap: wrap;
+	align-items: center;
+	box-shadow: 1px 1px 5px;
+}
+
+.semaforoOrden .textSemaforo {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.semaforoOrden .textSemaforo p {
+	width: 20px !important;
+	height: 20px !important;
+	margin-left: 2px;
+}
+
+.semaforoOrden .textSemaforo h6 {
+	width: calc(100% - 20px) !important;
+	margin-left: 5px;
+	text-transform: lowercase;
+	height: 20px !important;
+	margin-left: 2px;
+	text-align: left;
+	font-weight: bold;
+}
+
+td .btnSemaforo {
+	max-width: 25px !important;
+	min-width: 25px !important;
+	width: 25px !important;
+	height: 25px !important;
+	line-height: 25px !important;
+	font-size: 1.7vh !important;
+	font-weight: bold !important;
+}
+
+.chipOrdenPago h6 {
+	font-size: 1.7vh;
+	width: 70%;
+}
+
+.h6Factura {
+	font-size: 0.9rem;
+}
+
+.h6Cantidad {
+	font-size: 2.2rem;
+	font-weight: bold;
+}
+
+.space {
+	padding-block: 7px;
+}
+
+.divFactura {
+	padding-block: 15px;
+}
+
+.divMargin {
+	margin-top: 8px;
+}
+
+.card-header,
+.headerOrden {
+	background-color: #353535 !important;
+	border-radius: 8px 8px 0 0;
+	font-weight: bold;
+}
+
+.card-header,
+.headerOrden h6 {
+	color: #fff !important;
+	margin: 0 !important;
+}
+
+.ThFont {
+	background-color: #353535 !important;
+	height: 13px;
+	width: auto;
+	border-radius: 5px;
+	color: #fff !important;
+	margin-left: 0;
+	margin-right: 0;
+	font-size: 12px;
+}
+
+.cardVencidos {
+	display: flex;
+	background-color: #D32F2F !important;
+	border-radius: 4px 4px 0 0 !important;
+}
+
+.cardVencidos h6 {
+	color: #fff !important;
+	font-size: 20px;
+}
+
+.cardVencidos .folios {
+	width: 100%;
+	display: flex;
+	flex-wrap: wrap;
+}
+
+.cardVencidos .folios h6 {
+	font-size: 8px !important;
+}
+
+.botton {
+	display: flex;
+}
+
+.botton a {
+	background: #fff !important;
+	color: #353535 !important;
+	width: 22px !important;
+	height: 14px !important;
+	margin-top: 8px !important;
+	line-height: 22px !important;
+}
+
+.botton label {
+	background-color: transparent !important;
+}
+
+
+.breadcrumb:before {
+	color: #353535;
+}
+
+.card-main {
+	height: 100%;
+	margin: 0;
+	background-color: cadetblue;
+	padding: 0px;
+	border-radius: 8px;
+	background-color: rgba(55, 50, 78, 0.5);
+}
+
+.rowOption {
+	padding: 7px;
+	border-left: 1px solid #e0e0e0;
+	border-left: 1px solid rgba(55, 50, 78, 0.7);
+}
+
+.rowCabecera {
+	padding: 10px !important;
+}
+
+.row-main {
+	padding: 10px !important;
+	margin: 0 !important;
+}
+
+.contentCompanies {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	align-items: center;
+	height: calc(100% - 80px);
+}
+
+.contentCompanies div.card-companies {
+	width: 250px;
+	height: 270px;
+	margin: 5px !important;
+	border-radius: 25px;
+	box-shadow: 1px 1px 10px #353535;
+}
+
+.contentCompanies div.card-companies div.card-image {
+	width: 250px;
+	height: 250px;
+	padding: 50px;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	align-items: center;
+	z-index: 1;
+}
+
+.contentCompanies div.card-companies div.card-image img {
+	width: 100%;
+}
+
+.contentCompanies div.card-companies div.card-content {
+	height: 70px;
+	padding: 0;
+	z-index: 999;
+	position: relative
+}
+
+.contentCompanies div.card-companies div.card-content h6.card-title {
+	margin: 0;
+	font-size: 15px;
+	text-align: center;
+	height: 70px;
+	margin-top: -50px;
+	font-weight: bold;
+}
+
+.contentCompanies div.card-companies:hover,
+.contentCompanies div.card-company-active {
+	box-shadow: 1px 1px 10px #020a5e;
+}
+
+.contentCompanies div.card-companies:hover div.card-content h6.card-title,
+.contentCompanies div.card-company-active div.card-content h6.card-title {
+	background-color: #020a5e !important;
+	border-radius: 0 0 25px 25px !important;
+	color: #fff !important;
+}
+
+.footerCompanies {
+	height: 40px;
+	padding: 0;
+	display: flex !important;
+	justify-content: center !important;
+	align-items: center !important;
+}
+
+.footerCompanies button {
+	font-family: Arial, FontAwesome;
+}
+
+.card-main .listOptions {
+	padding: 0 !important;
+}
+
+.card-main .listOptions .collection {
+	margin: 0;
+	border: none;
+	/*border-right: 1px solid #e0e0e0;*/
+	background-color: transparent !important;
+	height: auto !important;
+}
+
+.card-main .listOptions ul.collection li.collection-item {
+	padding: 0;
+	height: 40px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background-color: transparent !important;
+	border: none !important;
+}
+
+.card-main .listOptions .collection div.collect-item-div {
+	padding: 5px !important;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.card-main .listOptions .collection a {
+	margin: 0;
+	width: 30px;
+	height: 30px;
+	line-height: 30px;
+	border-radius: 50%;
+	padding: 0;
+	background-color: #e7e7ea;
+	color: #020a5e;
+	box-shadow: 1px 1px 5px #353535;
+	font-family: ubuntu, FontAwesome;
+	text-align: center;
+}
+
+.card-main .listOptions .collection a.active,
+.card-main .listOptions .collection a:hover {
+	background-color: #020a5e !important;
+	color: #e7e7ea !important;
+}
+
+div.buttonCompanies {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+div.buttonCompanies a {
+	width: 25px;
+	height: 25px;
+	border-radius: 50% !important;
+}
+
+div.buttonCompanies a.btnDelete {
+	background-color: #d32f2f !important;
+}
+
+a.btnDisabled,
+a:disabled {
+	background-color: #686868 !important;
+}
+
+div.buttonCompanies a i {
+	width: 25px !important;
+	height: 25px !important;
+	line-height: 25px !important;
+	font-size: 15px;
+	text-align: center;
+}
+
+div.buttonCompanies div.input-field {
+	width: calc(100% - 70px);
+}
+
+div.buttonCompanies div.input-field input.rfcInput {
+	text-transform: uppercase !important;
+}
+
+ul.tabs li a {
+	color: #353535;
+}
+
+table tbody tr td.ultimo input,
+table tbody tr td.ultimo select,
+table tbody tr td.ultimo textarea {
+	width: 100%;
+}
+
+.tabs-main {
+	padding: 0;
+}
+
+.tabs-main ul.tabs {
+	border-radius: 0 8px 0 0;
+	height: 30px;
+}
+
+.tabs-main ul.tabs li {
+	height: 30px;
+}
+
+.tabs-main ul.tabs li a {
+	height: 30px;
+	line-height: 30px;
+}
+
+.tabs-content {
+	padding: 0;
+	margin-top: 10px;
+}
+
+.cardCfdi-emision {
+	height: 100%;
+	display: flex;
+	background-color: rgba(55, 50, 78, 0.7);
+	border-radius: 8px;
+	color: #fff;
+}
+
+.cardCfdi-emision .card-content {
+	height: 100%;
+	padding: 10px;
+}
+
+.cardCfdi-emision .card-content h6 {
+	display: flex;
+	text-transform: initial;
+	color: #fff;
+	font-size: 13px;
+}
+
+.cardCfdi-emision .card-content p {
+	text-transform: uppercase;
+	margin-left: 3px;
+	margin-right: 3px;
+}
+
+@media screen and (max-width: 600px) {
+	table.tableXmlSoli {
+		display: inline-table !important;
+	}
+
+	table thead tr {
+		padding: 0;
+	}
+
+	table thead tr th.ultimo,
+	table tbody tr td.ultimo {
+		width: 40px;
+		padding: 0;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		width: 100%;
+	}
+
+	table tfoot tr td#emptyTfootTd {
+		display: none;
+	}
+}

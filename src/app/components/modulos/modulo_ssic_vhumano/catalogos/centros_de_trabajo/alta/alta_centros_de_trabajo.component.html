@@ -1,0 +1,191 @@
+<p-confirmpopup #cp>
+  <ng-template #headless let-message>
+    <div class="rounded p-4">
+      <i class="fa-solid fa-circle-info"></i>&nbsp;
+      <span>{{ message.message }}</span>
+      <div class="flex items-center gap-2 mt-4">
+        <p-button id="popUpAccept" class="accept" (onClick)="cp.onAccept()" [label]="popUpAccept" size="small" />
+        <p-button id="popUpReject" class="reject" (onClick)="cp.onReject()" [label]="popUpReject" [text]="true"
+          size="small" severity="secondary" />
+      </div>
+    </div>
+  </ng-template>
+</p-confirmpopup>
+<form method="post" class="row formTrabajador" #formTrabajador="ngForm" name="frmAddProv" enctype="multipart/form-data"
+  (ngSubmit)="validaRegistroCentroTrabajo && registrarCentroTrabajo(formTrabajador);">
+  <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+    <label for="cenTrabRPImss" class="activeInput">Registro patronal del IMSS</label>
+    <input id="cenTrabRPImss" class="validate" type="text" name="cenTrabRPImss"
+      (keyup)="keyupCenTrabRPatronalIMSS($event.target);">
+  </div>
+  <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+    <label for="cenTrabLat" class="activeInput">Latitud (GPS)</label>
+    <input id="cenTrabLat" class="validate" type="number" name="cenTrabLat" step="any"
+      (keyup)="keyupCenTrabLatitude($event.target);">
+  </div>
+  <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+    <label for="cenTrabLong" class="activeInput">Longitud (GPS)</label>
+    <input id="cenTrabLong" class="validate" type="number" name="cenTrabLong" step="any"
+      (keyup)="keyupCenTrabLongitude($event.target);">
+  </div>
+  <div class="col-12 row">
+    <div class="col-12 explain">
+      <h6 class="title">Cat&aacute;logo de actividades para la clasificaci&oacute;n de las empresas en el seguro de
+        riesgos de trabajo</h6>
+    </div>
+    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input-group">
+      <label for="cenTrabActRiesDiv" class="activeInput">Divisi&oacute;n</label>
+      <p-select [options]="actividades_riesgo_divisiones" id="cenTrabActRiesDiv" name="cenTrabActRiesDiv"
+        optionLabel="division_nombre" [filter]="true" filterBy="division_nombre" [showClear]="true"
+        [placeholder]="'opt_select' | translate" class="w-full md:w-56"
+        (onChange)="changeCenTrabActRiesDivision($event.value);">
+        <ng-template #selectedItem let-selected>
+          <div class="flex items-center gap-2">
+            <div>{{selected.division_nombre}}</div>
+          </div>
+        </ng-template>
+        <ng-template let-riesgo #item>
+          <div class="flex items-center gap-2">
+            <div>{{riesgo.division_nombre}}</div>
+          </div>
+        </ng-template>
+      </p-select>
+    </div>
+    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input-group">
+      <label for="cenTrabActRiesGrupo" class="activeInput">Grupo</label>
+      <p-select [options]="actividades_riesgo_grupos" id="cenTrabActRiesGrupo" name="cenTrabActRiesGrupo"
+        optionLabel="label" [filter]="true" filterBy="label"
+        [ngClass]="actividades_riesgo_grupos.length == 0 ? 'disabled' : ''"
+        [disabled]="actividades_riesgo_grupos.length == 0"
+        [attr.aria-disabled]="actividades_riesgo_grupos.length == 0 ? true : null" [showClear]="true"
+        [placeholder]="'opt_select' | translate" class="w-full md:w-56"
+        (onChange)="changeCenTrabActRiesGrupos($event.value);">
+        <ng-template #selectedItem let-selected>
+          <div class="flex items-center gap-2">
+            <div>{{selected.label}}</div>
+          </div>
+        </ng-template>
+        <ng-template let-riesgo #item>
+          <div class="flex items-center gap-2">
+            <div>{{riesgo.label}}</div>
+          </div>
+        </ng-template>
+      </p-select>
+    </div>
+    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input-group">
+      <label for="cenTrabActRiesFraccion" class="activeInput">Fracciones</label>
+      <p-select [options]="actividades_riesgo_fracciones" id="cenTrabActRiesFraccion" name="cenTrabActRiesFraccion"
+        optionLabel="actividad" [filter]="true" filterBy="actividad"
+        [ngClass]="actividades_riesgo_fracciones.length == 0 ? 'disabled' : ''"
+        [disabled]="actividades_riesgo_fracciones.length == 0"
+        [attr.aria-disabled]="actividades_riesgo_fracciones.length == 0 ? true : null" [showClear]="true"
+        [placeholder]="'opt_select' | translate" class="w-full md:w-56"
+        (onChange)="changeCenTrabActRiesFracciones($event.value);">
+        <ng-template #selectedItem let-selected>
+          <div class="flex items-center gap-2">
+            <div>{{selected.fraccion+" "+selected.actividad+" "+selected.clave}}</div>
+          </div>
+        </ng-template>
+        <ng-template let-riesgo #item>
+          <div class="flex items-center gap-2">
+            <div>{{riesgo.fraccion+" "+riesgo.actividad+" "+riesgo.clave}}</div>
+          </div>
+        </ng-template>
+      </p-select>
+    </div>
+    <div class="col-12 explain" style="padding-left: 10px;">
+      <h6 class="content">{{"División "+centTrabModel.riesgo_division+", Grupo "+centTrabModel.riesgo_grupo+", Fraccion "+centTrabModel.riesgo_fraccion+", Clave "+centTrabModel.riesgo_clave}}</h6>
+    </div>
+  </div>
+  <!--<div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+		<label for="cenTrabDivision" class="activeInput">Factor de riesgo vigente</label>
+		<p-select [options]="riesgos_de_trabajo_clasificacion_lista" id="cenTrabDivision" name="cenTrabDivision" optionLabel="clase" [filter]="true" filterBy="clase" 
+			[showClear]="true" [placeholder]="'opt_select' | translate" class="w-full md:w-56" (onChange)="changeCenTrabDivision($event.value);">
+			<ng-template #selectedItem let-selected>
+				<div class="flex items-center gap-2"><div>{{selected.clase}}</div></div>
+			</ng-template>
+			<ng-template let-riesgo #item>
+				<div class="flex items-center gap-2"><div>{{riesgo.clase}}</div></div>
+			</ng-template>
+		</p-select>
+	</div>-->
+  <div class="col-12 input-group">
+    <label for="cenTrabDesc" class="activeInput">Descripci&oacute;n de actividades</label>
+    <textarea id="cenTrabDesc" name="cenTrabDesc" class="validate"
+      (keyup)="keyupCenTrabDescripcion($event.target);"></textarea>
+  </div>
+  <p-table #estabTrueList [value]="catalogo_establecimientos" dataKey="id" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]"
+    [globalFilterFields]="['token_establecimiento','estab_folio','estab_alias','estab_tipo','estab_desc','estab_encargado','aplica_ingresos','aplica_egresos','aplica_interno','aplica_almacen']">
+    <ng-template #caption>
+      <div class="flex" style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;">
+        <a class="btn btn_extend bg-blue-600" style="margin-right:5px!important;"
+          (click)="abre_registrar_establecimiento();">
+          <i class="fa-solid fa-plus"></i>&nbsp;registrar establecimiento
+        </a>
+        <a class="btn btn_extend bg-blue-600" style="margin-right:5px!important;"
+          (click)="descarga_establecimientos();">
+          <i class="fa-solid fa-rotate"></i>&nbsp;{{'list_updt' | translate}}
+        </a>
+        <p-iconfield iconPosition="left" class="ml-auto" style="margin:0!important;">
+          <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+          <input pInputText type="text" (input)="estabTrueList.filterGlobal($event.target.value, 'contains')"
+            placeholder="{{'bus_car' | translate}}" />
+        </p-iconfield>
+      </div>
+    </ng-template>
+    <ng-template #header>
+      <tr>
+        <th class="ultimo"></th>
+        <th pSortableColumn="estab_folio">folio&nbsp;<p-sortIcon field="folio" /></th>
+        <th pSortableColumn="estab_alias">alias&nbsp;<p-sortIcon field="alias" /></th>
+        <th pSortableColumn="estab_tipo">tipo&nbsp;<p-sortIcon field="tipo" /></th>
+        <th pSortableColumn="estab_desc">descripci&oacute;n&nbsp;<p-sortIcon field="descripcion" /></th>
+        <th pSortableColumn="aplica_ingresos">ingresos&nbsp;<p-sortIcon field="ingresos" /></th>
+        <th pSortableColumn="aplica_egresos">egresos&nbsp;<p-sortIcon field="egresos" /></th>
+        <th pSortableColumn="aplica_interno">interno&nbsp;<p-sortIcon field="interno" /></th>
+        <th pSortableColumn="aplica_almacen">aplica para almacen&nbsp;<p-sortIcon field="Almacen" /></th>
+      </tr>
+    </ng-template>
+    <ng-template #body let-est>
+      <tr>
+        <td>
+          <div class="form-check radio_check">
+            <input class="form-check-input" type="checkbox" name="caja_select" [checked]="est.select_for_centrotrab"
+              (click)="selectEstablecimiento($event.target,est.token_establecimiento);">
+          </div>
+        </td>
+        <td>{{est.estab_folio}}</td>
+        <td>{{est.estab_alias}}</td>
+        <td>{{est.estab_tipo}}</td>
+        <td>{{est.estab_desc}}</td>
+        <td>{{est.aplica_ingresos | translate}}</td>
+        <td>{{est.aplica_egresos | translate}}</td>
+        <td>{{est.aplica_interno | translate}}</td>
+        <td>{{est.aplica_almacen | translate}}</td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="9" class="text-center py-4">
+          <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+          <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+            {{'no_rows' | translate}}
+          </p>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+  <p-divider />
+  <div class="col-12 row" style="display: flex;justify-content: end;">
+    <button class="btn btn_extend text-bg-success rounded-3" [ngClass]="!validaRegistroCentroTrabajo ? 'disabled' : ''"
+      [attr.disabled]="!validaRegistroCentroTrabajo ? true : null"
+      [attr.aria-disabled]="!validaRegistroCentroTrabajo ? true : null">
+      <i class="fa-solid fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+    </button>
+  </div>
+</form>
+
+<p-dialog header="Registrar establecimiento" [(visible)]="registrar_establecimiento" [modal]="true"
+  [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  <app-registro-establecimiento></app-registro-establecimiento>
+</p-dialog>

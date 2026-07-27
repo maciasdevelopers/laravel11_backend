@@ -1,0 +1,744 @@
+<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco" #vContent>
+  <div class="contenido">
+    <app-loader></app-loader>
+    <nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+    <main class="contenidoPagina">
+      <article class="listas_ps revanecer" *ngFor="let detcfdi of arrayCFDIDet">
+        <div id="listaClientes" class="lista-div lista-divNoFlex row">
+
+          <nav class="nav-bread">
+            <div class="nav-wrapper">
+              <div class="col-12">
+                <a routerLink="/sos_inside/ingresos/solicitudes_facturacion" class="breadcrumb">Solicitudes de facturaci&oacute;n</a>
+              </div>
+            </div>
+          </nav>
+
+          <h4>{{folio_soli_cfdi}}</h4>
+          <div class="cabecera col-12">
+            <div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+              <h6 class="title">CFDI FOLIO</h6>
+              <h6 class="content contentMayus">{{detcfdi.folio_cfdi}}</h6>
+            </div>
+            <div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+              <h6 class="title">{{'fecha_reg' | translate}}</h6>
+              <h6 class="content">{{detcfdi.fecha_registro}}</h6>
+            </div>
+
+            <div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+              <h6 class="title">emisor</h6>
+              <h6 class="content contentName">{{detcfdi.nombreEmiPers}}</h6>
+              <h6 class="content contentMayus">{{detcfdi.name_emisor}}</h6>
+            </div>
+            <div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+              <h6 class="title">Receptor</h6>
+              <h6 class="content contentName">{{detcfdi.nombreReceptorPers}}</h6>
+              <h6 class="content contentMayus">{{detcfdi.name_receptor}}</h6>
+            </div>
+          </div>
+          <div class="card card-main row col-12">
+            <div class="row" style="margin:0!important;height:100%!important;">
+              <div class="row" style="margin:0!important;height:100%!important;">
+
+                <p-tabs value="0">
+                  <p-tablist>
+                    <p-tab value="0"><i class="fa-solid fa-file-code"></i> {{htmlToolInfoCfdi}}</p-tab>
+                    <p-tab value="1"><i class="fa-solid fa-folder-closed"></i> {{htmlToolEmiFact}}</p-tab>
+                    <p-tab value="2" (click)="area_ventana('tab_cancelacion');"><i class="fa-solid fa-rectangle-xmark"></i> {{htmlToolCancel}}</p-tab>
+                    <p-tab value="3"><i class="fa-solid fa-folder-closed"></i> {{htmlToolVersions}}</p-tab>
+                  </p-tablist>
+                  <p-tabpanels>
+                    <p-tabpanel value="0">
+                      <div class="col-12">
+                        <h6>{{'cfdi_info' | translate}}</h6>
+      
+                        <div *ngFor="let vlast of detcfdi.last_version_principal" class="cabecera col-12">
+                          <div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                            <h6 class="title">folio de solicitud</h6>
+                            <h6 class="content contentMayus">{{vlast.all_folio_solicitud}}</h6>
+                          </div>
+                          <div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                            <h6 class="title">RFC de cliente</h6>
+                            <h6 class="content contentMayus">{{vlast.rfc_cliente}}</h6>
+                          </div>
+                          <div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                            <h6 class="title">¿A quien le factura?</h6>
+                            <h6 class="content contentName">{{vlast.name_cliente}}</h6>
+                          </div>
+                          <div class="col-12 col-sm-12 col-md-3 col-lg-22col-xl-2 col-xxl-22">
+                            <h6 class="title">Email de referencia</h6>
+                            <h6 class="content">{{vlast.email_referencia}}</h6>
+                          </div>
+      
+                          <div *ngIf="vlast.fact_pagada == true" class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                            <h6 class="title">¿Esta factura fue pagada anteriomente?</h6>
+                            <h6 class="content">si</h6>
+                          </div>
+                          <div *ngIf="vlast.fact_pagada == true" class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                            <h6 class="title">Fecha tentativa de pago</h6>
+                            <h6 class="content">{{vlast.tentativa_pago}}</h6>
+                          </div>
+                          <div *ngIf="vlast.fact_pagada == true" class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                            <h6 class="title">Mes de venta</h6>
+                            <h6 class="content">{{vlast.mes_venta}}</h6>
+                          </div>
+                          <div *ngIf="vlast.fact_pagada == true" class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                            <h6 class="title">Importe</h6>
+                            <h6 class="content">${{vlast.importe_venta}}</h6>
+                          </div>
+      
+                          <div *ngIf="vlast.fact_pagada == false" class="col-12">
+                            <h6 class="title">¿Esta factura fue pagada anteriomente?</h6>
+                            <h6 class="content">no</h6>
+                          </div>
+      
+                          <div class="col-12">
+                            <table class="responsive-table centered tableXmlSoli">
+                              <thead>
+                                <tr>
+                                  <th>Sat</th>
+                                  <th>Cantidad</th>
+                                  <th>Descuento</th>
+                                  <th>Descripci&oacute;n</th>
+                                  <th>Pago</th>
+                                  <th>uso de cfdi</th>
+                                  <th>Precio unitario</th>
+                                  <th>I.V.A</th>
+                                </tr>
+                              </thead>
+                              <tbody *ngIf="vlast.detalle_solicfdi.length != 0">
+                                <tr *ngFor="let solixml of vlast.detalle_solicfdi;index as posicion">
+                                  <td class="ultimo">
+                                    <div class="modal fade" id="windowASat{{posicion}}" tabindex="-1" role="dialog" [attr.aria-labelledby]="'#windowASat'+posicion+'Label'" aria-hidden="true">
+                                      <div class="modal-dialog">
+                                        <div class="modal-content">
+                                          <div class="modal-header">
+                                            <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="windowASat+{{posicion}}Label">Sat</h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: transparent !important;"></button>
+                                          </div>
+                                          <div class="modal-body">
+                                            <div class="col-12">
+                                              <div class="col-12">
+                                                <h6 class="title">catalogo sat</h6>
+                                                <h6 class="content contentBlack">{{solixml.sat_clave+" - "+solixml.sat_descripcion}}</h6>
+                                              </div>
+          
+                                              <div class="col-12">
+                                                <h6 class="title">catalogo sat</h6>
+                                                <h6 class="content contentBlack">{{solixml.uni_medida+" - "+solixml.uni_med_clave}}</h6>
+                                              </div>
+                                            </div>
+                                          </div>
+                                          <div class="modal-footer"></div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <a class="btn btn_extend bg-indigo-600" data-bs-toggle="modal" [attr.data-bs-target]="'#windowASat'+posicion"><i class="fa-solid fa-pen"></i></a>
+                                  </td>
+                                  <td>{{solixml.cantidad}}</td>
+                                  <td>{{solixml.descuento}}</td>
+                                  <td class="ultimo">
+                                    <div class="modal fade" id="windowADescripcion{{posicion}}" tabindex="-1" role="dialog" [attr.aria-labelledby]="'#windowADescripcion'+posicion+'Label'" aria-hidden="true">
+                                      <div class="modal-dialog">
+                                        <div class="modal-content">
+                                          <div class="modal-header">
+                                            <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="windowADescripcion+{{posicion}}Label">Descripci&oacute;n</h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: transparent !important;"></button>
+                                          </div>
+                                          <div class="modal-body">
+                                            <div class="col-12">
+                                              <div class="col-12">
+                                                <h6 class="title">Descripci&oacute;n</h6>
+                                                <h6 class="content contentBlack">{{solixml.short_descripcion}}</h6>
+                                              </div>
+          
+                                              <div class="col-12">
+                                                <h6 class="title">Descripci&oacute;n extendida</h6>
+                                                <h6 class="content contentBlack">{{solixml.large_descripcion}}</h6>
+                                              </div>
+                                            </div>
+                                          </div>
+                                          <div class="modal-footer"></div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <a class="btn btn_extend bg-indigo-600" data-bs-toggle="modal" [attr.data-bs-target]="'#windowADescripcion'+posicion"><i class="fa-solid fa-pen"></i></a>
+                                  </td>
+                                  <td class="ultimo">
+                                    <div class="modal fade" id="windowAMFPago{{posicion}}" tabindex="-1" role="dialog" [attr.aria-labelledby]="'#windowAMFPago'+posicion+'Label'" aria-hidden="true">
+                                      <div class="modal-dialog">
+                                        <div class="modal-content">
+                                          <div class="modal-header">
+                                            <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="windowAMFPago+{{posicion}}Label">Forma y m&eacute;todo de pago</h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: transparent !important;"></button>
+                                          </div>
+                                          <div class="modal-body">
+                                            <div class="col-12">
+                                              <div class="col-12">
+                                                <h6 class="title">Forma de pago</h6>
+                                                <h6 class="content contentBlack">{{solixml.fpago_clave+" "+solixml.fpago_forma}}</h6>
+                                              </div>
+          
+                                              <div class="col-12">
+                                                <h6 class="title">M&eacute;todo de pago</h6>
+                                                <h6 class="content contentBlack">{{solixml.mpago_abrev+" "+solixml.mpago_metodo}}</h6>
+                                              </div>
+                                            </div>
+                                          </div>
+                                          <div class="modal-footer"></div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <a class="btn btn_extend bg-indigo-600" data-bs-toggle="modal" [attr.data-bs-target]="'#windowAMFPago'+posicion"><i class="fa-solid fa-pen"></i></a>
+                                  </td>
+                                  <td>{{solixml.usoCfdi_clave+" "+solixml.usoCfdi_uso}}</td>
+                                  <td>${{solixml.precio_unitario}}</td>
+                                  <td class="ultimo">
+                                    <div class="modal fade" id="windowAIva{{posicion}}" tabindex="-1" role="dialog" [attr.aria-labelledby]="'#windowAIva'+posicion+'Label'" aria-hidden="true">
+                                      <div class="modal-dialog">
+                                        <div class="modal-content">
+                                          <div class="modal-header">
+                                            <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="windowAIva+{{posicion}}Label">I.V.A</h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: transparent !important;"></button>
+                                          </div>
+                                          <div class="modal-body">
+                                            <div class="col-12">
+                                              <div class="col-12">
+                                                <h6 class="title">Aplicaci&oacute;n de I.V.A</h6>
+                                                <h6 class="content contentBlack" *ngIf="solixml.type_iva == 'percent'">{{'percent' | translate}}</h6>
+                                                <h6 class="content contentBlack" *ngIf="solixml.type_iva == 'cant'">{{'cant' | translate}}</h6>
+                                              </div>
+          
+                                              <div class="col-12" style="margin-top: 10px!important;">
+                                                <h6 class="title">&nbsp;I.V.A</h6>
+                                                <h6 class="content contentBlack">{{solixml.iva}}</h6>
+                                              </div>
+                                            </div>
+                                          </div>
+                                          <div class="modal-footer"></div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <a class="btn btn_extend bg-indigo-600" [ngClass]="solixml.cantidad == '0' || solixml.precio_unitario == '0.00' ? 'disabled' : ''" data-bs-toggle="modal"
+                                      [attr.disabled]="solixml.cantidad == '0' || solixml.precio_unitario == '0.00' ? true : null" [attr.aria-disabled]="solixml.cantidad == '0' || solixml.precio_unitario == '0.00' ? true : null" 
+                                      [attr.data-bs-target]="'#windowAIva'+posicion"><i class="fa-solid fa-pen"></i></a>
+                                  </td>
+                                </tr>
+                                <tr class="trTfoot">
+                                  <td id="emptyTfootTd" colspan="6"></td>
+                                  <td style="font-weight:bold;">I.V.A</td>
+                                  <td colspan="2">{{vlast.iva_total}}</td>
+                                </tr>
+                                <tr class="trTfoot">
+                                  <td id="emptyTfootTd" colspan="6"></td>
+                                  <td style="font-weight:bold;">Importe</td>
+                                  <td colspan="2">{{vlast.importe_total}}</td>
+                                </tr>
+                              </tbody>
+                              <tbody *ngIf="vlast.detalle_solicfdi.length == 0">
+                                <tr><td colspan="8">{{'no_rows' | translate}}</td></tr>
+                              </tbody>
+                              <tfoot>
+                                <tr>
+                                  <td id="emptyTfootTd" colspan="6"></td>
+                                  <th>I.V.A</th>
+                                  <td colspan="2">${{vlast.iva_total}}</td>
+                                </tr>
+                                <tr>
+                                  <td id="emptyTfootTd" colspan="6"></td>
+                                  <th>Importe</th>
+                                  <td colspan="2">${{vlast.importe_total}}</td>
+                                </tr>
+                              </tfoot>
+                            </table>
+                          </div>
+      
+                          <div class="col-12">
+                            <table class="responsive-table centered" style="margin-top:5px!important;">
+                              <thead>
+                                <tr>
+                                  <th>{{'file' | translate}}</th>
+                                  <th class="ultimo"></th>
+                                  <th class="ultimo"></th>
+                                </tr>
+                              </thead>
+                              <tbody class="upload-name-style" *ngIf="docsAnexos.length != 0">
+                                <tr *ngFor="let doc of docsAnexos; index as i">
+                                  <td><strong>{{doc.name_documento}}</strong></td>
+                                  <td colspan="2">
+                                    <a href="#windowViewDocs" class="btn waves-effect waves-light indigo darken-4 modal-trigger"
+                                      style="width:100%!important;border-radius:50px!important;" (click)="viewDocumento(doc.token_doc_soli);">
+                                      <i class="fa-regular fa-eye"></i>
+                                    </a>
+                                  </td>
+                                </tr>
+                              </tbody>
+                              <tbody class="upload-name-style" *ngIf="docsAnexos.length == 0">
+                                <tr><td colspan="3">{{'no_rows' | translate}}</td></tr>
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      </div>
+                    </p-tabpanel>
+                    <p-tabpanel value="1">
+                      <div class="col-12">
+                        <h6>{{'cfdi_emision' | translate}}</h6>
+      
+                        <form class="formdata_log" name="loginClientForm" #loginClientForm="ngForm" class="rowCabecera"
+                          autocomplete="off" (ngSubmit)="onEmiteFactura()">
+                          <div class="cabecera col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2" style="padding: 0!important;padding-top: 1%!important;">
+                            <div *ngFor="let vLst of detcfdi.last_version_reflejo" class="col-12">
+                              <div class="col-12">
+                                <h6 class="title">RFC de cliente</h6>
+                                <h6 class="content contentMayus">{{vLst.rfc_cliente}}</h6>
+                              </div>
+                              <div class="col-12">
+                                <h6 class="title">¿A quien le factura?</h6>
+                                <h6 class="content contentName">{{vLst.name_cliente}}</h6>
+                              </div>
+                              <div class="col-12">
+                                <h6 class="title">Email de referencia</h6>
+                                <h6 class="content">{{vLst.email_referencia}}</h6>
+                              </div>
+      
+                              <div class="col-12">
+                                <h6 class="title">¿Esta factura fue pagada anteriomente?</h6>
+                                <h6 *ngIf="vLst.fact_pagada == true" class="content">si</h6>
+                                <h6 *ngIf="vLst.fact_pagada == false" class="content">no</h6>
+                              </div>
+      
+                              <div *ngIf="vLst.fact_pagada == true" class="col-12">
+                                <h6 class="title">Fecha tentativa de pago</h6>
+                                <h6 class="content">{{vLst.tentativa_pago}}</h6>
+                              </div>
+                              <div *ngIf="vLst.fact_pagada == true" class="col-12">
+                                <h6 class="title">Mes de venta</h6>
+                                <h6 class="content">{{vLst.mes_venta}}</h6>
+                              </div>
+                              <div *ngIf="vLst.fact_pagada == true" class="col-12">
+                                <h6 class="title">Importe</h6>
+                                <h6 class="content">${{vLst.importe_venta}}</h6>
+                              </div>
+      
+                              <div class="col-12" style="overflow:overlay!important;">
+                                <table class="responsive-table centered tableXmlSoli" style="width:max-content!important;">
+                                  <thead>
+                                    <tr>
+                                      <th>Sat</th>
+                                      <th>Cantidad</th>
+                                      <th>Descuento</th>
+                                      <th>Descripci&oacute;n</th>
+                                      <th>Pago</th>
+                                      <th>uso de cfdi</th>
+                                      <th>Precio unitario</th>
+                                      <th>I.V.A</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody *ngIf="vLst.detalle_solicfdi.length != 0">
+                                    <tr *ngFor="let solixml of vLst.detalle_solicfdi;index as posicion">
+                                      <td class="ultimo">
+                                        <div class="modal fade" id="windowBSat{{posicion}}" tabindex="-1" role="dialog" [attr.aria-labelledby]="'#windowBSat'+posicion+'Label'" aria-hidden="true">
+                                          <div class="modal-dialog">
+                                            <div class="modal-content">
+                                              <div class="modal-header">
+                                                <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="windowBSat+{{posicion}}Label">Sat</h1>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: transparent !important;"></button>
+                                              </div>
+                                              <div class="modal-body">
+                                                <div class="col-12">
+                                                  <div class="col-12">
+                                                    <h6 class="title">catalogo sat</h6>
+                                                    <h6 class="content contentBlack">{{solixml.sat_clave+" - "+solixml.sat_descripcion}}</h6>
+                                                  </div>
+          
+                                                  <div class="col-12">
+                                                    <h6 class="title">catalogo sat</h6>
+                                                    <h6 class="content contentBlack">{{solixml.uni_medida+" - "+solixml.uni_med_clave}}</h6>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                              <div class="modal-footer"></div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                        <a class="btn btn_extend bg-indigo-600" data-bs-toggle="modal" [attr.data-bs-target]="'#windowBSat'+posicion"><i class="fa-solid fa-pen"></i></a>
+                                      </td>
+                                      <td>{{solixml.cantidad}}</td>
+                                      <td>{{solixml.descuento}}</td>
+                                      <td class="ultimo">
+                                        <div class="modal fade" id="windowBDescripcion{{posicion}}" tabindex="-1" role="dialog" [attr.aria-labelledby]="'#windowBDescripcion'+posicion+'Label'" aria-hidden="true">
+                                          <div class="modal-dialog">
+                                            <div class="modal-content">
+                                              <div class="modal-header">
+                                                <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="windowBDescripcion+{{posicion}}Label">Descripci&oacute;n</h1>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: transparent !important;"></button>
+                                              </div>
+                                              <div class="modal-body">
+                                                <div class="col-12">
+                                                  <div class="col-12">
+                                                    <h6 class="title">Descripci&oacute;n</h6>
+                                                    <h6 class="content contentBlack">{{solixml.short_descripcion}}</h6>
+                                                  </div>
+          
+                                                  <div class="col-12">
+                                                    <h6 class="title">Descripci&oacute;n extendida</h6>
+                                                    <h6 class="content contentBlack">{{solixml.large_descripcion}}</h6>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                              <div class="modal-footer"></div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                        <a class="btn btn_extend bg-indigo-600" data-bs-toggle="modal" [attr.data-bs-target]="'#windowBDescripcion'+posicion"><i class="fa-solid fa-pen"></i></a>
+                                      </td>
+                                      <td class="ultimo">
+                                        <div class="modal fade" id="windowBMFPago{{posicion}}" tabindex="-1" role="dialog" [attr.aria-labelledby]="'#windowBMFPago'+posicion+'Label'" aria-hidden="true">
+                                          <div class="modal-dialog">
+                                            <div class="modal-content">
+                                              <div class="modal-header">
+                                                <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="windowBMFPago+{{posicion}}Label">Forma y m&eacute;todo de pago</h1>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: transparent !important;"></button>
+                                              </div>
+                                              <div class="modal-body">
+                                                <div class="col-12">
+                                                  <div class="col-12">
+                                                    <h6 class="title">Forma de pago</h6>
+                                                    <h6 class="content contentBlack">{{solixml.fpago_clave+" "+solixml.fpago_forma}}</h6>
+                                                  </div>
+          
+                                                  <div class="col-12">
+                                                    <h6 class="title">M&eacute;todo de pago</h6>
+                                                    <h6 class="content contentBlack">{{solixml.mpago_abrev+" "+solixml.mpago_metodo}}</h6>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                              <div class="modal-footer"></div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                        <a class="btn btn_extend bg-indigo-600" [ngClass]="solixml.cantidad == '0' || solixml.precio_unitario == '0.00' ? 'disabled' : ''" data-bs-toggle="modal"
+                                          [attr.disabled]="solixml.cantidad == '0' || solixml.precio_unitario == '0.00' ? true : null" [attr.aria-disabled]="solixml.cantidad == '0' || solixml.precio_unitario == '0.00' ? true : null"
+                                          [attr.data-bs-target]="'#windowBMFPago'+posicion"><i class="fa-solid fa-pen"></i></a>
+                                      </td>
+                                      <td>{{solixml.usoCfdi_clave+" "+solixml.usoCfdi_uso}}</td>
+                                      <td>${{solixml.precio_unitario}}</td>
+                                      <td class="ultimo">
+                                        <div class="modal fade" id="windowBIva{{posicion}}" tabindex="-1" role="dialog" [attr.aria-labelledby]="'#windowBIva'+posicion+'Label'" aria-hidden="true">
+                                          <div class="modal-dialog">
+                                            <div class="modal-content">
+                                              <div class="modal-header">
+                                                <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="windowBIva+{{posicion}}Label">I.V.A</h1>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: transparent !important;"></button>
+                                              </div>
+                                              <div class="modal-body">
+                                                <div class="col-12">
+                                                  <div class="col-12">
+                                                    <h6 class="title">Aplicaci&oacute;n de I.V.A</h6>
+                                                    <h6 class="content contentBlack" *ngIf="solixml.type_iva == 'percent'">{{'percent' | translate}}</h6>
+                                                    <h6 class="content contentBlack" *ngIf="solixml.type_iva == 'cant'">{{'cant' | translate}}</h6>
+                                                  </div>
+          
+                                                  <div class="col-12" style="margin-top: 10px!important;">
+                                                    <h6 class="title">&nbsp;I.V.A</h6>
+                                                    <h6 class="content contentBlack" *ngIf="solixml.type_iva == 'percent'">{{solixml.iva}}%</h6>
+                                                    <h6 class="content contentBlack" *ngIf="solixml.type_iva == 'cant'">$ {{solixml.iva}}</h6>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                              <div class="modal-footer"></div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                        <a class="btn btn_extend bg-indigo-600" data-bs-toggle="modal" [attr.data-bs-target]="'#windowBIva'+posicion"><i class="fa-solid fa-pen"></i></a>
+                                      </td>
+                                    </tr>
+                                    <tr class="trTfoot">
+                                      <td id="emptyTfootTd" colspan="6"></td>
+                                      <td style="font-weight:bold;">I.V.A</td>
+                                      <td colspan="2">{{vLst.iva_total}}</td>
+                                    </tr>
+                                    <tr class="trTfoot">
+                                      <td id="emptyTfootTd" colspan="6"></td>
+                                      <td style="font-weight:bold;">Importe</td>
+                                      <td colspan="2">{{vLst.importe_total}}</td>
+                                    </tr>
+                                  </tbody>
+                                  <tbody *ngIf="vLst.detalle_solicfdi.length == 0">
+                                    <tr><td colspan="8">{{'no_rows' | translate}}</td></tr>
+                                  </tbody>
+                                  <tfoot>
+                                    <tr>
+                                      <td id="emptyTfootTd" colspan="6"></td>
+                                      <th>I.V.A</th>
+                                      <td colspan="2">{{vLst.iva_total}}</td>
+                                    </tr>
+                                    <tr>
+                                      <td id="emptyTfootTd" colspan="6"></td>
+                                      <th>Importe</th>
+                                      <td colspan="2">{{vLst.importe_total}}</td>
+                                    </tr>
+                                  </tfoot>
+                                </table>
+                              </div>
+      
+                              <div class="col-12">
+                                <table class="responsive-table centered" style="margin-top:5px!important;">
+                                  <thead>
+                                    <tr>
+                                      <th>{{'file' | translate}}</th>
+                                      <th class="ultimo"></th>
+                                      <th class="ultimo"></th>
+                                    </tr>
+                                  </thead>
+                                  <tbody class="upload-name-style" *ngIf="docsAnexos.length != 0">
+                                    <tr *ngFor="let doc of docsAnexos; index as i">
+                                      <td><strong>{{doc.name_documento}}</strong></td>
+                                      <td colspan="2">
+                                        <a href="#windowViewDocs" class="btn waves-effect waves-light indigo darken-4 modal-trigger"
+                                          style="width:100%!important;border-radius:50px!important;" (click)="viewDocumento(doc.token_doc_soli);">
+                                          <i class="fa-regular fa-eye"></i>
+                                        </a>
+                                      </td>
+                                    </tr>
+                                  </tbody>
+                                  <tbody class="upload-name-style" *ngIf="docsAnexos.length == 0">
+                                    <tr><td colspan="3">{{'no_rows' | translate}}</td></tr>
+                                  </tbody>
+                                </table>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-12 col-sm-8 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                            <div *ngFor="let vLst of detcfdi.last_version_reflejo" class="col-12">
+                              <div class="col-12">
+                                <div class="card cardCfdi-emision">
+                                  <div class="card-content">
+                                    <div class="col-12">
+                                      <h6>Para: <p>{{vLst.name_cliente}} ({{vLst.rfc_cliente}})</p></h6>
+                                    </div>
+                                    <div class="col-12">
+                                      <h6>Estimado Cliente,</h6>
+                                    </div>
+                                    <div class="col-12">
+                                      <h6 style="flex-wrap: wrap;justify-content: flex-start;text-align: justify;">
+                                        <p>{{detcfdi.name_emisor}} ({{detcfdi.rfc_emp_emi}})</p> emiti&oacute; para Usted unos documento(s) de tipo Factura con las siguientes caracter&iacute;sticas:</h6>
+                                    </div>
+      
+                                    <div class="col-12"><h6>Serie y Folio: {{emision_serie+" "+emision_folio}}</h6></div>
+                                    <div class="col-12"><h6>Fecha de Emisión: {{emision_fecha}}</h6></div>
+                                    <div class="col-12"><h6>Monto total: {{emision_monto}}</h6></div>
+                                    <div class="col-12"><h6>Consulte los datos adjuntos, por favor. </h6></div>
+                                    <div class="col-12"><h6>Este correo fue emitido desde el sistema Aspel-SAE. Derechos reservados Aspel.</h6></div>
+                                  </div>
+                                </div>
+                              </div>
+      
+                              <div class="col-12">
+                                <ngx-file-drop dropZoneLabel="Drop files here" (onFileDrop)="droppedEmision($event,vLst.tkn_cliente)" (onFileOver)="fileOverEmision($event)" (onFileLeave)="fileLeaveEmision($event)">
+                                  <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">                                    
+                                    <a class="btn btn_load_file" type="button" style="color: #0782d0 !important;" (click)="openFileSelector()">
+                                      {{'load_files' | translate}} / {{'browse_files' | translate}}
+                                    </a>
+                                  </ng-template>
+                                </ngx-file-drop>
+                              </div>
+      
+                              <table class="responsive-table centered" style="margin-top:5px!important;">
+                                <thead>
+                                  <tr>
+                                    <th>{{'file' | translate}}</th>
+                                    <th class="ultimo"></th>
+                                    <th class="ultimo"></th>
+                                    <th class="ultimo"></th>
+                                  </tr>
+                                </thead>
+                                <tbody class="upload-name-style" *ngIf="docsAnexos.length != 0 || files.length != 0">
+                                  <tr *ngFor="let item of files; index as i">
+                                    <td colspan="3"><strong>{{ item.relativePath }}</strong></td>
+                                    <td class="ultimo">
+                                      <a class="btn btn_extend text-bg-danger rounded-3"
+                                        (click)="deleteAnexos(i);">
+                                        <i class="fa-solid fa-xmark"></i>
+                                      </a>
+                                    </td>
+                                  </tr>
+                                </tbody>
+                                <tbody class="upload-name-style" *ngIf="docsAnexos.length == 0 && files.length == 0">
+                                  <tr><td colspan="4">{{'no_rows' | translate}}</td></tr>
+                                </tbody>
+                              </table>
+                            </div>
+      
+                            <div class="col-12 spaceButton" style="margin-bottom:10px!important;">
+                              <button [disabled]="docsRespuesta.length == 0 || docsRespuesta.length != 2" class="btn bg-blue-300" type="submit"><i class="fa-regular fa-floppy-disk"></i> Guardar Cambios</button>
+                            </div>
+                          </div>
+                        </form>
+      
+                        <table class="responsive-table centered">
+                          <thead>
+                            <tr>
+                              <th>folio</th>
+                              <th>fecha de cancelaci&oacute;n</th>
+                              <th>solicitudes relacionadas</th>
+                              <th colspan="3">motivo de cancelaci&oacute;n</th>
+                              <th colspan="2">cancelacion</th>
+                              <th class="ultimo"></th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <!--*ngFor="let canList of detcfdi.auth_cancelaciones | filter:searchPrevCancelation"-->
+                            <tr *ngFor="let canList of detcfdi.auth_cancelaciones">
+                              <td>{{canList.folio_cancelacion}}</td>
+                              <td>{{canList.fecha_cancelacion}}</td>
+                              <td>{{canList.older_folio+" "+canList.replace_folio}}</td>
+                              <td>{{canList.cancelation_clave}}</td>
+                              <td>{{canList.cancelation_motivo}}</td>
+                              <td>{{canList.detalle_motivo_cancelacion}}</td>
+                              <td>{{canList.fecha_autorizacion}}</td>
+                              <td>{{canList.observaciones_autorizacion}}</td>
+                              <td class="ultimo">
+                                <a class="btn bg-blue-600">
+                                  <i class="fa-solid fa-hand-pointer"></i>
+                                </a>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </p-tabpanel>
+                    <p-tabpanel value="2">
+                      <div class="col-12">
+                        <h6>{{'cfdi_can' | translate}}</h6>
+      
+                        <div class="busqueda row">
+                          <div class="col-12 col-sm-7 col-md-3 col-lg-2 col-xl-2 col-xxl-2"><h6>{{'soli_cfdi_can' | translate}}</h6></div>
+                          <div class="col content-buscar s12 m5 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                            <input class="datasearch" style="border-radius: 25px!important;" type="text" autocomplete="on" [(ngModel)]="searchSoliCancel" placeholder="{{'bus_car' | translate}}">
+                          </div>
+                        </div>
+                        <table class="responsive-table centered">
+                          <thead>
+                            <tr>
+                              <th>folio</th>
+                              <th>fecha de cancelaci&oacute;n</th>
+                              <th>solicitudes relacionadas</th>
+                              <th colspan="3">motivo de cancelaci&oacute;n</th>
+                              <th class="ultimo"></th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <!--*ngFor="let canList of detcfdi.soli_cancelaciones | filter:searchSoliCancel"-->
+                            <tr *ngFor="let canList of detcfdi.soli_cancelaciones">
+                              <td>{{canList.folio_cancelacion}}</td>
+                              <td>{{canList.fecha_cancelacion}}</td>
+                              <td>{{canList.older_folio+" "+canList.replace_folio}}</td>
+                              <td>{{canList.cancelation_clave}}</td>
+                              <td>{{canList.cancelation_motivo}}</td>
+                              <td>{{canList.detalle_motivo_cancelacion}}</td>
+                              <td class="ultimo">
+                                <a class="btn bg-blue-600">
+                                  <i class="fa-solid fa-hand-pointer"></i>
+                                </a>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+      
+                        <div class="busqueda row">
+                          <div class="col-12 col-sm-7 col-md-3 col-lg-2 col-xl-2 col-xxl-2"><h6>{{'prev_cfdi_can' | translate}}</h6></div>
+                          <div class="col content-buscar s12 m5 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                            <input class="datasearch" style="border-radius: 25px!important;" type="text" autocomplete="on" [(ngModel)]="searchPrevCancelation" placeholder="{{'bus_car' | translate}}">
+                          </div>
+                        </div>
+      
+                        <table class="responsive-table centered">
+                          <thead>
+                            <tr>
+                              <th>folio</th>
+                              <th>fecha de cancelaci&oacute;n</th>
+                              <th>solicitudes relacionadas</th>
+                              <th colspan="3">motivo de cancelaci&oacute;n</th>
+                              <th colspan="2">cancelacion</th>
+                              <th class="ultimo"></th>
+                            </tr>
+                          </thead>
+                          <tbody *ngIf="detcfdi.auth_cancelaciones.length != 0">
+                            <!--*ngFor="let canList of detcfdi.auth_cancelaciones | filter:searchPrevCancelation"-->
+                            <tr *ngFor="let canList of detcfdi.auth_cancelaciones">
+                              <td>{{canList.folio_cancelacion}}</td>
+                              <td>{{canList.fecha_cancelacion}}</td>
+                              <td>{{canList.older_folio+" "+canList.replace_folio}}</td>
+                              <td>{{canList.cancelation_clave}}</td>
+                              <td>{{canList.cancelation_motivo}}</td>
+                              <td>{{canList.detalle_motivo_cancelacion}}</td>
+                              <td>{{canList.fecha_autorizacion}}</td>
+                              <td>{{canList.observaciones_autorizacion}}</td>
+                              <td class="ultimo">
+                                <a class="btn bg-blue-600">
+                                  <i class="fa-solid fa-hand-pointer"></i>
+                                </a>
+                              </td>
+                            </tr>
+                          </tbody>
+                          <tbody *ngIf="detcfdi.auth_cancelaciones.length == 0">
+                            <tr><td colspan="9">{{'no_rows' | translate}}</td></tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </p-tabpanel>
+                    <p-tabpanel value="3">
+                      <div class="col-12">
+                        <h6>{{'old_versions' | translate}}</h6>
+      
+                        <div class="busqueda row">
+                          <div class="col-12 col-sm-7 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+                          <div class="col content-buscar s12 m5 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                            <input class="datasearch" style="border-radius: 25px!important;" type="text" autocomplete="on" [(ngModel)]="searchVersions" placeholder="{{'bus_car' | translate}}">
+                          </div>
+                        </div>
+                        <table class="responsive-table centered">
+                          <thead>
+                            <tr>
+                              <th>folio de solicitud</th>
+                              <th>fecha de solicitud</th>
+                              <th>cliente</th>
+                              <th>iva total</th>
+                              <th>importe total</th>
+                              <th class="ultimo"></th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <!--*ngFor="let oldV of detcfdi.old_versions | filter:searchVersions"-->
+                            <tr *ngFor="let oldV of detcfdi.old_versions">
+                              <td>{{oldV.all_folio_solicitud}}</td>
+                              <td>{{oldV.fecha_solicitud}}</td>
+                              <td>{{oldV.name_cliente}}</td>
+                              <td>{{oldV.iva_total}}</td>
+                              <td>{{oldV.importe_total}}</td>
+                              <td class="ultimo">
+                                <a class="btn bg-blue-600">
+                                  <i class="fa-solid fa-hand-pointer"></i>
+                                </a>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </p-tabpanel>
+                  </p-tabpanels>
+                </p-tabs>
+                
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+    </main>
+    <app-footer-inside></app-footer-inside>
+  </div>
+</div>

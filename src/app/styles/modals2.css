@@ -1,0 +1,132 @@
+div.open div.contenido div.modal-content div.form{
+    width: 100%;
+    padding: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    /*margin-bottom: 10px;*/
+    margin-bottom: 0px!important;
+    align-content: center;
+    justify-content: flex-start;
+    flex-direction: column;
+}
+
+.modalNotificaciones div.contenido div.modal-content div.form{
+    flex-direction: row!important;
+    justify-content: space-between!important;
+    align-content: flex-start!important;
+    height: 100%!important;
+}
+
+.modalNotificaciones div.contenido div.modal-content div.form div.circleNofif{
+    width: 35%;
+    height: calc(100% - 50px);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: inherit;
+}
+
+.modalNotificaciones div.contenido div.modal-content div.form div.card-ingresos{
+    background-color: #C0FFAF;
+}
+.modalNotificaciones div.contenido div.modal-content div.form div.card-ingresos .card-header{
+    background-color: #45ac29;  
+}
+
+.modalNotificaciones div.contenido div.modal-content div.form div.card-egresos{
+    background-color: #FFC7BC;
+}
+.modalNotificaciones div.contenido div.modal-content div.form div.card-egresos .card-header{
+    background-color: #6d1300;
+}
+
+.modalNotificaciones div.contenido div.modal-content div.form div.card-tesoreria{
+    background-color: #DCDCDC;
+}
+.modalNotificaciones div.contenido div.modal-content div.form div.card-tesoreria .card-header{
+    background-color: #DCDCDC;
+}
+.modalNotificaciones div.contenido div.modal-content div.form div.card-tesoreria .card-header h6{
+    color: #353535!important;
+}
+
+.modalNotificaciones div.contenido div.modal-content div.form div.card-vHumano{
+    background-color: #FFF8C2;
+}
+.modalNotificaciones div.contenido div.modal-content div.form div.card-vHumano .card-header{
+    background-color: #f1d600;
+}
+.modalNotificaciones div.contenido div.modal-content div.form div.card-vHumano .card-header h6{
+    color: #353535!important;
+}
+
+.modalNotificaciones div.contenido div.modal-content div.form div.card-contabilidad{
+    background-color: #C4D4FF;
+}
+.modalNotificaciones div.contenido div.modal-content div.form div.card-contabilidad .card-header{
+    background-color: #0044FF;
+}
+
+.modalNotificaciones div.contenido div.modal-content div.form div.card-tecInformación{
+    background-color: #F2C4FF;
+}
+.modalNotificaciones div.contenido div.modal-content div.form div.card-tecInformación .card-header{
+    background-color: #C700FF;
+}
+
+.modalNotificaciones div.contenido div.modal-content div.form div.card .card-header{
+    height: 30px;
+    margin: 0;
+    border-radius: 8px 8px 0 0;
+    box-shadow: 1px 2px 5px #353535;
+}
+
+.modalNotificaciones div.contenido div.modal-content div.form div.card .card-header h6{
+    margin: 0;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    font-weight: bold;
+    color: #fff;
+}
+
+.modalNotificaciones div.contenido div.modal-content div.form div.card .card-content{
+    height: calc(100% - 30px);
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    width: 100%;
+    align-items: center;
+}
+
+.modalNotificaciones div.contenido div.modal-content div.form div.card .card-content .spanTotales{
+    min-width: 75px;
+    max-width: 100px;
+    height: 75px;
+    background-color: rgba(0,0,0,0.7);
+    border-radius: 50%;
+    text-align: center;
+    line-height: 75px;
+    font-size: 40px;
+    box-shadow: 0px 1px 5px #353535;
+    margin: 0;
+    font-family: Arial, FontAwesome;
+    display: flex;
+    justify-content: center;
+}
+
+.modalNotificaciones div.contenido div.modal-content div.form div.card .card-content .spanTotales span{
+    position: absolute;
+    transform: scale(.6);
+    transform-origin: top right;
+    color: #fff;
+    background-color: #e74a3b;
+    padding: .25em .4em;
+    font-size: 75%;
+    font-weight: 700;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: .35rem;
+    transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+}

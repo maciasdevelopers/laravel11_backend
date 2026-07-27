@@ -1,0 +1,207 @@
+<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco" #vContent>
+  <div class="contenido">
+    <app-loader></app-loader>
+    <nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+    <main class="contenidoPagina">
+      <div class="listas_ps revanecer">
+        <div id="listaClientes" class="lista-div lista-divNoFlex row">
+          <p-megaMenu [model]="menu_barra_superior" [attr.autoDisplay]="true"></p-megaMenu>
+          <!--Ordenes de compra-->
+          <div class="col-12" *ngIf="seccion_compras == 'registro_general_compras'">
+            <div class="col-12 explain">
+              <h6 class="title">Registro general de compras realizadas</h6>
+            </div>
+            <app_interno_egresos_registro_general_compras></app_interno_egresos_registro_general_compras>
+          </div>
+
+          <div class="col-12" *ngIf="seccion_compras == 'compras_por_autorizar'">
+            <div class="col-12 explain">
+              <h6 class="title">Compras por autorizar</h6>
+            </div>
+            <app_interno_egresos_compras_por_autorizar></app_interno_egresos_compras_por_autorizar>
+          </div>
+
+          <div class="col-12" *ngIf="seccion_compras == 'compras_autorizadas'">
+            <div class="col-12 explain">
+              <h6 class="title">Compras autorizadas</h6>
+            </div>
+            <app_interno_egresos_compras_autorizadas></app_interno_egresos_compras_autorizadas>
+          </div>
+
+          <div class="col-12" *ngIf="seccion_compras == 'compras_pagadas'">
+            <div class="col-12 explain">
+              <h6 class="title">Compras pagadas</h6>
+            </div>
+            <app_interno_egresos_compras_pagadas></app_interno_egresos_compras_pagadas>
+          </div>
+
+          <div class="col-12" *ngIf="seccion_compras == 'compras_sin_factura_recibida'">
+            <div class="col-12 explain">
+              <h6 class="title">Compras sin factura recibida</h6>
+            </div>
+            <app_interno_egresos_compras_sin_factura_recibida></app_interno_egresos_compras_sin_factura_recibida>
+          </div>
+
+          <div class="col-12" *ngIf="seccion_compras == 'compras_prorrateo_antes_de_recepcion'">
+            <div class="col-12 explain">
+              <h6 class="title">Prorrateo antes de recepci&oacute;n</h6>
+            </div>
+            <app_egresos_compras_lista_prorratean></app_egresos_compras_lista_prorratean>
+          </div>
+
+          <div class="col-12" *ngIf="seccion_compras == 'compras_programadas'">
+            <div class="col-12 explain">
+              <h6 class="title">Compras programadas</h6>
+            </div>
+            <app_interno_egresos_compras_programadas></app_interno_egresos_compras_programadas>
+          </div>
+
+          <div class="col-12" *ngIf="seccion_compras == 'solicitudes_de_descuento'">
+            <div class="col-12 explain">
+              <h6 class="title">Solicitudes de descuento</h6>
+            </div>
+            <app_interno_egresos_compras_descuentos_solicitudes></app_interno_egresos_compras_descuentos_solicitudes>
+          </div>
+
+          <div class="col-12" *ngIf="seccion_compras == 'solicitudes_de_devolucion'">
+            <div class="col-12 explain">
+              <h6 class="title">Solicitudes de devoluci&oacute;n</h6>
+            </div>
+            <app_interno_egresos_compras_devolucion_solicitudes></app_interno_egresos_compras_devolucion_solicitudes>
+          </div>
+
+          <div class="col-12" *ngIf="seccion_compras == 'notas_de_credito'">
+            <div class="col-12 explain">
+              <h6 class="title">Notas de cr&eacute;dito</h6>
+            </div>
+            <app_interno_egresos_compras_notas_de_credito></app_interno_egresos_compras_notas_de_credito>
+          </div>
+
+          <div class="col-12" *ngIf="seccion_compras == 'notas_de_debito'">
+            <div class="col-12 explain">
+              <h6 class="title">Notas de d&eacute;bito</h6>
+            </div>
+            <app_interno_egresos_compras_notas_de_debito></app_interno_egresos_compras_notas_de_debito>
+          </div>
+          <!--Seguimiento con proveedores-->
+          <div class="col-12" *ngIf="seccion_compras == 'anticipos_a_proveedor'">
+            <div class="col-12 explain">
+              <h6 class="title">Registro de anticipos a proveedor</h6>
+            </div>
+            <app_compras_proveedores_anticipo></app_compras_proveedores_anticipo>
+          </div>
+          <div class="col-12" *ngIf="seccion_compras == 'carga_cfdis_traslado'">
+            <div class="col-12 explain">
+              <h6 class="title">Carga de CFDI de Traslado</h6>
+            </div>
+            <egresos_compras_carga_cfdis_traslado class="col-12 row"></egresos_compras_carga_cfdis_traslado>
+          </div>
+          
+
+          <div class="col-12" *ngIf="seccion_compras == 'compras_registro_directo'">
+            <div class="col-12 explain">
+              <h6 class="title">Compra manual</h6>
+            </div>
+            <app_compras_registro_productos></app_compras_registro_productos>
+          </div>
+          <div class="col-12" *ngIf="seccion_compras == 'compras_registro_cfdi'">
+            <div class="col-12 explain">
+              <h6 class="title">Compra base CFDI</h6>
+            </div>
+            <app_compras_registro_cfdi></app_compras_registro_cfdi>
+          </div>
+          <div class="col-12" *ngIf="seccion_compras == 'compras_registro_instruccion'">
+            <div class="col-12 explain">
+              <h6 class="title">Compra base previa istrucci&oacute;n</h6>
+            </div>
+            <app_compras_registro_instrucion></app_compras_registro_instrucion>
+          </div>
+          <div class="col-12" *ngIf="seccion_compras == 'app_interno_egresos_compras_descuentos'">
+            <div class="col-12 explain">
+              <h6 class="title">Solicitar de descuento</h6>
+            </div>
+            <app_interno_egresos_compras_descuentos_solicitar></app_interno_egresos_compras_descuentos_solicitar>
+          </div>
+
+          <!--Instrucción para la orden de compra-->
+          <div class="col-12" *ngIf="seccion_compras == 'app_interno_egresos_compras_requisicion_lista'">
+            <div class="col-12 explain">
+              <h6 class="title">Cat&aacute;logo de requisiciones</h6>
+            </div>
+            <app_interno_egresos_compras_requisicion_lista></app_interno_egresos_compras_requisicion_lista>
+          </div>
+          <div class="col-12" *ngIf="seccion_compras == 'app_interno_egresos_compras_requisicion_registro'">
+            <div class="col-12 explain">
+              <h6 class="title">NUEVA REQUISICION DE COMPRA</h6>
+            </div>
+            <app_interno_egresos_compras_requisicion_registro></app_interno_egresos_compras_requisicion_registro>
+          </div>
+          <div class="col-12" *ngIf="seccion_compras == 'app_interno_egresos_compras_cotizacion_lista'">
+            <div class="col-12 explain">
+              <h6 class="title">Cat&aacute;logo de cotizaciones</h6>
+            </div>
+            <app_interno_egresos_compras_cotizacion_lista></app_interno_egresos_compras_cotizacion_lista>
+          </div>
+          <div class="col-12" *ngIf="seccion_compras == 'app_interno_egresos_compras_cotizacion_registro'">
+            <div class="col-12 explain">
+              <h6 class="title">Solicitudes de cotizaci&oacute;n</h6>
+            </div>
+            <app_interno_egresos_compras_cotizacion_registro></app_interno_egresos_compras_cotizacion_registro>
+          </div>
+          <div class="col-12" *ngIf="seccion_compras == 'app_interno_egresos_compras_instruccion'">
+            <div class="col-12 explain">
+              <h6 class="title">NUEVA REQUISICION DE COMPRA</h6>
+            </div>
+            <app_interno_egresos_compras_instruccion></app_interno_egresos_compras_instruccion>
+          </div>
+          <div class="col-12" *ngIf="seccion_compras == 'app_interno_egresos_compras_instr_prvc'">
+            <!--<app_interno_egresos_compras_instr_prvc></app_interno_egresos_compras_instr_prvc>-->
+          </div>
+          <!--Reembolsos-->
+          <div class="col-12" *ngIf="seccion_compras == 'app_compras_egr_reembolsos'">
+            <div class="col-12 explain">
+              <!--<h6 class="title">{{'reem_list' | translate}}</h6>-->
+              <h6 class="title">comisiones y reembolsos</h6>
+            </div>
+            <p-tabs value="0" scrollable>
+              <p-tablist>
+                <p-tab value="0">{{'reem_gen_list' | translate}}</p-tab>
+                <p-tab value="1">{{'reem_term_list' | translate}}</p-tab>
+                <p-tab value="2">Lista general de comisiones</p-tab>
+                <p-tab value="3">Comisiones no concluidas</p-tab>
+                <p-tab value="4">Comisiones concluidas</p-tab>
+                <p-tab value="5">Comisiones eliminadas</p-tab>
+                <p-tab value="6">{{'comi_soli' | translate}}</p-tab>
+              </p-tablist>
+              <p-tabpanels>
+                <p-tabpanel value="0">
+                  <app_compras_egr_reembolsos_lista_general></app_compras_egr_reembolsos_lista_general>
+                </p-tabpanel>
+                <p-tabpanel value="1">
+                  <app_compras_egr_reembolsos_lista_autorizados></app_compras_egr_reembolsos_lista_autorizados>
+                </p-tabpanel>
+                <p-tabpanel value="2">
+                  <app_compras_egr_comi_lista_general></app_compras_egr_comi_lista_general>
+                </p-tabpanel>
+                <p-tabpanel value="3">
+                  <app_compras_egr_comi_lista_no_conc></app_compras_egr_comi_lista_no_conc>
+                </p-tabpanel>
+                <p-tabpanel value="4">
+                  <app_compras_egr_comi_lista_conc></app_compras_egr_comi_lista_conc>
+                </p-tabpanel>
+                <p-tabpanel value="5">
+                  <app_compras_egr_comi_lista_deleted></app_compras_egr_comi_lista_deleted>
+                </p-tabpanel>
+                <p-tabpanel value="6">
+                  <app_compras_egr_comi_registro></app_compras_egr_comi_registro>
+                </p-tabpanel>
+              </p-tabpanels>
+            </p-tabs>
+          </div>
+        </div>
+      </div>
+    </main>
+    <app-footer-inside></app-footer-inside>
+  </div>
+</div>

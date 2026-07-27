@@ -1,0 +1,308 @@
+<div class="form data-reg row" style="margin-top:30px!important;">
+  <div *ngIf="!validateFoundProv" class="col-12 row" style="padding: 0;margin-bottom: 20px !important;">
+    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6 fase_uno_nac">
+      <div class="card card_fase_uno row">
+        <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 seccion_logo_tipo" style="padding: 0;">
+          <img src="../assets/images/mx_logo.png">
+        </div>
+        <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 seccion_form" style="display: flex;flex-wrap: wrap;flex-direction: column;justify-content: space-between;">
+          <div class="col-12">
+            <h6 class="header_text">proveedor nacional</h6>
+            <ul class="list-group list_opciones">
+              <li id="nacFisBtn" class="list-group-item" (click)="tipoNacionalidadSelectProv($event.target,'nacional','provFisica','nacFisBtn');especificacionesInputRfcProv();"><i class="fa-solid fa-person"></i>Persona f&iacute;sica</li>
+              <li id="nacMorBtn" class="list-group-item" (click)="tipoNacionalidadSelectProv($event.target,'nacional','provMoral','nacMorBtn');especificacionesInputRfcProv();"><i class="fa-solid fa-people-group"></i>Persona moral</li>
+            </ul>
+          </div>
+
+          <div class="col-12 formulario_verificacion">
+            <div class="col-12" style="padding:0!important;">
+              <div class="input-group rfcMayus" *ngIf="provModelo.tipoProv == '' || provModelo.tipoProv == 'extranjero' || provModelo.subtipoProv == ''">
+                <label for="first_name" class="activeInput">Escriba su rfc con Homoclave</label>
+                <input id="verif_rfcProv" class="validate" name="verif_rfcProvMx" type="text" placeholder="Ej. ABCD000000XXX" disabled>
+              </div>
+              <div class="input-group rfcMayus" *ngIf="provModelo.tipoProv != '' && provModelo.tipoProv == 'nacional' && provModelo.subtipoProv != '' && provModelo.subtipoProv == 'provFisica'">
+                <label for="first_name" class="activeInput">Escriba su rfc con Homoclave (13 caracteres)</label>
+                <input id="verif_rfcProv" class="verif_rfc validate inputWthPass" name="verif_rfcProvMx" type="text" autocomplete="off" data-length="13" placeholder="Ej. ABCD000000XXX" maxlength="13" (keyup)="keyupverif_rfcProv($event.target);">
+              </div>
+              <div class="input-group rfcMayus" *ngIf="provModelo.tipoProv != '' && provModelo.tipoProv == 'nacional' && provModelo.subtipoProv != '' && provModelo.subtipoProv == 'provMoral'">
+                <label for="first_name" class="activeInput">Escriba su rfc con Homoclave (12 caracteres)</label>
+                <input id="verif_rfcProv" class="verif_rfc validate inputWthPass" name="verif_rfcProvMx" type="text" autocomplete="off" data-length="12" placeholder="Ej. ABC000000XXX" maxlength="12" (keyup)="keyupverif_rfcProv($event.target);">
+              </div>
+            </div>
+            <div class="col-12" style="padding:0!important;">
+              <div class="input-group rfcMayus">
+                <label for="txtMaternoPF_reg"class="activeInput" id="lblMaterno">Nombre completo / raz&oacute;n social del proveedor</label>
+                <input id="verifNameProvidder_reg" class="validate" name="verifRfcMaterno" type="text" autocomplete="off" [disabled]="provModelo.tipoProv == '' || provModelo.tipoProv == 'extranjero' || provModelo.subtipoProv == '' || provModelo.rfc == ''"
+                  (keyup)="checkNombreProv($event.target);">
+              </div>
+            </div>
+            <div class="col-12 row" style="padding:0!important;">
+              <div class="col-12 col-sm-12 col-md-6 col-lg-8 col-xl-8 col-xxl-8"></div>
+              <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-4" style="display: flex !important;justify-content: end!important;margin-top: 5px!important;padding: 0!important;margin-bottom: 5px !important;">
+                <a class="btn btn_extend bg-blue-300" id="btnBuscaProvDB"
+                  [ngClass]="provModelo.tipoProv == '' || provModelo.tipoProv == 'extranjero' || provModelo.subtipoProv == '' || provModelo.rfc == '' || provModelo.name_prov == '' ? 'disabled' : ''"
+                  [attr.disabled]="provModelo.tipoProv == '' || provModelo.tipoProv == 'extranjero' || provModelo.subtipoProv == '' || provModelo.rfc == '' || provModelo.name_prov == '' ? true : null"
+                  [attr.aria-disabled]="provModelo.tipoProv == '' || provModelo.tipoProv == 'extranjero' || provModelo.subtipoProv == '' || provModelo.rfc == '' || provModelo.name_prov == '' ? true : null"
+                  (click)="provModelo.tipoProv != '' && provModelo.tipoProv == 'nacional' && provModelo.subtipoProv != '' && provModelo.name_prov != '' && provModelo.rfc != '' ? funtcBuscaProvDBNac() : null;">
+                  Verificar RFC
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6 fase_uno_ext">
+      <div class="card card_fase_uno row">
+        <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 seccion_logo_tipo" style="padding: 0;">
+          <i class="fa-solid fa-globe"></i>
+        </div>
+        <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 seccion_form" style="display: flex;flex-wrap: wrap;flex-direction: column;justify-content: space-between;">
+          <div class="col-12">
+            <h6 class="header_text">proveedor extranjero</h6>
+            <ul class="list-group list_opciones">
+              <li id="extFisBtn" class="list-group-item" (click)="tipoNacionalidadSelectProv($event.target,'extranjero','provFisica','extFisBtn');especificacionesInputRfcProv();"><i class="fa-solid fa-person"></i>Persona f&iacute;sica</li>
+              <li id="extMorBtn" class="list-group-item" (click)="tipoNacionalidadSelectProv($event.target,'extranjero','provMoral','extMorBtn');especificacionesInputRfcProv();"><i class="fa-solid fa-people-group"></i>Persona moral</li>
+            </ul>
+          </div>
+
+          <div class="col-12 formulario_verificacion">
+            <div class="col-12" style="padding:0!important;">
+              <div class="input-group rfcMayus" *ngIf="provModelo.tipoProv == '' || provModelo.tipoProv == 'nacional' || provModelo.subtipoProv == ''">
+                <label for="first_name" class="activeInput">Escriba su rfc</label>
+                <input class="validate" name="verif_rfcProvMx" type="text" placeholder="Ej. ABCD000000XXX" disabled>
+              </div>
+              <div class="input-group rfcMayus" *ngIf="provModelo.tipoProv != '' && provModelo.tipoProv == 'extranjero' && provModelo.subtipoProv != '' && provModelo.subtipoProv == 'provMoral'">
+                <datalist id="listaRfcModelo">
+                  <option value="xaxx010101000"></option>
+                  <option value="xax010101000"></option>
+                  <option value="xexx010101000"></option>
+                </datalist>
+                <label for="first_name" class="activeInput">Escriba su rfc</label>
+                <input id="verif_rfcProv" list="#listaRfcModelo" class="verif_rfc validate" name="verif_rfcProvExt" autocomplete="off" type="text" placeholder="Ej. ABC000000XXX" (keyup)="keyupverif_rfcExtProv($event.target);">
+              </div>
+              <div class="input-group rfcMayus">
+                <label for="first_name" class="activeInput">Escriba Tax ID del proveedor</label>
+                <input id="verif_idTaxProv" class="verif_rfc validate" name="verif_rfcProvMx" type="text" [disabled]="provModelo.tipoProv == '' || provModelo.tipoProv == 'nacional' || provModelo.subtipoProv == ''" minlength="9" maxlength="40" autocomplete="off" (keyup)="keyupverif_TaxIdProv($event.target);">
+              </div>
+            </div>
+            <div class="col-12" style="padding:0!important;">
+              <div class="input-group rfcMayus">
+                <label for="txtMaternoPF_reg"class="activeInput" id="lblMaterno">Nombre completo / raz&oacute;n social del proveedor</label>
+                <input class="validate" name="verifRfcMaterno" type="text" autocomplete="off" [disabled]="provModelo.tipoProv == '' || provModelo.tipoProv == 'nacional' || provModelo.subtipoProv == '' || provModelo.rfc == ''"
+                  (keyup)="checkNombreProv($event.target);" id="verifNameProvidderExt_reg">
+              </div>
+            </div>
+            <div class="col-12 row" style="padding:0!important;">
+              <div class="col-12 col-sm-12 col-md-6 col-lg-8 col-xl-8 col-xxl-8"></div>
+              <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-4" style="display: flex !important;justify-content: end!important;margin-top: 5px!important;padding: 0!important;margin-bottom: 5px !important;">
+                <a class="btn btn_extend bg-blue-300" id="btnBuscaProvDB"
+                  [ngClass]="provModelo.tipoProv == '' || provModelo.tipoProv == 'nacional' || provModelo.subtipoProv == '' || provModelo.rfc == '' || provModelo.name_prov == '' ? 'disabled' : ''"
+                  [attr.disabled]="provModelo.tipoProv == '' || provModelo.tipoProv == 'nacional' || provModelo.subtipoProv == '' || provModelo.rfc == '' || provModelo.name_prov == '' ? true : null"
+                  [attr.aria-disabled]="provModelo.tipoProv == '' || provModelo.tipoProv == 'nacional' || provModelo.subtipoProv == '' || provModelo.rfc == '' || provModelo.name_prov == '' ? true : null"
+                  (click)="provModelo.tipoProv != '' && provModelo.tipoProv == 'extranjero' && provModelo.subtipoProv != '' && provModelo.name_prov != '' && provModelo.rfc != '' ? funtcBuscaProvDBExt() : null;">
+                  Verificar RFC
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="validateFoundProv" class="col-12" style="border-top: solid 1px lightgray!important;padding: 0 !important;">
+    <form method="post" #frmAddProv="ngForm" class="frmAddProv" id="frmAddProv" name="frmAddProv" enctype="multipart/form-data" (ngSubmit)="validateUbicacion && solicitaRegistroProveedor(frmAddProv);">
+      <div class="data-reg row">
+        <div class="col-12 row" style="padding: 0;">
+          <div class="col-12 col-sm-4 col-md-4 col-lg-4 col-xl-4 col-xxl-4 explain">
+            <h6 class="title">Clasificaci&oacute;n del proveedor</h6>
+            <h6 class="content">{{vSubClasificacionProv == 'provFisica' ? 'Persona física' : 'Persona moral'}}</h6>
+          </div>
+          <div class="col-12 col-sm-4 col-md-4 col-lg-4 col-xl-4 col-xxl-4 explain">
+            <h6 class="title">Rfc</h6>
+            <h6 class="content">{{provModelo.rfc != '' ? provModelo.rfc : '---'}}</h6>
+          </div>
+          <div class="col-12 col-sm-4 col-md-4 col-lg-4 col-xl-4 col-xxl-4 explain">
+            <h6 class="title">idTax</h6>
+            <h6 class="content">{{provModelo.id_tax != '' ? provModelo.id_tax : '---'}}</h6>
+          </div>
+          <div class="col-12 explain">
+            <h6 class="title">Nombre completo / raz&oacute;n social del proveedor</h6>
+            <h6 class="content" (click)="decideEditarDataProveedor();">{{provModelo.name_prov+" "}}
+              <i class="fa-solid" [ngClass]="!decisionEditNombre ? 'fa-pen-to-square fa-beat' : 'fa-solid fa-caret-up'"></i>
+            </h6>
+          </div>
+          <div class="col-12 row" style="padding:0!important;" *ngIf="decisionEditNombre">
+            <div class="col-12 col-sm-12 col-md-11 col-lg-11 col-xl-11 col-xxl-11 row" style="padding: 0;" *ngIf="provModelo.tipoProv == 'nacional'">
+              <div class="input-group rfcMayus col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6" style="padding-left: 0;">
+                <label for="txtMaternoPF_reg"class="activeInput" id="lblMaterno">Nombre completo / raz&oacute;n social del proveedor</label>
+                <input id="verifNameProvidder_reg" class="validate" name="verifRfcMaterno" type="text" autocomplete="off" (keyup)="validaNewNombreProv($event.target);">
+              </div>
+              <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6" style="padding-left: 0;">
+                <div class="input-group rfcMayus" *ngIf="provModelo.subtipoProv == 'provFisica'">
+                  <label class="activeInput">Escriba su rfc con Homoclave (13 caracteres)</label>
+                  <input class="verif_rfc validate inputWthPass" type="text" autocomplete="off" data-length="13" placeholder="Ej. ABCD000000XXX" maxlength="13" (keyup)="validaNewRfcProv($event.target);">
+                </div>
+                <div class="input-group rfcMayus" *ngIf="provModelo.subtipoProv == 'provMoral'">
+                  <label class="activeInput">Escriba su rfc con Homoclave (12 caracteres)</label>
+                  <input class="verif_rfc validate inputWthPass" type="text" autocomplete="off" data-length="12" placeholder="Ej. ABC000000XXX" maxlength="12" (keyup)="validaNewRfcProv($event.target);">
+                </div>
+              </div>
+            </div>
+  
+            <div class="col-12 col-sm-12 col-md-11 col-lg-11 col-xl-11 col-xxl-11 row" style="padding: 0;" *ngIf="provModelo.tipoProv == 'extranjero'">
+              <div class="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-4 col-xxl-4 input-group rfcMayus" style="padding-left: 0;">
+                <label for="txtMaternoPF_reg"class="activeInput" id="lblMaterno">Nombre completo / raz&oacute;n social del proveedor</label>
+                <input id="verifNameProvidder_reg" class="validate" name="verifRfcMaterno" type="text" autocomplete="off" (keyup)="validaNewNombreProv($event.target);">
+              </div>
+              <div class="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-4 col-xxl-4" style="padding-left: 0;">
+                <div class="input-group rfcMayus" *ngIf="provModelo.subtipoProv == 'provFisica'">
+                  <label class="activeInput">Escriba su rfc con Homoclave (13 caracteres)</label>
+                  <input class="verif_rfc validate inputWthPass" type="text" autocomplete="off" data-length="13" placeholder="Ej. ABCD000000XXX" maxlength="13" (keyup)="validaNewRfcProv($event.target);">
+                </div>
+                <div class="input-group rfcMayus" *ngIf="provModelo.subtipoProv == 'provMoral'">
+                  <label class="activeInput">Escriba su rfc con Homoclave (12 caracteres)</label>
+                  <input class="verif_rfc validate inputWthPass" type="text" autocomplete="off" data-length="12" placeholder="Ej. ABC000000XXX" maxlength="12" (keyup)="validaNewRfcProv($event.target);">
+                </div>
+              </div>
+              <div class="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-4 col-xxl-4 input-group rfcMayus">
+                <label for="first_name" class="activeInput">Escriba Tax ID del proveedor</label>
+                <input id="verif_idTaxProv" class="verif_rfc validate" name="verif_rfcProvMx" type="text" minlength="9" maxlength="40" autocomplete="off" (keyup)="validaNewTaxIdProv($event.target);">
+              </div>
+            </div>
+  
+            <div class="col-12 col-sm-12 col-md-1 col-lg-1 col-xl-1 col-xxl-1" style="padding: 0;margin-left: -10px;">
+              <a class="btn btn_extend text-bg-success rounded-3 disabled" *ngIf="(provModelo.name_prov_back == '' || provModelo.name_prov_back == provModelo.name_prov) && (provModelo.rfc_back == '' || provModelo.rfc == provModelo.rfc_back) && (provModelo.id_tax_back == '' || provModelo.id_tax == provModelo.id_tax_back)" disabled aria-disabled="true">
+                <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}</a>
+              <a class="btn btn_extend text-bg-success rounded-3" (click)="guardaNew_DataProveedor();"
+                *ngIf="(provModelo.name_prov_back != '' && provModelo.name_prov != provModelo.name_prov_back) || (provModelo.rfc_back != '' && provModelo.rfc != provModelo.rfc_back) || (provModelo.id_tax_back != '' && provModelo.id_tax != provModelo.id_tax_back)">
+                <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}</a>
+            </div>
+          </div>
+          <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-6 col-xxl-6" style="margin: 0;padding: 0;">
+            <span class="error" style="font-family: 'roboto_cr' !important;font-size: smaller;">* Campos obligatorios</span>
+          </div>
+          <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-6 col-xxl-6" style="margin: 0;padding: 0;">
+            <a class="btn btnGuardar btnRow bg-red-700" 
+              style="font-family:'roboto_cr'!important;font-size: smaller;height: 20px;line-height: 20px;"
+              (click)="comeBackPrincipalMenu();"><i class="fa-solid fa-chevron-left"></i>&nbsp;Regresar al menu principal</a>
+          </div>
+        </div>
+        <p-divider/>
+        <div class="col-12 row" style="padding:0!important;">
+          <div class="col-12 explain"><h6 class="title">DATOS GENERALES</h6></div>
+          
+          <div class="input-group col-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-4">
+            <label for="txtnomCom_regPF" class="activeInput" id="lblNomComercial">Nombre comercial</label>
+            <input class="validate" name="txtNomComercialPF" type="text" (keyup)="keyupComercialName($event.target);" id="txtnomCom_regPF">
+          </div>
+          <div *ngIf="vClasificacionProv == 'nacional'" class="input-group col-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-4">
+            <label for="txtcurpPF_reg" class="activeInput" *ngIf="vClasificacionProv == 'nacional'">CURP</label>
+            <input class="validate" name="txtcurpPF" type="text" (keyup)="keyupCurp($event.target);" id="txtcurpPF_reg">
+          </div>
+          <div *ngIf="vClasificacionProv == 'extranjero'" class="input-group col-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-4">
+            <label for="selPaisExtPF_reg" class="active activeSelect" id="lblselPaisExtPF_reg"><h6 class="errorLabel">*</h6>País</label>
+            <select id="selPaisExtPF_reg" class="browser-default" name="paisPF" (change)="changePais($event.target);">
+              <option value="" disabled selected>{{'opt_select' | translate}}</option>
+              <option *ngFor="let ltpais of arraYpais" value="{{ltpais.token_pais}}">{{ltpais.pais}}</option>
+            </select>
+          </div>
+          <div class="input-group input-field-website col-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-4">
+            <label for="txtsitWeb_reg" class="activeInput" id="lblSitioWeb">Sitio web</label>
+            <input class="validate" name="txtSitioWebPF" type="text" (change)="changeSitioWeb($event.target);" id="txtsitWebPF_reg">
+          </div>
+  
+          <div class="input-group col-12">
+            <label class="activeInput"><span class="obligatorio">Regimen fiscal</span></label>
+            <select *ngIf="vSubClasificacionProv == 'provFisica'" id="selRegimenFiscal" class="browser-default" name="selRegimenFiscal" (change)="changeRegimenFiscal($event.target);">
+              <option value="" disabled selected>{{'opt_select' | translate}}</option>
+              <option *ngFor="let ltrfis of PfAllRegFisArray" value="{{ltrfis.token_regimen_fiscal}}">{{ltrfis.regimen}}</option>
+            </select>
+            <select *ngIf="vSubClasificacionProv == 'provMoral'" id="selRegimenFiscal" class="browser-default" name="selRegimenFiscal" (change)="changeRegimenFiscal($event.target);">
+              <option value="" disabled selected>{{'opt_select' | translate}}</option>
+              <option *ngFor="let ltrfis of PmAllRegFisArray" value="{{ltrfis.token_regimen_fiscal}}">{{ltrfis.regimen}}</option>
+            </select>
+          </div>
+  
+          <div class="input-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3">
+            <label for="fechaAltaProd" class="activeInput">Cuenta contable</label>
+            <input class="validate" type="text" (keyup)="keyupValidateCuentaContable($event.target);">
+          </div>
+        </div>
+        <p-divider/>
+        <div class="col-12 row" style="padding:0!important;">
+          <div class="col-12 explain"><h6 class="title">DIRECCIONES (UBICACI&Oacute;N)</h6></div>
+  
+          <div *ngIf="vClasificacionProv != '' && vClasificacionProv == 'extranjero'" class="col-12 row">
+            <label class="activeInput"><span class="obligatorio">Direcci&oacute;n completa</span></label>
+            <textarea class="validate" name="txtCodPostalSucExt" (keyup)="keyupUbicaciontxtCodPostalExt($event.target);" id="txtCodPostalUbicacionExt" minlength="5" style="max-height: 80px!important;"></textarea>
+          </div>
+  
+          <div *ngIf="vClasificacionProv != '' && vClasificacionProv == 'nacional'" class="col-12 row" style="padding: 0;">
+            <ul class="list-group collection_postales" style="margin-top: 0;">
+              <li class="list-group-item">
+                <div class="busqueda row">
+                  <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6" style="display: flex;justify-content: flex-start;margin: auto;padding: 0;height: 30px;line-height: 30px;">
+                    <h6>C&oacute;digo postal: </h6>
+                  </div>
+                  <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6 field_buscar">
+                    <input class="validate" type="text" placeholder="{{'bus_car' | translate}}" (keyup)="buscaCodPostalDipomex($event.target);">
+                  </div>
+                </div>
+              </li>
+              <li class="list-group-item">Estado: {{dipomex_cod_postal_estado}}</li>
+              <li class="list-group-item">Municipio: {{dipomex_cod_postal_municipio}}</li>
+              <li class="list-group-item">C&oacute;digo postal: {{dipomex_cod_postal_cp}}</li>
+              <li class="list-group-item" *ngIf="dipomex_cod_postal_colonias.length == 0">Colonias: ---</li>
+              <li class="list-group-item itemFor" *ngIf="dipomex_cod_postal_colonias.length > 0">Colonias: <p *ngFor="let col of dipomex_cod_postal_colonias" (click)="seleccionaColoniaCPDipomex(col);">{{col}}</p></li>
+              <li class="list-group-item itemColoniaSeleted" *ngIf="dipomex_cod_postal_colonia_vinculada != ''">Colonia seleccionada: {{dipomex_cod_postal_colonia_vinculada}}</li>
+            </ul>
+  
+            <table *ngIf="dipomex_cod_postal_cp != '' && dipomex_cod_postal_cp == ('unk_nown' | translate)" class="centered responsive-table">
+              <thead>
+                <tr>
+                  <th>Estado</th>
+                  <th>Municipio</th>
+                  <th>C&oacute;digo postal</th>
+                  <th>Colonia</th>
+                  <th class="ultimo"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><input id="newDipoMexEstado" class="validate" type="text" (keyup)="keyupCPostal_EstName($event.target);"></td>
+                  <td><input id="newDipoMexMunicipio" class="validate" type="text" (keyup)="keyupCPostal_Municipio($event.target);"></td>
+                  <td><input id="newDipoMexCP" class="validate" type="text" (keyup)="keyupCPostal_CP($event.target);"></td>
+                  <td><input id="newDipoMexColonia" class="validate" type="text" (keyup)="keyupCPostal_Colonia($event.target);"></td>
+                  <td class="ultimo">
+                    <a class="btn text-bg-success rounded-3" 
+                      [ngClass]="!validatecPostal ? 'disabled' : ''" [attr.disabled]="!validatecPostal ? true : null" [attr.aria-disabled]="!validatecPostal ? true : null"
+                      (click)="validatecPostal && addListPostal();">
+                      <i class="fa-solid fa-floppy-disk"></i>
+                    </a>
+                  </td>
+                </tr>
+                <tr *ngFor="let newCP of listnewdireccionNac;index as pos">
+                  <td>{{newCP.estado}}</td>
+                  <td>{{newCP.municipio}}</td>
+                  <td>{{newCP.codigo_postal}}</td>
+                  <td>{{newCP.colonia}}</td>
+                  <td class="ultimo">
+                    <a class="btn text-bg-danger rounded-3" (click)="deleteListCPostal(pos);"><i class="fa-solid fa-eraser"></i> {{'delete_row' | translate}}</a>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <p-divider/>
+        <div class="col-12 row" style="display: flex;justify-content: end;">
+          <button class="btn btn_extend text-bg-success rounded-3" [ngClass]="!validateUbicacion ? 'disabled' : ''" [attr.disabled]="!validateUbicacion ? true : null" [attr.aria-disabled]="!validateUbicacion ? true : null">
+            <i class="fa-solid fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+          </button>
+        </div>
+
+      </div>
+    </form>
+  </div>
+</div>

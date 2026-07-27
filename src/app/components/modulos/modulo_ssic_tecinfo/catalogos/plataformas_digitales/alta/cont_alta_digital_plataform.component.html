@@ -1,0 +1,264 @@
+<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco" #vContent>
+	<div class="contenido">
+		<app-loader></app-loader>
+		<nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+		<main class="contenidoPagina">
+			<div class="listas_ps revanecer">
+				<div id="formMon" class="fmAlta">
+					<h4>REGISTRO DE MONEDERO ELECTR&Oacute;NICO</h4>
+					<form class="row formDataMonElectro" #formDataMonElectro="ngForm" autocomplete="off"
+						(ngSubmit)="regMonElectro(formDataMonElectro);">
+						<div class="col-12">
+							<div class="busqueda row">
+								<div class="col s2 m3 col-md-3 col-lg-2">
+									<a class="btn" placement="top" tooltip="Buscar por clave"><i
+											class="fa-solid fa-cart-shopping"></i></a>
+								</div>
+								<div class="col s2 m3 col-md-3 col-lg-2">
+									<a class="btn" placement="top" tooltip="Buscar por nombre comercial"><i
+											class="fa-solid fa-cart-shopping"></i></a>
+								</div>
+								<div class="col s8 m6 col-md-3 col-lg-2">
+									<input class="datasearch" type="text" id="buscaprod" disabled placeholder="{{'bus_car' | translate}}">
+								</div>
+							</div>
+							<div class="col-12">
+								<table class="centered responsive-table" cellspacing="0" cellpadding="0">
+									<thead>
+										<tr>
+											<th>Instituci&oacute;n</th>
+											<th class="ultimo"></th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr *ngFor="let trMonederos of arrayListMonederos">
+											<td>{{trMonederos.nombre}}</td>
+											<td>
+												<p>
+													<label>
+														<input class="selectBanco select with-gap" name="selectMonedero" type="radio"
+															(click)="selectListaMonederoElectro($event.target,trMonederos.plataforma_electronica);"
+															(click)="validaFormMonedero();" />
+													</label>
+												</p>
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+						<div class="col-12">
+							<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+								<div class="input-field divWthibtnView">
+									<input class="txtPasssContrato validate inputWthPass" name="referenciaMonElect" type="password"
+										(keyup)="validaNoRef($event.target,monderoElect);" (change)="validaFormMonedero();">
+									<label class="activeInput">No. de referencia</label>
+									<a class="btn btnView waves-effect waves-light" (click)="verContrato($event.target);"><i class="fa-solid fa-info"></i></a>
+								</div>
+							</div>
+							<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+								<div class="input-field divWthibtnView">
+									<input class="txtPassCuenta validate inputWthPass" name="noCuentaMonElect" type="password" required
+										(keyup)="validaNoCuenta($event.target,monderoElect);" (change)="validaFormMonedero();">
+									<label class="activeInput">No. de cuenta</label>
+									<a class="btn btnView waves-effect waves-light" (click)="verCuenta($event.target);"><i class="fa-solid fa-info"></i></a>
+								</div>
+							</div>
+							<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+								<div class="input-field divWthibtnView">
+									<input class="txtPassClabeInter validate inputWthPass" name="clabeInterMonElect" type="password"
+										maxlength="18" required (keyup)="validaClabeInter($event.target,monderoElect);"
+										(change)="validaFormMonedero();">
+									<label class="activeInput">Clabe interbancaria</label>
+									<a class="btn btnView waves-effect waves-light" (click)="verClabeInter($event.target);"><i class="fa-solid fa-info"></i></a>
+								</div>
+							</div>
+							<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+								<div class="input-field">
+									<input class="validate" name="vigenciaCuenta" type="text" placeholder="mm/aa" required
+										(keyup)="validaVigencia($event.target,monderoElect);">
+									<label class="activeInput">Vigencia</label>
+								</div>
+							</div>
+							<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+								<div class="input-field">
+									<input class="validate" name="titularMonElectronico" type="text" required
+										(keyup)="validaTitular($event.target,monderoElect);" (change)="validaFormMonedero();">
+									<label class="activeInput">Titular</label>
+								</div>
+							</div>
+							<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+								<div class="input-field">
+									<select id="formaPagoCompra" name="formaPago" (change)="selectMonedaMonedero($event.target);">
+										<option value="" disabled selected>{{'opt_select' | translate}}</option>
+										<option *ngFor="let arraMon of arrayMonedas" value="{{arraMon.c_token}}">
+											{{arraMon.codigo+'-'+arraMon.moneda}}</option>
+									</select>
+									<label class="active activeSelect">Moneda</label>
+								</div>
+							</div>
+							<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+								<div class="col-12 col-sm-12 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+									<h6>&Aacute;rea de utilidad:</h6>
+								</div>
+								<div class="col s4 m4 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+									<p class="radio">
+										<label class="labelRadio">
+											<input class="validate" name="areaUtilEgresos" type="checkbox" value="egresos"
+												(click)="validaAreaEgresos($event.target,monderoElect);" (click)="validaFormMonedero();">
+											<span placement="top" tooltip="Egresos y cuentas por pagar"><i
+													class="fa-solid fa-arrow-up-short-wide"></i></span>
+										</label>
+									</p>
+								</div>
+								<div class="col s4 m4 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+									<p class="radio">
+										<label class="labelRadio">
+											<input class="validate" name="areaUtilIngresos" type="checkbox" value="ingresos"
+												(click)="validaAreaIngresos($event.target,monderoElect);" (click)="validaFormMonedero();">
+											<span placement="top" tooltip="Ingresos y cuentas por cobrar"><i
+													class="fa-solid fa-arrow-down-short-wide"></i></span>
+										</label>
+									</p>
+								</div>
+								<div class="col s4 m4 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+									<p class="radio">
+										<label class="labelRadio">
+											<input class="validate" name="areaUtilVHumano" type="checkbox" value="v_humano"
+												(click)="validaAreaVHumano($event.target,monderoElect);" (click)="validaFormMonedero();">
+											<span placement="top" tooltip="Valor humano">&#xf007;</span>
+										</label>
+									</p>
+								</div>
+							</div>
+							<div class="col-12 opcionesAdionales">
+								<h6>Medios de operaci&oacute;n</h6>
+								<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+									<div class="input-field">
+										<select (change)="selectManejoMonedero($event.target);">
+											<option value="" disabled selected>{{'opt_select' | translate}}</option>
+											<option value="Chequera">Chequera</option>
+											<option value="Tarjetas de cr&eacute;dito">Tarjetas de cr&eacute;dito</option>
+											<option value="Tarjetas de débito">Tarjetas de débito</option>
+										</select>
+										<label class="active activeSelect" id="lblCheque">Manejo de:</label>
+									</div>
+								</div>
+								<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+									<div class="input-field">
+										<input #txtReferenciaManejoMon id="txtReferenciaManejoMon" class="validate" type="text"
+											(keyup)="referenciaManejoMon($event.target);" (keyup)="validaNoReferencia($event.target);">
+										<label class="activeInput" id="lblReferencia">No. de referencia</label>
+									</div>
+								</div>
+								<div class="col s10 m11 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+									<div class="input-field">
+										<select (change)="selectResponsableMon($event.target);">
+											<option value="" disabled selected>{{'opt_select' | translate}}</option>
+											<option *ngFor="let people of arrayPersonal"
+												value="{{people.token_empleado_inside+'-'+people.nombre_completo}}">{{people.nombre_completo}}
+											</option>
+										</select>
+										<label class="active activeSelect" id="lblResponsable">Responsable</label>
+									</div>
+								</div>
+								<div class="col s2 m1 divAdd">
+									<a #btnAddMnjMon class="btn btnRow btn text-bg-success rounded-3" disabled
+										(click)="addManejoMonedero();"><i class="fa-solid fa-plus"></i></a>
+								</div>
+								<div class="col-12">
+									<table class="centered responsive-table">
+										<thead>
+											<tr>
+												<th>Manejo de:</th>
+												<th>No. de referencia</th>
+												<th>Responsable</th>
+												<th class="ultimo"></th>
+											</tr>
+										</thead>
+										<tbody *ngIf="arrayOptionAddMon.length > 0">
+											<tr *ngFor="let trMonederos of arrayOptionAddMon">
+												<td>{{trMonederos.clave}}</td>
+												<td>{{trMonederos.valor}}</td>
+												<td>{{trMonederos.nameResp}}</td>
+												<td><a id="btnDeleteManejMon" class="btn text-bg-danger rounded-3"
+														(click)="deleteManejoMonedero($event.target);"><i class="fa-solid fa-eraser"></i></a></td>
+											</tr>
+										</tbody>
+										<tbody *ngIf="arrayOptionAddMon.length == 0">
+											<tr>
+												<td colspan="4">{{'no_rows' | translate}}</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</div>
+							<div class="col-12 col-sm-12 col-md-3 col-lg-2 col-xl-2 col-xxl-2 opcionesCuentaVinculada">
+								<h6>Vincular cuenta bancaria</h6>
+								<div class="col-12">
+									<table class="centered responsive-table" cellspacing="0" cellpadding="0">
+										<thead>
+											<tr>
+												<th>Cuenta</th>
+												<th class="ultimo"></th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr *ngFor="let trCuentaMon of arrayCuentaMonedero">
+												<td>{{trCuentaMon.nombre_comercial+" - "+trCuentaMon.cuenta}}</td>
+												<td>
+													<p>
+														<label>
+															<input class="select with-gap" name="selectCuentaMon" type="radio"
+																(click)="selectCuentaMondElect($event.target,trCuentaMon.token_cuenta);" />
+														</label>
+													</p>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</div>
+							<div class="col-12 col-sm-12 col-md-3 col-lg-2 col-xl-2 col-xxl-2 opcionesCaja">
+								<h6>Vincular caja</h6>
+								<div class="col-12">
+									<table class="centered responsive-table" cellspacing="0" cellpadding="0">
+										<thead>
+											<tr>
+												<th>Caja</th>
+												<th>Alias</th>
+												<th class="ultimo"></th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr *ngFor="let trCajaMon of arrayCajaMonedero">
+												<td>{{trCajaMon.caja}}</td>
+												<td>{{trCajaMon.alias}}</td>
+												<td>
+													<p>
+														<label>
+															<input class="select with-gap" name="selectCajaMon" type="radio"
+																(click)="selectCajaMondElect($event.target,trCajaMon.token_caja);" />
+														</label>
+													</p>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+						<div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+						<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+							<button #btnGuardarMonedero class="btn btnGuardar btnRow waves-light green darken-2" type="submit"
+								name="guadarMonElectro" disabled>Guardar</button>
+						</div>
+						<div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+					</form>
+				</div>
+			</div>
+		</main>
+		<app-footer-inside></app-footer-inside>
+	</div>
+</div>

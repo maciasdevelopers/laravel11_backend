@@ -1,0 +1,99 @@
+.card-panel{
+  overflow-x: overlay;
+  padding: 5px!important;
+  margin: 0!important;
+  background-color: transparent!important;
+  box-shadow: none!important;
+}
+
+.card-panel table.tableProrrat{
+  width: max-content!important;
+  background-color: #fffd98!important;
+}
+
+.card-panel table thead tr th.thProrrt{
+  width: 300px!important;
+  background: linear-gradient(90deg,rgba(0,0,0,1) 0%,rgba(227,67,62,1)100%);
+}
+
+.card-panel table thead tr th.thProrrt div.thead{
+  width: 300px!important;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  justify-content: space-between;
+  height: 40px;
+  margin: 0;
+  padding: 0;
+}
+
+.card-panel table thead tr th.thProrrt div.thead p.titulo{
+  width: 100%!important;
+  margin: 0;
+}
+
+.card-panel table thead tr th.thProrrt div.thead a.btnDelPrort{
+  margin-top: 5px;
+  background-color: transparent!important;
+}
+
+.card-panel table thead tr th.thProrrt div.thead a.btnDelPrort:hover{
+  margin-top: 5px;
+  background-color: #000!important;
+}
+
+.card-panel table thead tr th.dat{
+  font-family: FontAwesome;
+}
+
+.card-panel table thead tr th.thProrrt div.thead p.dat{
+  width: calc((100% - 300px) / 5)!important;
+  margin: 0;
+  font-family: FontAwesome;
+}
+
+.card-panel table thead tr th.thProrrt div.thead p.letter{
+  font-family: Ubuntu!important;
+}
+
+.card-panel table thead tr th.thProrrt div.thead p.lastPrort{
+  width: 150px!important;
+}
+
+.card-panel table tbody tr.trColorUno{
+  background-color: #fffd98;
+}
+
+.card-panel table tbody tr.trColorDos{
+  background-color: #98efff;
+}
+
+.card-panel table tbody tr td.second{
+  margin:0;
+  padding:0;
+  border-right: 1px solid;
+}
+
+.card-panel table tbody tr td.second tr.trSecond{
+  border-left: solid 1px #353535;
+  width:300px!important;
+  width: inherit;
+  display: flex;
+  justify-content: center;
+}
+
+.card-panel table tbody tr td.second tr.trSecond td{
+  width: calc((100% - 300px) / 5)!important;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.card-panel table tbody tr td.second tr.trSecond td.lastPrort{
+  width: 150px!important;
+}
+
+a.calculate svg{
+  height: 20px!important;
+}

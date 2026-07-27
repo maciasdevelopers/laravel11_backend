@@ -1,0 +1,183 @@
+<div id="loadingSeccion" class="progress loadingpage loadingBlue" #loadingBlue>
+	<div class="preloader"></div>
+	<h6 class="h6loadingSeccion" #h6loadingSeccion>usuario verificado, ¡Bienvenido!</h6>
+</div>
+<!--<header><h1>Encabezado</h1></header>-->
+<div id="vContent" class="marco noneView" #vContent>
+	<div class="contenido">
+    <header class="sticky-top">
+			<nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+		</header>
+		<main id="mainContenidoModProyectos" class="contenidoPagina contenidoModProyectos">
+			<article class="listas_ps revanecer">
+        <div class="fmAlta lista-divNoFlex row">
+          <div class="col-12">
+            <h6 class="col-12">{{'proy_new' | translate}}</h6>
+            <div class="col-12 card card_main">
+              <div class="card-content" style="height: 100%;display: flex;flex-wrap: wrap;align-items: center;">
+                <span class="card-title" style="margin-bottom: 5px;font-weight: bold;text-transform: capitalize;color:#353535;">{{'proy_new' | translate}}</span>
+                <div class="col-12 row" style="padding: 0;">
+                  <div class="col-12 input-group">
+                    <label class="activeInput">{{'proy_name' | translate}}</label>
+                    <input class="validate" name="txtNameProyecto" type="text" (keyup)="validaNameProyecto($event.target);" id="txtNameProyecto">
+                  </div>
+                  <div class="col-12 input-group">
+                    <label class="activeInput">{{'proy_desc' | translate}}</label>
+                    <textarea class="validate" name="txtDescripProyecto" (keyup)="validaDescProyecto($event.target);" id="txtDescripProyecto"></textarea>
+                  </div>
+
+                  <div class="col-12 input-group">
+                    <label class="activeInput">{{'kliente' | translate}}</label>
+                    <div class="col-12 input-group mb-3" style="padding: 0;margin: 0 !important;">
+                      <input class="validate" name="txtAbrevClienteProyecto" type="text" minlength="3" maxlength="4" style="width: 200px;border-radius: 8px 0 0 8px !important;"
+                        placeholder="{{'abrev_kliente' | translate}}" (keyup)="validaAbrevClienteProyecto($event.target);" id="txtAbrevClienteProyecto">
+                      <span class="input-group-text">-</span>
+                      <input class="validate" name="txtClienteProyecto" placeholder="{{'kliente' | translate}}" (keyup)="validaClienteProyecto($event.target);" 
+                        type="text" id="txtClienteProyecto" style="width: calc(100% - 230px);border-radius: 0 8px 8px 0!important;">
+                    </div> 
+                  </div>
+
+                  <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 input-group">
+                    <label class="activeInput">{{'pryori' | translate}}</label>
+                    <select class="browser-default" name="txtPrioridadProyecto" (change)="validaPrioridadProyecto($event.target);" id="txtPrioridadProyecto">
+                      <option value="" disabled selected>{{'opt_select' | translate}}</option>
+                      <option class="pryori_baj" value="baj">baja</option>
+                      <option class="pryori_med" value="med">media</option>
+                      <option class="pryori_alt" value="alt">alta</option>
+                    </select>
+                  </div>
+                  <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 input-group">
+                    <label class="activeInput">{{'fecha_fin' | translate}}</label>
+                    <input class="datepicker" name="fechaAltaProd" type="datetime-local" (change)="validaFechaFinProyecto($event.target);" id="txtFechaFinProyecto">
+                  </div>
+                  <div class="col-12 col-sm-4 col-md-4 col-lg-6 col-xl-6 col-xxl-6 input-group" style="padding-left: 0!important;">
+                    <label class="activeInput">{{'proy_manager' | translate}}</label>
+                    <select class="browser-default" name="txtResponsableProyecto" (change)="validaResponsableProyecto($event.target);" id="txtResponsableProyecto">
+                      <option value="" disabled selected>{{'opt_select' | translate}}</option>
+                      <option *ngFor="let people of arrayEmpleados" value="{{people.token_empleado_inside}}">
+                        {{people.nombre_completo}}</option>
+                    </select>
+                  </div>
+                  <div class="col-12" *ngIf="listEquipoTrabajo.length != 0" style="margin-top: 10px;">
+                    <ol class="list-group list-group-numbered">
+                      <li class="list-group-item d-flex justify-content-between align-items-start" aria-controls="collapseExample">
+                        <div class="col-12 me-auto">
+                          <div class="fw-bold">{{'proy_teamwork' | translate}}</div>
+                          <div class="col-12 me-auto" #collapsePanelTeamNewProject="ngbCollapse" [(ngbCollapse)]="isTeamProjectCollapsed">
+                            <div class="col-12 row" style="padding: 0;">
+                              <table id="datatable_TeamNewProject" class="display nowrap mdl-data-table white centered table_show_register" style="width:100%!important;margin:0!important;">
+                                <thead>
+                                  <tr>
+                                    <th>{{'name' | translate}}</th>
+                                    <th class="ultimo ultimo-buttons"></th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  <tr *ngFor="let people of listEquipoTrabajo">
+                                    <td>{{people.nombre_completo}}</td>
+                                    <td class="ultimo">
+                                      <div class="form-check form-switch form-check-reverse switch_primario" style="justify-content: center;flex-direction: column;">
+                                        <input class="form-check-input selectSwitchProvProd" name="selectImpProd" type="checkbox"
+                                          (click)="validaEquipoProyecto($event.target);" style="width: 80%!important;" [value]="people.token_empleado_inside">
+                                      </div>
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+                        </div>
+                      </li>
+                    </ol>
+                  </div>
+          
+                  <div class="col-12" *ngIf="arrayProyectos.length != 0" style="margin-top: 10px;">
+                    <ol class="list-group list-group-numbered">
+                      <li class="list-group-item d-flex justify-content-between align-items-start" aria-controls="collapseExample" (click)="collapsePanelProyectos.toggle();">
+                        <div class="col-12 me-auto">
+                          <div class="fw-bold">Listado de proyectos registrados anteriormente</div>
+                          <div class="col-12 me-auto" #collapsePanelProyectos="ngbCollapse" [(ngbCollapse)]="isProyectosCollapsed">
+                            <div class="col-12 row" style="padding: 0;">
+                              <table id="proy_new_datatable" class="display nowrap mdl-data-table white centered table_show_register" style="width:100%!important;margin:0!important;">
+                                <thead>
+                                  <tr>
+                                    <th>No</th>
+                                    <th>{{'proy_name' | translate}}</th>
+                                    <th class="ultimo ultimo-buttons"></th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  <tr *ngFor="let sideProy of arrayProyectos">
+                                    <td>{{"1"}}</td>
+                                    <td>{{"("+sideProy.creat_lider+ ") "+sideProy.folio_proy+" - "+sideProy.proyecto}}</td>
+                                    <td class="ultimo">
+                                      <div class="form-check form-switch form-check-reverse switch_primario" style="justify-content: center;flex-direction: column;">
+                                        <input class="form-check-input selectSwitchProvProd" name="selectImpProd" type="checkbox"
+                                          (click)="addDependeProyecto($event.target);" style="width: 80%!important;" [value]="sideProy.token_proyecto">
+                                      </div>
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+                        </div>
+                      </li>
+                    </ol>
+                  </div>
+
+                  <div class="col-12 col-sm-12 col-md-8 col-lg-8 col-xl-9 col-xxl-9"></div>
+                  <div class="col-12 col-sm-12 col-md-4 col-lg-3 col-xl-3 col-xxl-3">
+                    <div class="col-12 form-check form-switch form-check-reverse switch_primario"style="height: auto;">
+                      <label class="form-check-label" for="flexSwitchCheckReverse" style="font-size: smaller!important;width: 100%!important;"><i class="fa-solid fa-file-arrow-up"></i>&nbsp;{{'upload_evid' | translate}}</label>
+                      <label class="form-check-label" for="flexSwitchCheckReverse" style="font-size: smaller!important;">{{'disabled' | translate}}</label>
+                      <input class="form-check-input" type="checkbox" (click)="evidUploadCheck();" id="radioUploadEvid">
+                      <label class="form-check-label" for="flexSwitchCheckReverse" style="font-size: smaller!important;margin-left: 3px!important;">{{'enabled' | translate}}</label>
+                    </div>
+  
+                    <div class="col-12 form-check form-switch form-check-reverse switch_primario" style="height: auto;">
+                      <label class="form-check-label" for="flexSwitchCheckReverse" style="font-size: smaller!important;width: 100%!important;"><i class="fa-solid fa-file-circle-xmark"></i>&nbsp;{{'del_evid_auth_perm' | translate}}</label>
+                      <label class="form-check-label" for="flexSwitchCheckReverse" style="font-size: smaller!important;">{{'not_allowed' | translate}}</label>
+                      <input class="form-check-input" type="checkbox" (click)="evidDeleteUploadedCheck();" id="radioDeletedUploadedEvid">
+                      <label class="form-check-label" for="flexSwitchCheckReverse" style="font-size: smaller!important;">{{'allowed' | translate}}</label>
+                    </div>
+                  </div>
+
+                  <div class="col-12 col-sm-12 col-md-8 col-lg-8 col-xl-9 col-xxl-9"></div>
+                  <div class="col-12 col-sm-12 col-md-4 col-lg-3 col-xl-3 col-xxl-3">
+                    <div class="col-12" style="display: flex;justify-content: end;padding: 0;">
+                      <a class="btn btn_extend text-bg-danger rounded-3" [class.disabled]="listoToCancel" [attr.disabled]="listoToCancel ? true : null" (click)="listoToCancel ? null : cancelaRegistro();">
+                        <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                      </a>	
+                    </div>
+  
+                    <div class="col-12" style="display: flex;justify-content: end;padding: 0;margin-top: 5px;margin-bottom: 10px;">
+                      <a class="btn btn_extend text-bg-success rounded-3" [class.disabled]="!listoToRegistro" [attr.disabled]="listoToRegistro ? null : true" (click)="!listoToRegistro ? null : registrarProyecto();">
+                        <i class="fa-solid fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}</a>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+		</main>
+	</div>
+</div>
+
+<div class="modal fade bd-example-modal-lg" id="modalListProyectosOld" tabindex="-1" role="dialog" aria-labelledby="modalListProyectosOldLabel" aria-hidden="true">
+  <div class="modal-dialog modal-fullscreen" style="margin: 1%;width: 98%!important;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="modalListProyectosOldLabel">Listado de proyectos registrados anteriormente</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: transparent !important;"></button>
+      </div>
+      <div class="modal-body">
+
+      </div>
+      <div class="modal-footer"></div>
+    </div>
+  </div>
+</div>

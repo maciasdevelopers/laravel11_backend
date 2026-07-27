@@ -1,0 +1,17 @@
+export interface InterfDescuentos {
+    c_token: string,	
+    folio: number,	
+    alias: string,	
+    concepto: string,	
+    cou_porc: boolean,	
+    cantidad_base: string,	
+    aplicacion: string,	
+    fecha_inicio: string,	
+    fecha_fin: string,	
+    fecha_activacion: string,	
+    status_activacion: boolean,	
+    fecha_delete: string,	
+    status: boolean,	
+    empresa: number,
+    vinculacion:boolean,
+}

@@ -1,0 +1,35 @@
+export class productoAngularModelo {
+  constructor(
+    public logoProducto: string,
+    public fechaAlta: string,
+    public familia: string,
+    public clasificacion: string,
+    public genero: string,
+    public sat_clave_code: string,
+    public sat_clave_homologada: string,
+    public concepto: string,
+    public marca: string,
+    public stock_min: number,
+    public stock_max: number,
+    public control_inventarios: string,
+    public costeo: string,
+    public unidad_entrada_clave: string,
+    public unidad_entrada_homologada: string,
+    public unidad_salida_clave: string,
+    public unidad_salida_homologada: string,
+    public uso_prod: string,
+    public num_serie: boolean,
+    public num_lote: boolean,
+    public pedimentoAduanal: boolean,
+    public nivel_alm: string,
+    //public proveedor:string,
+    //public caracteristicas:any = [],
+    //public turnos:string
+    public precio_aplicable: number,
+    public moneda_codigo: string,
+    public moneda_decimales: string,
+    public moneda_homologada: string,
+    public cuenta_contable: string,
+    public impuestos: any = []
+  ) { }
+}

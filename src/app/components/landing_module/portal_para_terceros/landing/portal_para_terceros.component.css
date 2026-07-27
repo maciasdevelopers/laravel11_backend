@@ -1,0 +1,508 @@
+div.tarjeta_portal{
+	margin-bottom: 5px;
+}
+
+div.tarjeta_portal:last-child{
+	margin-bottom: 0px!important;
+}
+
+div.divLgCompany{
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+
+div.divLgCompanyNav{
+	height: 100%;
+}
+
+div.divLgCompanyMin{
+	height: 60px;
+	display: none!important;
+}
+
+div.divLgCompany p{
+	color:#353535!important;
+	margin:0!important;
+	height: 30px;
+	line-height: 30px;
+	padding: 0;
+	font-weight: bold;
+}
+
+div.open{
+	background-color: rgba(121, 65, 65, 0.3);
+  top: 10%!important;
+  width: 90%;
+  height: 80%!important;
+  max-height: 80%;
+  position: fixed;
+  display: block!important;
+  z-index: 999;
+  border-radius: 8px;
+}
+
+div.open .modal-content{
+	background-attachment: fixed;
+  background-repeat: no-repeat;
+  background-size: cover;
+  height: 100%!important;
+  padding: 0!important;
+}
+
+div.open .modal-content .header{
+	height: 50px;
+	background-color: rgba(55, 50, 78, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+div.open .modal-content .header{
+	height: 50px;
+	background-color: rgba(55, 50, 78, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+div.open .modal-content .header h5{
+	margin: 0;
+	text-align: center;
+	color: #e7e7ea;
+	font-weight: bold;
+}
+
+div.open .modal-content .content{
+	padding: 0;
+	background-color: rgba(55, 50, 78, 0.7);
+	height: 95%;
+	overflow: overlay;
+	display: flex;
+	justify-content: center;
+	align-items: flex-start;
+}
+
+div.open .modal-content .contentDown{
+	padding: 5px!important;
+	display: block!important;
+}
+
+div.open .modal-footer a{
+  margin-right: 5px;
+  font-family: arial,FontAwesome;
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+  border-radius: 50%;
+  background-color: red;
+  color: #fff;
+  background-color: #d32f2f!important;
+}
+
+div.open .modal-footer a i{
+	font-size: 1rem;
+}
+
+/*modal*/
+  div.open div.contenido div.modal-content div.form div.contenido-modal{
+    background: linear-gradient(180deg, rgba(233,0,0,1) 0%, rgba(138,0,0,1) 33%, rgba(102,0,0,1) 85%);
+  }
+
+  div.open div.contenido div.modal-content div.form div.contenido-modal h4,
+  div.open div.contenido div.modal-content div.form div.contenido-modal h5,
+  div.open div.contenido div.modal-content div.form div.contenido-modal h6{
+  	color:#fff;
+  }
+
+  div.open div.contenido div.modal-content ul.collapsible li{
+    box-shadow: 1px 1px 10px #000;
+    background-color: white;
+    background-color: transparent;
+  }
+
+  div.open div.contenido div.modal-content ul.collapsible li div.collapsible-header{
+    background-color: #d3d3d3;
+  }
+
+  div.open div.contenido div.modal-content ul.collapsible li div.collapsible-header .chip{
+    color: #353535;
+    font-weight: bold;
+  }
+
+  div.open div.contenido div.modal-content ul.collapsible li div.collapsible-body div.alineacion-card{
+    max-height: 400px;
+    overflow-y: overlay;
+  }
+
+  div.open div.contenido div.modal-content ul.collapsible li div.collapsible-body div.card-personal-direccion{
+    background: linear-gradient(180deg, rgba(250,250,250,1) 0%, rgba(230,230,230,1) 33%, rgba(200,200,200,1) 85%);
+  }
+
+  div.open div.contenido div.modal-content ul.collapsible li div.collapsible-body div.card-personal-direccion p,
+  div.open div.contenido div.modal-content ul.collapsible li div.collapsible-body div.card-personal-direccion .tituloNamePersonal{
+    width: 100%;
+    color: #353535;
+    text-align: center;
+  }
+
+  div.open div.contenido div.modal-content ul.collapsible li div.collapsible-body div.card-personal-direccion p.tlog{
+    font-family: fontAwesome;
+  }
+
+/*ul*/
+	.portal_ps ul.collapsible li{
+		background-color: rgba(0,0,0,0.1)!important;
+	  box-shadow: 1px 1px 5px rgba(0,0,0,0.5);
+	}
+
+	.portal_ps ul.collapsible li div.collapsible-header{
+	   background-color: #6d1300;
+	 }
+
+	 .portal_ps ul.collapsible li div.collapsible-header .chip{
+		 color: #fff;
+	   font-weight: bold;
+	 }
+
+/*radio buttons*/
+	.portal_ps div.radio p,
+	.portal_ps p.radio label{
+		background-color: #FFC7BC;
+	}
+
+	.portal_ps p.radio label.disabled{
+	  background-color: #FFC7BC;
+	}
+
+	.tabs_listaprov a{
+	  width: 50px!important;
+	  height: 50px!important;
+	  border-radius: 50%!important;
+	  font-size: 3vh!important;
+	  padding: 0!important;
+	  display: flex!important;
+	  justify-content: center!important;
+	  flex-direction: column!important;
+	}
+
+/*ul collapsible*/
+	div.portal_ps div.fmAlta div.form form div.data-reg ul.collapsible li.licollapsible{
+	  box-shadow: 1px 1px 10px #353535;
+	  background-color: rgba(53,53,53,0.3);
+	}
+
+	h6.noselected{
+    color: #d3d3d3;
+    text-transform: lowercase;
+    font-size: 2.5vh;
+	}
+
+	div.scroll_kardex{
+    overflow-x: scroll;
+	}
+
+	table.tabla_kardex thead tr th.thKardex div.thead{
+    width: 100%!important;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: space-around;
+    height: 40px;
+    margin: 0;
+    padding: 0;
+	}
+
+	table.tabla_kardex thead tr th.thKardex div.thead p.titulo{
+    width: 100%!important;
+    margin: 0;
+	}
+
+	table.tabla_kardex thead tr th.thKardex div.thead p.dat{
+    width: 50%!important;
+    margin: 0;
+	}
+
+	.principalViewAlta{
+    background-color: darkred;
+    border-radius: 8px;
+	}
+
+	.principalViewAlta .radiovProv p{
+    background-color: transparent!important;
+	}
+
+	.principalViewAlta .radiovProv p label input{
+    margin-right: 5px!important;
+	}
+
+	.principalViewAlta .radiovProv p label span{
+    color: #fff!important;
+	}
+
+/*proveedores*/
+  ul.tabs_listaprov{
+		height: auto!important;
+  }
+
+  ul.tabs_listaprov li{
+		display: flex!important;
+		justify-content: center!important;
+  }
+
+  ul.tabs_listaprov li a{
+    width: 50px!important;
+    height: 50px!important;
+    border-radius: 50%;
+    font-size: 4vh;
+  }
+
+  div.dataCredito p.radio{
+    width: 50%!important;
+  }
+
+  .selectLabel{
+    transform: translateY(-13px)scale(0.8)!important;
+  }
+
+	td.desgloseCont{
+    overflow-x: overlay;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    align-content: flex-start;
+    width: auto;
+	}
+
+	td.desgloseCont::-webkit-scrollbar,
+	td.desgloseCont::-webkit-ms-scrollbar{
+    width: 10px;
+    height: 5px;
+	}
+
+	td.desgloseCont::-webkit-scrollbar-track,
+	td.desgloseCont::-webkit-ms-scrollbar-track{
+    background-color: transparent;
+    border-radius: 10px;
+	}
+
+	td.desgloseCont::-webkit-scrollbar-thumb,
+	td.desgloseCont::-webkit-ms-scrollbar-thumb{
+    background-color: rgba(0, 0, 0, 0.4);
+    border-radius: 10px;
+	}
+
+/*inside options terceros*/
+	nav{
+		background-color: #fff!important;
+	}
+
+	nav div.nav-wrapper a{
+		color: #353535;
+	}
+
+	nav div.nav-wrapper div.divLgOut{
+		height: 100%;
+		display: flex;
+		justify-content: right;
+		align-items: center;
+	}
+
+	nav div.nav-wrapper div.divLgOut a.lgout{
+		margin: 0;
+		width: 30px;
+		height: 30px;
+		line-height: 30px;
+		border-radius: 50%;
+		padding: 0;
+		font-family: ubuntu,FontAwesome;
+		text-align: center;
+	}
+
+	nav div.nav-wrapper div.divLgOut a.lgout:hover{
+		background-color: #2962ff!important;
+		color: #2962ff;
+		color: #fff;
+	}
+
+	.breadcrumb:before{
+		color: #353535;
+	}
+
+	.card-main{
+  	height: 100%;
+  	margin: 0;
+  	background-color: cadetblue;
+  	padding: 0px;
+  	border-radius: 8px;
+  	background-color: rgba(55, 50, 78, 0.5);
+	}
+
+	.rowOption{
+		padding: 0;
+	}
+
+	.row-main{
+		padding: 10px!important;
+		margin: 0!important;
+	}
+
+	.contentCompanies{
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		align-items: center;
+		height: calc(100% - 80px);
+	}
+
+	.contentCompanies div.card-companies{
+		width:250px;
+		height:270px;
+		margin:5px!important;
+		border-radius:25px;
+		box-shadow: 1px 1px 10px #353535;
+	}
+
+	.contentCompanies div.card-companies div.card-image{
+		width:250px;
+		height:250px;
+		padding:50px;
+		display:flex;
+		flex-wrap:wrap;
+		justify-content:center;
+		align-items:center;
+		z-index:1;
+	}
+
+	.contentCompanies div.card-companies div.card-image img{
+		width:100%;
+	}
+
+	.contentCompanies div.card-companies div.card-content{
+		height:70px;
+		padding:0;
+		z-index:999;
+		position:relative
+	}
+
+	.contentCompanies div.card-companies div.card-content h6.card-title{
+		margin:0;
+		font-size:15px;
+		text-align:center;
+		height: 70px;
+		margin-top:-50px;
+		font-weight:bold;
+	}
+
+	.contentCompanies div.card-companies:hover,
+	.contentCompanies div.card-company-active{
+		box-shadow: 1px 1px 10px #020a5e;
+	}
+
+	.contentCompanies div.card-companies:hover div.card-content h6.card-title,
+	.contentCompanies div.card-company-active div.card-content h6.card-title{
+		background-color: #020a5e!important;
+		border-radius: 0 0 25px 25px!important;
+		color: #fff!important;
+	}
+
+	.footerCompanies{
+		height:40px;
+		padding: 0;
+		display: flex!important;
+		justify-content: center!important;
+		align-items: center!important;
+	}
+
+	.footerCompanies button{
+		font-family: Arial, FontAwesome;
+	}
+
+	.card-main .listOptions{
+  	padding: 0!important;
+	}
+
+	.card-main .listOptions .collection{
+  	margin: 0;
+  	border: none;
+  	border-right: 1px solid #e0e0e0;
+		background-color: transparent!important;
+		height: auto!important;
+	}
+
+	.card-main .listOptions ul.collection li.collection-item{
+  	padding: 0;
+		height: 40px;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		background-color: transparent!important;
+		border: none!important;
+	}
+
+	.card-main .listOptions .collection div.collect-item-div{
+		padding: 5px!important;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+
+	.card-main .listOptions .collection a{
+		margin: 0;
+		width: 30px;
+		height: 30px;
+		line-height: 30px;
+		border-radius: 50%;
+		padding: 0;
+		background-color: #e7e7ea;
+		color: #020a5e;
+		box-shadow: 1px 1px 5px #353535;
+		font-family: ubuntu,FontAwesome;
+		text-align: center;
+	}
+
+	.card-main .listOptions .collection a.active,
+	.card-main .listOptions .collection a:hover{
+		background-color: #020a5e!important;
+		color: #e7e7ea!important;
+	}
+
+	a.btnDisabled,
+	a:disabled{
+		background-color: #686868!important;
+	}
+
+@media screen and (max-width: 600px) {
+	div.divLgCompanyNav{
+		display: none!important;
+	}
+
+	div.divLgCompanyMin{
+		display: flex!important;
+	}
+
+	div.portal div.decision div.columna{
+		height: 33.3%;
+	}
+
+	div.portal div.decision div.columna div.circulo{
+    height: 100px;
+    width: 100px;
+	}
+
+	div.portal div.decision div.columna div.circulo p.tlog,
+	div.portal div.decision div.columna div.circulo h6.tlog{
+		color: #e7e7ea;
+	}
+
+	div.portal div.decision div.columna div.circulo p.tlog{
+		font-size: 5vh;
+	}
+
+	div.portal div.decision div.columna div.circulo h6.tlog{
+    font-size: small;
+	}
+}

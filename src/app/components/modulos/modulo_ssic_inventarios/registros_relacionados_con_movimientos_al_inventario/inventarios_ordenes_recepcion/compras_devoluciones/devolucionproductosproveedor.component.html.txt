@@ -1,0 +1,219 @@
+<div class="col-12 row">
+  <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6 input-group">
+    <label class="activeInput">Devoluci&oacute;n</label>
+    <select class="browser-default" (change)="seleccionaTipoDevolucion($event.target);">
+      <option value="" disabled selected>{{'opt_select' | translate}}</option>
+      <option value="direct">Directa</option>
+      <option value="compra">Compra</option>
+    </select>
+  </div>
+  <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6 input-group">
+    <label class="activeInput">Compra</label>
+    <datalist id="dtl_compras">
+      <option *ngFor="let buy of arrayComprasGeneral" [value]="buy.folio_compra"></option>
+    </datalist>
+    <input class="validate" list="dtl_compras" type="text" [ngClass]="tipo_devolucion != 'compra' ? 'disabled' : ''"
+      [attr.disabled]="tipo_devolucion != 'compra' ? true : null"
+      [attr.aria-disabled]="tipo_devolucion != 'compra' ? true : null"
+      (change)="tipo_devolucion == 'compra' && seleccionaCompraDevolucion($event.target);">
+  </div>
+
+  <div class="col-12 row" *ngFor="let detBuy of arrayDetalleCompra">
+    <div class="col-12 row">
+      <div class="col-12 explain">
+        <h6 class="title">Datos generales de la compra</h6>
+      </div>
+
+      <div class="col-12 explain">
+        <h6 class="title">Folio</h6>
+        <h6 class="content">{{detBuy.folio}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">proveedor</h6>
+        <h6 class="content">{{detBuy.proveedor_folio+" "+detBuy.proveedor_nombre}}</h6>
+      </div>
+    </div>
+
+    <div class="col-12 row" style="margin-top: 10px!important;">
+      <div class="col-12 explain">
+        <h6 class="title">articulos comprados</h6>
+      </div>
+
+      <p-table [value]="arrayArticulos" [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }"
+        [rowsPerPageOptions]="[10,20,30,50,100]">
+        <ng-template #header>
+          <tr>
+            <th rowspan="2" class="ultimo"></th>
+            <th rowspan="2"></th>
+            <th rowspan="2">folio de articulo</th>
+            <th rowspan="2">articulo</th>
+            <th rowspan="2">cantidad</th>
+            <th rowspan="2">precio unitario</th>
+            <th rowspan="2">impuestos relacionados</th>
+            <th rowspan="2">Importe</th>
+            <th colspan="5">caracter&iacute;sticas de recepci&oacute;n</th>
+            <th rowspan="2" class="ultimo"></th>
+          </tr>
+          <tr>
+            <th>Es lo que se ha pedido</th>
+            <th>Lleg&oacute; a tiempo</th>
+            <th>Lleg&oacute; en buen estado</th>
+            <th>Es de la calidad que esperaba</th>
+            <th>{{'observ' | translate}}</th>
+          </tr>
+        </ng-template>
+        <ng-template #body let-artList>
+          <tr>
+            <td class="img_dat">
+              <div class="col-12"><img class="circle optimizedImage" fill
+                  ngSrc="./assets/images/catalogos/default_producto.jpg" alt=""></div>
+            </td>
+            <td>{{artList.tipo_articulo}}</td>
+            <td>{{artList.folio_articulo}}</td>
+            <td>{{artList.articulo}}</td>
+            <td>
+              <input class="validate" type="text" [ngClass]="tipo_devolucion != 'compra' ? 'disabled' : ''"
+                [attr.disabled]="tipo_devolucion != 'compra' ? true : null" [value]="artList.cantidad"
+                [attr.aria-disabled]="tipo_devolucion != 'compra' ? true : null"
+                (keyup)="tipo_devolucion == 'compra' && cantidadCompraArticulo($event.target,artList.token_articulo,artList.token_detcompra);">
+            </td>
+            <td>{{artList.precio_unitario}}</td>
+            <td class="ultimo">
+              <a class="btn btn_extend bg-indigo-600" (click)="verImpuestosUno(artList);"><i
+                  class="fa-solid fa-info"></i></a>
+            </td>
+            <td>{{artList.totalDetCompFormat}}</td>
+
+            <td class="ultimo">
+              <div style="display: flex;justify-content: space-evenly;">
+                <div class="col-12 form-check radio_check"
+                  style="width: max-content;height: 10px;display: flex;justify-content: center;align-items: center;align-content: center;margin-right: 5px;">
+                  <input class="form-check-input" type="radio" name="lo_pedido" value="si"
+                    (click)="checkloPedido($event.target,artList.token_articulo,artList.token_detcompra);">
+                  <label class="form-check-label" for="flexRadioDefault1" style="height: 15px;margin-left: 5px;"><i
+                      class="fa-solid fa-check"></i>&nbsp;Sí</label>
+                </div>
+                <div class="col-12 form-check radio_check"
+                  style="width: max-content;height: 10px;display: flex;justify-content: center;align-items: center;align-content: center;">
+                  <input class="form-check-input" type="radio" name="lo_pedido" value="no"
+                    (click)="checkloPedido($event.target,artList.token_articulo,artList.token_detcompra);">
+                  <label class="form-check-label" for="flexRadioDefault1" style="height: 15px;margin-left: 5px;"><i
+                      class="fa-solid fa-xmark"></i>&nbsp;No</label>
+                </div>
+              </div>
+            </td>
+            <td class="ultimo">
+              <div style="display: flex;justify-content: space-evenly;">
+                <div class="col-12 form-check radio_check"
+                  style="width: max-content;height: 10px;display: flex;justify-content: center;align-items: center;align-content: center;margin-right: 5px;">
+                  <input class="form-check-input" type="radio" name="llego_tiempo" value="si"
+                    (click)="checkllegoTiempo($event.target,artList.token_articulo,artList.token_detcompra);">
+                  <label class="form-check-label" for="flexRadioDefault1" style="height: 15px;margin-left: 5px;"><i
+                      class="fa-solid fa-check"></i>&nbsp;Sí</label>
+                </div>
+                <div class="col-12 form-check radio_check"
+                  style="width: max-content;height: 10px;display: flex;justify-content: center;align-items: center;align-content: center;">
+                  <input class="form-check-input" type="radio" name="llego_tiempo" value="no"
+                    (click)="checkllegoTiempo($event.target,artList.token_articulo,artList.token_detcompra);">
+                  <label class="form-check-label" for="flexRadioDefault1" style="height: 15px;margin-left: 5px;"><i
+                      class="fa-solid fa-xmark"></i>&nbsp;No</label>
+                </div>
+              </div>
+            </td>
+            <td class="ultimo">
+              <div style="display: flex;justify-content: space-evenly;">
+                <div class="col-12 form-check radio_check"
+                  style="width: max-content;height: 10px;display: flex;justify-content: center;align-items: center;align-content: center;margin-right: 5px;">
+                  <input class="form-check-input" type="radio" name="buen_estado" value="si"
+                    (click)="checkBuenEstado($event.target,artList.token_articulo,artList.token_detcompra);">
+                  <label class="form-check-label" for="flexRadioDefault1" style="height: 15px;margin-left: 5px;"><i
+                      class="fa-solid fa-check"></i>&nbsp;Sí</label>
+                </div>
+                <div class="col-12 form-check radio_check"
+                  style="width: max-content;height: 10px;display: flex;justify-content: center;align-items: center;align-content: center;">
+                  <input class="form-check-input" type="radio" name="buen_estado" value="no"
+                    (click)="checkBuenEstado($event.target,artList.token_articulo,artList.token_detcompra);">
+                  <label class="form-check-label" for="flexRadioDefault1" style="height: 15px;margin-left: 5px;"><i
+                      class="fa-solid fa-xmark"></i>&nbsp;No</label>
+                </div>
+              </div>
+            </td>
+            <td class="ultimo">
+              <div style="display: flex;justify-content: space-evenly;">
+                <div class="col-12 form-check radio_check"
+                  style="width: max-content;height: 10px;display: flex;justify-content: center;align-items: center;align-content: center;margin-right: 5px;">
+                  <input class="form-check-input" type="radio" name="uso_producto" value="si"
+                    (click)="checkCalidad($event.target,artList.token_articulo,artList.token_detcompra);">
+                  <label class="form-check-label" for="flexRadioDefault1" style="height: 15px;margin-left: 5px;"><i
+                      class="fa-solid fa-check"></i>&nbsp;Sí</label>
+                </div>
+                <div class="col-12 form-check radio_check"
+                  style="width: max-content;height: 10px;display: flex;justify-content: center;align-items: center;align-content: center;">
+                  <input class="form-check-input" type="radio" name="uso_producto" value="no"
+                    (click)="checkCalidad($event.target,artList.token_articulo,artList.token_detcompra);">
+                  <label class="form-check-label" for="flexRadioDefault1" style="height: 15px;margin-left: 5px;"><i
+                      class="fa-solid fa-xmark"></i>&nbsp;No</label>
+                </div>
+              </div>
+            </td>
+            <td class="ultimo">
+              <textarea class="validate"
+                (keyup)="observacionesKeyup($event.target,artList.token_articulo,artList.token_detcompra);"></textarea>
+            </td>
+            <td class="ultimo">
+              <div class="form-check radio_check" style="justify-content: center;display: flex;">
+                <input class="form-check-input" type="checkbox" name="articuloSelect"
+                  [checked]="artList.seleccionado == true"
+                  [ngClass]="!validateCheckDevolucion(artList.token_articulo,artList.token_detcompra) ? 'disabled' : ''"
+                  [attr.disabled]="!validateCheckDevolucion(artList.token_articulo,artList.token_detcompra) ? true : null"
+                  [attr.aria-disabled]="!validateCheckDevolucion(artList.token_articulo,artList.token_detcompra) ? true : null"
+                  (click)="validateCheckDevolucion(artList.token_articulo,artList.token_detcompra) && seleccionaCompraArticulo($event.target,artList.token_articulo,artList.token_detcompra);">
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="14" class="text-center py-4">
+              <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+              <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                {{'no_rows' | translate}}
+              </p>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+
+    </div>
+  </div>
+
+  <div class="col-12 row">
+    <label class="activeInput" style="padding: 0;">Establecimiento</label>
+    <datalist id="dtlEstabLista">
+      <option *ngFor="let estab of arrayEstablecCompras" [value]="estab.estab_folio">
+        {{estab.estab_alias+(estab.estab_ubicacion_pais == 'Mx' ? estab.colonia_main+' CP.'+estab.c_postal_main+',
+        '+estab.municipio_main+', Estado: '+estab.estado_main : estab.dir_completa+', CP.'+estab.cod_postalext+',
+        '+estab.pais_nombre)}}</option>
+    </datalist>
+    <input class="validate" name="txtAliasCaja" type="text" list="dtlEstabLista"
+      (keyup)="validaEstablecimientoDevolucion($event.target);">
+  </div>
+
+  <div class="col-12 input-group">
+    <label class="activeInput">{{'observ' | translate}}</label>
+    <textarea class="validate register" name="txtDescripTar" style="max-height: 80px!important;"
+      (keyup)="validaObservaciones($event.target);"></textarea>
+  </div>
+
+  <div class="col-12 row">
+    <div class="col-12 col-sm-12 col-md-6 col-lg-8 col-xl-8 col-xxl-9"></div>
+    <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3"
+      style="display: flex !important;justify-content: end!important;">
+      <a class="btn btn_extend text-bg-success rounded-3" [ngClass]="!validaDevolucionRegistro ? 'disabled' : ''"
+        [attr.disabled]="!validaDevolucionRegistro ? true : null"
+        [attr.aria-disabled]="!validaDevolucionRegistro ? true : null"
+        (click)="validaDevolucionRegistro && registraDevolucion();"><i
+          class="fa-solid fa-cart-plus"></i>&nbsp;{{'sav_cam' | translate}}</a>
+    </div>
+  </div>
+</div>

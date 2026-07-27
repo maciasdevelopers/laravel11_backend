@@ -1,0 +1,6 @@
+div.explain{padding: 0;display: flex;margin: 0;flex-wrap: wrap;justify-content: flex-start;align-items: center;align-content: center;}
+div.explain h6{font-size: 11px;text-align: left;color: #353535;white-space: break-spaces !important;font-family: lato, FontAwesome!important;}
+div.explain h6.title{width: max-content;}
+div.explain h6.content{margin: 0;margin-bottom: 2px;font-family: roboto_cr, FontAwesome;width: max-content;}
+div.explain h6.content_importes{text-align: right!important;width: 100%!important;}
+div.explain_white h6{color:white!important;}

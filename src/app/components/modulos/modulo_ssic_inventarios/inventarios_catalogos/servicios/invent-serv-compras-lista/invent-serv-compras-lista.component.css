@@ -1,0 +1,41 @@
+div.scroll_kardex{
+  overflow-x: scroll;
+}
+
+table.tabla_kardex thead tr th.thKardex div.thead{
+  width: 100%!important;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  justify-content: space-around;
+  height: 40px;
+  margin: 0;
+  padding: 0;
+}
+
+table.tabla_kardex thead tr th.thKardex div.thead p.titulo{
+  width: 100%!important;
+  margin: 0;
+}
+
+table.tabla_kardex thead tr th.thKardex div.thead p.dat{
+  width: 50%!important;
+  margin: 0;
+}
+
+/*proveedores*/
+  ul.tabs_listaprov{
+      height: auto!important;
+  }
+
+  ul.tabs_listaprov li{
+      display: flex!important;
+      justify-content: center!important;
+  }
+
+  ul.tabs_listaprov li a{
+      width: 50px!important;
+      height: 50px!important;
+      border-radius: 50%;
+      font-size: 4vh;
+  }

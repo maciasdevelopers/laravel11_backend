@@ -1,0 +1,354 @@
+<p-table #lpagos_realizados id="pagos_done_lista_general" [value]="list_pagos_done"
+  [globalFilterFields]="search_pagos_done" showGridlines [resizableColumns]="true" [paginator]="true"
+  [rows]="10" [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]">
+  <ng-template #caption>
+    <div class="flex" style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;" ngbDropdown>
+      <a class="btn btn_extend" [ngClass]="indicadorOrdPagos == 'hoy' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="lista_pagos_realizados('hoy');">
+        <i class="fa-solid fa-calendar-days"></i>&nbsp;Hoy
+      </a>
+      <a class="btn btn_extend" [ngClass]="indicadorOrdPagos == 'esta_semana' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="lista_pagos_realizados('esta_semana');">
+        <i class="fa-solid fa-calendar-days"></i>&nbsp;Esta semana
+      </a>
+      <a class="btn btn_extend" [ngClass]="indicadorOrdPagos == 'este_mes' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="lista_pagos_realizados('este_mes');">
+        <i class="fa-solid fa-calendar-days"></i>&nbsp;Este mes
+      </a>
+      <a class="btn btn_extend" [ngClass]="indicadorOrdPagos == 'mes_anterior' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="lista_pagos_realizados('mes_anterior');">
+        <i class="fa-solid fa-arrow-left"></i>&nbsp;mes anterior
+      </a>
+      <a id="menuDropPagoOrdenGral" class="btn btn_extend" [ngClass]="indicadorOrdPagos == 'otras_fechas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" ngbDropdownToggle>
+        <i class="fa-solid fa-list-ul"></i>&nbsp;otras fechas
+      </a>
+      <div class="dropdown-menu-end menu-despegable" ngbDropdownMenu="menuDropPagoOrdenGral" style="padding: 0!important; margin: 0!important; width: max-content!important; max-height: 400px; overflow-y: auto;">
+        <div class="col-12 input-group">
+          <label for="pag_done_otras_fechas" class="activeInput">Periodo de fechas</label>
+          <p-datepicker id="pag_done_otras_fechas" name="pag_done_otras_fechas" [(ngModel)]="rangoPeriodoPagosOrd" appendTo="body" dateFormat="dd/mm/yy" 
+            placeholder="dd/mm/aaaa" selectionMode="range" (onSelect)="lista_pagos_realizados('otras_fechas');" />
+        </div>
+      </div>
+      <a class="btn btn_extend" [ngClass]="indicadorOrdPagos == 'all_partidas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="lista_pagos_realizados('all_partidas');">
+        <i class="fa-solid fa-list-ul"></i>&nbsp;todos los registros
+      </a>
+      <a class="btn btn_extend bg-green-600 descarga_lista_excel" style="height: 25px !important;" (click)="descarga_excel_pagos();">
+        descargar&nbsp;<i class="fa-solid fa-file-excel"></i>
+      </a>
+      <p-iconfield iconPosition="left" class="ml-auto">
+        <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+        <input pInputText type="text" (input)="lpagos_realizados.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+      </p-iconfield>
+    </div>
+  </ng-template>
+  <ng-template #header>
+    <tr>
+      <th rowspan="2" class="ultimo"></th>
+      <th rowspan="2" class="ultimo"></th>
+      <th rowspan="2" pResizableColumn pSortableColumn="folio_pagos">folio&nbsp;<p-sortIcon field="folio_pagos" /></th>
+      <th rowspan="2" pResizableColumn pSortableColumn="fecha_contabilizacion">{{'fecha_cont' | translate}}&nbsp;<p-sortIcon field="fecha_contabilizacion" /></th>
+      <th colspan="2">{{'doc_ant' | translate}}</th>
+      <th colspan="3">status</th>
+      <th colspan="3">{{'ter_cero' | translate}}</th>
+      <th colspan="3">financeado a</th>
+      <th rowspan="2" pResizableColumn pSortableColumn="medio_pago_vinculado">{{'f_pago' | translate}}&nbsp;<p-sortIcon field="medio_pago_vinculado" /></th>
+      <th rowspan="2" pResizableColumn pSortableColumn="forma_metodo_pago_cfdi">{{'f_m_pago_cfdi' | translate}}&nbsp;<p-sortIcon field="forma_metodo_pago_cfdi" /></th>
+      <th rowspan="2" pResizableColumn pSortableColumn="forma_metodo_pago_anticipos">medio de pago por anticipos&nbsp;<p-sortIcon field="forma_metodo_pago_anticipos" /></th>
+      <th rowspan="2" pResizableColumn pSortableColumn="observacionesPago">{{'observ' | translate}}&nbsp;<p-sortIcon field="observacionesPago" /></th>
+      <th rowspan="2" pResizableColumn pSortableColumn="p_moneda">{{'currency' | translate}}&nbsp;<p-sortIcon field="p_moneda" /></th>
+      <th rowspan="2" pResizableColumn pSortableColumn="monto_pago_format">{{'total_import' | translate}}&nbsp;<p-sortIcon field="monto_pago_format" /></th>
+      <th rowspan="2" pResizableColumn pSortableColumn="tipo_cambio_format">{{'mon_tipo_cambio' | translate}}&nbsp;<p-sortIcon field="tipo_cambio_format" /></th>
+      <th rowspan="2" pResizableColumn pSortableColumn="monto_pago_resultant">{{'total_import_resultant' | translate}}&nbsp;<p-sortIcon field="monto_pago_resultant" /></th>
+    </tr>
+    <tr>
+      <th pResizableColumn pSortableColumn="doc_anterior_folio">folio&nbsp;<p-sortIcon field="doc_anterior_folio" /></th>
+      <th pResizableColumn pSortableColumn="doc_anterior_fecha_contabilizacion">{{'fecha_cont' | translate}}&nbsp;<p-sortIcon field="doc_anterior_fecha_contabilizacion" /></th>
+      <th pResizableColumn pSortableColumn="pago_cancelado">status&nbsp;<p-sortIcon field="pago_cancelado" /></th>
+      <th pResizableColumn pSortableColumn="pago_folio_cancelacion">folio&nbsp;<p-sortIcon field="pago_folio_cancelacion" /></th>
+      <th pResizableColumn pSortableColumn="pago_fecha_contabilizacion_cancelacion">{{'fecha_cont' | translate}}&nbsp;<p-sortIcon field="pago_fecha_contabilizacion_cancelacion" /></th>
+      <th pResizableColumn pSortableColumn="tercero_folio">folio&nbsp;<p-sortIcon field="tercero_folio" /></th>
+      <th pResizableColumn pSortableColumn="tercero_name">{{'name' | translate}}&nbsp;<p-sortIcon field="tercero_name" /></th>
+      <th pResizableColumn pSortableColumn="tercero_comercial_name">{{'comercial_name' | translate}}&nbsp;<p-sortIcon field="tercero_comercial_name" /></th>
+      <th pResizableColumn pSortableColumn="financeadoa_folio">folio&nbsp;<p-sortIcon field="financeadoa_folio" /></th>
+      <th pResizableColumn pSortableColumn="financeadoa_name">{{'name' | translate}}&nbsp;<p-sortIcon field="financeadoa_name" /></th>
+      <th pResizableColumn pSortableColumn="financeadoa_comercial_name">{{'comercial_name' | translate}}&nbsp;<p-sortIcon field="financeadoa_comercial_name" /></th>
+    </tr>
+  </ng-template>
+  <ng-template #body let-payDone let-i="rowIndex">
+    <tr>
+      <td class="ultimo">
+        <a class="btn text-bg-success rounded-3" (click)="pagos_realizados_desglose(payDone.token_pagos);">
+          <i class="fa-solid fa-file-invoice-dollar"></i>
+        </a>
+      </td>
+      <td class="ultimo">
+        @if (payDone.pago_cancelado) {
+          <a class="btn btn_extend bg-gray-700">
+            <i class="fa-solid fa-clock-rotate-left"></i>&nbsp;Pago cancelado
+          </a>
+        } @else {
+          <a class="btn btn_extend text-bg-danger rounded-3" (click)="pago_realizado_openform_cancelacion(payDone);">
+            <i class="fa-solid fa-clock-rotate-left"></i>&nbsp;Solicitar cancelaci&oacute;n
+          </a>
+        }
+      </td>
+      <td>{{payDone.folio_pagos}}</td>
+      <td>{{payDone.fecha_contabilizacion}}</td>
+
+      <td class="name">{{payDone.doc_anterior_folio}}</td>
+      <td>{{payDone.doc_anterior_fecha_contabilizacion}}</td>
+
+      <td class="name">{{(payDone.pago_cancelado ? 'canceled_reg' : 'approved_reg') | translate}}</td>
+      <td class="name">{{payDone.pago_folio_cancelacion}}</td>
+      <td>{{payDone.pago_fecha_contabilizacion_cancelacion}}</td>
+
+      <td class="name">{{payDone.tercero_folio}}</td>
+      <td class="name">{{payDone.tercero_name}}</td>
+      <td class="name">{{payDone.tercero_comercial_name}}</td>
+
+      @switch (payDone.orden_factura_relacionada_typo) {
+        @case ('anticipos') {
+          <td class="name">{{payDone.financeadoa_folio}}</td>
+          <td class="name">{{payDone.financeadoa_name}}</td>
+          <td class="name">{{payDone.financeadoa_comercial_name}}</td>
+        }
+        @default {
+          <td></td>
+          <td></td>
+          <td></td>
+        }
+      }
+
+      <td>{{payDone.medio_pago_vinculado}}</td>
+      <td class="name">{{payDone.forma_metodo_pago_cfdi}}</td>
+      @if (payDone.orden_factura_relacionada_typo == 'anticipos') {
+        <td class="name">{{payDone.forma_pago_pago}}</td>
+      } @else {
+        <td></td>
+      }
+      <td class="name">{{payDone.observacionesPago}}</td>
+      <td>{{payDone.p_moneda}}</td>
+      <td class="td_importes">{{payDone.monto_pago_format}}</td>
+      <td class="td_importes">{{payDone.tipo_cambio_format}}</td>
+      <td class="td_importes">{{payDone.monto_pago_resultant}}</td>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td colspan="22" class="text-center py-4">
+        <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+        <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+          {{'no_rows' | translate}}
+        </p>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<p-dialog header="Cancelaci&oacute;n de pago {{cancelacion_pago_folio}}" class="window_cancelacion" [(visible)]="pago_window_cancelacion" [modal]="true" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  @if (viewNewCancelacionForm) {
+    <form class="formCancelPago" #formCancelPago="ngForm" name="formCancelPago" enctype="multipart/form-data" (ngSubmit)="validaRegistroCancelacionPago && pagos_realizados_solicitar_cancelacion(formCancelPago);">
+      <div class="col-12 input-group">
+        <label class="activeInput" for="cancelPayFechaCont">{{'fecha_cont' | translate}}</label>
+        <input id="cancelPayFechaCont" name="cancelPayFechaCont" type="date" (change)="cancel_fecha_contabilizacion($event.target);">
+      </div>
+      <div class="col-12 input-group" style="margin-bottom: 10px!important;">
+        <label class="activeInput" for="cancelPayObservaciones">{{'observ' | translate}}</label>
+        <textarea id="cancelPayObservaciones" name="cancelPayObservaciones" class="validate" (keyup)="keyupObservacionCancelacion($event.target);"></textarea>
+      </div>
+      <div class="col-12" style="display: flex !important;justify-content: end!important;margin-top: 5px!important;">
+        <button class="btn btn_extend text-bg-success rounded-3" [ngClass]="!validaRegistroCancelacionPago ? 'disabled' : ''" 
+          [attr.disabled]="!validaRegistroCancelacionPago ? true : null" [attr.aria-disabled]="!validaRegistroCancelacionPago ? true : null">
+          <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+        </button>
+      </div>
+    </form>
+  }
+</p-dialog>
+
+<p-dialog header="Desglose de pagos realizados" [(visible)]="pago_desglose_view" [modal]="true" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  @for (info_pago of pago_desglose_info; track $index) {
+    <div class="col-12">
+      <div class="col-12 explain">
+        <h6 class="title">Folio</h6>
+        <h6 class="content">{{info_pago.folio_pagos}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">{{'fecha_cont' | translate}}</h6>
+        <h6 class="content">{{info_pago.fecha_contabilizacion}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">{{'total_import' | translate}}</h6>
+        <h6 class="content">{{info_pago.monto_pago}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">{{'observ' | translate}}</h6>
+        <h6 class="content">{{info_pago.observacionesPago}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">{{'mon_tipo_cambio' | translate}}</h6>
+        <h6 class="content">{{info_pago.tipo_cambio}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">{{'mon_name' | translate}}</h6>
+        <h6 class="content">{{info_pago.p_moneda}}</h6>
+      </div>
+      @if (info_pago.medio_pago_vinculado != '') {
+        <div class="col-12 explain">
+          <h6 class="title">{{'f_pago' | translate}}</h6>
+          <h6 class="content">{{info_pago.medio_pago_vinculado}}</h6>
+        </div>
+      }
+      <div class="col-12 explain">
+        <h6 class="title">{{'f_m_pago_cfdi' | translate}}</h6>
+        <h6 class="content">{{info_pago.forma_metodo_pago_cfdi}}</h6>
+      </div>
+      @if (info_pago.proveedor_token != '') {
+        <div class="col-12 explain">
+          <h6 class="title">{{'prov' | translate}}</h6>
+          <h6 class="content">{{info_pago.proveedor_name}}</h6>
+        </div>
+      }
+      @if (info_pago.cliente_token != '') {
+        <div class="col-12 explain">
+          <h6 class="title">{{'kliente' | translate}}</h6>
+          <h6 class="content">{{info_pago.cliente_name}}</h6>
+        </div>
+      }
+      @if (info_pago.empleado_token != '') {
+        <div class="col-12 explain">
+          <h6 class="title">{{'employ' | translate}}</h6>
+          <h6 class="content">{{info_pago.empleado_name}}</h6>
+        </div>
+      }
+      @if (info_pago.acreedor_token != '') {
+        <div class="col-12 explain">
+          <h6 class="title">{{'acree_name' | translate}}</h6>
+          <h6 class="content">{{info_pago.acreedor_name}}</h6>
+        </div>
+      }
+      @if (info_pago.deudor_token != '') {
+        <div class="col-12 explain">
+          <h6 class="title">{{'deudor_name' | translate}}</h6>
+          <h6 class="content">{{info_pago.deudor_name}}</h6>
+        </div>
+      }
+      <div class="col-12 explain">
+        <h6 class="title">{{'autho_riza' | translate}}</h6>
+        <h6 class="content">{{info_pago.personal_pago_folio+" "+info_pago.personal_pago_name}}</h6>
+      </div>
+      <!--<div class="col-12 explain">
+        <h6 class="title">{{'autho_riza' | translate}}</h6>
+        <h6 class="content">{{info_pago.personal_autoriza_folio+" "+info_pago.personal_autoriza_name}}</h6>
+      </div>-->
+      <div class="col-12">
+        <div class="col-12 explain">
+          <h6 class="title">Ordenes de pago vinculadas</h6>
+        </div>
+        <p-table #opRelacionadasLista [value]="info_pago.ordenes_relacionadas_lista"
+          [globalFilterFields]="['factura_relacionada_typo','factura_relacionada_token','folio_ordenPago','fecha_contabilizacion_ordenPago','orden_emisor_personal',
+            'orden_emisor_emp','factura_relacionada_string','autorizacion_pay_text','fecha_autorizacion_pay','importe_total_inicial','importe_autorizado_inicial_format','importe_autorizado_final','debe_format']"
+          showGridlines [resizableColumns]="true" [paginator]="true" [rows]="10"
+          [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]">
+          <ng-template #caption>
+            <div class="flex">
+              <p-iconfield iconPosition="left" class="ml-auto">
+                <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                <input pInputText type="text" (input)="opRelacionadasLista.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+              </p-iconfield>
+            </div>
+          </ng-template>
+          <ng-template #header>
+            <tr>
+              <th class="ultimo"></th>
+              <th>{{'folio' | translate}}</th>
+              <th>{{'fecha_cont' | translate}}</th>
+              <!--<th>{{'company_name' | translate}}</th>-->
+              <th>{{'doc_ant' | translate}}</th>
+              <th>{{'autho_riza' | translate}}</th>
+              <th>{{'date_autho_riza' | translate}}</th>
+              <th style="padding-left: 5px;padding-right: 5px;">{{'monto_total' | translate}}</th>
+              <th style="padding-left: 5px;padding-right: 5px;">{{'monto_total_autorizado' | translate}}</th>
+              <th style="padding-left: 5px;padding-right: 5px;">{{'monto_total_convertido' | translate}}</th>
+              <th style="padding-left: 5px;padding-right: 5px;">{{'debe' | translate}}</th>
+            </tr>
+          </ng-template>
+          <ng-template #body let-lPay>
+            <tr>
+              <td class="ultimo">
+                <a class="btn bg-red-700" [ngClass]="lPay.factura_relacionada_typo == '---' ? 'disabled' : ''"
+                  [attr.disabled]="lPay.factura_relacionada_typo == '---' ? true : null"
+                  [attr.aria-disabled]="lPay.factura_relacionada_typo == '---' ? true : null"
+                  [attr.target]="lPay.factura_relacionada_typo != '---' ? '_blank' : null"
+                  [attr.href]="lPay.factura_relacionada_typo != '---' ? (lPay.factura_relacionada_typo == 'compras' ? 'https://downloads.sos-mexico.com.mx/compras_pdf/'+lPay.factura_relacionada_token : 
+                    (lPay.factura_relacionada_typo == 'ventas' ? 'https://downloads.sos-mexico.com.mx/ventas_pdf/'+lPay.factura_relacionada_token : 'https://downloads.sos-mexico.com.mx/reembolso_pdf/'+lPay.factura_relacionada_token)) : null">
+                  <i class="fa-solid fa-file-pdf"></i>
+                </a>
+              </td>
+              <td>{{lPay.folio_ordenPago}}</td>
+              <td>{{lPay.fecha_contabilizacion_ordenPago}}</td>
+              <!--<td>{{lPay.orden_emisor_personal == '---' ? '---' : lPay.orden_emisor_emp}}</td>-->
+              <td>{{lPay.factura_relacionada_string}}</td>
+              <td>{{lPay.autorizacion_pay_text}}</td>
+              <td>{{lPay.fecha_autorizacion_pay}}</td>
+    
+              <td class="td_importes">{{lPay.importe_total_inicial}}</td>
+              <td class="td_importes">{{lPay.importe_autorizado_inicial_format}}</td>
+              <td class="td_importes">{{lPay.importe_autorizado_final}}</td>
+              <td class="td_importes">{{lPay.debe_format}}</td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="10" class="text-center py-4">
+                <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                  {{'no_rows' | translate}}
+                </p>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    
+      <div class="col-12">
+        <div class="col-12 explain">
+          <h6 class="title">Movimientos de pago</h6>
+        </div>
+        <p-table #opDesglosePagosMedio [value]="info_pago.desglose_pagos_medio" showGridlines
+          [resizableColumns]="true" [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }"
+          [globalFilterFields]="['folio_movimiento','movimiento_tipo','movimiento_folio','movimiento_name','monto_aplicado']"
+          [rowsPerPageOptions]="[10,20,30,50,100]">
+          <ng-template #caption>
+            <div class="flex">
+              <p-iconfield iconPosition="left" class="ml-auto">
+                <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                <input pInputText type="text" (input)="opDesglosePagosMedio.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+              </p-iconfield>
+            </div>
+          </ng-template>
+          <ng-template #header>
+            <tr>
+              <th pResizableColumn pSortableColumn="folio_movimiento">folio&nbsp;<p-sortIcon field="folio_movimiento" /></th>
+              <th pResizableColumn pSortableColumn="movimiento_tipo">Cuenta&nbsp;<p-sortIcon field="movimiento_tipo" /></th>
+              <th pResizableColumn pSortableColumn="movimiento_monto">{{'total_import' | translate}}&nbsp;<p-sortIcon field="movimiento_monto" /></th>
+            </tr>
+          </ng-template>
+          <ng-template #body let-lMov>
+            <tr>
+              <td>{{lMov.folio_movimiento}}</td>
+              <td>{{lMov.movimiento_tipo+" "+lMov.movimiento_folio+" "+lMov.movimiento_name}}</td>
+              <td class="td_importes">{{lMov.monto_aplicado}}</td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="3" class="text-center py-4">
+                <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                  {{'no_rows' | translate}}
+                </p>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+  }
+</p-dialog>

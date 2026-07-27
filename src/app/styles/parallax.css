@@ -1,0 +1,39 @@
+.header_seccion_parallax{
+  background-position: center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  background-size: cover;
+  height: 300px!important;
+  padding: 0!important;
+  border-radius: 8px;
+  margin-bottom: 10px!important;
+}
+  
+.header_seccion_parallax div.contentText{
+  position: absolute;
+  text-align: center;
+  padding: 0 250px;
+  border-radius: 8px;
+  color: #e7e7ea;
+
+  background-color: rgba(0,0,0,0.3);
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+}
+  
+.header_seccion_parallax div.contentText h2{
+  width: 100%;
+  margin: 0;
+  font-size: 5vh;
+}
+
+@media screen and (max-width: 600px) {
+    div.parallax-container{
+        height: 200px!important;
+    }    
+}

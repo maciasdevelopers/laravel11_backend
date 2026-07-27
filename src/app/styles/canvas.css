@@ -1,0 +1,11 @@
+div.canva_contenedor{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+canvas {
+  display: inline-block;
+  height: 500px !important;
+  width: 500px !important;
+}

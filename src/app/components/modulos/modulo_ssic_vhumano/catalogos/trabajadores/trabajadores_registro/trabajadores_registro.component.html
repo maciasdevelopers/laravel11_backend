@@ -1,0 +1,815 @@
+<p-confirmpopup #cp>
+  <ng-template #headless let-message>
+    <div class="rounded p-4">
+      <i class="fa-solid fa-circle-info"></i>&nbsp;
+      <span>{{ message.message }}</span>
+      <div class="flex items-center gap-2 mt-4">
+        <p-button id="popUpAccept" class="accept" (onClick)="cp.onAccept()" [label]="popUpAccept" size="small" />
+        <p-button id="popUpReject" class="reject" (onClick)="cp.onReject()" [label]="popUpReject" [text]="true"
+          size="small" severity="secondary" />
+      </div>
+    </div>
+  </ng-template>
+</p-confirmpopup>
+
+@if (viewFormulario) {
+<form method="post" class="row formTrabajador" #formTrabajador="ngForm" [formGroup]="phoneForm" name="frmAddProv" enctype="multipart/form-data" (ngSubmit)="validaRegistroTrabajador && registrarTrabajador(formTrabajador);">
+  <p-accordion value="0">
+    <p-accordion-panel value="0">
+      <p-accordion-header>Datos personales</p-accordion-header>
+      <p-accordion-content>
+        <div class="col-12 row">
+          <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+            <label for="trabApellidoPaterno" class="activeInput">{{'surname' | translate}}</label>
+            <input id="trabApellidoPaterno" class="validate" type="text" name="trabApellidoPaterno"
+              (keyup)="keyupTrabPaterno($event.target);">
+          </div>
+          <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+            <label for="trabApellidoMaterno" class="activeInput">{{'maternal_surname' | translate}}</label>
+            <input id="trabApellidoMaterno" class="validate" type="text" name="trabApellidoMaterno"
+              (keyup)="keyupTrabMaterno($event.target);">
+          </div>
+          <div class="col-12 col-sm-12 col-md-6 col-lg-8 col-xl-4 col-xxl-4 input-group">
+            <label for="trabNombres" class="activeInput">{{'personal_name' | translate}}</label>
+            <input id="trabNombres" class="validate" type="text" name="trabNombres"
+              (keyup)="keyupTrabNombres($event.target);">
+          </div>
+          <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-2 col-xxl-2 input-group">
+            <label for="trabNombres" class="activeInput">{{'edad' | translate}}</label>
+            <input id="trabNombres" class="validate" type="number" name="trabNombres"
+              (keyup)="keyupTrabEdad($event.target);">
+          </div>
+
+          <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-2 col-xxl-2 input-group">
+            <label for="trabSexo" class="activeInput">{{'genero' | translate}}</label>
+            <p-select [options]="trab_sexo" id="trabSexo" name="trabSexo" optionLabel="label" [filter]="true"
+              filterBy="label" appendTo="body" [showClear]="true" [placeholder]="'opt_select' | translate"
+              class="w-full md:w-56" (onChange)="keyupTrabSexo($event.value);">
+              <ng-template #selectedItem let-selectedOption>
+                <div class="flex items-center gap-2">
+                  <div>{{selectedOption.label}}</div>
+                </div>
+              </ng-template>
+              <ng-template let-sex #item>
+                <div class="flex items-center gap-2">
+                  <div>{{sex.label}}</div>
+                </div>
+              </ng-template>
+            </p-select>
+          </div>
+          <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-2 col-xxl-2 input-group">
+            <label for="trabEstadoCivil" class="activeInput">{{'estado_civil' | translate}}</label>
+            <p-select [options]="trab_estado_civil" id="trabEstadoCivil" name="trabEstadoCivil" optionLabel="label"
+              [filter]="true" filterBy="label" appendTo="body" [showClear]="true"
+              [placeholder]="'opt_select' | translate" class="w-full md:w-56"
+              (onChange)="keyupTrabEstadoCivil($event.value);">
+              <ng-template #selectedItem let-selectedOption>
+                <div class="flex items-center gap-2">
+                  <div>{{selectedOption.label}}</div>
+                </div>
+              </ng-template>
+              <ng-template let-eciv #item>
+                <div class="flex items-center gap-2">
+                  <div>{{eciv.label}}</div>
+                </div>
+              </ng-template>
+            </p-select>
+          </div>
+          <div class="col-12 explain" style="padding-left: 10px!important;">
+            <h6 class="title">Informaci&oacute;n de origen</h6>
+          </div>
+          <p-divider />
+          <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input-group">
+            <label for="trabOrigenNacimFecha" class="activeInput">Fecha de Nacimiento</label>
+            <input id="trabOrigenNacimFecha" class="validate" type="date" name="trabOrigenNacimFecha"
+              (change)="keyupTrabOrigenNacimFecha($event.target);">
+          </div>
+          <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input-group">
+            <label for="trabOrigenNacimLugar" class="activeInput">Lugar de Nacimiento</label>
+            <input id="trabOrigenNacimLugar" class="validate" type="text" name="trabOrigenNacimLugar"
+              (keyup)="keyupTrabOrigenNacimLugar($event.target);">
+          </div>
+          <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input-group">
+            <label for="trabOrigenNacionalidad" class="activeInput">Nacionalidad</label>
+            <p-select [options]="paises_lista" id="trabOrigenNacionalidad" name="trabOrigenNacionalidad"
+              optionLabel="pais" [filter]="true" filterBy="pais" appendTo="body" [showClear]="true"
+              [placeholder]="'opt_select' | translate" class="w-full md:w-56"
+              (onChange)="changeTrabOrigenPais($event.value);">
+              <ng-template #selectedItem let-selPais>
+                <div class="flex items-center gap-2">
+                  <div>{{selPais.pais}}</div>
+                </div>
+              </ng-template>
+              <ng-template let-pai #item>
+                <div class="flex items-center gap-2">
+                  <div>{{pai.pais}}</div>
+                </div>
+              </ng-template>
+            </p-select>
+          </div>
+          <div class="col-12 explain" style="padding-left: 10px!important;">
+            <h6 class="title">Identificaci&oacute;n Oficial</h6>
+          </div>
+          <p-divider />
+          <div class="col-12 col-sm-12 col-md-6 col-lg-8 col-xl-4 col-xxl-4 input-group">
+            <label for="trabDocsCURP" class="activeInput">Clave &uacute;nica de registro de poblaci&oacute;n
+              (CURP)</label>
+            <input id="trabDocsCURP" class="validate" name="txtcurpPF" type="text"
+              (keyup)="keyupTrabDocsCurp($event.target);">
+          </div>
+          <div class="col-12 col-sm-12 col-md-6 col-lg-8 col-xl-4 col-xxl-4 input-group">
+            <label for="trabDocsRFC" class="activeInput">Registro Federal de Contribuyentes (RFC)</label>
+            <input id="trabDocsRFC" class="verif_rfc validate" name="trabDocsRFC" type="text" autocomplete="off"
+              data-length="13" placeholder="Ej. ABCD000000XXX" maxlength="13"
+              (keyup)="keyupTrabDocsRfc($event.target);">
+          </div>
+          <div class="col-12 col-sm-12 col-md-6 col-lg-8 col-xl-4 col-xxl-4 input-group">
+            <label for="trabDocsNSS" class="activeInput">N&uacute;mero de Seguridad Social</label>
+            <input id="trabDocsNSS" class="validate" name="trabDocsNSS" type="text" autocomplete="off"
+              (keyup)="keyupTrabDocsNSS($event.target);">
+          </div>
+        </div>
+      </p-accordion-content>
+    </p-accordion-panel>
+    <p-accordion-panel value="1">
+      <p-accordion-header>Domicilio</p-accordion-header>
+      <p-accordion-content>
+        <div class="col-12 row">
+          <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input-group">
+            <label for="trabDomicilioCalleNumero" class="activeInput">Calle y n&uacute;mero</label>
+            <input id="trabDomicilioCalleNumero" class="validate" type="text" name="trabDomicilioCalleNumero"
+              (keyup)="keyupTrabDomicilioCalleNumero($event.target);">
+          </div>
+          <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-2 col-xxl-2 input-group">
+            <label for="trabDomicilioCPostal" class="activeInput">C&oacute;digo postal</label>
+            <input id="trabDomicilioCPostal" class="validate" type="text" name="trabDomicilioCPostal"
+              (keyup)="buscaCodPostalDipomex($event.target);">
+          </div>
+          <div class="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-2 col-xxl-2 input-group">
+            <label for="trabDomicilioColonia" class="activeInput">Colonia</label>
+            @if (modeloTrab.domicilio_colonias_por_cp.length <= 1) { <input id="trabDomicilioColonia"
+              class="validate disabled" disabled aria-disabled="true" [value]="modeloTrab.domicilio_colonia_vinculada"
+              type="text" name="trabDomicilioColonia">
+              } @else {
+              <p-select [options]="modeloTrab.domicilio_colonias_por_cp" id="trabDomicilioColonia"
+                name="trabDomicilioColonia" [filter]="true" appendTo="body" [showClear]="true"
+                [placeholder]="'opt_select' | translate" class="w-full md:w-56"
+                (onChange)="seleccionaColoniatrab($event.value);">
+                <ng-template #selectedItem let-selectedCol>
+                  <div class="flex items-center gap-2">
+                    <div>{{selectedCol}}</div>
+                  </div>
+                </ng-template>
+                <ng-template let-col #item>
+                  <div class="flex items-center gap-2">
+                    <div>{{col}}</div>
+                  </div>
+                </ng-template>
+              </p-select>
+              }
+          </div>
+          <div class="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-2 col-xxl-2 input-group">
+            <label for="trabDomicilioMunicipio" class="activeInput">Municipio</label>
+            <input id="trabDomicilioMunicipio" class="validate disabled" disabled aria-disabled="true"
+              [value]="modeloTrab.domicilio_municipio" type="text" name="trabDomicilioMunicipio">
+          </div>
+          <div class="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-2 col-xxl-2 input-group">
+            <label for="trabDomicilioEstado" class="activeInput">Estado</label>
+            <input id="trabDomicilioEstado" class="validate disabled" disabled aria-disabled="true"
+              [value]="modeloTrab.domicilio_estado" type="text" name="trabDomicilioEstado">
+          </div>
+        </div>
+      </p-accordion-content>
+    </p-accordion-panel>
+    <p-accordion-panel value="2">
+      <p-accordion-header>Informaci&oacute;n de contacto</p-accordion-header>
+      <p-accordion-content>
+        <div class="col-12 row">
+          <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input-group">
+            <label for="trabContTipoTel" class="activeInput">Tipo de tel&eacute;fono</label>
+            <p-select [options]="trab_tipo_telefonos" id="trabContTipoTel" name="trabContTipoTel" optionLabel="label"
+              [filter]="true" filterBy="label" appendTo="body" [showClear]="true"
+              [placeholder]="'opt_select' | translate" class="w-full md:w-56"
+              (onChange)="changeTrabContTelefonoTipo($event.value);">
+              <ng-template #selectedItem let-selectedOption>
+                <div class="flex items-center gap-2">
+                  <div>{{selectedOption.label}}</div>
+                </div>
+              </ng-template>
+              <ng-template let-ttel #item>
+                <div class="flex items-center gap-2">
+                  <div>{{ttel.label}}</div>
+                </div>
+              </ng-template>
+            </p-select>
+          </div>
+          <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input-group">
+            <label for="trabContTelefono" class="activeInput">Tel&eacute;fono</label>
+            <ngx-material-intl-tel-input id="trabContTelefono" [fieldControl]="phoneForm.get('telefono')"
+              [preferredCountries]="preferredCountries" [enablePlaceholder]="true" maxLength="15" name="phone"
+              (input)="probarTextPhone();keyupTrabContTelefonoNumero($event);">
+            </ngx-material-intl-tel-input>
+          </div>
+          <p-divider />
+          <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input-group">
+            <label for="trabContEmail" class="activeInput form-label">{{'email' | translate}}</label>
+            <input id="trabContEmail" type="email" class="validate" name="correo_electronico"
+              (keyup)="keyupTrabContMail($event.target);">
+          </div>
+        </div>
+      </p-accordion-content>
+    </p-accordion-panel>
+    <p-accordion-panel value="3">
+      <p-accordion-header>Documentaci&oacute;n Internacional</p-accordion-header>
+      <p-accordion-content>
+        <div class="col-12 row">
+          <div class="col-12 explain">
+            <h6 class="title">Pasaporte</h6>
+          </div>
+          <div class="col-12 col-sm-12 col-md-12 col-lg-4 col-xl-4 col-xxl-4 input-group">
+            <label for="trabDocsPasaporteNum" class="activeInput">Pasaporte No.</label>
+            <input id="trabDocsPasaporteNum" class="validate" name="trabDocsPasaporteNum" type="text" autocomplete="off"
+              (keyup)="keyupTrabDocsPasaporte($event.target);">
+          </div>
+          <div class="col-12 col-sm-12 col-md-12 col-lg-4 col-xl-4 col-xxl-4 input-group">
+            <label for="trabDocsPasaporteExpide" class="activeInput">Expide</label>
+            <p-select [options]="paises_lista" id="trabDocsPasaporteExpide" name="trabDocsPasaporteExpide"
+              optionLabel="pais" [filter]="true" filterBy="pais" appendTo="body" [showClear]="true"
+              [placeholder]="'opt_select' | translate" class="w-full md:w-56"
+              (onChange)="changeTrabDocsPasaporteExpide($event.value);">
+              <ng-template #selectedItem let-selPais>
+                <div class="flex items-center gap-2">
+                  <div>{{selPais.pais}}</div>
+                </div>
+              </ng-template>
+              <ng-template let-pai #item>
+                <div class="flex items-center gap-2">
+                  <div>{{pai.pais}}</div>
+                </div>
+              </ng-template>
+            </p-select>
+          </div>
+          <div class="col-12 col-sm-12 col-md-12 col-lg-4 col-xl-4 col-xxl-4 input-group">
+            <label for="trabDocsPasaporteVigencia" class="activeInput">Vigencia</label>
+            <input id="trabDocsPasaporteVigencia" class="validate" name="trabDocsPasaporteVigencia" type="date"
+              (change)="changeTrabDocsPasaporteVigencia($event.target);">
+          </div>
+          <div class="col-12 row" style="display: flex;justify-content: end;">
+            <a class="btn btn_extend text-bg-success rounded-3" [ngClass]="!validatePasaporteAdd ? 'disabled' : ''"
+              [attr.disabled]="!validatePasaporteAdd ? true : null"
+              [attr.aria-disabled]="!validatePasaporteAdd ? true : null"
+              (click)="validatePasaporteAdd && changeTrabDocsPasaporteAdd($event);">
+              <i class="fa-solid fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+            </a>
+          </div>
+          <div class="col-12">
+            <p-table #emplePasport [value]="modeloTrab.documentacion_pasaporte_list_new" showGridlines
+              [resizableColumns]="true" [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }"
+              [rowsPerPageOptions]="[10,20,30,50,100]"
+              [globalFilterFields]="['pasaporte_numero','pasaporte_expide','pasaporte_vigencia','pasaporte_estado']">
+              <ng-template #caption>
+                <div class="flex">
+                  <p-iconfield iconPosition="left" class="ml-auto">
+                    <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                    <input pInputText type="text" (input)="emplePasport.filterGlobal($event.target.value, 'contains')"
+                      placeholder="{{'bus_car' | translate}}" />
+                  </p-iconfield>
+                </div>
+              </ng-template>
+              <ng-template #header>
+                <tr>
+                  <th pResizableColumn pSortableColumn="pasaporte_numero">Pasaporte No.&nbsp;<p-sortIcon
+                      field="pasaporte_numero" /></th>
+                  <th pResizableColumn pSortableColumn="pasaporte_expide">Expide&nbsp;<p-sortIcon
+                      field="pasaporte_expide" /></th>
+                  <th pResizableColumn pSortableColumn="pasaporte_vigencia">Vigencia&nbsp;<p-sortIcon
+                      field="pasaporte_vigencia" /></th>
+                  <th class="ultimo"></th>
+                </tr>
+              </ng-template>
+              <ng-template #body let-pst>
+                <tr>
+                  <td class="name">{{pst.pasaporte_numero}}</td>
+                  <td class="name">{{pst.pasaporte_expide}}</td>
+                  <td class="name">{{pst.pasaporte_vigencia}}</td>
+                  <td class="ultimo">
+                    <a class="btn btn_extend text-bg-danger rounded-3"
+                      (click)="changeTrabDocsPasaporteNewRemove($event,pst.num_lista);">
+                      <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                    </a>
+                  </td>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td colspan="4" class="text-center py-4">
+                    <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                    <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                      {{'no_rows' | translate}}
+                    </p>
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+
+          <div class="col-12 explain">
+            <h6 class="title">VISA</h6>
+          </div>
+          <p-divider />
+          <div class="col-12 col-sm-12 col-md-12 col-lg-4 col-xl-4 col-xxl-4 input-group">
+            <label for="trabDocsVisa" class="activeInput">VISA No.</label>
+            <input id="trabDocsVisa" class="validate" name="trabDocsVisa" type="text" autocomplete="off"
+              (keyup)="keyupTrabDocsVisa($event.target);">
+          </div>
+          <div class="col-12 col-sm-12 col-md-12 col-lg-4 col-xl-4 col-xxl-4 input-group">
+            <label for="trabDocsVisaExpide" class="activeInput">Expide</label>
+            <p-select [options]="paises_lista" id="trabDocsVisaExpide" name="trabDocsVisaExpide" optionLabel="pais"
+              [filter]="true" filterBy="pais" appendTo="body" [showClear]="true"
+              [placeholder]="'opt_select' | translate" class="w-full md:w-56"
+              (onChange)="changeTrabDocsVisaExpide($event.value);">
+              <ng-template #selectedItem let-selPais>
+                <div class="flex items-center gap-2">
+                  <div>{{selPais.pais}}</div>
+                </div>
+              </ng-template>
+              <ng-template let-pai #item>
+                <div class="flex items-center gap-2">
+                  <div>{{pai.pais}}</div>
+                </div>
+              </ng-template>
+            </p-select>
+          </div>
+          <div class="col-12 col-sm-12 col-md-12 col-lg-4 col-xl-4 col-xxl-4 input-group">
+            <label for="trabDocsVisaVigencia" class="activeInput">Vigencia</label>
+            <input id="trabDocsVisaVigencia" class="validate" name="trabDocsVisaVigencia" type="date"
+              (change)="changeTrabDocsVisaVigencia($event.target);">
+          </div>
+          <div class="col-12 row" style="display: flex;justify-content: end;">
+            <a class="btn btn_extend text-bg-success rounded-3" [ngClass]="!validateVisaAdd ? 'disabled' : ''"
+              [attr.disabled]="!validateVisaAdd ? true : null" [attr.aria-disabled]="!validateVisaAdd ? true : null"
+              (click)="validateVisaAdd && changeTrabDocsVisaAdd($event);">
+              <i class="fa-solid fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+            </a>
+          </div>
+          <div class="col-12">
+            <p-table #empleVigen [value]="modeloTrab.documentacion_visa_list_new" showGridlines
+              [resizableColumns]="true" [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }"
+              [rowsPerPageOptions]="[10,20,30,50,100]"
+              [globalFilterFields]="['visa_numero','visa_expide','visa_vigencia','visa_estado']">
+              <ng-template #caption>
+                <div class="flex">
+                  <p-iconfield iconPosition="left" class="ml-auto">
+                    <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                    <input pInputText type="text" (input)="empleVigen.filterGlobal($event.target.value, 'contains')"
+                      placeholder="{{'bus_car' | translate}}" />
+                  </p-iconfield>
+                </div>
+              </ng-template>
+              <ng-template #header>
+                <tr>
+                  <th pResizableColumn pSortableColumn="visa_numero">VISA No.&nbsp;<p-sortIcon field="visa_numero" />
+                  </th>
+                  <th pResizableColumn pSortableColumn="visa_expide">Expide&nbsp;<p-sortIcon field="visa_expide" /></th>
+                  <th pResizableColumn pSortableColumn="visa_vigencia">Vigencia&nbsp;<p-sortIcon
+                      field="visa_vigencia" /></th>
+                  <th class="ultimo"></th>
+                </tr>
+              </ng-template>
+              <ng-template #body let-vis>
+                <tr>
+                  <td class="name">{{vis.visa_numero}}</td>
+                  <td class="name">{{vis.visa_expide}}</td>
+                  <td class="name">{{vis.visa_vigencia}}</td>
+                  <td class="ultimo">
+                    <a class="btn btn_extend text-bg-danger rounded-3"
+                      (click)="changeTrabDocsVisaNewRemove($event,vis.num_lista);">
+                      <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                    </a>
+                  </td>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td colspan="4" class="text-center py-4">
+                    <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                    <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                      {{'no_rows' | translate}}
+                    </p>
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+        </div>
+      </p-accordion-content>
+    </p-accordion-panel>
+    <p-accordion-panel value="4">
+      <p-accordion-header>Licencia de Manejo</p-accordion-header>
+      <p-accordion-content>
+        <div class="col-12 row">
+          <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+            <label for="trabLicenciaClave" class="activeInput">Clase</label>
+            <p-select [options]="trab_licencia_tipos" id="trabLicenciaClave" name="trabLicenciaClave"
+              optionLabel="opcion" [filter]="true" filterBy="opcion" appendTo="body" [showClear]="true"
+              [placeholder]="'opt_select' | translate" class="w-full md:w-56"
+              (onChange)="changeTrabLicenciaManejarClave($event.value);">
+              <ng-template #selectedItem let-selectedOption>
+                <div class="flex items-center gap-2">
+                  <div>{{selectedOption.opcion}}</div>
+                </div>
+              </ng-template>
+              <ng-template let-ttel #item>
+                <div class="flex items-center gap-2">
+                  <div>{{ttel.opcion}}</div>
+                </div>
+              </ng-template>
+            </p-select>
+          </div>
+          <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+            <label for="trabLicenciaNum" class="activeInput">N&uacute;mero de licencia</label>
+            <input id="trabLicenciaNum" class="validate" name="trabLicenciaNum" type="text"
+              (keyup)="keyupTrabLicenciaManejarNumero($event.target);">
+          </div>
+          <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+            <label for="trabLicenciaExpide" class="activeInput">Expide</label>
+            <p-select [options]="trab_entidades_federativas" id="trabLicenciaExpide" name="trabLicenciaExpide"
+              optionLabel="nombre" [filter]="true" filterBy="nombre" appendTo="body" [showClear]="true"
+              [placeholder]="'opt_select' | translate" class="w-full md:w-56"
+              (onChange)="changeTrabLicenciaManejarExpide($event.value);">
+              <ng-template #selectedItem let-selEnt>
+                <div class="flex items-center gap-2">
+                  <div>{{selEnt.nombre}}</div>
+                </div>
+              </ng-template>
+              <ng-template let-ent #item>
+                <div class="flex items-center gap-2">
+                  <div>{{ent.nombre}}</div>
+                </div>
+              </ng-template>
+            </p-select>
+          </div>
+          <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+            <label for="trabLicenciaExpedicionDate" class="activeInput">Fecha de expedici&oacute;n</label>
+            <input id="trabLicenciaExpedicionDate" class="validate" name="trabLicenciaExpedicionDate" type="date"
+              (change)="changeTrabLicenciaFechaExpedicion($event.target);">
+          </div>
+          @if (modeloTrab.documentacion_licencia_tiene && modeloTrab.documentacion_licencia_fecha_expedicion != ''
+          &&!modeloTrab.documentacion_licencia_permanente) {
+          <div class="col-12 explain" style="margin: 0!important;">
+            <h6 class="title">Fecha de vencimiento</h6>
+            <h6 class="content">{{fechaVencimientoInformativa}}</h6>
+          </div>
+          }
+          <div class="col-12 row" style="display: flex;justify-content: end;">
+            <a class="btn btn_extend text-bg-success rounded-3" [ngClass]="!validateLicenciaAdd ? 'disabled' : ''"
+              [attr.disabled]="!validateLicenciaAdd ? true : null"
+              [attr.aria-disabled]="!validateLicenciaAdd ? true : null"
+              (click)="validateLicenciaAdd && changeTrabDocsLicenciaAdd($event);">
+              <i class="fa-solid fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+            </a>
+          </div>
+          <div class="col-12">
+            <div class="col-12 explain">
+              <h6 class="title">Licencias para registrar</h6>
+            </div>
+            <p-table #empleLicen [value]="modeloTrab.documentacion_licencia_list_new" showGridlines
+              [resizableColumns]="true" [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }"
+              [rowsPerPageOptions]="[10,20,30,50,100]"
+              [globalFilterFields]="['visa_numero','visa_expide','visa_vigencia','visa_estado']">
+              <ng-template #caption>
+                <div class="flex">
+                  <p-iconfield iconPosition="left" class="ml-auto">
+                    <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                    <input pInputText type="text" (input)="empleLicen.filterGlobal($event.target.value, 'contains')"
+                      placeholder="{{'bus_car' | translate}}" />
+                  </p-iconfield>
+                </div>
+              </ng-template>
+              <ng-template #header>
+                <tr>
+                  <th pResizableColumn pSortableColumn="licencia_nivel">nivel&nbsp;<p-sortIcon field="licencia_nivel" />
+                  </th>
+                  <th pResizableColumn pSortableColumn="licencia_clase">clase&nbsp;<p-sortIcon field="licencia_clase" />
+                  </th>
+                  <th pResizableColumn pSortableColumn="licencia_numero">numero&nbsp;<p-sortIcon
+                      field="licencia_numero" /></th>
+                  <th pResizableColumn pSortableColumn="licencia_expide">expide&nbsp;<p-sortIcon
+                      field="licencia_expide" /></th>
+                  <th pResizableColumn pSortableColumn="licencia_fecha_expedicion">fecha de
+                    expedici&oacute;n&nbsp;<p-sortIcon field="licencia_fecha_expedicion" /></th>
+                  <th pResizableColumn pSortableColumn="licencia_vigencia">vigencia&nbsp;<p-sortIcon
+                      field="licencia_vigencia" /></th>
+                  <th pResizableColumn pSortableColumn="licencia_permanente">permanente&nbsp;<p-sortIcon
+                      field="licencia_permanente" /></th>
+                  <th pResizableColumn pSortableColumn="licencia_estado">estado&nbsp;<p-sortIcon
+                      field="licencia_estado" /></th>
+                  <th class="ultimo"></th>
+                </tr>
+              </ng-template>
+              <ng-template #body let-lic>
+                <tr>
+                  <td class="name">{{lic.licencia_nivel}}</td>
+                  <td class="name">{{lic.licencia_clase}}</td>
+                  <td class="name">{{lic.licencia_numero}}</td>
+                  <td class="name">{{lic.licencia_expide_show}}</td>
+                  <td class="name">{{lic.licencia_fecha_expedicion}}</td>
+                  <td class="name">{{lic.licencia_vigencia}}</td>
+                  <td class="name">{{lic.licencia_permanente ? ['yes' | translate] : 'No'}}</td>
+                  <td class="name">{{lic.licencia_estado}}</td>
+                  <td class="ultimo">
+                    <a class="btn btn_extend text-bg-danger rounded-3"
+                      (click)="changeTrabDocsLicenciaNewRemove($event,lic.num_lista);">
+                      <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                    </a>
+                  </td>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td colspan="9" class="text-center py-4">
+                    <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                    <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                      {{'no_rows' | translate}}
+                    </p>
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+        </div>
+      </p-accordion-content>
+    </p-accordion-panel>
+    <p-accordion-panel value="5">
+      <p-accordion-header>Informaci&oacute;n bancaria</p-accordion-header>
+      <p-accordion-content>
+        <div class="col-12 row">
+          <div class="col-12 col-sm-12 col-md-12 col-lg-4 col-xl-4 col-xxl-4 input-group">
+            <label for="trabCBancariaBanco" class="activeInput">Banco</label>
+            <p-select [options]="lista_bancos" id="trabCBancariaBanco" optionValue="token_bancos"
+              name="trabCBancariaBanco" optionLabel="nombre_comercial" [filter]="true" filterBy="nombre_comercial"
+              appendTo="body" [showClear]="true" [placeholder]="'opt_select' | translate" class="w-full md:w-56"
+              (onChange)="changeTrabCBancariaBanco($event.value);">
+              <ng-template #selectedItem let-selContrato>
+                <div class="flex items-center gap-2">
+                  <div>{{selContrato.nombre_comercial}}</div>
+                </div>
+              </ng-template>
+              <ng-template let-contrat #item>
+                <div class="flex items-center gap-2">
+                  <div>{{contrat.nombre_comercial}}</div>
+                </div>
+              </ng-template>
+            </p-select>
+          </div>
+          <div class="col-12 col-sm-12 col-md-12 col-lg-4 col-xl-4 col-xxl-4 input_group_pass">
+            <label for="trabCBancariaCuenta" class="activeInput">No. de cuenta</label>
+            <input id="trabCBancariaCuenta" class="txtPassCuenta validate inputWthPass" name="noCuenta"
+              name="trabCBancariaCuenta" type="password" required (keyup)="changeTrabCBancariaCuenta($event.target);">
+            <a class="btn" [ngClass]="modeloTrab.cbancaria_cuenta == '' ? 'disabled' : ''"
+              [attr.disabled]="modeloTrab.cbancaria_cuenta == '' ? true : null"
+              [attr.aria-disabled]="modeloTrab.cbancaria_cuenta == '' ? true : null"
+              (click)="modeloTrab.cbancaria_cuenta != '' && verCuenta();">
+              <i class="fa-solid"
+                [ngClass]="modeloTrab.cbancaria_cuenta != '' && viewCuenta ? 'fa-eye-slash' : 'fa-eye'"></i>
+            </a>
+          </div>
+          <div class="col-12 col-sm-12 col-md-12 col-lg-4 col-xl-4 col-xxl-4 input_group_pass">
+            <label for="trabCBancariaClabeInter" class="activeInput">Clabe interbancaria</label>
+            <input id="trabCBancariaClabeInter" class="txtPassClabeInter validate inputWthPass"
+              name="trabCBancariaClabeInter" type="password" maxlength="18" required
+              (keyup)="changeTrabCBancariaClabeInter($event.target);">
+            <a class="btn" [ngClass]="modeloTrab.cbancaria_clabe_inter == '' ? 'disabled' : ''"
+              [attr.disabled]="modeloTrab.cbancaria_clabe_inter == '' ? true : null"
+              [attr.aria-disabled]="modeloTrab.cbancaria_clabe_inter == '' ? true : null"
+              (click)="modeloTrab.cbancaria_clabe_inter != '' && verClabeInter();">
+              <i class="fa-solid"
+                [ngClass]="modeloTrab.cbancaria_clabe_inter != '' && viewClabeInterbanc ? 'fa-eye-slash' : 'fa-eye'"></i>
+            </a>
+          </div>
+        </div>
+      </p-accordion-content>
+    </p-accordion-panel>
+    <p-accordion-panel value="6">
+      <p-accordion-header>Dentro de la empresa</p-accordion-header>
+      <p-accordion-content>
+        <div class="col-12 row">
+          <div class="col-12">
+            <div class="col-12 explain">
+              <h6 class="title">Centro de trabajo</h6>
+            </div>
+            <p-table #estabTrueList [value]="catalogo_centros_trabajo" dataKey="id" [paginator]="true" [rows]="10"
+              [rowsPerPageOptions]="[10,20,30,50,100]"
+              [globalFilterFields]="['folio_centro_trab','fecha_contabilizacion','descripcion','clave_registro_patronal_imss','ubicacion_token','ubicacion_alias']">
+              <ng-template #caption>
+                <div class="flex">
+                  <p-iconfield iconPosition="left" class="ml-auto">
+                    <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                    <input pInputText type="text" (input)="estabTrueList.filterGlobal($event.target.value, 'contains')"
+                      placeholder="{{'bus_car' | translate}}" />
+                  </p-iconfield>
+                </div>
+              </ng-template>
+              <ng-template #header>
+                <tr>
+                  <th class="ultimo"></th>
+                  <th pSortableColumn="folio_centro_trab">folio&nbsp;<p-sortIcon field="folio_centro_trab" /></th>
+                  <th pSortableColumn="fecha_contabilizacion">{{'fecha_cont' | translate}}&nbsp;<p-sortIcon
+                      field="fecha_contabilizacion" /></th>
+                  <th pSortableColumn="clave_registro_patronal_imss">Registro patronal del IMSS&nbsp;<p-sortIcon
+                      field="clave_registro_patronal_imss" /></th>
+                  <th pSortableColumn="ubicacion_alias">{{'ubica_loca' | translate}}&nbsp;<p-sortIcon
+                      field="ubicacion_alias" /></th>
+                  <th pSortableColumn="descripcion">{{'desc' | translate}}&nbsp;<p-sortIcon field="descripcion" /></th>
+                </tr>
+              </ng-template>
+              <ng-template #body let-ctrb>
+                <tr>
+                  <td>
+                    <div class="form-check radio_check">
+                      <input class="form-check-input" type="checkbox" name="caja_select"
+                        [checked]="ctrb.select_for_trabajador"
+                        (click)="selectTrabajoCentro($event.target,ctrb.centrotrab_uuid);">
+                    </div>
+                  </td>
+                  <td>{{ctrb.folio_centro_trab}}</td>
+                  <td>{{ctrb.fecha_contabilizacion}}</td>
+                  <td>{{ctrb.clave_registro_patronal_imss}}</td>
+                  <td>{{ctrb.ubicacion_alias}}</td>
+                  <td>{{ctrb.descripcion}}</td>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td colspan="6" class="text-center py-4">
+                    <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                    <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                      {{'no_rows' | translate}}
+                    </p>
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+
+          <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+            <label for="trabDepartamento" class="activeInput">Departamento</label>
+            <input id="trabDepartamento" class="validate" type="text" name="trabDepartamento"
+              (keyup)="keyupTrabDepartamento($event.target);">
+          </div>
+
+          <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+            <label for="trabPuesto" class="activeInput">Puesto</label>
+            <input id="trabPuesto" class="validate" type="text" name="trabPuesto"
+              (keyup)="keyupTrabPuesto($event.target);">
+          </div>
+
+          <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+            <label for="trabTipoSalario" class="activeInput">Tipo de salario</label>
+            <p-select [options]="trab_lista_tipos_salario" id="trabTipoSalario" optionValue="nombre"
+              name="trabTipoSalario" optionLabel="nombre" [filter]="true" filterBy="nombre" appendTo="body"
+              [showClear]="true" [placeholder]="'opt_select' | translate" class="w-full md:w-56"
+              (onChange)="changeTrabTipoSalario($event.value);">
+              <ng-template #selectedItem let-selSal>
+                <div class="flex items-center gap-2">
+                  <div>{{selSal.nombre}}</div>
+                </div>
+              </ng-template>
+              <ng-template let-sal #item>
+                <div class="flex items-center gap-2">
+                  <div>{{sal.nombre}}</div>
+                </div>
+              </ng-template>
+            </p-select>
+          </div>
+
+          <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+            <label for="trabContratoTipo" class="activeInput">Tipo de contrataci&oacute;n</label>
+            <p-select [options]="trab_lista_tipos_contrato" id="trabContratoTipo" optionValue="tipo"
+              name="trabContratoTipo" optionLabel="tipo" [filter]="true" filterBy="tipo" appendTo="body"
+              [showClear]="true" [placeholder]="'opt_select' | translate" class="w-full md:w-56"
+              (onChange)="changeTrabContratacionTipo($event.value);">
+              <ng-template #selectedItem let-selContrato>
+                <div class="flex items-center gap-2">
+                  <div>{{selContrato.tipo}}</div>
+                </div>
+              </ng-template>
+              <ng-template let-contrat #item>
+                <div class="flex items-center gap-2">
+                  <div>{{contrat.tipo}}</div>
+                </div>
+              </ng-template>
+            </p-select>
+          </div>
+          <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+            <label for="trabContratoFecha" class="activeInput">Fecha de contrataci&oacute;n</label>
+            <input id="trabContratoFecha" class="validate" type="date" name="trabContratoFecha"
+              (change)="changeTrabContratacionFecha($event.target);">
+          </div>
+          <p-divider />
+          <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+            <label for="trabAltaEnEmpresaFecha" class="activeInput">Fecha de inicio de labores</label>
+            <input id="trabAltaEnEmpresaFecha" class="validate" type="date" name="trabAltaEnEmpresaFecha"
+              (change)="changeTrabAltaEnEmpresaFecha($event.target);">
+          </div>
+
+          <div class="col-12 explain">
+            <h6 class="title">Informaci&oacute;n para n&oacute;minas</h6>
+          </div>
+          <p-divider />
+          <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+            <label for="trabEditNominaPeriodicidad" class="activeInput">Periodicidad de pago</label>
+            <p-select [options]="nomina_periodos" id="trabEditNominaPeriodicidad" [(ngModel)]="nomina_periodicidad"
+              name="trabEditNominaPeriodicidad" optionLabel="periodicidad" [filter]="true" filterBy="periodicidad"
+              appendTo="body" [showClear]="true" [placeholder]="'opt_select' | translate" class="w-full md:w-56"
+              (onChange)="changeNominaPeriodicidad($event.value);">
+              <ng-template #selectedItem let-selectedOption>
+                <div class="flex items-center gap-2">
+                  <div>{{selectedOption.periodicidad}}</div>
+                </div>
+              </ng-template>
+              <ng-template let-prov #item>
+                <div class="flex items-center gap-2">
+                  <div>{{prov.periodicidad}}</div>
+                </div>
+              </ng-template>
+            </p-select>
+          </div>
+          <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+            <label for="trabEditNominaMoneda" class="activeInput">{{'mon_name' | translate}}</label>
+            <p-select [options]="catalogo_monedas_api" id="trabEditNominaMoneda" [(ngModel)]="nomina_moneda"
+              optionLabel="_filtro_busqueda" [filter]="true" filterBy="_filtro_busqueda" appendTo="body"
+              [showClear]="true" [placeholder]="'opt_select' | translate" class="w-full md:w-56"
+              (onChange)="changeMonedaNomina($event.value);">
+              <ng-template #selectedItem let-selectedOption>
+                <div class="flex items-center gap-2">
+                  <div>{{selectedOption.code+" "+selectedOption.langEN}}</div>
+                </div>
+              </ng-template>
+              <ng-template let-mon #item>
+                <div class="flex items-center gap-2">
+                  <div>{{mon.code+" "+mon.langEN}}</div>
+                </div>
+              </ng-template>
+            </p-select>
+          </div>
+          <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+            <label for="trabNominaDiasJornada" class="activeInput">Jornada</label>
+            <p-select [options]="nomina_jornadas" id="trabNominaDiasJornada" [(ngModel)]="nomina_jornada_empleado"
+              name="trabNominaDiasJornada" optionLabel="jornada" [filter]="true" filterBy="jornada" appendTo="body"
+              [showClear]="true" [placeholder]="'opt_select' | translate" class="w-full md:w-56"
+              (onChange)="keyupNominaDiasJornada($event.value);">
+              <ng-template #selectedItem let-selectedOption>
+                <div class="flex items-center gap-2">
+                  <div>{{selectedOption.jornada}}</div>
+                </div>
+              </ng-template>
+              <ng-template let-prov #item>
+                <div class="flex items-center gap-2">
+                  <div>{{prov.jornada}}</div>
+                </div>
+              </ng-template>
+            </p-select>
+          </div>
+          <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+            <label for="trabNominaTurno" class="activeInput">Turno</label>
+            <p-select [options]="nomina_turnos" id="trabNominaTurno" [(ngModel)]="nomina_turno_empleado"
+              name="trabNominaTurno" optionLabel="turno" [filter]="true" filterBy="turno" appendTo="body"
+              [showClear]="true" [placeholder]="'opt_select' | translate" class="w-full md:w-56"
+              (onChange)="keyupNominaTurno($event.value);">
+              <ng-template #selectedItem let-selectedOption>
+                <div class="flex items-center gap-2">
+                  <div>{{selectedOption.turno}}</div>
+                </div>
+              </ng-template>
+              <ng-template let-prov #item>
+                <div class="flex items-center gap-2">
+                  <div>{{prov.turno}}</div>
+                </div>
+              </ng-template>
+            </p-select>
+          </div>
+          <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+            <label for="trabEditNominaSalarioDiario" class="activeInput">Salario diario</label>
+            <input id="trabEditNominaSalarioDiario" class="validate" type="number" name="trabEditNominaSalarioDiario"
+              (keyup)="keyupNominaSalarioDiario($event.target);">
+          </div>
+          <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+            <label for="trabEditNominaSalarioIntegrado" class="activeInput">SDI</label>
+            <input id="trabEditNominaSalarioIntegrado" class="validate" type="number"
+              name="trabEditNominaSalarioIntegrado" (keyup)="keyupNominaSalarioIntegrado($event.target);">
+          </div>
+        </div>
+      </p-accordion-content>
+    </p-accordion-panel>
+  </p-accordion>
+  <p-divider />
+  <div class="col-12 row" style="display: flex;justify-content: end;">
+    <button class="btn btn_extend text-bg-success rounded-3" [ngClass]="!validaRegistroTrabajador ? 'disabled' : ''"
+      [attr.disabled]="!validaRegistroTrabajador ? true : null"
+      [attr.aria-disabled]="!validaRegistroTrabajador ? true : null">
+      <i class="fa-solid fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+    </button>
+  </div>
+</form>
+}

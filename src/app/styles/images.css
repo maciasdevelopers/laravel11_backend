@@ -1,0 +1,36 @@
+img.circle{
+    height: 32px!important;
+    width: 32px!important;
+}
+
+img.circle_login{
+    height: 40px!important;
+    width: 40px!important;
+    position: absolute!important;
+    margin-top: 5px!important;
+    margin-left: 5px!important;
+}
+
+img.optimizedImage{
+    position: relative!important;
+    height: auto!important;
+}
+
+img.optimizedImageParallax{
+    position: absolute!important;
+    min-width: 100%!important;
+    min-height: 100%!important;
+    height: auto !important;
+}
+
+/*div.chip*/
+.chip img{
+    height: 32px!important;
+    width: 32px!important;
+}
+
+div.file-field-logo div.btn img{
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+}

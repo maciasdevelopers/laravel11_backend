@@ -1,0 +1,93 @@
+<div class="col-12 row">
+  @for (cancd of desglose_solicitud_cancelacion; track $index) {
+    <div class="col-12 explain">
+      <h6 class="title">folio</h6>
+      <h6 class="content">{{cancd.cancel_soli_folio}}</h6>
+    </div>
+    <div class="col-12 explain">
+      <h6 class="title">Registro de movimiento entre cuentas propias</h6>
+      <h6 class="content">{{cancd.doc_anterior_folio}}</h6>
+    </div>
+    <div class="col-12 explain">
+      <h6 class="title">{{'observ' | translate}}</h6>
+      <h6 class="content">{{cancd.cancel_soli_observaciones}}</h6>
+    </div>
+    <div class="col-12 explain">
+      <h6 class="title">cancelaci&oacute;n realizada</h6>
+      <h6 class="content">{{cancd.cancel_soli_cancel_realizada ? ['yes_auth' | translate] : ['not_auth' | translate]}}</h6>
+    </div>
+  }
+  <p-divider />
+  <div class="col-12 explain">
+    <h6 class="title">Movimiento relacionado</h6>
+  </div>
+
+  @for (mov_cp of desgloseSoliCancelacionMCP; track $index) {
+    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 explain explain_column" style="margin: 0!important;">
+      <h6 class="title">folio</h6>
+      <h6 class="content">{{mov_cp.movimiento_cp_folio}}</h6>
+    </div>
+
+    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 explain explain_column" style="margin: 0!important;">
+      <h6 class="title">{{'fecha_cont' | translate}}</h6>
+      <h6 class="content">{{mov_cp.movimiento_cp_fecha_contabilizacion}}</h6>
+    </div>
+
+    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 explain explain_column" style="margin: 0!important;">
+      <h6 class="title">Origen</h6>
+      <h6 class="content">{{mov_cp.origen_catalogo_folio+" "+mov_cp.origen_catalogo_name}}</h6>
+    </div>
+
+    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 explain explain_column" style="margin: 0!important;">
+      <h6 class="title">Destino</h6>
+      <h6 class="content">{{mov_cp.destino_catalogo_folio+" "+mov_cp.destino_catalogo_name}}</h6>
+    </div>
+
+    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 explain explain_column" style="margin: 0!important;">
+      <h6 class="title">{{'total_import' | translate}}</h6>
+      <h6 class="content">{{mov_cp.movimiento_monto}}</h6>
+    </div>
+
+    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 explain explain_column" style="margin: 0!important;">
+      <h6 class="title">{{'mon_name' | translate}}</h6>
+      <h6 class="content">{{mov_cp.movimiento_moneda}}</h6>
+    </div>
+
+    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 explain explain_column" style="margin: 0!important;">
+      <h6 class="title">{{'mon_tipo_cambio' | translate}}</h6>
+      <h6 class="content">{{mov_cp.movimiento_tipo_cambio}}</h6>
+    </div>
+
+    <div class="col-12 explain explain_column" style="margin: 0!important;">
+      <h6 class="title">{{'observ' | translate}}</h6>
+      <h6 class="content">{{mov_cp.movimiento_cp_observaciones}}</h6>
+    </div>
+  }
+
+  @for (cancd of desglose_solicitud_cancelacion; track $index) {
+    @if (!cancd.cancel_soli_cancel_realizada) {
+      <p-divider />
+      <div class="col-12 explain">
+        <h6 class="title">confirmar cancelación</h6>
+      </div>
+      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+        <label class="activeInput">{{'fecha_cont' | translate}}</label>
+        <input class="validate datepicker" id="fechaContabilizacionPago" name="fechaContabilizacionCompra" type="date" (change)="confirmaCancelacionFechaCont($event.target,cancd.cancel_soli_token);">
+      </div>
+      <div class="col-12 input-group" style="margin-bottom: 10px!important;">
+        <label for="stockmin_regCat" id="lblStockmin" class="activeInput">{{'observ' | translate}}</label>
+        <textarea class="validate" name="large_descript" (keyup)="confirmaCancelacionObserva($event.target,cancd.cancel_soli_token);"></textarea>
+      </div>
+      <div class="col-12" style="display: flex !important;justify-content: end!important;">
+        <a class="btn btn_extend text-bg-success rounded-3" type="submit" name="btnAltaProducto2"
+          [ngClass]="cancd.f_contab_confirma_cancelacion == '' || cancd.comentarios_confirma_cancelacion == '' ? 'disabled' : ''"
+          [attr.disabled]="cancd.f_contab_confirma_cancelacion == '' || cancd.comentarios_confirma_cancelacion == '' ? true : null"
+          [attr.aria-disabled]="cancd.f_contab_confirma_cancelacion == '' || cancd.comentarios_confirma_cancelacion == '' ? true : null"
+          (click)="(cancd.f_contab_confirma_cancelacion != '' && cancd.comentarios_confirma_cancelacion != '') && confirmaCancelacionMCP(cancd.cancel_soli_token,cancd.doc_anterior_token,cancd.f_contab_confirma_cancelacion,cancd.comentarios_confirma_cancelacion);">
+          <i class="fa-solid fa-floppy-disk"
+            style="height: 15px!important;line-height: 15px!important;width: 15px!important;font-size: small!important;"></i>&nbsp;{{'sav_cam' | translate}}
+        </a>
+      </div>
+    }
+  }
+</div>

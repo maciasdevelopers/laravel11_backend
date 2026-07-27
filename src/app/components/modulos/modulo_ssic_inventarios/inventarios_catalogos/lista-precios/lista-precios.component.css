@@ -1,0 +1,170 @@
+.encabezado-prv-cl{
+    background-color: #d3d3d3;
+    border-radius: 8px;
+    padding: 5px;
+}
+
+.encabezado-prv-cl h6{
+    color: #353535;
+    font-weight: bold;
+    padding-bottom: 5px;
+}
+
+.card-panel{
+    overflow-x: overlay;
+    background-color: transparent!important;
+    padding: 0;
+    box-shadow: none;
+    margin: 0;
+}
+
+.card-panel::-webkit-scrollbar,
+.card-panel::-webkit-ms-scrollbar{
+    width: 10px;
+    height: 5px;
+}
+
+.card-panel::-webkit-scrollbar-track,
+.card-panel::-webkit-ms-scrollbar-track{
+    background-color: transparent;
+    border-radius: 10px;
+}
+
+.card-panel::-webkit-scrollbar-thumb,
+.card-panel::-webkit-ms-scrollbar-thumb{
+    background-color: rgba(0, 0, 0, 0.4);
+    border-radius: 10px;
+}
+
+div.divTab{
+	margin-top: 5px!important;
+	padding: 10px;
+	border-radius: 8px;
+	background-color: rgba(0, 0, 0, 0.4);
+}
+
+.card-panel table{
+    margin: 0;
+    min-width: 100%!important;
+    width: max-content!important;
+}
+
+table.table_lista thead tr th div.thead{
+    width: 100%!important;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: space-around;
+    height: 40px;
+    margin: 0;
+    padding: 0;
+}
+
+table.table_lista thead tr th div.thead p.titulo{
+    width: 100%!important;
+    margin: 0;
+}
+
+.divTabProd table.table_lista thead tr th div.thead p.dat-first{
+    width: 32%!important;
+    margin: 0;
+}
+
+.divTabProd table.table_lista thead tr th div.thead p.dat-second{
+    width: 32%!important;
+    margin: 0;
+}
+
+.divTabProd table.table_lista thead tr th div.thead p.dat-third{
+    width: 32%!important;
+    margin: 0;
+}
+
+.divTabProd table.table_lista thead tr th div.thead p.dat-fourth{
+    width: 5%!important;
+    margin: 0;
+}
+
+
+
+
+.divTabServ table thead tr th div.thead p.dat-first{
+    width: 45%!important;
+    margin: 0;
+}
+
+.divTabServ table thead tr th div.thead p.dat-second{
+    width: 45%!important;
+    margin: 0;
+}
+
+.divTabServ table thead tr th div.thead p.dat-third{
+    width: 5%!important;
+    margin: 0;
+}
+
+
+table.table_lista div.input-field label{
+    background-color: #353535!important;
+    color:#fff!important;
+    text-transform: capitalize;
+    font-weight: bold;
+}
+
+table.table_lista tbody td.td_detalle td.dat-first{
+    width: 32%!important;
+    margin: 0;
+}
+
+table.table_lista tbody td.td_detalle td.dat-second{
+    width: 32%!important;
+    margin: 0;
+}
+
+table.table_lista tbody td.td_detalle td.dat-second div.input-field{
+    margin: 0;
+    width: 100%!important;
+}
+
+table.table_lista tbody td.td_detalle td.dat-third{
+    width: 32%!important;
+    margin: 0;
+}
+
+table.table_lista tbody td.td_detalle td.dat-fourth{
+    width: 5%!important;
+    margin: 0;
+}
+
+
+
+
+.divTabServ table tbody td.td_detalle td.dat-first{
+    width: 45%!important;
+    margin: 0;
+}
+
+.divTabServ table tbody td.td_detalle td.dat-second{
+    width: 45%!important;
+    margin: 0;
+}
+
+.divTabServ table tbody td.td_detalle td.dat-third{
+    width: 5%!important;
+    margin: 0;
+}
+
+table tbody td.td_detalle td a.btnRow{
+    width: 100%!important;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    font-size: 12pt;
+}
+
+table tbody td.td_detalle td a.btnRow i{
+    width: 30px!important;
+    height: 30px!important;
+    line-height: 30px!important;
+}
+

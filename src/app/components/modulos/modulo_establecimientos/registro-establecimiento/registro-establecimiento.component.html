@@ -1,0 +1,122 @@
+@if (viewFormulario) {
+  <form method="post" class="row formEstablecimiento" #formEstablecimiento="ngForm" [formGroup]="phoneForm" name="frmAddProv" enctype="multipart/form-data" (ngSubmit)="validateRegistro && registrarEstablecimiento(formEstablecimiento);">
+    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+      <label for="estabAlias" class="activeInput"><span class="obligatorio">* Alias</span></label>
+      <input class="validate" for="estabAlias" name="estabAlias" type="text" required (keyup)="keyupfunctiontxtAlias($event.target);" (keypress)="bindPressAlpha($event);">
+    </div>
+    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+      <label for="estabTipos" class="activeInput">Tipo</label>
+      <p-select [options]="tipos_establecimiento" id="estabTipos" name="estabTipos" optionLabel="tipo" [filter]="true" filterBy="tipo" 
+        [showClear]="true" [placeholder]="'opt_select' | translate" class="w-full md:w-56" (onChange)="changefunctiontxtTipo($event.value);">
+        <ng-template #selectedItem let-selected>
+          <div class="flex items-center gap-2"><div>{{selected.tipo}}</div></div>
+        </ng-template>
+        <ng-template let-riesgo #item>
+          <div class="flex items-center gap-2"><div>{{riesgo.tipo}}</div></div>
+        </ng-template>
+      </p-select>
+    </div>
+    <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-6 col-xxl-6 input-group">
+      <label class="activeInput"><span class="obligatorio">Descripci&oacute;n</span></label>
+      <input class="validate" name="producto_regCat" type="text" required (keyup)="keyupfunctiontxtDescripcion($event.target);" (keypress)="bindPressAlpha($event);">
+    </div>
+    
+    <!--app-registro-establecimiento class="col-12 col-sm-12 col-md-8 col-lg-8 col-xl-9 col-xxl-9 input-group">
+      <label class="activeInput"><span class="obligatorio">Encargado</span></label>
+      <datalist id="employDL">
+        <option *ngFor="let pers of listaEmpleados" [value]="pers.nombre_completo"></option>
+      </datalist>
+      <input class="validate" name="producto_regCat" type="text" required list="employDL" (keyup)="keyupfunctiontxtEncargado($event.target);" (keypress)="bindPressAlpha($event);">
+    </div>-->
+    
+    <!--<div class="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-3 col-xxl-3 form-check radio_check">
+      <input class="form-check-input" type="radio" id="aplicaAlmacen" name="aplicaAlmacen" (click)="functionAplicaAlmacen($event.target);">
+      <label class="form-check-label" for="aplicaAlmacen">Aplica para almacen</label>
+    </div>-->
+    
+    <div class="col-12 row" style="padding:0!important;">
+      <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain"><h6 class="title">¿Aplica para almacen?</h6></div>
+      <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+        <label class="form-check-label" for="flexSwitchCheckReverse">No</label>
+        <input class="form-check-input" type="checkbox" (click)="functionAplicaAlmacen($event.target);">
+        <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+      </div>
+    </div>
+    
+    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+      <label for="estabTelefonos" class="activeInput">Tel&eacute;fono</label>
+      <ngx-material-intl-tel-input id="estabTelefonos" 
+        [fieldControl]="phoneForm.get('telefono')" 
+        [preferredCountries]="preferredCountries" 
+        [enablePlaceholder]="true" 
+        maxLength="15" 
+        name="phone"
+        (input)="probarTextPhone();telefonoKeyupNumeroCont_reg($event);">
+      </ngx-material-intl-tel-input>
+    </div>
+    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+      <label class="activeInput"><span class="obligatorio">Cuentas contables</span></label>
+       <input class="validate" name="" type="text" required (keyup)="keyupfunctionCuentaContable($event.target);">
+    </div>
+  
+    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+      <label for="estabSeccionTrabajo" class="activeInput">Secci&oacute;n de trabajo</label>
+      <p-multiSelect [options]="secciones_de_trabajo" id="estabSeccionTrabajo" name="estabSeccionTrabajo" optionLabel="name" [filter]="true" filterBy="name" 
+        [showClear]="true" [placeholder]="'opt_select' | translate" class="w-full md:w-56" (onChange)="functionAplicaMultiple($event.value);">
+        <ng-template #selectedItem let-selected>
+          <div class="flex items-center gap-2"><div>{{selected.name}}</div></div>
+        </ng-template>
+        <ng-template let-riesgo #item>
+          <div class="flex items-center gap-2"><div>{{riesgo.name}}</div></div>
+        </ng-template>
+      </p-multiSelect>
+    </div>
+  
+    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+      <label for="estabPaises" class="activeInput">Pa&iacute;s</label>
+      <p-select [options]="paisesLista" id="estabPaises" name="estabPaises" optionLabel="tipo" [filter]="true" filterBy="alpha3,langES,langEN" 
+        [showClear]="true" [placeholder]="'opt_select' | translate" class="w-full md:w-56" (onChange)="changePais($event.value);">
+        <ng-template #selectedItem let-selected>
+          <div class="flex items-center gap-2"><div>{{selected.langES}}</div></div>
+        </ng-template>
+        <ng-template let-ltpais #item>
+          <div class="flex items-center gap-2"><div>{{ltpais.alpha3+' '+ltpais.langES+', '+ltpais.langEN}}</div></div>
+        </ng-template>
+      </p-select>
+    </div>
+  
+    <div class="col-12 row" [ngClass]="estabModel.ubicacion_pais == 'MEX' ? '' : 'noneView'">
+      <div class="col-12" style="margin-top: 5px !important;margin-bottom: 5px !important;">
+        <ul class="list-group collection_postales">
+          <li class="list-group-item">
+            <div class="busqueda row">
+              <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6" style="display: flex;justify-content: flex-start;margin: auto;padding: 0;height: 30px;line-height: 30px;">
+                <h6>C&oacute;digo postal: </h6>
+              </div>
+              <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6 field_buscar">
+                <input class="validate" type="text" placeholder="{{'bus_car' | translate}}" (keyup)="buscaCodPostalDipomex($event.target);">
+              </div>
+            </div>
+          </li>
+          <li class="list-group-item">Estado: {{estabModel.dipomex_cod_postal_estado}}</li>
+          <li class="list-group-item">Municipio: {{estabModel.dipomex_cod_postal_municipio}}</li>
+          <li class="list-group-item">C&oacute;digo postal: {{estabModel.dipomex_cod_postal_cp}}</li>
+          <li class="list-group-item" *ngIf="dipomex_cod_postal_colonias.length == 0">Colonias: ---</li>
+          <li class="list-group-item itemFor" *ngIf="dipomex_cod_postal_colonias.length > 0">Colonias: <p *ngFor="let col of dipomex_cod_postal_colonias" (click)="seleccionaColoniaCPDipomex(col);">{{col}}</p></li>
+          <li class="list-group-item itemColoniaSeleted" *ngIf="estabModel.dipomex_cod_postal_colonia_vinculada != ''">Colonia seleccionada: {{estabModel.dipomex_cod_postal_colonia_vinculada}}</li>
+        </ul>
+      </div>
+    </div>
+    <div class="col-12 row" [ngClass]="estabModel.ubicacion_pais != 'MEX' ? '' : 'noneView'">
+      <div class="input-group col-12">
+        <label class="activeInput"><span class="obligatorio">* Direcci&oacute;n completa</span></label>
+        <input class="validate" name="direccionEstablecimExt" type="text" (keyup)="keyupfunctionEstablecimExtCompleto($event.target);" (keypress)="bindPressDireccEstabExt($event);">
+      </div>
+    </div>
+    <div class="col-12" style="display: flex;justify-content: end;">
+      <button class="btn btn_extend text-bg-success rounded-3" [ngClass]="!validateRegistro ? 'disabled' : ''" [attr.disabled]="!validateRegistro ? true : null" [attr.aria-disabled]="!validateRegistro ? true : null">
+        <i class="fa-solid fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+      </button>
+    </div>
+  </form>
+}

@@ -1,0 +1,35 @@
+/*proveedores*/
+ul.tabs_listaclient{
+    height: auto!important;
+}
+
+ul.tabs_listaclient li{
+    display: flex!important;
+    justify-content: center!important;
+}
+
+ul.tabs_listaclient li a{
+    width: 50px!important;
+    height: 50px!important;
+    border-radius: 50%;
+    font-size: 4vh;
+}
+
+div.listas_ps div.data-reg div.logotipo{
+    display: flex;
+    justify-content: center!important;
+    margin-bottom: 5px;
+}
+
+div.listas_ps div.data-reg div.logotipo img{
+    height: 60px;
+    border-radius: 8px;
+}
+
+div.listas_ps div.data-reg div.infoNewServ{
+    width: 100%!important;
+}
+
+.select-wrapper{
+    background-color: blue;
+}

@@ -1,0 +1,77 @@
+ul.collapsible li.licollapsible div.collapsible-header div.chip {
+    color: #353535 !important;
+}
+
+ul.collapsible li.licollapsible:hover div.collapsible-header div.chip,
+ul.collapsible li.licollapsible.active div.collapsible-header div.chip {
+    color: #e7e7ea !important;
+}
+
+div.mapa_view{display: flex;flex-wrap: wrap;justify-content: center;margin-bottom: 5px;}
+div.mapa_view h6{color: #e7e7ea!important;}
+
+
+.disabledView{
+  position: relative;
+}
+
+.disabledView::after{
+  content: 'Selecciona al menos una comisión para continuar';
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: larger;
+  font-weight: bold;
+  z-index: 10;
+}
+
+.fake-table {
+  /*display: table;*/
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  overflow: scroll;
+}
+
+.fake-thead {
+  display: table-header-group;
+  background: #f1f5f9;
+  font-weight: bold;
+}
+
+.fake-tbody {
+  display: table-row-group;
+}
+
+.fake-row {
+  display: table-row;
+}
+
+.fake-cell {
+  display: table-cell;
+  border: 1px solid #d1d5db;
+  padding: 6px;
+  vertical-align: middle;
+}
+
+.fake-cell input,
+.fake-cell textarea,
+.fake-cell p-select {
+  width: 100%;
+}
+
+.fake-cell.result {
+  text-align: right;
+  font-weight: bold;
+}
+
+.fake-cell.action {
+  text-align: center;
+}
+
+.fake-row:hover {
+  background: #f9fafb;
+}

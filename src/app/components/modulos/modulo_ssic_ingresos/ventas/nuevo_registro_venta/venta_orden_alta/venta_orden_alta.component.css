@@ -1,0 +1,553 @@
+/*botones tipo de usuario*/
+    .listas_ps .fmAlta .ventas div.divDecisionVenta{
+        display: flex;
+        justify-content: center;
+    }
+
+    .listas_ps .fmAlta .ventas div.divDecisionVenta a.btnModal{
+        width: 30vh;
+        height: 30vh;
+        border-radius: 50%;
+        border: outset;
+        background-color: #6AE33E!important;
+        box-shadow: 1px 1px 10px #353535;
+    }
+
+    .listas_ps .fmAlta .ventas div.divDecisionVenta a.btnModal:hover{
+        border: inset;
+        background-color: #2D7D17!important;
+    }
+
+    .listas_ps .fmAlta .ventas div.divDecisionVenta a.btnModal i{
+        font-size: 5vh;
+    }
+
+
+/*div general de ventas*/
+    /*lista de clientes*/
+        .listas_ps .fmAlta .ventas .form .busqueda{
+            padding-top: 5px;
+            margin-top: 25px;
+        } 
+
+        .listas_ps .fmAlta .ventas .form .busqueda .inputBusqueda{
+            width: 23%;
+        }
+
+        .listas_ps .fmAlta .ventas .form .divClienteVenta table tbody tr td p label{
+            height: 15px;
+        }
+
+    /*row de cabacera*/
+        .listas_ps .fmAlta .registraVenta .datacliente{
+            background-color: #d3d3d3;
+            border-radius: 8px;
+        } 
+
+        .listas_ps .fmAlta .registraVenta .datacliente h4{
+            color: #353535;
+            font-weight: bold;
+            padding-bottom: 5px;
+        }
+
+        .listas_ps .fmAlta .registraVenta .datacliente a{
+            position: absolute;
+            right: 3%;
+            margin-top: 10px;
+        }
+
+        .listas_ps .fmAlta .registraVenta .datacliente h6.titulo{
+            background-color: #353535;
+            border-radius: 8px;
+            height: 13px;
+            line-height: 13px;
+            color: #d3d3d3;
+            font-weight: bold;
+            font-size: 12px!important;
+        }
+
+        .listas_ps .fmAlta .registraVenta .datacliente .input-field{
+            width: 100%; 
+            margin: 3px;
+        }  
+
+        .listas_ps .fmAlta .registraVenta .datacliente .input-field input,
+        .listas_ps .fmAlta .registraVenta .datacliente input{
+            font-size: 13px;
+            height: 15px!important;
+        }
+        
+    /*cuerpo*/
+    .listas_ps .fmAlta .registraVenta .articuloLista{
+        background-color: transparent!important;
+        margin-top: 15px!important;
+    } 
+
+    .listas_ps .fmAlta .registraVenta .articuloLista .divTabProdServ{
+        width: 100%;
+        max-height: 250px;
+        overflow: overlay;
+    } 
+
+    .listas_ps .fmAlta .registraVenta .articuloLista .divTabProdServ table tbody tr td p label{
+        height: 15px;
+    } 
+
+    .listas_ps .fmAlta .registraVenta .articuloLista .divTabProdServ .tdCantidad{
+        width: 7%;
+    }
+
+    .listas_ps .fmAlta .registraVenta .articuloLista .divTabProdServ .notificacion{
+        display: flex;
+        flex-direction: column;
+        padding-left: 0;
+        margin-bottom: 0;
+        list-style: none;
+        position: absolute;
+        transform: scale(.7);
+        transform-origin: top right;
+        right: .25rem;
+        margin-top: -.25rem;    color: #fff;
+        background-color: #e74a3b;
+        display: inline-block;
+        padding: .25em .4em;
+        font-size: 75%;
+        font-weight: 700;
+        line-height: 1;
+        text-align: center;
+        white-space: nowrap;
+        vertical-align: baseline;
+        border-radius: .35rem;
+        transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+        font-size: 15px;
+    }
+
+    .listas_ps .fmAlta .registraVenta .articuloLista .divOperProdServ{
+        overflow-x: scroll;
+    }
+
+    .listas_ps .fmAlta .registraVenta .articuloLista .divOperProdServ table{
+        min-width: 100%;
+        width: max-content;
+    }
+
+    .listas_ps .fmAlta .registraVenta .articuloLista .divOperProdServ table tbody tr td.listaImpuestos{
+        max-width: 150px;
+        overflow: overlay;
+        text-overflow: unset;
+        white-space: nowrap;
+    }
+    
+    .listas_ps .fmAlta .registraVenta .articuloLista .totalventas .total div.titulo{
+        width: 60%!important;
+    }
+
+    .listas_ps .fmAlta .registraVenta .articuloLista .totalventas .total div.registro{
+        width: 40%!important;
+    }
+
+    .listas_ps .fmAlta .registraVenta .articuloLista .totalventas .total div p{
+        width: 100%!important;
+    }
+
+    .listas_ps .fmAlta .registraVenta .articuloLista .totalventas .total div.registro p{
+        color: #353535;
+    }
+
+    .errorTotal{
+        background-color: #6D1300!important;
+        color: #fff!important;
+        border-radius: 0 8px 8px 0;
+    }
+
+    .correctoTotal{
+        background-color: #00ff00;
+        color: #353535!important;
+        border-radius: 0 8px 8px 0;
+    }
+
+    .listas_ps .fmAlta .registraVenta .card-fpago,
+    .listas_ps .fmAlta .registraVenta .card-lugar{
+        padding: 5px;
+    }
+
+    .listas_ps .fmAlta .registraVenta .card-fpago .card,
+    .listas_ps .fmAlta .registraVenta .card-lugar .card{
+        width: 100%!important;
+        background-color: #d3d3d3;
+    } 
+
+    .listas_ps .fmAlta .registraVenta .card-fpago .card .card-header,
+    .listas_ps .fmAlta .registraVenta .card-lugar .card .card-header{
+        height: 30px;
+        margin: 0;
+        border-radius: 8px 8px 0 0!important;
+        box-shadow: 1px 2px 5px #353535;
+        background-color: #45ac29;  
+    }
+
+    .listas_ps .fmAlta .registraVenta .card-fpago .card .card-header h6,
+.listas_ps .fmAlta .registraVenta .card-lugar .card .card-header h6{
+    margin: 0;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    font-weight: bold;
+    color: #fff;
+}
+
+.listas_ps .fmAlta .registraVenta .card-fpago .card .card-content,
+.listas_ps .fmAlta .registraVenta .card-lugar .card .card-content{
+    padding: 5px!important;
+}
+
+.listas_ps .fmAlta .registraVenta .card-fpago .card .card-content .divBtnPago,
+.listas_ps .fmAlta .registraVenta .card-lugar .card .card-content .divBtnLugar{
+    justify-content: space-around;
+    display: flex;
+}
+
+.listas_ps .fmAlta .registraVenta .card-fpago .card .card-content .divBtnPago a,
+.listas_ps .fmAlta .registraVenta .card-lugar .card .card-content .divBtnLugar a{
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.listas_ps .fmAlta .registraVenta .card-fpago .card .divCuerpo{
+    width: 100%!important;
+} 
+
+.listas_ps .fmAlta .registraVenta .card-fpago .card .divCuerpo .divCard,
+.listas_ps .fmAlta .registraVenta .card-lugar .card .divCuerpo .divCard{
+    background-color: #D6FFC4;
+    margin-top: 15px;
+    border-radius: 8px;
+    box-shadow: 1px 1px 3px #353535;
+}
+
+.listas_ps .fmAlta .registraVenta .card-fpago .card .divCuerpo .divCard .header,
+.listas_ps .fmAlta .registraVenta .card-lugar .card .divCuerpo .divCard .header{
+    height: 25px;
+    width: inherit;
+    box-shadow: 1px 1px 10px 1px rgba(0,0,0,0.3)!important;
+    border-radius: 8px 8px 0 0;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    flex-direction: row;
+    align-content: center;
+    justify-content: space-between;
+    padding: 0.3%;
+}
+
+.listas_ps .fmAlta .registraVenta .card-fpago .card .divCuerpo .divCard .header a.btnPago,
+.listas_ps .fmAlta .registraVenta .card-lugar .card .divCuerpo .divCard .header a.btnPago{
+    position: absolute;
+    width: 20px;
+    height: 20px;
+}
+
+.listas_ps .fmAlta .registraVenta .card-fpago .card .divCuerpo .divCard .header a:first-child{
+    right: 10%;
+}
+
+.listas_ps .fmAlta .registraVenta .card-fpago .card .divCuerpo .divCard .content,
+.listas_ps .fmAlta .registraVenta .card-lugar .card .divCuerpo .divCard .content{
+    padding: 5px;
+} 
+
+.listas_ps .fmAlta .registraVenta .card-fpago .card .divPago{
+    margin-left: 7px;
+    color: #353535;
+    display: inline-flex;
+    flex-direction: row;
+    margin-bottom: 7px;
+    margin-top: 7px;
+    margin-right: 7px;
+}
+
+.listas_ps .fmAlta .registraVenta .card-fpago .card .divPago a{
+    height: 25px;
+    line-height: 25px;
+    width: 100px;
+    border-radius: 8px;
+}
+
+.listas_ps .fmAlta .registraVenta .card-fpago .card .divCuerpo .input-field{
+    width: 100%;
+    padding-bottom: 3px;
+} 
+
+.listas_ps .fmAlta .registraVenta .formaPago .divTotalVenta .info .pheader{
+    width: 80%!important;
+    background-color: #B9FC9C;
+    color: #353535;
+} 
+
+.listas_ps .fmAlta .registraVenta .formaPago .divTotalVenta .divInfo .pContenido{
+    width: 20%!important;
+}
+
+.card-panel{
+	overflow-x: overlay;
+	background-color: transparent!important;
+	padding: 0;
+	box-shadow: none;
+	margin: 0;
+}
+
+.card-panel::-webkit-scrollbar,
+.card-panel::-webkit-ms-scrollbar{
+	width: 10px;
+	height: 5px;
+}
+
+.card-panel::-webkit-scrollbar-track,
+.card-panel::-webkit-ms-scrollbar-track{
+	background-color: transparent;
+	border-radius: 10px;
+}
+
+.card-panel::-webkit-scrollbar-thumb,
+.card-panel::-webkit-ms-scrollbar-thumb{
+	background-color: rgba(0, 0, 0, 0.4);
+	border-radius: 10px;
+}
+
+.card-panel table{
+	margin: 0;
+	min-width: 100%!important;
+	width: max-content!important;
+}
+
+
+/*row de cabacera*/
+  .listas_ps .fmAlta .datacliente{
+    background-color: #d3d3d3;
+    border-radius: 8px;
+    height: fit-content;
+  } 
+
+  .listas_ps .fmAlta .datacliente h4{
+    color: #353535;
+    font-weight: bold;
+    padding-bottom: 5px;
+  }
+
+  .listas_ps .fmAlta .datacliente a{
+    position: absolute;
+    right: 3%;
+    margin-top: 10px;
+  }
+  
+	.listas_ps .fmAlta .datacliente h6.titulo{
+    background-color: #353535;
+    border-radius: 8px;
+    height: 13px;
+    line-height: 13px;
+    color: #d3d3d3;
+    font-weight: bold;
+    font-size: 12px!important;
+  }
+  
+	.listas_ps .fmAlta .datacliente .input-field{
+    width: 100%; 
+    margin: 3px;
+  }  
+    
+	.listas_ps .fmAlta .datacliente .input-field input,
+	.listas_ps .fmAlta .datacliente input{
+    font-size: 13px;
+    height: 15px!important;
+	}
+
+/*cuerpo*/
+.listas_ps .fmAlta .divTabProdServ table tbody tr td p label{
+	height: 15px;
+} 
+
+.listas_ps .fmAlta .divTabProdServ .tdCantidad{
+	width: 7%;
+}
+
+.listas_ps .fmAlta .divTabProdServ .notificacion{
+	display: flex;
+	flex-direction: column;
+	padding-left: 0;
+	margin-bottom: 0;
+	list-style: none;
+	position: absolute;
+	transform: scale(.7);
+	transform-origin: top right;
+	right: .25rem;
+	margin-top: -.25rem;    color: #fff;
+	background-color: #e74a3b;
+	display: inline-block;
+	padding: .25em .4em;
+	font-size: 75%;
+	font-weight: 700;
+	line-height: 1;
+	text-align: center;
+	white-space: nowrap;
+	vertical-align: baseline;
+	border-radius: .35rem;
+	transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+	font-size: 15px;
+}
+
+.listas_ps .fmAlta .divOperProdServ{
+	overflow-x: scroll;
+}
+
+.listas_ps .fmAlta .divOperProdServ table{
+	min-width: 100%;
+	width: max-content;
+}
+
+.listas_ps .fmAlta .divOperProdServ table tbody tr td.listaImpuestos{
+	max-width: 150px;
+	overflow: overlay;
+	text-overflow: unset;
+	white-space: nowrap;
+}
+
+.listas_ps .fmAlta .articuloLista .totalventas .total div.titulo{
+    width: 60%!important;
+}
+
+.listas_ps .fmAlta .articuloLista .totalventas .total div.registro{
+    width: 40%!important;
+}
+
+.listas_ps .fmAlta .articuloLista .totalventas .total div p{
+    width: 100%!important;
+}
+
+.listas_ps .fmAlta .articuloLista .totalventas .total div.registro p{
+    color: #353535;
+}
+
+.errorTotal{
+    background-color: #6D1300!important;
+    color: #fff!important;
+    border-radius: 0 8px 8px 0;
+}
+
+.correctoTotal{
+    background-color: #00ff00;
+    color: #353535!important;
+    border-radius: 0 8px 8px 0;
+}
+
+.listas_ps .fmAlta .card-fpago,
+.listas_ps .fmAlta .card-lugar{
+    padding: 5px;
+}
+
+.listas_ps .fmAlta .card-fpago .card{
+    width: 100%!important;
+    background-color: #d3d3d3;
+} 
+
+.listas_ps .fmAlta .card-fpago .card .card-header{
+    height: 30px;
+    margin: 0;
+    border-radius: 8px 8px 0 0!important;
+    box-shadow: 1px 2px 5px #353535;
+    background-color: #45ac29;  
+}
+
+.listas_ps .fmAlta .card-fpago .card .card-header h6{
+margin: 0;
+height: 30px;
+line-height: 30px;
+text-align: center;
+font-weight: bold;
+color: #fff;
+}
+
+.listas_ps .fmAlta .card-fpago .card .card-content{
+padding: 5px!important;
+}
+
+.listas_ps .fmAlta .card-fpago .card .card-content .divBtnPago{
+justify-content: space-around;
+display: flex;
+}
+
+.listas_ps .fmAlta .card-fpago .card .card-content .divBtnPago{
+padding-left: 5px;
+padding-right: 5px;
+}
+
+.listas_ps .fmAlta .card-fpago .card .divCuerpo{
+    width: 100%!important;
+} 
+
+.listas_ps .fmAlta .card-fpago .card .divCuerpo .divCard{
+    background-color: #D6FFC4;
+    margin-top: 15px;
+    border-radius: 8px;
+    box-shadow: 1px 1px 3px #353535;
+}
+
+.listas_ps .fmAlta .card-fpago .card .divCuerpo .divCard .header{
+    height: 25px;
+    width: inherit;
+    box-shadow: 1px 1px 10px 1px rgba(0,0,0,0.3)!important;
+    border-radius: 8px 8px 0 0;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    flex-direction: row;
+    align-content: center;
+    justify-content: space-between;
+    padding: 0.3%;
+}
+
+.listas_ps .fmAlta .card-fpago .card .divCuerpo .divCard .header a.btnPago{
+    position: absolute;
+    width: 20px;
+    height: 20px;
+}
+
+.listas_ps .fmAlta .card-fpago .card .divCuerpo .divCard .header a:first-child{
+    right: 10%;
+}
+
+.listas_ps .fmAlta .card-fpago .card .divCuerpo .divCard .content,
+.listas_ps .fmAlta .card-lugar .card .divCuerpo .divCard .content{
+    padding: 5px;
+} 
+
+.listas_ps .fmAlta .card-fpago .card .divPago{
+    margin-left: 7px;
+    color: #353535;
+    display: inline-flex;
+    flex-direction: row;
+    margin-bottom: 7px;
+    margin-top: 7px;
+    margin-right: 7px;
+}
+
+.listas_ps .fmAlta .card-fpago .card .divPago a{
+    height: 25px;
+    line-height: 25px;
+    width: 100px;
+    border-radius: 8px;
+}
+
+.listas_ps .fmAlta .card-fpago .card .divCuerpo .input-field{
+    width: 100%;
+    padding-bottom: 3px;
+} 
+
+.listas_ps .fmAlta .formaPago .divTotalVenta .info .pheader{
+    width: 80%!important;
+    background-color: #B9FC9C;
+    color: #353535;
+} 
+
+.listas_ps .fmAlta .formaPago .divTotalVenta .divInfo .pContenido{
+    width: 20%!important;
+}

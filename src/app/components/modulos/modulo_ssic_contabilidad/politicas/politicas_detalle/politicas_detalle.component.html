@@ -1,0 +1,100 @@
+<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco" #vContent>
+	<div class="contenido">
+		<app-loader></app-loader>
+		<nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+		<main class="contenidoPagina">
+			<div class="listas_ps revanecer">
+				<div class="lista-div lista-divNoFlex row">
+					<div class="col-12" style="/* height: -webkit-fill-available; */overflow: overlay;">
+						<div class="card card_white cabecera" style="height: 100%;">
+							<div class="card-content" style="height: 100%;">
+								<span class="card-title" style="margin-bottom: 5px;font-weight: bold;text-transform: capitalize;color:#353535;">{{'politic_reem' | translate}}</span>
+								<div style="width: 100%!important;display: flex;flex-wrap: wrap;justify-content: center;">
+									<div class="col-12">
+										<div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2 row">
+											<a routerLink="/sos_inside/contabilidad/politicas" class="btn btnGuardar btnRow waves-effect waves-light grey darken-4"
+												style="color: white;font-family: roboto_cr;border-radius: 25px;width: 100%!important;">
+												<i class="fa-solid fa-left-long" style="margin-right: 5px;"></i>{{'politicas' | translate}}
+											</a>
+										</div>
+										<div class="col-12 col-sm-9 col-md-3 col-lg-20col-xl-2 col-xxl-20"></div>
+									</div>
+									<div class="col-12" *ngFor="let pol_info of list_politicas_cont_detalle">
+										<div class="col-12">
+											<h5 class="content contentMayus">{{pol_info.tipo_politica_extend}}</h5>
+										</div>
+										<div class="col-12">
+											<h6 class="title">{{'concept' | translate}}</h6>
+											<h6 class="content contentMayus">{{pol_info.concepto_politica}}</h6>
+										</div>
+										<div class="col-12" *ngIf="pol_info.anexos.length > 0">
+											<h6 class="title">{{'file' | translate}}</h6>
+											<div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2 card card_file card_white_shadow" id="caja_file_{{doc.anexos_num_list}}" *ngFor="let doc of pol_info.anexos" (click)="viewDocumento('caja_file_',doc.anexos_num_list,doc.name_documento,doc.ext_doc,doc.html);">
+												<div class="card-image card_icon">
+													<i *ngIf="doc.ext_doc == 'pdf'" class="fa-solid fa-file-pdf"></i>
+													<i *ngIf="doc.ext_doc == 'xml'" class="fa-solid fa-code"></i>
+													<i *ngIf="doc.ext_doc == 'jpg' || doc.ext_doc == 'jpeg' || doc.ext_doc == 'png'" class="fa-solid fa-image"></i>
+												</div>
+												<div class="card-content"><h6 class="content contentMayus">{{doc.name_documento}}</h6></div>
+											</div>
+											<div class="col-12">
+												<div *ngIf="html_type_documento != '' && html_type_documento != 'xml'" [innerHTML]="html_view_documento" class="col-12 card-content white-text" style="display: flex;justify-content: center;align-items: center;height: 100% !important;"></div>
+												<pre *ngIf="html_type_documento != '' && html_type_documento == 'xml'" class="col-12 card-content black-text" style="height: 100%;text-align: justify;max-width: 100%;overflow: overlay;margin: 0;background-color: white;border-radius: 25px;">{{html_view_documento}}</pre>
+											</div>
+										</div>
+
+										<div class="col-12">
+											<h6 class="title">{{'file' | translate}}</h6>
+											<div class="col-12 field_file_drop">
+												<ngx-file-drop dropZoneLabel="Drop files here" (onFileDrop)="droppedPolitUPDT($event)" (onFileOver)="fileOverPolitUPDT($event)" (onFileLeave)="fileLeavePolitUPDT($event)">
+													<ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
+														<a class="btn btn_load_file" type="button" style="color: #0782d0 !important;" (click)="openFileSelector()">
+															{{'load_files' | translate}} / {{'browse_files' | translate}}
+														</a>
+													</ng-template>
+												</ngx-file-drop>
+												<table class="white centered" style="margin-top: 5px!important; width: 100% !important;">
+													<thead>
+														<tr>
+															<th>{{'file' | translate}}</th>
+															<th class="ultimo"></th>
+														</tr>
+													</thead>
+													<tbody class="upload-name-style" *ngIf="update_politica_files.length != 0">
+														<tr *ngFor="let item of update_politica_files; index as i">
+															<td><strong>{{ item.relativePath }}</strong></td>
+															<td class="ultimo">
+																<a class="btn btn_extend text-bg-danger rounded-3"
+																	(click)="deleteAnexosPolitUPDT(i);">
+																	<i class="fa-solid fa-xmark"></i>
+																</a>
+															</td>
+														</tr>
+													</tbody>
+													<tbody *ngIf="update_politica_files.length == 0">
+														<tr><td colspan="2">{{'no_rows' | translate}}</td></tr>
+													</tbody>
+												</table>
+											</div>
+								
+											<div class="col-12">
+												<div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+												<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+													<a *ngIf="update_politica_concepto != '' && update_politica_anexos.length != 0" class="btn btnGuardar btnSaveRow waves-light" (click)="onUpdatePolitica(pol_info.tipo_politica);"><i class="fa-regular fa-floppy-disk"></i> {{'save' | translate}}</a>
+												</div>
+												<div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+											</div>
+										</div>
+
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</main>
+		<app-footer-inside></app-footer-inside>
+	</div>
+</div>

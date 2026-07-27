@@ -1,0 +1,392 @@
+<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco" #vContent>
+  <div class="contenido"><app-loader></app-loader>
+    <nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+    <div class="contenidoPagina">
+      <div class="listas_ps lista-divNoFlex">
+        <div id="listaDisp" class="lista-div lista-divNoFlex row">
+          <h4>CATALOGO DE DISPOSITIVOS</h4>
+          <div class="col-12">
+            <div class="btn-group lista_botones col" role="group" arial-label="Basic example">
+              <a class="btn btn_extend bg-indigo-600" (click)="listaDispositivosTRUE();listarDispositivosEliminados();">
+                <i class="fa-solid fa-rotate"></i>&nbsp;{{'list_updt' | translate}}
+              </a>
+              <a class="btn btn_extend bg-indigo-600" data-bs-toggle="modal" data-bs-target="#modalNuevoDispositivo">
+                <i class="fa-solid fa-plus"></i>&nbsp;Registrar nuevo dispositivo
+              </a>
+              <a class="btn btn_extend bg-indigo-600" data-bs-toggle="modal"
+                data-bs-target="#modalDispositivosEliminados">
+                <i class="fa-solid fa-trash" style="margin-left: 5px;"></i>&nbsp;Dispositivos eliminados
+              </a>
+            </div>
+          </div>
+          <div class="col-12">
+            <p-table #deviceLista [value]="arrayListaDispositivo"
+              [globalFilterFields]="['token_dispositivos','folio','tipo','alias']" dataKey="id" [paginator]="true"
+              [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]">
+              <ng-template #caption>
+                <div class="flex">
+                  <p-iconfield iconPosition="left" class="ml-auto">
+                    <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                    <input pInputText type="text" (input)="deviceLista.filterGlobal($event.target.value, 'contains')"
+                      placeholder="{{'bus_car' | translate}}" />
+                  </p-iconfield>
+                </div>
+              </ng-template>
+              <ng-template #header>
+                <tr>
+                  <th class="ultimo"></th>
+                  <th pSortableColumn="folio">Folio&nbsp;<p-sortIcon field="folio" /></th>
+                  <th pSortableColumn="tipo">Tipo de dispositivo&nbsp;<p-sortIcon field="tipo" /></th>
+                  <th pSortableColumn="alias">Alias&nbsp;<p-sortIcon field="alias" /></th>
+                  <th class="ultimo"></th>
+                </tr>
+              </ng-template>
+              <ng-template #body let-disp>
+                <tr>
+                  <td>
+                    <a class="btn bg-blue-600" data-bs-toggle="modal" data-bs-target="#modalDetDispositivo"
+                      (click)="functViewDispositivo(disp.token_dispositivos);">
+                      <i class="fa-solid fa-info"></i>
+                    </a>
+                  </td>
+                  <td>{{disp.folio}}</td>
+                  <td>{{disp.tipo}}</td>
+                  <td>{{disp.alias}}</td>
+                  <td><a class="btn btn_extend text-bg-danger rounded-3"
+                      (click)="functDelDispositivo(disp.token_dispositivos);"><i class="fa-solid fa-eraser"></i></a>
+                  </td>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td colspan="5" class="text-center py-4">
+                    <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                    <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                      {{'no_rows' | translate}}
+                    </p>
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade bd-example-modal-lg" id="modalNuevoDispositivo" tabindex="-1" role="dialog"
+  arial-labelledby="#modalNuevoDispositivoLabel">
+  <div class="modal-dialog modal-fullscreen" style="margin: 1%;width: 98%!important;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="modalNuevoDispositivoLabel">REGISTRO DE DISPOSITIVOS</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+          style="background-color: transparent !important;"></button>
+      </div>
+      <div class="modal-body"><app-nuevo-dispositivo-finanzas></app-nuevo-dispositivo-finanzas></div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade bd-example-modal-lg" id="modalDetDispositivo" tabindex="-1" role="dialog"
+  arial-labelledby="#modalDetDispositivoLabel">
+  <div class="modal-dialog modal-fullscreen" style="margin: 1%;width: 98%!important;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="modalDetDispositivoLabel">INFORMACI&Oacute;N DE DISPOSITIVOS
+          REGISTRADOS</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+          style="background-color: transparent !important;"></button>
+      </div>
+      <div class="modal-body">
+        <div class="col-12" *ngFor="let det of arrayDetListDispositivo">
+          <form class="row formDataDispositivo" #formDataDispositivo="ngForm" autocomplete="off"
+            (ngSubmit)="actualizaDispositivo();">
+            <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+              <label class="activeInput">Tipo de dispositivo</label>
+              <select name="tipoDispositivo" (change)="validaTipoDisp($event.target);">
+                <option value="" disabled selected>{{'opt_select' | translate}}</option>
+                <option *ngFor="let lisTipo of arrayTipoDips" [value]="lisTipo.token_tipo_disp"
+                  [disabled]="lisTipo.token_tipo_disp == det.tipo_dispositivo"
+                  [selected]="lisTipo.token_tipo_disp == det.tipo_dispositivo">{{lisTipo.tipo}}
+                </option>
+              </select>
+            </div>
+            <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+              <label class="activeInput">Alias</label>
+              <input class="validate" name="aliasDispositivo" type="text" required [value]="det.alias"
+                (keyup)="validaAliasDisp($event.target);">
+            </div>
+            <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+              <label class="activeInput">No. serie</label>
+              <input class="validate" name="serieDispositivo" type="text" required [value]="det.serie"
+                (keyup)="validaSerie($event.target);">
+            </div>
+            <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+              <label class="activeInput">Vigencia</label>
+              <input class="datepicker validate" name="vigenciaDispositivo" type="month" [value]="det.vigencia" required
+                (change)="validaVigencia($event.target);">
+            </div>
+
+            <div class="col-12 row" style="padding: 0;padding-top: 5px;padding-bottom: 5px;">
+              <p-panel header="Vincular a una caja" [toggleable]="true">
+                <div class="col-12" style="margin-top: 15px;">
+                  <p-table id="tabla_productos_list_general" #dt [value]="arrayCajaMonedero" dataKey="id"
+                    [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]"
+                    [globalFilterFields]="['nombre']">
+                    <ng-template #header>
+                      <tr>
+                        <th pSortableColumn="caja_alias">Caja&nbsp;<p-sortIcon field="caja_alias" /></th>
+                        <th pSortableColumn="establecimiento">Establecimiento&nbsp;<p-sortIcon
+                            field="establecimiento" /></th>
+                        <th class="ultimo"></th>
+                      </tr>
+                    </ng-template>
+                    <ng-template #body let-caj>
+                      <tr>
+                        <td>{{caj.caja_folio+" "+caj.caja_alias}}</td>
+                        <td>{{caj.establecimiento}}</td>
+                        <td>
+                          <div class="form-check radio_check">
+                            <input class="form-check-input" type="radio" name="caja_select"
+                              [checked]="caj.token_caja == det.caja_token" (click)="selectCajaDisp(caj.token_caja);">
+                          </div>
+                        </td>
+                      </tr>
+                    </ng-template>
+                    <ng-template pTemplate="emptymessage">
+                      <tr>
+                        <td colspan="3" class="text-center py-4">
+                          <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                          <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                            {{'no_rows' | translate}}
+                          </p>
+                        </td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
+                </div>
+              </p-panel>
+            </div>
+
+            <div class="col-12 row" style="padding: 0;padding-bottom: 5px;">
+              <p-panel header="Vincular a una cuenta bancaria" [toggleable]="true">
+                <div class="col-12" style="margin-top: 15px;">
+                  <p-table id="tabla_productos_list_general" #dt [value]="listaCuentasBancarias" dataKey="id"
+                    [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]"
+                    [globalFilterFields]="['nombre']">
+                    <ng-template #header>
+                      <tr>
+                        <th pSortableColumn="folio_cuenta">folio de cuenta&nbsp;<p-sortIcon field="folio_cuenta" /></th>
+                        <th pSortableColumn="banco_nombre_comercial">banco&nbsp;<p-sortIcon
+                            field="banco_nombre_comercial" /></th>
+                        <th class="ultimo" pSortableColumn="cuenta_bancaria">cuenta&nbsp;<p-sortIcon
+                            field="cuenta_bancaria" /></th>
+                        <th class="ultimo"></th>
+                      </tr>
+                    </ng-template>
+                    <ng-template #body let-cuent>
+                      <tr>
+                        <td>{{cuent.folio_cuenta}}</td>
+                        <td>{{cuent.banco_clave+' '+cuent.banco_nombre_comercial}}</td>
+                        <td>
+                          <a class="btn btn_extend bg-blue-600" (click)="functCuentaNumber(cuent.token_cuenta);">
+                            {{cuent.cuenta_bancaria}}&nbsp;<i class="fa-solid"
+                              [ngClass]="cuent.cuenta_view ? 'fa-user-clock' : 'fa-eye'"></i>&nbsp;{{cuent.cuenta_view ?
+                            " "+cuent.cuenta_time : ""}}
+                          </a>
+                        </td>
+                        <td>
+                          <div class="form-check radio_check">
+                            <input class="form-check-input" type="radio" name="cuenta_bancaria_selected"
+                              [checked]="cuent.token_cuenta == det.cuenta_bank_token"
+                              (click)="selectCuentaDisp(cuent.token_cuenta);">
+                          </div>
+                        </td>
+                      </tr>
+                    </ng-template>
+                    <ng-template pTemplate="emptymessage">
+                      <tr>
+                        <td colspan="4" class="text-center py-4">
+                          <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                          <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                            {{'no_rows' | translate}}
+                          </p>
+                        </td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
+                </div>
+              </p-panel>
+            </div>
+
+            <div class="col-12 row" style="padding: 0;padding-bottom: 5px;">
+              <p-panel header="Vincular a una cuenta de monedero Electr&oacute;nico" [toggleable]="true">
+                <div class="col-12" style="margin-top: 15px;">
+                  <p-table id="tabla_productos_list_general" #dt [value]="arrayMonederoElectro" dataKey="id"
+                    [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]"
+                    [globalFilterFields]="['nombre']">
+                    <ng-template #header>
+                      <tr>
+                        <th pSortableColumn="monedero">Cuenta&nbsp;<p-sortIcon field="monedero" /></th>
+                        <th pSortableColumn="monedero">Vigencia&nbsp;<p-sortIcon field="monedero" /></th>
+                        <th class="ultimo"></th>
+                      </tr>
+                    </ng-template>
+                    <ng-template #body let-mon>
+                      <tr>
+                        <td>{{mon.monedero+" - "+mon.cuenta}}</td>
+                        <td></td>
+                        <td>
+                          <div class="form-check radio_check">
+                            <input class="form-check-input" type="radio" name="monedero_selected"
+                              [checked]="mon.token_cuentaMon == det.monedero_token"
+                              (click)="selectMonederoDisp(mon.token_cuentaMon);">
+                          </div>
+                        </td>
+                      </tr>
+                    </ng-template>
+                    <ng-template pTemplate="emptymessage">
+                      <tr>
+                        <td colspan="3" class="text-center py-4">
+                          <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                          <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                            {{'no_rows' | translate}}
+                          </p>
+                        </td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
+                </div>
+              </p-panel>
+            </div>
+
+            <div class="col-12 row" style="padding: 0;padding-bottom: 5px;">
+              <p-panel header="Asignar a un personal responsable" [toggleable]="true">
+                <div class="col-12" style="margin-top: 15px;">
+                  <p-table id="tabla_productos_list_general" #dt [value]="arrayPersonal" dataKey="id" [paginator]="true"
+                    [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]" [globalFilterFields]="['nombre']">
+                    <ng-template #header>
+                      <tr>
+                        <th pSortableColumn="folio">Folio&nbsp;<p-sortIcon field="folio" /></th>
+                        <th pSortableColumn="nombre_completo">Responsable&nbsp;<p-sortIcon field="nombre_completo" />
+                        </th>
+                        <th class="ultimo"></th>
+                      </tr>
+                    </ng-template>
+                    <ng-template #body let-pers>
+                      <tr>
+                        <td>{{pers.folio}}</td>
+                        <td>{{pers.nombre_completo}}</td>
+                        <td>
+                          <div class="form-check radio_check">
+                            <input class="form-check-input" type="radio" name="empleado_selected"
+                              [checked]="pers.token_empleado_vhum == det.tokenResponsDispositivo"
+                              (click)="selectResponsDisp(pers.token_empleado_vhum);">
+                          </div>
+                        </td>
+                      </tr>
+                    </ng-template>
+                    <ng-template pTemplate="emptymessage">
+                      <tr>
+                        <td colspan="3" class="text-center py-4">
+                          <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                          <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                            {{'no_rows' | translate}}
+                          </p>
+                        </td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
+                </div>
+              </p-panel>
+            </div>
+
+            <p-divider />
+            <div class="col-12 row">
+              <div class="col-12 col-sm-12 col-md-6 col-lg-8 col-xl-8 col-xxl-9"></div>
+              <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3"
+                style="display: flex !important;justify-content: end!important;">
+                <p-confirmpopup />
+                <button class="btn btn_extend text-bg-success rounded-3" type="submit" name="btnAltaProducto2"
+                  [ngClass]="!validaDispRegistro ? 'disabled' : ''" [attr.disabled]="!validaDispRegistro ? true : null"
+                  [attr.aria-disabled]="!validaDispRegistro ? true : null">
+                  <i class="fa-solid fa-floppy-disk"
+                    style="height: 15px!important;line-height: 15px!important;width: 15px!important;font-size: small!important;"></i>&nbsp;{{'sav_cam'
+                  | translate}}</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade bd-example-modal-lg" id="modalDispositivosEliminados" tabindex="-1" role="dialog"
+  aria-labelledby="modalDispositivosEliminadosLabel" aria-hidden="true">
+  <div class="modal-dialog modal-fullscreen" style="margin: 1%;width: 98%!important;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="modalDispositivosEliminadosLabel">INFORMACI&Oacute;N DE
+          DISPOSITIVOS ELIMINADOS</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+          style="background-color: transparent !important;"></button>
+      </div>
+      <div class="modal-body">
+        <p-table #deviceListDel [value]="arrayListaDelDispositivo"
+          [globalFilterFields]="['token_dispositivos','folio','tipo','alias','fecha_delete_disp']" dataKey="id"
+          [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]">
+          <ng-template #caption>
+            <div class="flex">
+              <p-iconfield iconPosition="left" class="ml-auto">
+                <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                <input pInputText type="text" (input)="deviceListDel.filterGlobal($event.target.value, 'contains')"
+                  placeholder="{{'bus_car' | translate}}" />
+              </p-iconfield>
+            </div>
+          </ng-template>
+          <ng-template #header>
+            <tr>
+              <th pSortableColumn="folio">Folio&nbsp;<p-sortIcon field="folio" /></th>
+              <th pSortableColumn="tipo">Tipo de dispositivo&nbsp;<p-sortIcon field="tipo" /></th>
+              <th pSortableColumn="alias">Alias&nbsp;<p-sortIcon field="alias" /></th>
+              <th pSortableColumn="fecha_delete_disp">{{'f_delete' | translate}}&nbsp;<p-sortIcon
+                  field="fecha_delete_disp" /></th>
+              <th class="ultimo"></th>
+              <th class="ultimo"></th>
+            </tr>
+          </ng-template>
+          <ng-template #body let-dispDel>
+            <tr>
+              <td>{{dispDel.folio}}</td>
+              <td>{{dispDel.tipo}}</td>
+              <td>{{dispDel.alias}}</td>
+              <td>{{dispDel.fecha_delete_disp}}</td>
+              <td><a class="btn btn_extend text-bg-success rounded-3"
+                  (click)="restauraDispositivo(dispDel.token_dispositivos);"><i
+                    class="fa-solid fa-trash-arrow-up"></i>&nbsp;{{'restore_row' | translate}}</a></td>
+              <td><a class="btn btn_extend text-bg-danger rounded-3"
+                  (click)="eliminapermDispositivo(dispDel.token_dispositivos);"><i
+                    class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}</a></td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="6" class="text-center py-4">
+                <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                  {{'no_rows' | translate}}
+                </p>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+      <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

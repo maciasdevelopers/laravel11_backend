@@ -1,0 +1,14 @@
+.pendiente{
+    background-color: #cc0000;
+}
+
+.revisado{
+    background-color: #FF9326;
+    color: #636363;
+    color: #fff;
+}
+
+.realizado{
+    background-color: #00ff00;
+    color: #fff;
+}

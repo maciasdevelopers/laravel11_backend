@@ -1,0 +1,97 @@
+div.h6Clave{
+  background: darkred;
+  border-radius: 25px;
+  /*height: 40px;*/
+  height: 20px;
+  line-height: 20px;
+  text-align: center;
+  box-shadow: 0px 0px 5px red;
+  display: flex;
+  margin-top: 5px;
+}
+
+div.h6Clave p{
+  height: 20px;
+  width: 20px;
+  line-height: 20px;
+  margin: 0px;
+  margin-top: 10px;
+}
+
+div.h6Clave h6{
+  color: #fff;
+  font-size: 15px;
+  text-transform: none;
+  font-weight: bold;
+  justify-content: center;
+  display: flex;
+  align-items: center;
+}
+h4,h5,h6 {
+  width: 100%;
+  color: #353535;
+  text-align: center;
+  margin: 3px;
+  height: auto;
+  text-transform: uppercase;
+  font-family: ubuntu, FontAwesome;
+  font-family: sans-serif, FontAwesome;
+  font-family: 'roboto_bold';
+}
+
+h4.header-white,h5.header-white,h6.header-white {
+  color: #e7e7ea!important;
+}
+
+h4.header-black,h5.header-black,h6.header-black {
+  color: rgba(55, 50, 78, 0.8)!important;
+  font-weight: bold!important;
+}
+
+h6.errorLabel{
+  height: 13px;
+  line-height: 20px;
+  width: 13px;
+  border-radius: 50%;
+  background-color: #D32F2F !important;
+  color: #fff !important;
+  margin-left: 0;
+  margin-right: 5px;
+  display: flex;
+  justify-content: center;
+}
+
+h6.errorTh{
+  height: 15px;
+  line-height: 15px;
+  width: auto;
+  border-radius: 5px;
+  background-color: #D32F2F!important;
+  color: #fff!important;
+  margin-left: 0;
+  margin-right: 0;
+  font-size: 12px;
+  font-size: 10pt;
+  font-weight: bold;
+  /*margin-bottom: -1px;*/
+}
+
+h6.informativo{
+  height: 15px;
+  line-height: 15px;
+  width: auto;
+  border-radius: 5px;
+  background-color: #d3d3d3!important;
+  color: #353553!important;
+  margin-left: 0;
+  margin-right: 0;
+  font-size: 12px;
+  font-size: 10pt;
+  font-weight: bold;
+  /*margin-bottom: -1px;*/
+}
+
+h6.noImportantH6{
+  background-color: #FFC7BC!important;
+  color: #353535!important;
+}

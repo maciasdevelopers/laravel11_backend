@@ -1,0 +1,290 @@
+<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco" #vContent>
+  <div class="contenido">
+    <app-loader></app-loader>
+    <nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+    <div class="contenidoPagina">
+      <div class="listas_ps">
+        <div class="lista-div lista-divNoFlex">
+          <h4>CATALOGO DE CAJA</h4>
+          <div class="col-12">
+            <div class="btn-group lista_botones col" role="group" arial-label="Basic example">
+              <a class="btn btn_extend bg-indigo-600" (click)="listadoCajas(indicador_cajas_registradas);listadoDeletedCajas();">
+                <i class="fa-solid fa-rotate"></i>&nbsp;{{'list_updt' | translate}}
+              </a>
+              <a class="btn btn_extend bg-indigo-600" (click)="cajaVerFormReg();">
+                <i class="fa-solid fa-plus"></i>&nbsp;Registrar nueva caja
+              </a>
+              <a class="btn btn_extend bg-indigo-600" (click)="listadoDeletedCajas();verVentanaCajasEliminadas();">
+                <i class="fa-solid fa-trash" style="margin-left: 5px;"></i>&nbsp;Cajas eliminadas
+              </a>
+              <a class="btn btn_extend bg-green-600 descarga_lista_excel"
+                [ngClass]="listaCajasRegistradas.length == 0 ? 'disabled' : ''"
+                [attr.disabled]="listaCajasRegistradas.length == 0 ? true : null"
+                [attr.aria-disabled]="listaCajasRegistradas.length == 0 ? true : null"
+                (click)="listaCajasRegistradas.length > 0 && descarga_excel_cajas();">
+                <i class="fa-solid fa-file-excel" style="margin-left: 5px;"></i>&nbsp;descargar
+              </a>
+            </div>
+          </div>
+          <div class="col-12">
+            <p-table #listCajasTable id="tabla_cajas_gral" [value]="listaCajasRegistradas" [globalFilterFields]="['token_caja','caja_folio','caja_alias','establecimiento']" dataKey="id"
+              [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]">
+              <ng-template #caption>
+                <div class="flex" style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;" ngbDropdown>
+                  <a class="btn btn_extend" [ngClass]="indicador_cajas_registradas == 'hoy' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="listadoCajas('hoy');">
+                    <i class="fa-solid fa-calendar-days"></i>&nbsp;Hoy
+                  </a>
+                  <a class="btn btn_extend" [ngClass]="indicador_cajas_registradas == 'esta_semana' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="listadoCajas('esta_semana');">
+                    <i class="fa-solid fa-calendar-days"></i>&nbsp;Esta semana
+                  </a>
+                  <a class="btn btn_extend" [ngClass]="indicador_cajas_registradas == 'este_mes' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="listadoCajas('este_mes');">
+                    <i class="fa-solid fa-calendar-days"></i>&nbsp;Este mes
+                  </a>
+                  <a class="btn btn_extend" [ngClass]="indicador_cajas_registradas == 'mes_anterior' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="listadoCajas('mes_anterior');">
+                    <i class="fa-solid fa-arrow-left"></i>&nbsp;mes anterior
+                  </a>
+                  <a id="menuDropCajaRangos" class="btn btn_extend" [ngClass]="indicador_cajas_registradas == 'otras_fechas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" ngbDropdownToggle>
+                    <i class="fa-solid fa-list-ul"></i>&nbsp;otras fechas
+                  </a>
+                  <div class="dropdown-menu-end menu-despegable" ngbDropdownMenu="menuDropCajaRangos" style="padding: 0!important; margin: 0!important; width: max-content!important; max-height: 400px; overflow-y: auto;">
+                    <div class="col-12 input-group">
+                      <label for="caja_list_otras_fechas" class="activeInput">Periodo de fechas</label>
+                      <p-datepicker id="caja_list_otras_fechas" name="caja_list_otras_fechas" [(ngModel)]="rangoPeriodoCajasRegistradas" appendTo="body" dateFormat="dd/mm/yy" 
+                        placeholder="dd/mm/aaaa" selectionMode="range" (onSelect)="listadoCajas('otras_fechas');" />
+                    </div>
+                  </div>
+                  <a class="btn btn_extend" [ngClass]="indicador_cajas_registradas == 'all_partidas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="listadoCajas('all_partidas');">
+                    <i class="fa-solid fa-list-ul"></i>&nbsp;todos los registros
+                  </a>
+                  <p-iconfield iconPosition="left" class="ml-auto">
+                    <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                    <input pInputText type="text" (input)="listCajasTable.filterGlobal($event.target.value, 'contains')"
+                      placeholder="{{'bus_car' | translate}}" />
+                  </p-iconfield>
+                </div>
+              </ng-template>
+              <ng-template #header>
+                <tr>
+                  <th class="ultimo"></th>
+                  <th pSortableColumn="caja_folio">No. caja &nbsp;<p-sortIcon field="caja_folio" /></th>
+                  <th pSortableColumn="caja_alias">Alias &nbsp;<p-sortIcon field="caja_alias" /></th>
+                  <th pSortableColumn="establecimiento">Almacen (Alias) &nbsp;<p-sortIcon field="establecimiento" /></th>
+                  <th pSortableColumn="salDoCaja">Saldo&nbsp;<p-sortIcon field="salDoCaja" /></th>
+                  <th class="ultimo"></th>
+                </tr>
+              </ng-template>
+              <ng-template #body let-cja>
+                <tr>
+                  <td class="ultimo">
+                    <a class="btn bg-blue-600" (click)="functViewCaja(cja.token_caja);">
+                      <i class="fa-solid fa-info"></i>
+                    </a>
+                  </td>
+                  <td>{{cja.caja_folio}}</td>
+                  <td>{{cja.caja_alias}}</td>
+                  <td>{{cja.establecimiento}}</td>
+                  <td class="td_importes">{{cja.salDoCaja}}</td>
+                  <td class="ultimo">
+                    <a class="btn btn_extend text-bg-danger rounded-3" (click)="functDelCaja(cja.token_caja);">
+                      <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                    </a>
+                  </td>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td colspan="5" class="text-center py-4">
+                    <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                    <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                      {{'no_rows' | translate}}
+                    </p>
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p-dialog header="Registro de caja" [(visible)]="caja_ver_form_reg" [modal]="true" [style]="{ width: '50rem' }"
+  [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  <app-nueva-caja-finanzas></app-nueva-caja-finanzas>
+</p-dialog>
+
+<p-dialog header="Informaci&oacute;n de cajas registradas" [(visible)]="ver_ventana_caja_detalle" [modal]="true"
+  [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  @if (ver_info_caja) {
+  <div class="col-12 row" *ngFor="let det of caja_informacion">
+    <form class="row formRegAcreedores" [formGroup]="formCaja" #formRegAcreedores="ngForm" autocomplete="off"
+      name="formRegAcreedores" enctype="multipart/form-data"
+      (ngSubmit)="validaFormCaja && actualizaDataCaja(det.token_caja);">
+      <div class="col-12 explain">
+        <h6 class="title">Folio:</h6>
+        <h6 class="content">{{det.caja_folio}}</h6>
+      </div>
+      <div class="col-12 input-group" style="margin-bottom: 5px;">
+        <label class="activeInput">Descripci&oacute;n</label>
+        <input class="validate" name="txtAliasCaja" type="text" required [value]="det.alias"
+          (keyup)="validaDescripcion($event.target);"><!---->
+      </div>
+      <div class="col-12 col-sm-12 col-md-12 col-lg-4 col-xl-4 col-xxl-4 input-group">
+        <label class="activeInput">Establecimiento (almacen)</label>
+        <p-select [options]="arrayEstablecimientos" id="editEstabLista" formControlName="establecimiento"
+          name="selectedEstabLista" optionValue="estab_alias" optionLabel="estab_alias" [filter]="true"
+          filterBy="estab_alias" [showClear]="true" [placeholder]="'opt_select' | translate" class="w-full md:w-56"
+          (onChange)="validaEstablecimiento($event.value);">
+          <ng-template #selectedItem let-sel>
+            <div class="flex items-center gap-2">
+              <div>{{sel.estab_folio+' '+sel.estab_alias}}</div>
+            </div>
+          </ng-template>
+          <ng-template let-estab #item>
+            <div class="flex items-center gap-2">
+              <div>{{estab.estab_folio+' '+estab.estab_alias+' '+(estab.estab_ubicacion_pais == 'Mx' ?
+                estab.colonia_main+' CP.'+estab.c_postal_main+', '+estab.municipio_main+', Estado: '+estab.estado_main :
+                estab.dir_completa+', CP.'+estab.cod_postalext+', '+estab.pais_nombre)}}</div>
+            </div>
+          </ng-template>
+        </p-select>
+      </div>
+      <div class="col-12 col-sm-12 col-md-12 col-lg-8 col-xl-8 col-xxl-8 input-group">
+        <label class="activeInput">Vendedor asignado</label>
+        <input class="validate" name="txtAliasCaja" type="text" required [value]="det.responsable"
+          (keyup)="validaVendedor($event.target);">
+      </div>
+
+      <div class="col-12 col-sm-12 col-md-12 col-lg-4 col-xl-4 col-xxl-4 input-group">
+        <label class="activeInput">Moneda</label>
+        <p-select [options]="catalogoMonedasApi" id="selectedMonedaCode" formControlName="moneda" optionValue="code"
+          optionLabel="_filtro_busqueda" [filter]="true" filterBy="_filtro_busqueda" [showClear]="true"
+          [placeholder]="'opt_select' | translate" class="w-full md:w-56" (onChange)="validaMonedaCaja($event.value);">
+          <ng-template #selectedItem let-selectedOption>
+            <div class="flex items-center gap-2">
+              <div>{{selectedOption.code+" "+selectedOption.langEN}}</div>
+            </div>
+          </ng-template>
+          <ng-template let-mon #item>
+            <div class="flex items-center gap-2">
+              <div>{{mon.code+" "+mon.langEN}}</div>
+            </div>
+          </ng-template>
+        </p-select>
+      </div>
+
+      <div class="input-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4">
+        <label class="activeInput">Cuenta contable</label>
+        <input class="validate" name="titularMonElectronico" type="text" required [value]="det.cuenta_contable"
+          (keyup)="validaCuentaContable($event.target);">
+      </div>
+
+      <div class="col-12">
+        <div class="col-12 explain">
+          <h6 class="title">&Aacute;rea de servicio</h6>
+        </div>
+        <div class="col-12 form-check radio_check">
+          <input class="form-check-input" type="checkbox" name="flexRadioDefault" value="egresos"
+            [checked]="det.serv_egresos" (click)="validaAreaServicioEgresos($event.target);">
+          <label class="form-check-label" for="flexRadioDefault1">Egresos</label>
+        </div>
+        <div class="col-12 form-check radio_check">
+          <input class="form-check-input" type="checkbox" name="flexRadioDefault" value="ingresos"
+            [checked]="det.serv_ingresos" (click)="validaAreaServicioIngresos($event.target);">
+          <label class="form-check-label" for="flexRadioDefault1">Ingresos</label>
+        </div>
+        <div class="col-12 form-check radio_check">
+          <input class="form-check-input" type="checkbox" name="flexRadioDefault" value="propias"
+            [checked]="det.serv_interno" (click)="validaAreaServicioPropias($event.target);">
+          <label class="form-check-label" for="flexRadioDefault1">Cuentas propias</label>
+        </div>
+      </div>
+      <div class="col-12">
+        <div class="col-12 explain">
+          <h6 class="title">Configuraci&oacute;n para ventas</h6>
+        </div>
+        <div class="col-12 form-check radio_check">
+          <input class="form-check-input" type="checkbox" name="capt_cliente" [checked]="det.capt_cliente"
+            (click)="validaVentasCaptCliente($event.target);">
+          <label class="form-check-label" for="flexRadioDefault1">Capturar cliente</label>
+        </div>
+        <div class="col-12 form-check radio_check">
+          <input class="form-check-input" type="checkbox" name="capt_precio_x_articulo"
+            [checked]="det.capt_precio_x_articulo" (click)="validaVentasCaptPrecioXArticulo($event.target);">
+          <label class="form-check-label" for="flexRadioDefault1">Capturar precio por articulo</label>
+        </div>
+        <div class="col-12 form-check radio_check">
+          <input class="form-check-input" type="checkbox" name="capt_primero_cantidad"
+            [checked]="det.capt_primero_cantidad" (click)="validaVentasCaptPrimeroCantidad($event.target);">
+          <label class="form-check-label" for="flexRadioDefault1">Capturar primero cantidad</label>
+        </div>
+      </div>
+
+      <div class="col-12 row">
+        <div class="col-12 col-sm-12 col-md-6 col-lg-8 col-xl-8 col-xxl-9"></div>
+        <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3"
+          style="display: flex !important;justify-content: end!important;">
+          <button class="btn btn_extend text-bg-success rounded-3" type="submit" name="btnAltaProducto2"
+            [ngClass]="!validaFormCaja ? 'disabled' : ''" [attr.disabled]="!validaFormCaja ? true : null"
+            [attr.aria-disabled]="!validaFormCaja ? true : null">
+            <i class="fa-solid fa-floppy-disk"
+              style="height: 15px!important;line-height: 15px!important;width: 15px!important;font-size: small!important;"></i>&nbsp;{{'sav_cam'
+            | translate}}
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+  }
+</p-dialog>
+
+<p-dialog header="Informaci&oacute;n de cajas eliminadas" [(visible)]="ver_ventana_cajas_deleted" [modal]="true"
+  [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  <p-table #deletedCajasList [value]="listaCajasEliminadas"
+    [globalFilterFields]="['token_caja','caja_folio','caja_alias','establecimiento','fecha_delete']" dataKey="id"
+    [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]">
+    <ng-template #caption>
+      <div class="flex">
+        <p-iconfield iconPosition="left" class="ml-auto">
+          <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+          <input pInputText type="text" (input)="deletedCajasList.filterGlobal($event.target.value, 'contains')"
+            placeholder="{{'bus_car' | translate}}" />
+        </p-iconfield>
+      </div>
+    </ng-template>
+    <ng-template #header>
+      <tr>
+        <th pSortableColumn="caja_folio">No. caja&nbsp;<p-sortIcon field="caja_folio" /></th>
+        <th pSortableColumn="caja_alias">Alias&nbsp;<p-sortIcon field="caja_alias" /></th>
+        <th pSortableColumn="establecimiento">Almacen (Alias)&nbsp;<p-sortIcon field="establecimiento" /></th>
+        <th pSortableColumn="fecha_delete">{{'f_delete' | translate}}&nbsp;<p-sortIcon field="fecha_delete" /></th>
+        <th class="ultimo"></th>
+        <th class="ultimo"></th>
+      </tr>
+    </ng-template>
+    <ng-template #body let-cjaDel>
+      <tr>
+        <td>{{cjaDel.caja_folio}}</td>
+        <td>{{cjaDel.caja_alias}}</td>
+        <td>{{cjaDel.establecimiento}}</td>
+        <td>{{cjaDel.fecha_delete}}</td>
+        <td><a class="btn btn_extend text-bg-success rounded-3" (click)="restauraCaja(cjaDel.token_caja);"><i
+              class="fa-solid fa-trash-arrow-up"></i>&nbsp;{{'restore_row' | translate}}</a></td>
+        <td><a class="btn btn_extend text-bg-danger rounded-3" (click)="eliminapermCaja(cjaDel.token_caja);"><i
+              class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}</a></td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="6" class="text-center py-4">
+          <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+          <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+            {{'no_rows' | translate}}
+          </p>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</p-dialog>

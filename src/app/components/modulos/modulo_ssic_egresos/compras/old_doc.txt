@@ -1,0 +1,477 @@
+
+
+    /*provUpdatePaginated() {
+      const filteredItems = this.provListaTotal.filter((item:any) => 
+        item.folio.toLowerCase().includes(this.provBuscar.toLowerCase()) ||
+        item.nombre.toLowerCase().includes(this.provBuscar.toLowerCase()) ||
+        item.pais.toLowerCase().includes(this.provBuscar.toLowerCase()) ||
+        item.rfc_generico.toLowerCase().includes(this.provBuscar.toLowerCase()) ||
+        item.rfc_prov.toLowerCase().includes(this.provBuscar.toLowerCase()) ||
+        item.tax_id_prov.toLowerCase().includes(this.provBuscar.toLowerCase()));
+      this.provTotalRecords = filteredItems.length;
+      this.provListaPag = filteredItems.slice(this.provfilterSearch, this.provfilterSearch + this.provRows);
+    }
+
+    verProveedorInfo(token_cat_proveedores:any){
+      let indexPrv = this.provListaPag.findIndex((row:any) => row.token_cat_proveedores == token_cat_proveedores);
+      this.provListaPag[indexPrv]["data_detalle_vista"] = this.provListaPag[indexPrv]["data_detalle_vista"] == false ? true : false;
+      this.provListaPag[indexPrv]["data_detalle_vista"] == true ? this.informacionProveedor(token_cat_proveedores) : null;
+    }
+
+    informacionProveedor(token_cat_proveedores:any){
+      const index_prov = this.provListaPag.findIndex((row:any) => row.token_cat_proveedores == token_cat_proveedores);
+      this._provServ.verDetalleProveedor(token_cat_proveedores).subscribe(
+        response => {
+          if (response.status == 'success') {
+            console.log(response);
+            this.provListaPag[index_prov]["data_detalle"] = response.proveedor;
+          }
+        },
+        error => {
+          console.log(error);
+        }
+      )
+    }
+
+    verEmails(contacto:any) {
+      this.provContactoEmails = this.provContactoEmails === contacto ? null : contacto;
+    }
+
+    verTelefonos(contacto:any) {
+      this.provContPhoneSeccion = this.provContPhoneSeccion === contacto ? null : contacto;
+    }
+
+  //proceso de compra
+    iniciaProcesoCompraProv(token_cat_proveedores:any){
+      let prv = this.provListaPag.find((row:any) => row.token_cat_proveedores == token_cat_proveedores);
+      console.log(prv.comprasCollapsed);
+      this.receptFactura = prv.comprasCollapsed == true ? prv.receptFactura : false;
+      this.compra_contado_credito = prv.comprasCollapsed == true && prv.aceptaCredito ? '' : 'contado';
+      prv.comprasCollapsed == true ? this.listar_anticipos_proveedor(token_cat_proveedores) : null;
+      prv.comprasCollapsed == true ? this.descargaDataProvComprasList(token_cat_proveedores) : null; 
+    }
+
+  //procesos compartidos
+
+    desicionCreditoContadoCompra(token_cat_proveedores:any,decision:any){
+      let prv = this.provListaPag.find((row:any) => row.token_cat_proveedores == token_cat_proveedores);
+      console.log(prv.comprasCollapsed);
+      this.compra_contado_credito = decision;
+    }
+*/
+
+
+
+    /*
+
+
+
+
+  //seccion_compra_recept_fact_despues
+    verConceptoListFactDespuesRetenciones(listado:any){
+      let prdLt = this.productosVincLista.find((row:any) => row.listado == listado);
+      prdLt.articulo_retenciones = !prdLt.articulo_retenciones ? true : false;
+    }
+    
+    verConceptoListFactDespuesTraslados(listado:any){
+      let prdLt = this.productosVincLista.find((row:any) => row.listado == listado);
+      prdLt.articulo_traslados = !prdLt.articulo_traslados ? true : false;
+    }
+
+    verConceptoListFactDespuesSeries(listado:any){
+      let prdLt = this.productosVincLista.find((row:any) => row.listado == listado);
+      prdLt.articulo_homologado_serie_view = !prdLt.articulo_homologado_serie_view ? true : false;
+    }
+
+    selectConceptoListFactDespuesSerie(listado:any,serie_token:any){
+      let index_serie = this.seriesCatalogoTrue.findIndex((row:any) => row.serie_token == serie_token);
+      let prdLt = this.productosVincLista.find((row:any) => row.listado == listado);
+      prdLt.articulo_homologado_serie_token = this.seriesCatalogoTrue[index_serie]["serie_token"];
+      prdLt.articulo_homologado_serie_numero = this.seriesCatalogoTrue[index_serie]["serie_codigo"];
+      this.functionConceptoListContentArticulos(listado);
+    }
+
+    verConceptoListFactDespuesLote(listado:any){
+      let prdLt = this.productosVincLista.find((row:any) => row.listado == listado);
+      prdLt.articulo_homologado_lote_view = !prdLt.articulo_homologado_lote_view ? true : false;
+    }
+
+    selectConceptoListFactDespuesLote(listado:any,token_lote:any){
+      let index_lote = this.listLotesTrue.findIndex((row:any) => row.token_lote == token_lote);
+      let prdLt = this.productosVincLista.find((row:any) => row.listado == listado);
+      prdLt.articulo_homologado_lote_token = this.listLotesTrue[index_lote]["token_lote"];
+      prdLt.articulo_homologado_lote_numero = this.listLotesTrue[index_lote]["numero_lote"];
+      this.functionConceptoListContentArticulos(listado);
+    }
+
+    verConceptoListFactDespuesPedimentoAduanal(listado:any){
+      let prdLt = this.productosVincLista.find((row:any) => row.listado == listado);
+      prdLt.articulo_homologado_pedimento_view = !prdLt.articulo_homologado_pedimento_view ? true : false;
+    }
+  
+    selectConceptoListFactDespuesPedimento(listado:any,token_pedimento:any){
+      let index_pad = this.listaPedimentosTrue.findIndex((row:any) => row.token_pedimento == token_pedimento);
+      let prdLt = this.productosVincLista.find((row:any) => row.listado == listado);
+      prdLt.articulo_homologado_pedimento_token = this.listaPedimentosTrue[index_pad]["token_pedimento"];
+      prdLt.articulo_homologado_pedimento_numero = this.listaPedimentosTrue[index_pad]["numero_pedimento"];
+      this.functionConceptoListContentArticulos(listado);
+    }
+
+    selectConceptoListFactDespuesUsoActivo(listado:any){
+      let prdLt = this.productosVincLista.find((row:any) => row.listado == listado);
+      prdLt.articulo_homologado_view_uso = !prdLt.articulo_homologado_view_uso ? true : false;
+    }
+
+    selectConceptoListFactDespuesUsoArticulo(event:any,listado:any){
+      let prdLt = this.productosVincLista.find((row:any) => row.listado == listado);
+      prdLt.articulo_homologado_uso = event.value != '' ? event.value : '';
+      this.functionConceptoListContentArticulos(listado);
+    }
+
+    selectConceptoListFactDespuesActivosLista(listado:any){
+      let prdLt = this.productosVincLista.find((row:any) => row.listado == listado);
+      console.log(prdLt.identificador);
+      prdLt.articulo_homologado_view_activos = !prdLt.articulo_homologado_view_activos ? true : false;
+    }
+
+    selectConceptoListFactDespuesSelectActivo(listado:any,token_activo:any){
+      let prdLt = this.productosVincLista.find((row:any) => row.listado == listado);
+      console.log(prdLt.identificador); 
+      prdLt.articulo_homologado_activoFijo = prdLt.articulo_homologado_uso == 'activo_fijo' ? token_activo : '';
+      prdLt.articulo_homologado_activoDiferido = prdLt.articulo_homologado_uso == 'activo_intangible' ? token_activo : '';
+      this.functionConceptoListContentArticulos(listado);
+    }
+
+    selectConceptoListFactDespuesProrrateo(listado:any,event:any){
+      let prdLt = this.productosVincLista.find((row:any) => row.listado == listado);
+      prdLt.articulo_homologado_prorratea = event.checked;
+    }
+
+    validarGeneralConceptoList(concepto:any){
+      console.log(concepto.identificador);
+      if (!concepto.articulo_homologado_clasificacion || !concepto.Importe || !concepto.articulo_homologado_token || !concepto.identificador) {
+        //throw new Error('Faltan datos obligatorios en el concepto.');
+        this.primeAlerts.add({ severity: 'error', summary: 'SOS-México informa: ', detail: 'Faltan datos obligatorios en el concepto.'});
+        return false;
+      }
+    
+      if (!concepto.articulo_homologado_serie_bool && !concepto.articulo_homologado_lote_bool && !concepto.articulo_homologado_pedimento_bool && !concepto.articulo_homologado_uso) {
+        //throw new Error('Faltan datos obligatorios en el concepto.');
+        this.primeAlerts.add({ severity: 'error', summary: 'SOS-México informa: ', detail: 'Faltan datos obligatorios en el uso del producto.'});
+        return false;
+      }
+    
+      if (concepto.identificador === 'Producto') {
+        if (concepto.articulo_homologado_serie_bool && !concepto.articulo_homologado_serie_token) {
+          //throw new Error('Falta información de serie.');
+          this.primeAlerts.add({ severity: 'error', summary: 'SOS-México informa: ', detail: 'Falta información de serie.'});
+          return false;
+        }
+        if (concepto.articulo_homologado_lote_bool && !concepto.articulo_homologado_lote_token) {
+          //throw new Error('Falta información de lote.');
+          this.primeAlerts.add({ severity: 'error', summary: 'SOS-México informa: ', detail: 'Falta información de lote.'});
+          return false;
+        }
+        if (concepto.articulo_homologado_pedimento_bool && !concepto.articulo_homologado_pedimento_token) {
+          //throw new Error('Falta información de pedimento.');
+          this.primeAlerts.add({ severity: 'error', summary: 'SOS-México informa: ', detail: 'Falta información de pedimento.'});
+          return false;
+        }
+    
+        if (!concepto.articulo_homologado_uso) {
+          //throw new Error('Faltan datos obligatorios en el concepto.');
+          this.primeAlerts.add({ severity: 'error', summary: 'SOS-México informa: ', detail: 'Faltan datos obligatorios en el uso del producto.'});
+          return false;
+        }
+    
+        if (concepto["articulo_homologado_uso"] === 'activo_fijo' && !concepto.articulo_homologado_activoFijo) {
+          //throw new Error('Falta información de activo fijo.');
+          this.primeAlerts.add({ severity: 'error', summary: 'SOS-México informa: ', detail: 'Falta información de activo fijo.'});
+          return false;
+        }
+    
+        if (concepto.articulo_homologado_uso === 'activo_intangible' && !concepto.articulo_homologado_activoDiferido) {
+          //throw new Error('Falta información de activo intangible.');
+          this.primeAlerts.add({ severity: 'error', summary: 'SOS-México informa: ', detail: 'Falta información de activo intangible.'});
+          return false;
+        } 
+    
+        return true;
+      } else if (concepto.identificador === 'Servicio') {
+    
+        if (!concepto.articulo_homologado_uso) {
+          //throw new Error('Faltan datos obligatorios en el concepto.');
+          this.primeAlerts.add({ severity: 'error', summary: 'SOS-México informa: ', detail: 'Faltan datos obligatorios en el uso del servicio.'});
+          return false;
+        }
+    
+        if (concepto.articulo_homologado_uso === 'activo_intangible' && !concepto.articulo_homologado_activoDiferido) {
+          //throw new Error('Falta información de activo intangible.');
+          this.primeAlerts.add({ severity: 'error', summary: 'SOS-México informa: ', detail: 'Falta información de activo intangible.'});
+          return false;
+        } 
+        return true;
+      } else {
+        //throw new Error('Identificador de artículo no reconocido.');
+        this.primeAlerts.add({ severity: 'error', summary: 'SOS-México informa: ', detail: 'Identificador de artículo no reconocido.'});
+        return false;
+      }
+    }
+
+    functionConceptoListContentArticulos(listado:any){
+      try {
+        let prdLt = this.productosVincLista.find((row:any) => row.listado == listado);
+        var result_validacion:any = this.validarGeneralConceptoList(prdLt);
+        console.log(result_validacion);
+        this.selectvalidateArticulosVinc = result_validacion;
+        prdLt.activa_desglose = result_validacion;
+      } catch (error:any) {
+        this.selectvalidateArticulosVinc = false;
+        //console.error('Error en la validación de conceptos:', error.message);
+      }
+    }
+
+    selectConceptoListArticulos(){
+      Swal.fire({
+        title: this.translate.instant("swal_attenc"),
+        text: "¿Desea agregar estos articulos a la lista de compra?",
+        icon: 'warning',
+        confirmButtonColor: '#388E3C',
+        confirmButtonText: 'Sí, agregar',
+        showCancelButton: true,
+        cancelButtonColor: '#D32F2F',
+        cancelButtonText: this.translate.instant("swal_cancel"),
+      }).then((result) => {
+        if (result.isConfirmed) {
+          const atr_filtro = this.productosVincLista.filter((row:any) => row.activa_desglose === true);
+          this.arrayDesgloceCompra = atr_filtro;
+          console.log(this.arrayDesgloceCompra);
+          this.selectvalidateArticulosVinc = false;
+        }
+      });
+    }
+
+    validateRegistraCompra_recept_fact_despues(){
+      var validateXmlCompras:any = '';
+      Swal.fire({
+        title: this.translate.instant("swal_attenc"),
+        text: this.translate.instant("swal_insert"),
+        icon: 'warning',
+        confirmButtonColor: '#388E3C',
+        confirmButtonText: this.translate.instant("swal_yes_insert"),
+        showCancelButton: true,
+        cancelButtonColor: '#D32F2F',
+        cancelButtonText: this.translate.instant("swal_cancel"),
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.cargandoCompras = 'cargando';
+          if (this.provToken != '' && this.arrayDesgloceCompra.length != 0 && this.tipoLugarRecepcion != '' && this.tknLugarRecepcion != '') {
+            if (this.receptFactura == true) {
+                if (this.imagenEvidenciaXMl != '' && this.dataCFDI_comprobante_formaPago != '' && this.dataCFDI_comprobante_MetodoPago != '' && this.dataCFDI_comprobante_Moneda != ''
+                  && this.dataCFDI_receptor_UsoCFDI != '' && this.imagenEvidenciaPdf != '' && this.imagenEvidenciaVerificacion != '') {
+                  validateXmlCompras = 'true';
+                } else {
+                  validateXmlCompras = 'false';
+                  if (this.imagenEvidenciaXMl == '') {
+                    Swal.fire({
+                      position:'top-end',
+                      icon: 'warning',
+                      title: 'Debe cargar la factura en formato xml correspondiente a esta compra',
+                      showConfirmButton:false,
+                      timer: 3000
+                    });
+                  }
+
+                  if (this.dataCFDI_comprobante_formaPago == '') {
+                    Swal.fire({
+                      position:'top-end',
+                      icon: 'warning',
+                      title: 'forma de pago no existe para esta compra',
+                      showConfirmButton:false,
+                      timer: 3000
+                    });
+                  }
+
+                  if (this.dataCFDI_comprobante_MetodoPago == '') {
+                    Swal.fire({
+                      position:'top-end',
+                      icon: 'warning',
+                      title: 'método de pago no existe para esta compra',
+                      showConfirmButton:false,
+                      timer: 3000
+                    });
+                  }
+
+                  if (this.dataCFDI_comprobante_Moneda == '' ) {
+                    Swal.fire({
+                      position:'top-end',
+                      icon: 'warning',
+                      title: 'no hay moneda seleccionada para esta compra',
+                      showConfirmButton:false,
+                      timer: 3000
+                    });
+                  }
+
+                  if (this.dataCFDI_receptor_UsoCFDI == '') {
+                    Swal.fire({
+                      position:'top-end',
+                      icon: 'warning',
+                      title: 'uso de cfdi no existe para esta compra',
+                      showConfirmButton:false,
+                      timer: 3000
+                    });
+                  }
+
+                  if (this.imagenEvidenciaPdf == '') {
+                    Swal.fire({
+                      position:'top-end',
+                      icon: 'warning',
+                      title: 'Debe cargar la factura en formato pdf correspondiente a esta compra',
+                      showConfirmButton:false,
+                      timer: 3000
+                    });
+                  }
+
+                  if (this.imagenEvidenciaVerificacion == '') {
+                    Swal.fire({
+                      position:'top-end',
+                      icon: 'warning',
+                      title: 'Debe cargar el documento de verificación de comprobante fiscal degital correspondiente a esta compra',
+                      showConfirmButton:false,
+                      timer: 3000
+                    });
+                  }
+
+                }
+            }
+
+            if (this.receptFactura != true) {
+              if (this.dataCFDI_comprobante_Moneda != '') {
+                validateXmlCompras = 'true';
+              } else {
+                validateXmlCompras = 'false';
+                Swal.fire({
+                  position:'top-end',
+                  icon: 'warning',
+                  title: 'no hay moneda seleccionada para esta compra',
+                  showConfirmButton:false,
+                  timer: 3000
+                })
+              }
+            }
+
+            if (validateXmlCompras == 'true') {
+              this.comienzaRegistroCompra_recept_fact_despues();
+            } else {
+              this.cargandoCompras = 'fail';
+            }
+
+          } else {
+            if (this.provToken == '') {
+              Swal.fire({
+                position:'top-end',
+                icon: 'warning',
+                title: 'Debe seleccionar un proveedor para realizar esta compra',
+                showConfirmButton:false,
+                timer: 3000
+              });
+            }
+
+            if (!this.receptFactura) {
+                Swal.fire({
+                position:'top-end',
+                icon: 'warning',
+                title: 'Debe seleccionar una opción en el bloque "¿Recibe factura antes o despues del pago?" de esta compra',
+                showConfirmButton:false,
+                timer: 3000
+              });
+            }
+
+            if (this.arrayDesgloceCompra.length == 0) {
+                Swal.fire({
+                position:'top-end',
+                icon: 'warning',
+                title: 'Debe seleccionar articulos y/o servicios para comprar',
+                showConfirmButton:false,
+                timer: 3000
+              });
+            }
+
+            if (this.tipoLugarRecepcion == '') {
+                Swal.fire({
+                position:'top-end',
+                icon: 'warning',
+                title: 'Debe seleccionar una opción en el bloque "PUNTO DE ENTREGA O RECEPCION" de esta compra',
+                showConfirmButton:false,
+                timer: 3000
+              });
+            }
+
+            if (this.tknLugarRecepcion == '') {
+                Swal.fire({
+                position:'top-end',
+                icon: 'warning',
+                title: 'Debe seleccionar un lugar donde se recibiran los articulos seleccionados para esta compra',
+                showConfirmButton:false,
+                timer: 3000
+              });
+            }
+
+          }
+        }
+      })
+    }
+
+    comienzaRegistroCompra_recept_fact_despues(){
+      this._comprServ.registraCompra(
+        this.dataCFDI_comprobante_Fecha,
+        this.provToken,
+        this.dataCFDI_comprobante_formaPago,
+        this.dataCFDI_comprobante_MetodoPago,
+        this.dataCFDI_comprobante_Moneda,
+        this.tipoDeCambio,
+        this.dataCFDI_receptor_UsoCFDI,
+        this.compra_contado_credito,
+        this.receptFactura,
+        this.anticipoToken,
+        this.classRecibeArtPago,
+        this.totalPagoCompra,
+        this.pagoTesoreriaCaja,
+        this.datosCajaToken,
+        this.arrayDesgloceCompra,
+        this.tipoLugarRecepcion,
+        this.tknLugarRecepcion,
+        this.imagenEvidenciaXMl,
+        this.imagenEvidenciaPdf,
+        this.imagenEvidenciaVerificacion,
+        this.imagenEvidenciaAnexos
+        ).subscribe(
+        response => {
+          let translate_response = this.translate.instant(response.message);
+          if (response.status == 'success') {
+            this.cargandoCompras = '';
+            Swal.fire({
+              position:'center',
+              icon: 'success',
+              title: translate_response,
+              showConfirmButton:false,
+              timer: 3000
+            })
+            location.reload();
+          }
+          if (response.status == 'error') {
+            this.cargandoCompras = 'fail';
+            Swal.fire({
+              position:'top-end',
+              icon: 'warning',
+              title: translate_response,
+              showConfirmButton:false,
+              timer: 3000
+            })
+          }
+        },
+        error => {
+          console.log(error);
+        }
+      );
+    }*/

@@ -1,0 +1,28 @@
+.toast{
+    padding: 0;
+    border-radius: 8px;
+    min-height: 50px!important;
+}
+
+.toast div.btnError{
+    width: 100%!important;
+    background-color: #6D1300!important;
+    height: 50px!important;
+    line-height: 50px;
+    padding-left: 5px;
+    padding-right: 5px;
+    border-radius: 8px;
+    box-shadow: 3px 3px 8px #353535;
+}
+
+.toast div.btnCorrecto{
+    width: 100%!important;
+    background-color: #00ff00!important;
+    color: #353535!important;
+    height: 50px!important;
+    line-height: 50px;
+    padding-left: 5px;
+    padding-right: 5px;
+    border-radius: 8px;
+    box-shadow: 3px 3px 8px #353535;
+}

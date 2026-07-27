@@ -1,0 +1,26 @@
+<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco noneView" #vContent>
+	<div class="contenido">
+    <header class="sticky-top">
+			<nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+		</header>
+		<main id="mainContenidoModProyectos" class="contenidoPagina contenidoModProyectos">
+			<article class="listas_ps revanecer">
+        <div class="fmAlta lista-divNoFlex row">
+          <div class="col-12">
+            <h6 class="col-12">{{'gantt_diagram' | translate}}</h6>
+            <ngx-gantt #gantt [items]="listaGantt">
+				<ngx-gantt-table>
+				  <ngx-gantt-column name="Title" width="300px">
+					<ng-template #cell let-item="item"> {{ item.title }} </ng-template>
+				  </ngx-gantt-column>
+				</ngx-gantt-table>
+			  </ngx-gantt>
+          </div>
+        </div>
+      </article>
+		</main>
+	</div>
+</div>
+
+

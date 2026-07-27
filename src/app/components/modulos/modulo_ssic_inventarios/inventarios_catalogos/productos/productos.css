@@ -1,0 +1,43 @@
+.encabezado-prv-cl{
+    background-color: #d3d3d3;
+    border-radius: 8px;
+    padding: 5px;
+}
+
+.encabezado-prv-cl h6{
+    color: #353535;
+    font-weight: bold;
+    padding-bottom: 5px;
+}
+
+.card-panel{
+    overflow-x: overlay;
+    background-color: transparent!important;
+    padding: 0;
+    box-shadow: none;
+    margin: 0;
+}
+
+.card-panel::-webkit-scrollbar,
+.card-panel::-webkit-ms-scrollbar{
+    width: 10px;
+    height: 5px;
+}
+
+.card-panel::-webkit-scrollbar-track,
+.card-panel::-webkit-ms-scrollbar-track{
+    background-color: transparent;
+    border-radius: 10px;
+}
+
+.card-panel::-webkit-scrollbar-thumb,
+.card-panel::-webkit-ms-scrollbar-thumb{
+    background-color: rgba(0, 0, 0, 0.4);
+    border-radius: 10px;
+}
+
+.card-panel table{
+    margin: 0;
+    min-width: 100%!important;
+    width: max-content!important;
+}

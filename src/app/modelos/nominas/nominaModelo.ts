@@ -1,0 +1,55 @@
+export class nominaModelo {
+  constructor(
+    public registro_patronal: string,
+    public trabajador_token: string,
+    public trabajador_nombre: string,
+    public periodicidad: string,
+    public periodo_inicio: string,
+    public periodo_fin: string,
+    public moneda: string,
+    public moneda_decimales: number,
+    public trabajador_cBankBanco: string,
+    public trabajador_cBankCuenta: string,
+    public salario_diario:string,
+    public salario_integrado:string,
+    public dias_trabajados: number,
+    public sueldo: number,
+
+    public horas_extras_dobles: number,
+    public aguinaldo: number,
+    public horas_extras_triples: number,
+    public vacaciones: number,
+    public prima_vacacional: number,
+    public reparto_de_utilidades: number,
+    public despensa: number,
+    public premios_de_asistencia: number,
+    public premios_de_puntualidad: number,
+    public prima_dominical: number,
+    public bno_extra_x_comision_otro_edo: number,
+    public indemnizacion: number,
+    public prima_de_antiguedad: number,
+    public isr_ajustado_por_subsidio: number,
+
+    public total_isr:number,
+    public total_imss:number,
+
+    public credito_fonacot:number,
+    public credito_infonavit:number,
+
+    public subsidio_empleo:number,
+    //public subsidio_empleo_aplicado:number,
+
+    public otros_pagos:number,
+    public otras_percepciones:number,
+    public total_percepciones:number,
+    public otras_deducciones:number,
+    public total_deducciones:number,
+    public total_efectivo:number,
+    public total_en_especie:number,
+    public neto_pagado:number,
+    public salario_por_hora:number,
+    public horas_por_dia:number,
+    public faltas:number,
+    public u_t_laboradas:String
+  ) { }
+}

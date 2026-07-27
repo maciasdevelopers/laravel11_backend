@@ -1,0 +1,72 @@
+<svg
+  viewBox="0 0 600 500"
+  width="100%"
+  height="100%"
+  xmlns="http://www.w3.org/2000/svg"
+>
+
+  <!-- Fondo -->
+  <rect width="600" height="500" fill="#F8FAFC"/>
+
+  <!-- WELCOME -->
+  <text
+    x="300"
+    y="60"
+    text-anchor="middle"
+    font-family="Ubuntu, sans-serif"
+    font-size="32"
+    font-weight="700"
+    fill="#1E293B"
+  >
+    Bienvenido
+  </text>
+
+  <!-- Subtexto -->
+  <text
+    x="300"
+    y="90"
+    text-anchor="middle"
+    font-family="Ubuntu, sans-serif"
+    font-size="14"
+    fill="#64748B"
+  >
+    Selecciona la empresa para continuar
+  </text>
+
+  <!-- Nube decorativa -->
+  <ellipse cx="300" cy="300" rx="260" ry="120" fill="#E0F2FE"/>
+
+  <!-- Laptop -->
+  <rect x="180" y="230" width="240" height="140" rx="8" fill="#1E293B"/>
+  <rect x="195" y="245" width="210" height="110" rx="4" fill="#FFFFFF"/>
+
+  <!-- Gráfica -->
+  <rect x="220" y="295" width="16" height="40" fill="#22C55E"/>
+  <rect x="245" y="275" width="16" height="60" fill="#3B82F6"/>
+  <rect x="270" y="260" width="16" height="75" fill="#22C55E"/>
+  <rect x="295" y="280" width="16" height="55" fill="#3B82F6"/>
+
+  <!-- Flecha crecimiento -->
+  <polyline
+    points="220,300 245,280 270,270 295,285"
+    fill="none"
+    stroke="#16A34A"
+    stroke-width="3"
+  />
+  <polygon points="295,285 290,278 302,280" fill="#16A34A"/>
+
+  <!-- Documento -->
+  <rect x="420" y="270" width="70" height="90" rx="6" fill="#FFFFFF" stroke="#CBD5E1"/>
+  <line x1="430" y1="290" x2="480" y2="290" stroke="#94A3B8"/>
+  <line x1="430" y1="305" x2="470" y2="305" stroke="#94A3B8"/>
+  <line x1="430" y1="320" x2="465" y2="320" stroke="#94A3B8"/>
+
+  <!-- Monedas -->
+  <circle cx="160" cy="330" r="22" fill="#FACC15"/>
+  <circle cx="140" cy="345" r="22" fill="#EAB308"/>
+  <circle cx="160" cy="360" r="22" fill="#FACC15"/>
+
+  <!-- Símbolo $ -->
+  <text x="152" y="337" font-size="20" font-weight="700" fill="#854D0E">$</text>
+
+</svg>

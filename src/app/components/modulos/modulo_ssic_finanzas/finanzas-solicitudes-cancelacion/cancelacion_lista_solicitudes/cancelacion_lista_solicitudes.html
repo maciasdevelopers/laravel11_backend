@@ -1,0 +1,148 @@
+<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco" #vContent>
+  <div class="contenido"><app-loader></app-loader>
+    <nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+    <main class="contenidoPagina">
+      <div class="listas_ps revanecer">
+        <div id="listaProveedores" class="lista-div lista-divNoFlex">
+          <h4 class="col-12">SOLICITUDES DE CANCELACI&Oacute;N</h4>
+          
+          <p-table #tsoliCancelacion [value]="solicitudes_cancelacion" showGridlines [resizableColumns]="true" [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]"
+            [globalFilterFields]="['cancel_soli_cancel_realizada','cancel_soli_cancel_realizada','cancel_soli_folio','doc_anterior_folio_folio','reem_cancel_soli_folio','compras_folio_folio','cancel_soli_observaciones','cancel_soli_cancel_realizada']">
+            <ng-template #caption>
+              <div class="flex" style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;" ngbDropdown>
+                <a class="btn btn_extend" [ngClass]="indicadorSoliCancel == 'hoy' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_solicitudes_cancelacion('hoy');">
+                  <i class="fa-solid fa-calendar-days"></i>&nbsp;Hoy
+                </a>
+                <a class="btn btn_extend" [ngClass]="indicadorSoliCancel == 'esta_semana' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_solicitudes_cancelacion('esta_semana');">
+                  <i class="fa-solid fa-calendar-days"></i>&nbsp;Esta semana
+                </a>
+                <a class="btn btn_extend" [ngClass]="indicadorSoliCancel == 'este_mes' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_solicitudes_cancelacion('este_mes');">
+                  <i class="fa-solid fa-calendar-days"></i>&nbsp;Este mes
+                </a>
+                <a class="btn btn_extend" [ngClass]="indicadorSoliCancel == 'mes_anterior' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_solicitudes_cancelacion('mes_anterior');">
+                  <i class="fa-solid fa-arrow-left"></i>&nbsp;mes anterior
+                </a>
+                <a id="menuDropOPCancelaciones" class="btn btn_extend" [ngClass]="indicadorSoliCancel == 'otras_fechas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" ngbDropdownToggle>
+                  <i class="fa-solid fa-list-ul"></i>&nbsp;otras fechas
+                </a>
+                <div class="dropdown-menu-end menu-despegable" ngbDropdownMenu="menuDropOPCancelaciones" style="padding: 0!important; margin: 0!important; width: max-content!important; max-height: 400px; overflow-y: auto;">
+                  <div class="col-12 input-group">
+                    <label for="pag_cancelaciones_otras_fechas" class="activeInput">Periodo de fechas</label>
+                    <p-datepicker id="pag_cancelaciones_otras_fechas" name="pag_cancelaciones_otras_fechas" [(ngModel)]="rangoPeriodoSoliCancel" appendTo="body" dateFormat="dd/mm/yy"
+                      placeholder="dd/mm/aaaa" selectionMode="range" (onSelect)="ver_solicitudes_cancelacion('otras_fechas')" />
+                  </div>
+                </div>
+                <a class="btn btn_extend" [ngClass]="indicadorSoliCancel == 'all_partidas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_solicitudes_cancelacion('all_partidas');">
+                  <i class="fa-solid fa-list-ul"></i>&nbsp;todos los registros
+                </a>
+                <a class="btn btn_extend bg-green-600 descarga_lista_excel" style="height: 25px !important;">
+                  descargar&nbsp;<i class="fa-solid fa-file-excel"></i>
+                </a>
+                <p-iconfield iconPosition="left" class="ml-auto">
+                  <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                  <input pInputText type="text" (input)="tsoliCancelacion.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}"/>
+                </p-iconfield>
+              </div>
+            </ng-template>
+            <ng-template #header>
+              <tr>
+                <th class="ultimo"></th>
+                <th pResizableColumn pSortableColumn="cancel_soli_folio">folio&nbsp;<p-sortIcon field="cancel_soli_folio"/></th>
+                <th pResizableColumn pSortableColumn="fecha_contabilizacion">{{'fecha_cont' | translate}}&nbsp;<p-sortIcon field="fecha_contabilizacion"/></th>
+                <th pResizableColumn pSortableColumn="doc_anterior_folio">{{'doc_ant' | translate}}&nbsp;<p-sortIcon field="doc_anterior_folio"/></th>
+                <th pResizableColumn pSortableColumn="compras_folio">Compra vinculada&nbsp;<p-sortIcon field="compras_folio"/></th>
+                <th pResizableColumn pSortableColumn="cancel_soli_observaciones">{{'observ' | translate}}&nbsp;<p-sortIcon field="cancel_soli_observaciones"/></th>
+                <th pResizableColumn pSortableColumn="cancel_soli_cancel_realizada">cancelaci&oacute;n realizada&nbsp;<p-sortIcon field="cancel_soli_cancel_realizada"/></th>
+              </tr>
+            </ng-template>
+            <ng-template #body let-canc>
+              <tr>
+                <td class="ultimo">
+                  <a class="btn bg-blue-600" [ngClass]="canc.cancel_soli_cancel_realizada ? 'disabled' : ''" [attr.disabled]="canc.cancel_soli_cancel_realizada ? true : null"
+                    [attr.aria-disabled]="canc.cancel_soli_cancel_realizada ? true : null" (click)="detalle_solicitud_de_cancelacion(canc);">
+                    <i class="fa-solid fa-info"></i>
+                  </a>
+                </td>
+                <td>{{canc.cancel_soli_folio}}</td>
+                @if (canc.tipo_solicitud == 'REEMBOLSO') {
+                  <td>{{canc.doc_anterior_folio+" solicitud "+canc.soli_reem_folio}}</td>
+                } @else {
+                  <td>{{canc.doc_anterior_folio}}</td>
+                }
+                <td>{{canc.fecha_contabilizacion}}</td>
+                <td>{{canc.compras_folio}}</td>
+                <td>{{canc.cancel_soli_observaciones}}</td>
+                <td>{{canc.cancel_soli_cancel_realizada ? ['yes_auth' | translate] : ['not_auth' | translate]}}
+                </td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="7" class="text-center py-4">
+                  <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                  <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                    {{'no_rows' | translate}}
+                  </p>
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+
+        </div>
+      </div>
+    </main>
+    <app-footer-inside></app-footer-inside>
+  </div>
+</div>
+
+<p-dialog header="Solicitud de cancelaci&oacute;n de pago" [(visible)]="windowSoliCancelacionPagoInfo" [modal]="true" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  @if (windowSoliCancelacionPagoInfo) {
+    <fnzs_solicitud_cancelacion_pago [SoliCancelacion]="dataSolicitudCancelacion"></fnzs_solicitud_cancelacion_pago>
+  }
+</p-dialog>
+
+<p-dialog header="Solicitud de cancelaci&oacute;n de orden de pago" [(visible)]="windowSoliCancelacionOrdenPagoInfo" [modal]="true" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  @if (windowSoliCancelacionOrdenPagoInfo) {
+    <fnzs_solicitud_cancelacion_orden_de_pago [SoliCancelacion]="dataSolicitudCancelacion"></fnzs_solicitud_cancelacion_orden_de_pago>
+  }
+</p-dialog>
+
+<p-dialog header="Solicitud de cancelaci&oacute;n de pago para reembolsos" [(visible)]="windowSoliCancelacionReembolsoInfo" [modal]="true" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  @if (windowSoliCancelacionOrdenPagoInfo) {
+    <fnzs_solicitud_cancelacion_reembolsos [SoliCancelacion]="dataSolicitudCancelacion"></fnzs_solicitud_cancelacion_reembolsos>
+  }
+</p-dialog>
+
+<p-dialog header="Solicitud de cancelaci&oacute;n de movimientos entre cuentas propias" [(visible)]="windowSoliCancelacionMCPInfo" [modal]="true" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  @if (windowSoliCancelacionMCPInfo) {
+    <fnzs_solicitud_cancelacion_mov_cpropias [SoliCancelacion]="dataSolicitudCancelacion"></fnzs_solicitud_cancelacion_mov_cpropias>
+  }
+</p-dialog>
+
+<!--windowSoliCancelacionPagoDispersionInfo-->
+<!--desgloseSoliCancelacionDispersionPago-->
+
+<p-dialog header="Solicitud de cancelaci&oacute;n de pago de nominas" [(visible)]="windowSoliCancelacionPagoDispersionInfo" [modal]="true" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  @if (windowSoliCancelacionPagoDispersionInfo) {
+    <fnzs_solicitud_cancelacion_gral_nomina [SoliCancelacion]="dataSolicitudCancelacion"></fnzs_solicitud_cancelacion_gral_nomina>
+  }
+</p-dialog>
+
+<p-dialog header="Solicitud de cancelaci&oacute;n de nominas en efectivo" [(visible)]="windowSoliCancelacionOrdenDispersionEfectivoInfo" [modal]="true" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  @if (windowSoliCancelacionOrdenDispersionEfectivoInfo) {
+    <fnzs_solicitud_cancelacion_nomina_efectivo [SoliCancelacion]="dataSolicitudCancelacion"></fnzs_solicitud_cancelacion_nomina_efectivo>
+  }
+</p-dialog>
+
+<p-dialog header="Solicitud de cancelaci&oacute;n de nominas en especie" [(visible)]="windowSoliCancelacionOrdenDispersionEspecieInfo" [modal]="true" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  @if (windowSoliCancelacionOrdenDispersionEspecieInfo) {
+    <fnzs_solicitud_cancelacion_nomina_especie [SoliCancelacion]="dataSolicitudCancelacion"></fnzs_solicitud_cancelacion_nomina_especie>
+  }
+</p-dialog>
+
+<p-dialog header="Solicitud de cancelaci&oacute;n de anticipos" [(visible)]="windowSoliCancelacionAnticipoInfo" [modal]="true" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  @if (windowSoliCancelacionAnticipoInfo) {
+    <fnzs_solicitud_cancelacion_anticipos [SoliCancelacion]="dataSolicitudCancelacion"></fnzs_solicitud_cancelacion_anticipos>
+  }
+</p-dialog>

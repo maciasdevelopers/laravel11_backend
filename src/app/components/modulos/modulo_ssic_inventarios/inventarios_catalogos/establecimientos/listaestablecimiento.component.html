@@ -1,0 +1,364 @@
+<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco" #vContent>
+  <div class="contenido"><app-loader></app-loader>
+    <nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+    <div class="contenidoPagina">
+      <div class="listas_ps revanecer">
+        <div id="catalogosEstablecimientos" class="lista-div lista-divNoFlex row">
+          <h4 class="col-12">CATALOGO DE ESTABLECIMIENTOS</h4>
+          <div class="col-12">
+            <div class="btn-group lista_botones col" role="group" arial-label="Basic example">
+              <a class="btn btn_extend bg-indigo-600"
+                (click)="listarEstablecimientos();listarEstablecimientosDeleted();">
+                <i class="fa-solid fa-rotate"></i>&nbsp;{{'list_updt' | translate}}
+              </a>
+              <a class="btn btn_extend bg-indigo-600" data-bs-toggle="modal" data-bs-target="#infCatEstablecimientoEli">
+                <i class="fa-solid fa-trasj" style="margin-left: 5px;"></i>&nbsp;Establecimientos eliminados
+              </a>
+            </div>
+          </div>
+          <p-tabs value="0">
+            <p-tablist>
+              <p-tab value="0">Cat&aacute;logo de establecimientos</p-tab>
+              <p-tab value="1">Registro de establecimientos</p-tab>
+            </p-tablist>
+            <p-tabpanel value="0">
+              <div class="col-12">
+                <p-table #estabTrueList [value]="arrayEstablecimientosTRUE" dataKey="id" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]"
+                  [globalFilterFields]="['token_establecimiento','estab_folio','estab_alias','estab_tipo','estab_desc','estab_encargado','aplica_ingresos','aplica_egresos','aplica_interno','aplica_almacen']">
+                  <ng-template #caption>
+                    <div class="flex" style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;" ngbDropdown>
+                      <a class="btn btn_extend" [ngClass]="indicadorEstablecimientosTRUE == 'hoy' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="verEstablecimientos('hoy');">
+                        <i class="fa-solid fa-calendar-days"></i>&nbsp;Hoy
+                      </a>
+                      <a class="btn btn_extend" [ngClass]="indicadorEstablecimientosTRUE == 'esta_semana' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="verEstablecimientos('esta_semana');">
+                        <i class="fa-solid fa-calendar-days"></i>&nbsp;Esta semana
+                      </a>
+                      <a class="btn btn_extend" [ngClass]="indicadorEstablecimientosTRUE == 'este_mes' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="verEstablecimientos('este_mes');">
+                        <i class="fa-solid fa-calendar-days"></i>&nbsp;Este mes
+                      </a>
+                      <a class="btn btn_extend" [ngClass]="indicadorEstablecimientosTRUE == 'mes_anterior' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="verEstablecimientos('mes_anterior');">
+                        <i class="fa-solid fa-arrow-left"></i>&nbsp;mes anterior
+                      </a>
+                      <a id="menuDropEstabRangos" class="btn btn_extend" [ngClass]="indicadorEstablecimientosTRUE == 'otras_fechas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" ngbDropdownToggle>
+                        <i class="fa-solid fa-list-ul"></i>&nbsp;otras fechas
+                      </a>
+                      <div class="dropdown-menu-end menu-despegable" ngbDropdownMenu="menuDropEstabRangos" style="padding: 0!important; margin: 0!important; width: max-content!important; max-height: 400px; overflow-y: auto;">
+                        <div class="col-12 input-group">
+                          <label for="estab_otras_fechas" class="activeInput">Periodo de fechas</label>
+                          <p-datepicker id="estab_otras_fechas" name="estab_otras_fechas" [(ngModel)]="rangoPeriodoEstablecimientosTRUE" appendTo="body" dateFormat="dd/mm/yy" 
+                            placeholder="dd/mm/aaaa" selectionMode="range" (onSelect)="verEstablecimientos('otras_fechas');" />
+                        </div>
+                      </div>
+                      <a class="btn btn_extend" [ngClass]="indicadorEstablecimientosTRUE == 'all_partidas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="verEstablecimientos('all_partidas');">
+                        <i class="fa-solid fa-list-ul"></i>&nbsp;todos los registros
+                      </a>
+                      <p-iconfield iconPosition="left" class="ml-auto">
+                        <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                        <input pInputText type="text" (input)="estabTrueList.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+                      </p-iconfield>
+                    </div>
+                  </ng-template>
+                  <ng-template #header>
+                    <tr>
+                      <th class="ultimo"></th>
+                      <th pSortableColumn="estab_folio">folio&nbsp;<p-sortIcon field="folio" /></th>
+                      <th pSortableColumn="estab_alias">alias&nbsp;<p-sortIcon field="alias" /></th>
+                      <th pSortableColumn="estab_tipo">tipo&nbsp;<p-sortIcon field="tipo" /></th>
+                      <th pSortableColumn="estab_desc">descripci&oacute;n&nbsp;<p-sortIcon field="descripcion" /></th>
+                      <th pSortableColumn="aplica_ingresos">ingresos&nbsp;<p-sortIcon field="ingresos" /></th>
+                      <th pSortableColumn="aplica_egresos">egresos&nbsp;<p-sortIcon field="egresos" /></th>
+                      <th pSortableColumn="aplica_interno">interno&nbsp;<p-sortIcon field="interno" /></th>
+                      <th pSortableColumn="aplica_almacen">aplica para almacen&nbsp;<p-sortIcon field="Almacen" /></th>
+                      <th class="ultimo"></th>
+                    </tr>
+                  </ng-template>
+                  <ng-template #body let-estTrue>
+                    <tr>
+                      <td class="ultimo">
+                        <a class="btn bg-blue-600" (click)="infEstabView(estTrue.token_establecimiento);">
+                          <i class="fa-solid fa-info"></i>
+                        </a>
+                      </td>
+                      <td>{{estTrue.estab_folio}}</td>
+                      <td>{{estTrue.estab_alias}}</td>
+                      <td>{{estTrue.estab_tipo}}</td>
+                      <td>{{estTrue.estab_desc}}</td>
+                      <td>{{estTrue.aplica_ingresos | translate}}</td>
+                      <td>{{estTrue.aplica_egresos | translate}}</td>
+                      <td>{{estTrue.aplica_interno | translate}}</td>
+                      <td>{{estTrue.aplica_almacen | translate}}</td>
+                      <td class="ultimo">
+                        <a class="btn btn_extend text-bg-danger rounded-3"
+                          (click)="funcDeleteEstablecimiento(estTrue.token_establecimiento);">
+                          <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                        </a>
+                      </td>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="emptymessage">
+                    <tr>
+                      <td colspan="10" class="text-center py-4">
+                        <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                        <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                          {{'no_rows' | translate}}
+                        </p>
+                      </td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+              </div>
+            </p-tabpanel>
+            <p-tabpanel value="1">
+              <app-registro-establecimiento class="row"></app-registro-establecimiento>
+            </p-tabpanel>
+          </p-tabs>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="col-12">
+  <p-dialog header="INFORMACI&Oacute;N DE ESTABLECIMIENTO REGISTRADO ({{establecimientoFolioAlias}})"
+    [(visible)]="establecimientoModal" [modal]="true" [style]="{ width: '50rem' }"
+    [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+    @for (deE of establecimientoDetalle; track $index) {
+    <p-tabs value="0">
+      <p-tablist>
+        <p-tab value="0">Datos generales</p-tab>
+        <p-tab value="1">Cajas relacionadas</p-tab>
+        <p-tab value="2">Productos relacionados</p-tab>
+      </p-tablist>
+      <p-tabpanels>
+        <p-tabpanel value="0">
+          <div class="col-12 row">
+
+            @if (viewFormulario) {
+            <form method="post" class="row formEstablecimiento" #formEstablecimiento="ngForm" [formGroup]="dataForm"
+              name="frmAddProv" enctype="multipart/form-data"
+              (ngSubmit)="validateActualizacion(deE.token_establecimiento) && actualizarEstablecimiento(deE.token_establecimiento,formEstablecimiento);">
+              <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+                <label for="estabEditAlias" class="activeInput"><span class="obligatorio">* Alias</span></label>
+                <input class="validate" id="estabEditAlias" name="estabEditAlias" type="text" required
+                  [value]="deE.estab_alias" (keyup)="keyupfunctiontxtAlias($event.target,deE.token_establecimiento);"
+                  (keypress)="bindPressAlpha($event);">
+              </div>
+              <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+                <label for="estabEditTipos" class="activeInput">Tipo</label>
+                <p-select [options]="tipos_establecimiento" id="estabEditTipos" name="estabEditTipos"
+                  formControlName="tipo_estab" optionValue="data_db" optionLabel="tipo" [filter]="true" filterBy="tipo"
+                  [showClear]="true" [placeholder]="'opt_select' | translate" class="w-full md:w-56"
+                  (onChange)="changefunctiontxtTipo($event.value,deE.token_establecimiento);">
+                  <ng-template #selectedItem let-selected>
+                    <div class="flex items-center gap-2">
+                      <div>{{selected.tipo}}</div>
+                    </div>
+                  </ng-template>
+                  <ng-template let-riesgo #item>
+                    <div class="flex items-center gap-2">
+                      <div>{{riesgo.tipo}}</div>
+                    </div>
+                  </ng-template>
+                </p-select>
+              </div>
+              <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-6 col-xxl-6 input-group">
+                <label class="activeInput"><span class="obligatorio">Descripci&oacute;n</span></label>
+                <input class="validate" name="producto_regCat" type="text" required [value]="deE.estab_desc"
+                  (keyup)="keyupfunctiontxtDescripcion($event.target,deE.token_establecimiento);"
+                  (keypress)="bindPressAlpha($event);">
+              </div>
+
+              <div class="col-12 row" style="padding:0!important;">
+                <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain">
+                  <h6 class="title">¿Aplica para almacen?</h6>
+                </div>
+                <div
+                  class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                  <label class="form-check-label" for="flexSwitchCheckReverse">No</label>
+                  <input class="form-check-input" type="checkbox" [checked]="deE.aplica_almacen"
+                    (click)="functionAplicaAlmacen($event.target,deE.token_establecimiento);">
+                  <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                </div>
+              </div>
+
+              <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+                <label for="estabTelefonos" class="activeInput">Tel&eacute;fono</label>
+                <ngx-material-intl-tel-input id="estabTelefonos" [fieldControl]="dataForm.get('telefono')"
+                  [preferredCountries]="preferredCountries" [enablePlaceholder]="true" maxLength="15" name="phone"
+                  (input)="probarTextPhone();telefonoKeyupNumeroCont_reg($event,deE.token_establecimiento);">
+                </ngx-material-intl-tel-input>
+              </div>
+              <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+                <label class="activeInput"><span class="obligatorio">Cuentas contables</span></label>
+                <input class="validate" name="" type="text" required [value]="deE.cuenta_contable"
+                  (keyup)="keyupfunctionCuentaContable($event.target,deE.token_establecimiento);">
+              </div>
+
+              <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+                <label for="estabEditSeccionTrabajo" class="activeInput">Secci&oacute;n de trabajo</label>
+                <p-multiSelect [options]="secciones_de_trabajo" id="estabEditSeccionTrabajo"
+                  name="estabEditSeccionTrabajo" formControlName="secciones" optionValue="clave" optionLabel="name"
+                  [filter]="true" filterBy="name" [showClear]="true" [placeholder]="'opt_select' | translate"
+                  class="w-full md:w-56" (onChange)="functionAplicaMultiple($event.value,deE.token_establecimiento);">
+                  <ng-template #selectedItem let-selected>
+                    <div class="flex items-center gap-2">
+                      <div>{{selected.name}}</div>
+                    </div>
+                  </ng-template>
+                  <ng-template let-riesgo #item>
+                    <div class="flex items-center gap-2">
+                      <div>{{riesgo.name}}</div>
+                    </div>
+                  </ng-template>
+                </p-multiSelect>
+              </div>
+
+              <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+                <label for="estabEditPaises" class="activeInput">Pa&iacute;s</label>
+                <p-select [options]="paisesLista" id="estabEditPaises" name="estabEditPaises"
+                  formControlName="pais_ubicacion" optionValue="alpha3" optionLabel="alpha3" [filter]="true"
+                  filterBy="alpha3,langES,langEN" [showClear]="true" [placeholder]="'opt_select' | translate"
+                  class="w-full md:w-56" (onChange)="changePais($event.value,deE.token_establecimiento);">
+                  <ng-template #selectedItem let-selected>
+                    <div class="flex items-center gap-2">
+                      <div>{{selected.langES}}</div>
+                    </div>
+                  </ng-template>
+                  <ng-template let-ltpais #item>
+                    <div class="flex items-center gap-2">
+                      <div>{{ltpais.alpha3+' '+ltpais.langES+', '+ltpais.langEN}}</div>
+                    </div>
+                  </ng-template>
+                </p-select>
+              </div>
+
+              @if (estabModel.ubicacion_pais == 'MEX') {
+              <div class="col-12" style="margin-top: 5px !important;margin-bottom: 5px !important;">
+                <ul class="list-group collection_postales">
+                  <li class="list-group-item">
+                    <div class="busqueda row">
+                      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6"
+                        style="display: flex;justify-content: flex-start;margin: auto;padding: 0;height: 30px;line-height: 30px;">
+                        <h6>C&oacute;digo postal: </h6>
+                      </div>
+                      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6 field_buscar">
+                        <input class="validate" type="text" placeholder="{{'bus_car' | translate}}"
+                          (keyup)="buscaCodPostalDipomex($event.target,deE.token_establecimiento);">
+                      </div>
+                    </div>
+                  </li>
+                  <li class="list-group-item">Estado: {{estabModel.dipomex_cod_postal_estado}}</li>
+                  <li class="list-group-item">Municipio: {{estabModel.dipomex_cod_postal_municipio}}</li>
+                  <li class="list-group-item">C&oacute;digo postal: {{estabModel.dipomex_cod_postal_cp}}</li>
+                  <li class="list-group-item" *ngIf="dipomex_cod_postal_colonias.length == 0">Colonias: ---</li>
+                  <li class="list-group-item itemFor" *ngIf="dipomex_cod_postal_colonias.length > 0">Colonias: <p
+                      *ngFor="let col of dipomex_cod_postal_colonias"
+                      (click)="seleccionaColoniaCPDipomex(col,deE.token_establecimiento);">{{col}}</p>
+                  </li>
+                  <li class="list-group-item itemColoniaSeleted"
+                    *ngIf="estabModel.dipomex_cod_postal_colonia_vinculada != ''">Colonia seleccionada:
+                    {{estabModel.dipomex_cod_postal_colonia_vinculada}}</li>
+                </ul>
+              </div>
+              }
+              @else if (estabModel.ubicacion_pais != 'MEX') {
+              <div class="input-group col-12">
+                <label class="activeInput"><span class="obligatorio">* Direcci&oacute;n completa</span></label>
+                <input class="validate" name="direccionEstablecimExt" type="text" [value]="deE.cod_postalext"
+                  (keyup)="keyupfunctionEstablecimExtCompleto($event.target,deE.token_establecimiento);"
+                  (keypress)="bindPressDireccEstabExt($event);">
+              </div>
+              }
+
+              <div class="col-12" style="display: flex;justify-content: end;">
+                <button class="btn btn_extend text-bg-success rounded-3"
+                  [ngClass]="!validateActualizacion(deE.token_establecimiento) ? 'disabled' : ''"
+                  [attr.disabled]="!validateActualizacion(deE.token_establecimiento) ? true : null"
+                  [attr.aria-disabled]="!validateActualizacion(deE.token_establecimiento) ? true : null">
+                  <i class="fa-solid fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+                </button>
+              </div>
+            </form>
+            }
+          </div>
+        </p-tabpanel>
+        <p-tabpanel value="1"></p-tabpanel>
+        <p-tabpanel value="2"></p-tabpanel>
+      </p-tabpanels>
+    </p-tabs>
+    }
+  </p-dialog>
+</div>
+
+<div class="modal fade bd-example-modal-lg" id="infCatEstablecimientoEli" tabindex="-1" role="dialog"
+  aria-labelledby="infCatEstablecimientoEliLabel" aria-hidden="true">
+  <div class="modal-dialog modal-fullscreen" style="margin: 1%;width: 98%!important;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="infCatEstablecimientoEliLabel">ESTABLECIMIENTOS ELIMINADOS
+        </h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+          style="background-color: transparent !important;"></button>
+      </div>
+      <div class="modal-body">
+        <div class="col-12">
+          <p-table #estabListDel [value]="arrayEstablecimientosFALSE" dataKey="id" [paginator]="true" [rows]="10"
+            [rowsPerPageOptions]="[10,20,30,50,100]"
+            [globalFilterFields]="['token_establecimiento','estab_folio','estab_alias','estab_fecha_delete']">
+            <ng-template #caption>
+              <div class="flex">
+                <p-iconfield iconPosition="left" class="ml-auto">
+                  <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                  <input pInputText type="text" (input)="estabListDel.filterGlobal($event.target.value, 'contains')"
+                    placeholder="{{'bus_car' | translate}}" />
+                </p-iconfield>
+              </div>
+            </ng-template>
+            <ng-template #header>
+              <tr>
+                <th pSortableColumn="folio">folio&nbsp;<p-sortIcon field="folio" /></th>
+                <th pSortableColumn="alias">alias&nbsp;<p-sortIcon field="alias" /></th>
+                <th pSortableColumn="alias">{{'fecha_delete' | translate}}&nbsp;<p-sortIcon
+                    [field]="'fecha_delete' | translate" /></th>
+                <th class="ultimo"></th>
+                <th class="ultimo"></th>
+              </tr>
+            </ng-template>
+            <ng-template #body let-estTrueDel>
+              <tr>
+                <td>{{estTrueDel.estab_folio}}</td>
+                <td>{{estTrueDel.estab_alias}}</td>
+                <td>{{estTrueDel.estab_fecha_delete}}</td>
+                <td class="ultimo">
+                  <a class="btn btn_extend text-bg-success rounded-3"
+                    (click)="funcRestartEstablecimiento(estTrueDel.token_establecimiento);">
+                    <i class="fa-solid fa-trash-arrow-up"></i>&nbsp;{{'restore_row' | translate}}
+                  </a>
+                </td>
+                <td class="ultimo">
+                  <a class="btn btn_extend text-bg-danger rounded-3"
+                    (click)="funcDeleteDefinitivamenteEstablecimiento(estTrueDel.token_establecimiento);">
+                    <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                  </a>
+                </td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="5" class="text-center py-4">
+                  <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                  <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                    {{'no_rows' | translate}}
+                  </p>
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+      </div>
+      <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,804 @@
+<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco" #vContent>
+  <div class="contenido"><app-loader></app-loader>
+    <nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+    <div class="contenidoPagina">
+      <div class="listas_ps">
+        <div class="lista-div lista-divNoFlex">
+          <h4 class="col-12">{{'acree_catalogo' | translate}}</h4>
+
+          <div class="col-12">
+            <div class="btn-group lista_botones col" role="group" aria-label="Basic example">
+              <a class="btn btn_extend bg-indigo-600" data-bs-toggle="modal" data-bs-target="#windowAcreedorRegistro">
+                <i class="fa-solid fa-plus"></i>&nbsp;{{'acree_reg' | translate}}</a>
+              <a class="btn btn_extend bg-indigo-600"
+                (click)="lista_acreedores();lista_acreedores_mx();lista_acreedores_ext();lista_acredores_eliminados();">
+                <i class="fa-solid fa-rotate"></i>&nbsp;{{'list_updt' | translate}}</a>
+              <a class="btn btn_extend bg-indigo-600" data-bs-toggle="modal" data-bs-target="#infoAcreeEliminados">
+                <i class="fa-solid fa-trash"></i>&nbsp;acreedores eliminados
+              </a>
+              <a class="btn btn_extend bg-green-600 descarga_lista_excel"
+                [ngClass]="list_acreedores_general.length == 0 ? 'disabled' : ''"
+                [attr.disabled]="list_acreedores_general.length == 0 ? true : null"
+                [attr.aria-disabled]="list_acreedores_general.length == 0 ? true : null"
+                (click)="list_acreedores_general.length > 0 && descarga_excel_acreedores();">
+                <i class="fa-solid fa-file-excel" style="margin-left: 5px;"></i>&nbsp;descargar
+              </a>
+            </div>
+          </div>
+
+          <p-tabs value="0">
+            <p-tablist>
+              <p-tab value="0">Catálogo general de acreedores</p-tab>
+              <p-tab value="1">Catálogo de acreedores nacionales</p-tab><!-- (click)="lista_acreedores_mx();"-->
+              <p-tab value="2">Catálogo de acreedores extranjeros</p-tab><!-- (click)="lista_acreedores_ext();"-->
+            </p-tablist>
+            <p-tabpanels>
+              <p-tabpanel value="0">
+                <p-table #acrGralList id="listAcrGral" [value]="list_acreedores_general"
+                  [globalFilterFields]="search_acree_filtro" [paginator]="true" [rows]="10"
+                  [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]">
+                  <ng-template #caption>
+                    <div class="flex" style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;" ngbDropdown>
+                      <a class="btn btn_extend" [ngClass]="indicadorAcree == 'hoy' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="catalogo_acreedores('hoy');">
+                        <i class="fa-solid fa-calendar-days"></i>&nbsp;Hoy
+                      </a>
+                      <a class="btn btn_extend" [ngClass]="indicadorAcree == 'esta_semana' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="catalogo_acreedores('esta_semana');">
+                        <i class="fa-solid fa-calendar-days"></i>&nbsp;Esta semana
+                      </a>
+                      <a class="btn btn_extend" [ngClass]="indicadorAcree == 'este_mes' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="catalogo_acreedores('este_mes');">
+                        <i class="fa-solid fa-calendar-days"></i>&nbsp;Este mes
+                      </a>
+                      <a class="btn btn_extend" [ngClass]="indicadorAcree == 'mes_anterior' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="catalogo_acreedores('mes_anterior');">
+                        <i class="fa-solid fa-arrow-left"></i>&nbsp;mes anterior
+                      </a>
+                      <a id="menuDropacreGral" class="btn btn_extend" [ngClass]="indicadorAcree == 'otras_fechas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" ngbDropdownToggle>
+                        <i class="fa-solid fa-list-ul"></i>&nbsp;otras fechas
+                      </a>
+                      <div class="dropdown-menu-end menu-despegable" ngbDropdownMenu="menuDropacreGral" style="padding: 0!important; margin: 0!important; width: max-content!important; max-height: 400px; overflow-y: auto;">
+                        <div class="col-12 input-group">
+                          <label for="acree_gral_otras_fechas" class="activeInput">Periodo de fechas</label>
+                          <p-datepicker id="acree_gral_otras_fechas" name="acree_gral_otras_fechas" [(ngModel)]="rangoPeriodoAcree" appendTo="body" dateFormat="dd/mm/yy" 
+                            placeholder="dd/mm/aaaa" selectionMode="range" (onSelect)="catalogo_acreedores('otras_fechas');"/>
+                        </div>
+                      </div>
+                      <a class="btn btn_extend" [ngClass]="indicadorAcree == 'all_partidas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="catalogo_acreedores('all_partidas');">
+                        <i class="fa-solid fa-list-ul"></i>&nbsp;todos los registros
+                      </a>
+                      <a class="btn btn_extend bg-green-600 descarga_lista_excel" style="height: 25px !important;"><!-- (click)="descarga_excel_pagos();"-->
+                        descargar&nbsp;<i class="fa-solid fa-file-excel"></i>
+                      </a>
+                      <p-iconfield iconPosition="left" class="ml-auto">
+                        <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                        <input pInputText type="text" (input)="acrGralList.filterGlobal($event.target.value, 'contains')"
+                          placeholder="{{'bus_car' | translate}}" />
+                      </p-iconfield>
+                    </div>
+                  </ng-template>
+                  <ng-template #header>
+                    <tr>
+                      <th class="ultimo"></th>
+                      <th pResizableColumn pSortableColumn="folio">folio&nbsp;<p-sortIcon field="folio" /></th>
+                      <th pResizableColumn pSortableColumn="acr_rfc">rfc&nbsp;<p-sortIcon field="acr_rfc" /></th>
+                      <th pResizableColumn pSortableColumn="acr_taxId">idTax&nbsp;<p-sortIcon field="acr_taxId" /></th>
+                      <th pResizableColumn pSortableColumn="acr_titular">acreedor&nbsp;<p-sortIcon field="acr_titular" /></th>
+                      <th pResizableColumn pSortableColumn="nombre_comercial">{{'comercial_name' | translate}}&nbsp;<p-sortIcon field="nombre_comercial" /></th>
+                      <th pResizableColumn pSortableColumn="cuenta_contable">Cuenta contable &nbsp;<p-sortIcon field="cuenta_contable" /></th>
+                      <th pResizableColumn pSortableColumn="trab_nombre">empleado vinculado&nbsp;<p-sortIcon field="trab_nombre" /></th>
+                      <th pResizableColumn pSortableColumn="prov_nombre">proveedor vinculado&nbsp;<p-sortIcon field="prov_nombre" /></th>
+                      <th pResizableColumn pSortableColumn="deu_nombre">deudor vinculado&nbsp;<p-sortIcon field="deu_nombre" /></th>
+                      <th pResizableColumn pSortableColumn="deuda_al_acreedor">Deuda al acreedor &nbsp;<p-sortIcon field="deuda_al_acreedor" /></th>
+                      <th class="ultimo"></th>
+                    </tr>
+                  </ng-template>
+                  <ng-template #body let-row_acree>
+                    <tr>
+                      <td class="ultimo">
+                        <a class="btn bg-blue-600" data-bs-toggle="modal" data-bs-target="#windowAcreedorInfo"
+                          (click)="infoAcreeDetalle(row_acree.token_cat_acreedores);">
+                          <i class="fa-solid fa-info"></i>
+                        </a>
+                      </td>
+                      <td>{{row_acree.folio}}</td>
+                      <td>{{row_acree.acr_rfc}}</td>
+                      <td>{{row_acree.acr_taxId}}</td>
+                      <td [ngClass]="row_acree.acr_titular != 'N/A' ? 'name' : ''">{{row_acree.acr_titular}}</td>
+                      <td [ngClass]="row_acree.nombre_comercial == 'N/A' ? '' : 'name'">{{row_acree.nombre_comercial}}
+                      </td>
+                      <td>{{row_acree.cuenta_contable}}</td>
+                      <td [ngClass]="row_acree.trab_nombre != 'N/A' ? 'name' : ''">{{row_acree.trab_folio != 'N/A' ? row_acree.trab_folio+" "+row_acree.trab_nombre : row_acree.trab_nombre}}</td>
+                      <td [ngClass]="row_acree.prov_nombre != 'N/A' ? 'name' : ''">{{row_acree.prov_folio != 'N/A' ? row_acree.prov_folio+" "+row_acree.prov_nombre : row_acree.prov_nombre}}</td>
+                      <td [ngClass]="row_acree.deu_nombre != 'N/A' ? 'name' : ''">{{row_acree.deu_folio != 'N/A' ? row_acree.deu_folio+" "+row_acree.deu_nombre : row_acree.deu_nombre}}</td>
+                      <td class="td_importes">{{row_acree.deuda_al_acreedor}}</td>
+                      <td class="ultimo">
+                        <a class="btn btn_extend text-bg-danger rounded-3"
+                          [ngClass]="!row_acree.eliminacion_activa ? 'disabled' : ''"
+                          [attr.disabled]="!row_acree.eliminacion_activa ? true : null"
+                          [attr.aria-disabled]="!row_acree.eliminacion_activa ? true : null"
+                          (click)="!row_acree.utilizado && mataracreedor(row_acree.token_cat_acreedores);"><i
+                            class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                        </a>
+                      </td>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="emptymessage">
+                    <tr>
+                      <td colspan="12" class="text-center py-4">
+                        <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                        <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                          {{'no_rows' | translate}}
+                        </p>
+                      </td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+              </p-tabpanel>
+              <p-tabpanel value="1">
+                <p-table #acrMxList [value]="list_acreedores_mx" [globalFilterFields]="search_acree_filtro"
+                  [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }"
+                  [rowsPerPageOptions]="[10,20,30,50,100]">
+                  <ng-template #caption>
+                    <div class="flex" style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;" ngbDropdown>
+                      <a class="btn btn_extend" [ngClass]="indicadorMXAcree == 'hoy' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_acreedores_mx('hoy');">
+                        <i class="fa-solid fa-calendar-days"></i>&nbsp;Hoy
+                      </a>
+                      <a class="btn btn_extend" [ngClass]="indicadorMXAcree == 'esta_semana' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_acreedores_mx('esta_semana');">
+                        <i class="fa-solid fa-calendar-days"></i>&nbsp;Esta semana
+                      </a>
+                      <a class="btn btn_extend" [ngClass]="indicadorMXAcree == 'este_mes' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_acreedores_mx('este_mes');">
+                        <i class="fa-solid fa-calendar-days"></i>&nbsp;Este mes
+                      </a>
+                      <a class="btn btn_extend" [ngClass]="indicadorMXAcree == 'mes_anterior' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_acreedores_mx('mes_anterior');">
+                        <i class="fa-solid fa-arrow-left"></i>&nbsp;mes anterior
+                      </a>
+                      <a id="menuDropAcreeMX" class="btn btn_extend" [ngClass]="indicadorMXAcree == 'otras_fechas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" ngbDropdownToggle>
+                        <i class="fa-solid fa-list-ul"></i>&nbsp;otras fechas
+                      </a>
+                      <div class="dropdown-menu-end menu-despegable" ngbDropdownMenu="menuDropAcreeMX" style="padding: 0!important; margin: 0!important; width: max-content!important; max-height: 400px; overflow-y: auto;">
+                        <div class="col-12 input-group">
+                          <label for="acree_mx_otras_fechas" class="activeInput">Periodo de fechas</label>
+                          <p-datepicker id="acree_mx_otras_fechas" name="acree_mx_otras_fechas" [(ngModel)]="rangoPeriodoMXAcree" appendTo="body" dateFormat="dd/mm/yy"
+                            placeholder="dd/mm/aaaa" selectionMode="range" (onSelect)="ver_acreedores_mx('otras_fechas')" />
+                        </div>
+                      </div>
+                      <a class="btn btn_extend" [ngClass]="indicadorMXAcree == 'all_partidas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_acreedores_mx('all_partidas');">
+                        <i class="fa-solid fa-list-ul"></i>&nbsp;todos los registros
+                      </a>
+                      <a class="btn btn_extend bg-green-600 descarga_lista_excel" style="height: 25px !important;"><!-- (click)="descarga_excel_lgeneral();"-->
+                        descargar&nbsp;<i class="fa-solid fa-file-excel"></i>
+                      </a>
+                      <p-iconfield iconPosition="left" class="ml-auto">
+                        <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                        <input pInputText type="text" (input)="acrMxList.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+                      </p-iconfield>
+                    </div>
+                  </ng-template>
+                  <ng-template #header>
+                    <tr>
+                      <th class="ultimo"></th>
+                      <th pResizableColumn pSortableColumn="folio">folio&nbsp;<p-sortIcon field="folio" /></th>
+                      <th pResizableColumn pSortableColumn="acr_rfc">rfc&nbsp;<p-sortIcon field="acr_rfc" /></th>
+                      <th pResizableColumn pSortableColumn="acr_titular">acreedor&nbsp;<p-sortIcon field="acr_titular" /></th>
+                      <th pResizableColumn pSortableColumn="nombre_comercial">{{'comercial_name' | translate}}&nbsp;<p-sortIcon field="nombre_comercial" /></th>
+                      <th pResizableColumn pSortableColumn="cuenta_contable">Cuenta contable &nbsp;<p-sortIcon field="cuenta_contable" /></th>
+                      <th pResizableColumn pSortableColumn="trab_nombre">empleado vinculado&nbsp;<p-sortIcon field="trab_nombre" /></th>
+                      <th pResizableColumn pSortableColumn="prov_nombre">proveedor vinculado&nbsp;<p-sortIcon field="prov_nombre" /></th>
+                      <th pResizableColumn pSortableColumn="deu_nombre">deudor vinculado&nbsp;<p-sortIcon field="deu_nombre" /></th>
+                      <th pResizableColumn pSortableColumn="deuda_al_acreedor">Deuda al acreedor &nbsp;<p-sortIcon field="deuda_al_acreedor" /></th>
+                      <th class="ultimo"></th>
+                    </tr>
+                  </ng-template>
+                  <ng-template #body let-acreemx>
+                    <tr>
+                      <td class="ultimo">
+                        <a class="btn bg-blue-600" data-bs-toggle="modal" data-bs-target="#windowAcreedorInfo"
+                          (click)="infoAcreeDetalle(acreemx.token_cat_acreedores)">
+                          <i class="fa-solid fa-info"></i>
+                        </a>
+                      </td>
+                      <td>{{acreemx.folio}}</td>
+                      <td>{{acreemx.acr_rfc}}</td>
+                      <td [ngClass]="acreemx.acr_titular != 'N/A' ? 'name' : ''">{{acreemx.acr_titular}}</td>
+                      <td [ngClass]="acreemx.nombre_comercial == 'N/A' ? '' : 'name'">{{acreemx.nombre_comercial}}</td>
+                      <td>{{acreemx.cuenta_contable}}</td>
+                      <td [ngClass]="acreemx.trab_nombre != 'N/A' ? 'name' : ''">{{acreemx.trab_folio != 'N/A' ? acreemx.trab_folio+" "+acreemx.trab_nombre : acreemx.trab_nombre}}</td>
+                      <td [ngClass]="acreemx.prov_nombre != 'N/A' ? 'name' : ''">{{acreemx.prov_folio != 'N/A' ? acreemx.prov_folio+" "+acreemx.prov_nombre : acreemx.prov_nombre}}</td>
+                      <td [ngClass]="acreemx.deu_nombre != 'N/A' ? 'name' : ''">{{acreemx.deu_folio != 'N/A' ? acreemx.deu_folio+" "+acreemx.deu_nombre : acreemx.deu_nombre}}</td>
+                      <td class="td_importes">{{acreemx.deuda_al_acreedor}}</td>
+                      <td class="ultimo">
+                        <a class="btn btn_extend text-bg-danger rounded-3"
+                          [ngClass]="!acreemx.eliminacion_activa ? 'disabled' : ''"
+                          [attr.disabled]="!acreemx.eliminacion_activa ? true : null"
+                          [attr.aria-disabled]="!acreemx.eliminacion_activa ? true : null"
+                          (click)="!acreemx.utilizado && mataracreedor(acreemx.token_cat_acreedores);"><i
+                            class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                        </a>
+                      </td>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="emptymessage">
+                    <tr>
+                      <td colspan="11" class="text-center py-4">
+                        <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                        <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                          {{'no_rows' | translate}}
+                        </p>
+                      </td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+              </p-tabpanel>
+              <p-tabpanel value="2">
+                <p-table #acrExtList [value]="list_acreedores_ext" [globalFilterFields]="search_acree_filtro"
+                  [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }"
+                  [rowsPerPageOptions]="[10,20,30,50,100]">
+                  <ng-template #caption>
+                    <div class="flex" style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;" ngbDropdown>
+                      <a class="btn btn_extend" [ngClass]="indicadorEXTAcree == 'hoy' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_acreedores_ext('hoy');">
+                        <i class="fa-solid fa-calendar-days"></i>&nbsp;Hoy
+                      </a>
+                      <a class="btn btn_extend" [ngClass]="indicadorEXTAcree == 'esta_semana' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_acreedores_ext('esta_semana');">
+                        <i class="fa-solid fa-calendar-days"></i>&nbsp;Esta semana
+                      </a>
+                      <a class="btn btn_extend" [ngClass]="indicadorEXTAcree == 'este_mes' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_acreedores_ext('este_mes');">
+                        <i class="fa-solid fa-calendar-days"></i>&nbsp;Este mes
+                      </a>
+                      <a class="btn btn_extend" [ngClass]="indicadorEXTAcree == 'mes_anterior' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_acreedores_ext('mes_anterior');">
+                        <i class="fa-solid fa-arrow-left"></i>&nbsp;mes anterior
+                      </a>
+                      <a id="menuDropExtAcree" class="btn btn_extend" [ngClass]="indicadorEXTAcree == 'otras_fechas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" ngbDropdownToggle>
+                        <i class="fa-solid fa-list-ul"></i>&nbsp;otras fechas
+                      </a>
+                      <div class="dropdown-menu-end menu-despegable" ngbDropdownMenu="menuDropExtAcree" style="padding: 0!important; margin: 0!important; width: max-content!important; max-height: 400px; overflow-y: auto;">
+                        <div class="col-12 input-group">
+                          <label for="ext_acree_otras_fechas" class="activeInput">Periodo de fechas</label>
+                          <p-datepicker id="ext_acree_otras_fechas" name="ext_acree_otras_fechas" [(ngModel)]="rangoPeriodoEXTAcree" appendTo="body" dateFormat="dd/mm/yy"
+                            placeholder="dd/mm/aaaa" selectionMode="range" (onSelect)="ver_acreedores_ext('otras_fechas')" />
+                        </div>
+                      </div>
+                      <a class="btn btn_extend" [ngClass]="indicadorEXTAcree == 'all_partidas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_acreedores_ext('all_partidas');">
+                        <i class="fa-solid fa-list-ul"></i>&nbsp;todos los registros
+                      </a>
+                      <a class="btn btn_extend bg-green-600 descarga_lista_excel" style="height: 25px !important;"><!-- (click)="descarga_excel_lgeneral();"-->
+                        descargar&nbsp;<i class="fa-solid fa-file-excel"></i>
+                      </a>
+                      <p-iconfield iconPosition="left" class="ml-auto">
+                        <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                        <input pInputText type="text" (input)="acrExtList.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+                      </p-iconfield>
+                    </div>
+                  </ng-template>
+                  <ng-template #header>
+                    <tr>
+                      <th class="ultimo"></th>
+                      <th pResizableColumn pSortableColumn="folio">folio&nbsp;<p-sortIcon field="folio" /></th>
+                      <th pResizableColumn pSortableColumn="acr_rfc">rfc&nbsp;<p-sortIcon field="acr_rfc" /></th>
+                      <th pResizableColumn pSortableColumn="acr_taxId">idTax&nbsp;<p-sortIcon field="acr_taxId" /></th>
+                      <th pResizableColumn pSortableColumn="acr_titular">acreedor&nbsp;<p-sortIcon field="acr_titular" /></th>
+                      <th pResizableColumn pSortableColumn="nombre_comercial">{{'comercial_name' | translate}}&nbsp;<p-sortIcon field="nombre_comercial" /></th>
+                      <th pResizableColumn pSortableColumn="cuenta_contable">Cuenta contable &nbsp;<p-sortIcon field="cuenta_contable" /></th>
+                      <th pResizableColumn pSortableColumn="trab_nombre">empleado vinculado&nbsp;<p-sortIcon field="trab_nombre" /></th>
+                      <th pResizableColumn pSortableColumn="prov_nombre">proveedor vinculado&nbsp;<p-sortIcon field="prov_nombre" /></th>
+                      <th pResizableColumn pSortableColumn="deu_nombre">deudor vinculado&nbsp;<p-sortIcon field="deu_nombre" /></th>
+                      <th pResizableColumn pSortableColumn="deuda_al_acreedor">Deuda al acreedor &nbsp;<p-sortIcon field="deuda_al_acreedor" /></th>
+                      <th class="ultimo"></th>
+                    </tr>
+                  </ng-template>
+                  <ng-template #body let-acree_ext>
+                    <tr>
+                      <td class="ultimo">
+                        <a class="btn bg-blue-600" data-bs-toggle="modal" data-bs-target="#windowAcreedorInfo"
+                          (click)="infoAcreeDetalle(acree_ext.token_cat_acreedores)">
+                          <i class="fa-solid fa-info"></i>
+                        </a>
+                      </td>
+                      <td>{{acree_ext.folio}}</td>
+                      <td>{{acree_ext.acr_rfc}}</td>
+                      <td>{{acree_ext.acr_taxId}}</td>
+                      <td [ngClass]="acree_ext.acr_titular != 'N/A' ? 'name' : ''">{{acree_ext.acr_titular}}</td>
+                      <td [ngClass]="acree_ext.nombre_comercial == 'N/A' ? '' : 'name'">{{acree_ext.nombre_comercial}}
+                      </td>
+                      <td>{{acree_ext.cuenta_contable}}</td>
+                      <td [ngClass]="acree_ext.trab_nombre != 'N/A' ? 'name' : ''">{{acree_ext.trab_folio != 'N/A' ? acree_ext.trab_folio+" "+acree_ext.trab_nombre : acree_ext.trab_nombre}}</td>
+                      <td [ngClass]="acree_ext.prov_nombre != 'N/A' ? 'name' : ''">{{acree_ext.prov_folio != 'N/A' ? acree_ext.prov_folio+" "+acree_ext.prov_nombre : acree_ext.prov_nombre}}</td>
+                      <td [ngClass]="acree_ext.deu_nombre != 'N/A' ? 'name' : ''">{{acree_ext.deu_folio != 'N/A' ? acree_ext.deu_folio+" "+acree_ext.deu_nombre : acree_ext.deu_nombre}}</td>
+                      <td class="td_importes">{{acree_ext.deuda_al_acreedor}}</td>
+                      <td class="ultimo">
+                        <a class="btn btn_extend text-bg-danger rounded-3"
+                          [ngClass]="!acree_ext.eliminacion_activa ? 'disabled' : ''"
+                          [attr.disabled]="!acree_ext.eliminacion_activa ? true : null"
+                          [attr.aria-disabled]="!acree_ext.eliminacion_activa ? true : null"
+                          (click)="!acree_ext.utilizado && mataracreedor(acree_ext.token_cat_acreedores);"><i
+                            class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                        </a>
+                      </td>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="emptymessage">
+                    <tr>
+                      <td colspan="12" class="text-center py-4">
+                        <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                        <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                          {{'no_rows' | translate}}
+                        </p>
+                      </td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+              </p-tabpanel>
+            </p-tabpanels>
+          </p-tabs>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade bd-example-modal-lg" id="windowAcreedorInfo" tabindex="-1" role="dialog"
+  aria-labelledby="windowAcreedorInfoLabel" aria-hidden="true">
+  <div class="modal-dialog modal-fullscreen" style="margin: 1%;width: 98%!important;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="windowAcreedorInfoLabel">Informaci&oacute;n del acreedor
+        </h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+          style="background-color: transparent !important;"></button>
+      </div>
+      <div class="modal-body">
+        <div class="form data-reg row" *ngFor="let acrInfo of acreeDetalleData"><!-- noneView-->
+          <div class="col-12 explain">
+            <h6 class="title">{{'email' | translate}}</h6>
+            <h6 class="content">{{acrInfo.email}}</h6>
+          </div>
+          <div class="container col-12 row" style="padding: 0!important;margin: 0!important;">
+            <form class="row formRegAcreedores" [formGroup]="formAcreedor" #formRegAcreedores="ngForm"
+              autocomplete="off" name="formRegAcreedores" enctype="multipart/form-data"
+              (ngSubmit)="actualizarAcreedor(acrInfo.token_cat_acreedores);">
+              <!-- Tipo de acreedor -->
+              <div class="col-12">
+                <label class="activeInput">Tipo de acreedor</label>
+                <div class="col-12 form-check radio_check">
+                  <input class="form-check-input" type="radio" [checked]="acrInfo.tipo == 'nacional'"
+                    (change)="tipoSeleccionado('nacional');" name="tipoAcree">
+                  <label class="form-check-label">Nacional</label>
+                </div>
+                <div class="col-12 form-check radio_check">
+                  <input class="form-check-input" type="radio" [checked]="acrInfo.tipo == 'extranjero'"
+                    (change)="tipoSeleccionado('extranjero');" name="tipoAcree">
+                  <label class="form-check-label">Extranjero</label>
+                </div>
+              </div>
+
+              <!-- Subtipo (persona física o moral) *ngIf="formAcreedor.get('tipoAcree')?.value" -->
+              <div class="col-12">
+                <label class="activeInput">Tipo de persona</label>
+                <div class="col-12 form-check radio_check">
+                  <input class="form-check-input" type="radio" [checked]="acrInfo.subtipo == 'acreeFisica'"
+                    [ngClass]="!acreeModelo.tipoAcree ? 'disabled' : ''"
+                    [attr.disabled]="!acreeModelo.tipoAcree ? true : null"
+                    [attr.aria-disabled]="!acreeModelo.tipoAcree ? true : null"
+                    (change)="acreeModelo.subtipoAcree = 'acreeFisica';" name="subtipoAcree">
+                  <label class="form-check-label">Persona física</label>
+                </div>
+                <div class="col-12 form-check radio_check">
+                  <input class="form-check-input" type="radio" [checked]="acrInfo.subtipo == 'acreeMoral'"
+                    [ngClass]="!acreeModelo.tipoAcree ? 'disabled' : ''"
+                    [attr.disabled]="!acreeModelo.tipoAcree ? true : null"
+                    [attr.aria-disabled]="!acreeModelo.tipoAcree ? true : null"
+                    (change)="acreeModelo.subtipoAcree = 'acreeMoral';" name="subtipoAcree">
+                  <label class="form-check-label">Persona moral</label>
+                </div>
+              </div>
+
+              <div class="col-12 row">
+                <!-- RFC (solo nacional) -->
+                <div class="input-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6">
+                  <label class="activeInput form-label">RFC con Homoclave</label>
+                  <input id="verif_rfcAcree" class="verif_rfc validate inputWthPass rfcMayus" type="text"
+                    [value]="acrInfo.rfc_acr" placeholder="Ej. ABCD000000XXX" minlength="12" maxlength="13"
+                    (input)="limitarLongitudRfc($event,13);validaAcreeRfc($event.target,acrInfo.token_cat_acreedores);">
+                  <!--<div *ngIf="formAcreedor.get('rfc')?.invalid && formAcreedor.get('rfc')?.touched" class="text-danger">RFC inválido o faltante</div>-->
+                </div>
+
+                @if (esExtranjero) {
+                <div class="input-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6">
+                  <label class="activeInput form-label">Tax ID</label>
+                  <input id="verif_taxIDAcree" type="text" class="verif_rfc validate inputWthPass rfcMayus"
+                    [value]="acrInfo.tax_id_acr" formControlName="taxID" placeholder="Ej. 123456789">
+                  <!--<div *ngIf="formAcreedor.get('taxID')?.invalid && formAcreedor.get('taxID')?.touched" class="text-danger">Tax ID requerido (mínimo 9 caracteres)</div>-->
+                </div>
+                }
+
+                <!-- Nombre o razón social -->
+                <div class="input-group col-12">
+                  <label class="activeInput form-label"><span class="obligatorio">Nombre / Raz&oacute;n
+                      social</span></label>
+                  <input id="verifNameAcreedor" type="text" class="validate" [value]="acrInfo.nombre"
+                    (keyup)="keyupNombreAcree($event.target,acrInfo.token_cat_acreedores);">
+                </div>
+
+                <!-- Nombre o razón social -->
+                <div class="input-group col-12">
+                  <label class="activeInput form-label"><span class="obligatorio">Nombre Comercial</span></label>
+                  <input id="verifNameComercialAcreedor" type="text" class="validate" [value]="acrInfo.nombre_comercial"
+                    (keyup)="keyupNombreComercialAcree($event.target,acrInfo.token_cat_acreedores);">
+                </div>
+
+                <!-- Nombre o razón social -->
+                <div class="input-group col-12">
+                  <label class="activeInput form-label">{{'email' | translate}}</label>
+                  <input id="verifNameEmailAcreedor" type="email" class="validate" [value]="acrInfo.email"
+                    (keyup)="keyupMailAcree($event.target,acrInfo.token_cat_acreedores);">
+                </div>
+
+                <div class="input-group col-12">
+                  <label for="fechaAltaProd" class="activeInput">Cuenta contable</label>
+                  <input id="verifccontableAcreedor" class="validate" type="text" [value]="acrInfo.cuenta_contable"
+                    (keyup)="keyupCuentaContableAcree($event.target,acrInfo.token_cat_acreedores);">
+                </div>
+              </div>
+
+              <div class="col-12">
+                <label class="activeInput">Accesos</label>
+                <div class="col-12 form-check radio_check">
+                  <input class="form-check-input" type="checkbox" [checked]="acrInfo.habilita_reembolsos"
+                    (click)="selectHabilitaReembolsos($event.target,acrInfo.token_cat_acreedores);"><!---->
+                  <label class="form-check-label">Reembolsos</label>
+                </div>
+              </div>
+
+              <div class="input-group col-12">
+                <label class="activeInput"><span class="obligatorio">Regimen fiscal</span></label>
+                <p-select
+                  [ngClass]="acreeModelo.tipoAcree === '' || acreeModelo.subtipoAcree === '' || !acreeModelo.habilita_reembolsos ? 'disabled' : ''"
+                  [disabled]="acreeModelo.tipoAcree === '' || acreeModelo.subtipoAcree === '' || !acreeModelo.habilita_reembolsos"
+                  [attr.aria-disabled]="acreeModelo.tipoAcree === '' || acreeModelo.subtipoAcree === '' || !acreeModelo.habilita_reembolsos ? true : null"
+                  [options]="acreeModelo.subtipoAcree == 'acreeFisica' ? PfAllRegFisArray : PmAllRegFisArray"
+                  id="selectedFiscalRegimen" formControlName="regimen_fiscal" optionValue="regimen"
+                  optionLabel="regimen" [filter]="true" filterBy="regimen" [showClear]="true"
+                  [placeholder]="'opt_select' | translate" class="w-full md:w-56"
+                  (onChange)="changeRegimenFiscal($event.value,acrInfo.token_cat_acreedores);">
+                  <ng-template #selectedItem let-sel>
+                    <div class="flex items-center gap-2">
+                      <div>{{sel.regimen}}</div>
+                    </div>
+                  </ng-template>
+                  <ng-template let-reg #item>
+                    <div class="flex items-center gap-2">
+                      <div>{{reg.regimen}}</div>
+                    </div>
+                  </ng-template>
+                </p-select>
+              </div>
+              <p-divider />
+              <div class="col-12 row" style="padding:0!important;">
+                <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain" style="margin: 0!important;">
+                  <h6 class="title">Vincular trabajador</h6>
+                </div>
+                <div
+                  class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                  <label class="form-check-label" for="flexSwitchCheckReverse">No</label>
+                  <input class="form-check-input" type="checkbox" [checked]="acreeModelo.trabajador_vinculado != ''"
+                    (click)="decideVinculaTrab($event.target);">
+                  <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                </div>
+                <div id="decideinfoDetWorker" class="col-12"
+                  [ngClass]="acreeModelo.trabajador_vinculado != '' ? '' : 'noneView'" style="padding: 0;">
+                  <p-table #acrRelTrab [value]="listaRelationsTrab" [paginator]="true" [rows]="10"
+                    [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]"
+                    [globalFilterFields]="['people_relacionado_token','people_relacionado_folio','people_relacionado_nombre_completo','people_relacionado_comercial_nombre']">
+                    <ng-template #caption>
+                      <div class="flex">
+                        <p-iconfield iconPosition="left" class="ml-auto">
+                          <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                          <input pInputText type="text"
+                            (input)="acrRelTrab.filterGlobal($event.target.value, 'contains')"
+                            placeholder="{{'bus_car' | translate}}" />
+                        </p-iconfield>
+                      </div>
+                    </ng-template>
+                    <ng-template #header>
+                      <tr>
+                        <th class="ultimo"></th>
+                        <th pSortableColumn="people_relacionado_folio">folio&nbsp;<p-sortIcon
+                            field="people_relacionado_folio" /></th>
+                        <th pSortableColumn="people_relacionado_nombre_completo">nombre&nbsp;<p-sortIcon
+                            field="people_relacionado_nombre_completo" /></th>
+                        <th pSortableColumn="people_relacionado_comercial_nombre">combre comercial&nbsp;<p-sortIcon
+                            field="people_relacionado_comercial_nombre" /></th>
+                      </tr>
+                    </ng-template>
+                    <ng-template #body let-trab>
+                      <tr>
+                        <td>
+                          <div class="form-check radio_check">
+                            <input class="form-check-input" type="radio" name="acrTrabSelect"
+                              [checked]="trab.people_relacionado_token == acrInfo.trabajador_vinculado"
+                              (click)="vincula_select_trabajador(trab.people_relacionado_token,acrInfo.token_cat_acreedores);">
+                          </div>
+                        </td>
+                        <td>{{trab.people_relacionado_folio}}</td>
+                        <td>{{trab.people_relacionado_nombre_completo}}</td>
+                        <td>{{trab.people_relacionado_comercial_nombre}}</td>
+                      </tr>
+                    </ng-template>
+                    <ng-template pTemplate="emptymessage">
+                      <tr>
+                        <td colspan="4" class="text-center py-4">
+                          <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                          <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                            {{'no_rows' | translate}}
+                          </p>
+                        </td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
+                </div>
+              </div>
+              <p-divider />
+              <div class="col-12 row" style="padding:0!important;">
+                <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain" style="margin: 0!important;">
+                  <h6 class="title">Vincular proveedor</h6>
+                </div>
+                <div
+                  class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                  <label class="form-check-label" for="flexSwitchCheckReverse">No</label>
+                  <input class="form-check-input" type="checkbox" [checked]="acreeModelo.proveedor_vinculado != ''"
+                    (click)="decideVinculaProv($event.target);">
+                  <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                </div>
+                <div id="decideinfoDetProv" class="col-12"
+                  [ngClass]="acreeModelo.proveedor_vinculado != '' ? '' : 'noneView'" style="padding: 0;">
+                  <p-table #acrRelProv [value]="listaRelationsProv" [paginator]="true" [rows]="10"
+                    [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]"
+                    [globalFilterFields]="['people_relacionado_token','people_relacionado_folio','people_relacionado_nombre_completo','people_relacionado_comercial_nombre']">
+                    <ng-template #caption>
+                      <div class="flex">
+                        <p-iconfield iconPosition="left" class="ml-auto">
+                          <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                          <input pInputText type="text"
+                            (input)="acrRelProv.filterGlobal($event.target.value, 'contains')"
+                            placeholder="{{'bus_car' | translate}}" />
+                        </p-iconfield>
+                      </div>
+                    </ng-template>
+                    <ng-template #header>
+                      <tr>
+                        <th class="ultimo"></th>
+                        <th pSortableColumn="people_relacionado_folio">folio&nbsp;<p-sortIcon
+                            field="people_relacionado_folio" /></th>
+                        <th pSortableColumn="people_relacionado_nombre_completo">nombre&nbsp;<p-sortIcon
+                            field="people_relacionado_nombre_completo" /></th>
+                        <th pSortableColumn="people_relacionado_comercial_nombre">combre comercial&nbsp;<p-sortIcon
+                            field="people_relacionado_comercial_nombre" /></th>
+                      </tr>
+                    </ng-template>
+                    <ng-template #body let-prov>
+                      <tr>
+                        <td>
+                          <div class="form-check radio_check">
+                            <input class="form-check-input" type="radio" name="acrProvSelect"
+                              [checked]="prov.people_relacionado_token == acrInfo.proveedor_vinculado"
+                              (click)="vincula_select_proveedor(prov.people_relacionado_token,acrInfo.token_cat_acreedores);">
+                          </div>
+                        </td>
+                        <td>{{prov.people_relacionado_folio}}</td>
+                        <td>{{prov.people_relacionado_nombre_completo}}</td>
+                        <td>{{prov.people_relacionado_comercial_nombre}}</td>
+                      </tr>
+                    </ng-template>
+                    <ng-template pTemplate="emptymessage">
+                      <tr>
+                        <td colspan="4" class="text-center py-4">
+                          <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                          <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                            {{'no_rows' | translate}}
+                          </p>
+                        </td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
+                </div>
+              </div>
+              <p-divider />
+              <div class="col-12 row" style="padding:0!important;">
+                <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain" style="margin: 0!important;">
+                  <h6 class="title">Vincular deudor</h6>
+                </div>
+                <div
+                  class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                  <label class="form-check-label" for="flexSwitchCheckReverse">No</label>
+                  <input class="form-check-input" type="checkbox" [checked]="acreeModelo.deudor_vinculado != ''"
+                    (click)="decideocupaDeudor($event.target);">
+                  <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                </div>
+                <div id="decideinfoDetDeu" class="col-12"
+                  [ngClass]="acreeModelo.deudor_vinculado != '' ? '' : 'noneView'" style="padding: 0;">
+                  <p-table #acrRelDeudor [value]="listaRelationsDeu" [paginator]="true" [rows]="10"
+                    [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]"
+                    [globalFilterFields]="['people_relacionado_token','people_relacionado_folio','people_relacionado_nombre_completo','people_relacionado_comercial_nombre']">
+                    <ng-template #caption>
+                      <div class="flex">
+                        <p-iconfield iconPosition="left" class="ml-auto">
+                          <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                          <input pInputText type="text"
+                            (input)="acrRelDeudor.filterGlobal($event.target.value, 'contains')"
+                            placeholder="{{'bus_car' | translate}}" />
+                        </p-iconfield>
+                      </div>
+                    </ng-template>
+                    <ng-template #header>
+                      <tr>
+                        <th class="ultimo"></th>
+                        <th pSortableColumn="people_relacionado_folio">folio&nbsp;<p-sortIcon
+                            field="people_relacionado_folio" /></th>
+                        <th pSortableColumn="people_relacionado_nombre_completo">nombre&nbsp;<p-sortIcon
+                            field="people_relacionado_nombre_completo" /></th>
+                        <th pSortableColumn="people_relacionado_comercial_nombre">combre comercial&nbsp;<p-sortIcon
+                            field="people_relacionado_comercial_nombre" /></th>
+                        <th pSortableColumn="trab_nombre">empleado vinculado&nbsp;<p-sortIcon field="trab_nombre" />
+                        </th>
+                        <th pSortableColumn="prov_nombre">proveedor vinculado&nbsp;<p-sortIcon field="prov_nombre" />
+                        </th>
+                        <th pSortableColumn="acr_nombre">acreedor vinculado&nbsp;<p-sortIcon field="acr_nombre" /></th>
+                      </tr>
+                    </ng-template>
+                    <ng-template #body let-deu>
+                      <tr>
+                        <td>
+                          <div class="form-check radio_check">
+                            <input class="form-check-input" type="radio" name="acrDeuSelect"
+                              [checked]="deu.people_relacionado_token == acrInfo.deudor_vinculado"
+                              (click)="vincula_select_deudor(deu.people_relacionado_token,acrInfo.token_cat_acreedores);">
+                          </div>
+                        </td>
+                        <td>{{deu.people_relacionado_folio}}</td>
+                        <td>{{deu.people_relacionado_nombre_completo}}</td>
+                        <td>{{deu.people_relacionado_comercial_nombre}}</td>
+                        <td [ngClass]="deu.trab_nombre != 'N/A' ? 'name' : ''">{{deu.trab_folio != 'N/A' ?
+                          deu.trab_folio+" "+deu.trab_nombre : deu.trab_nombre}}</td>
+                        <td [ngClass]="deu.prov_nombre != 'N/A' ? 'name' : ''">{{deu.prov_folio != 'N/A' ?
+                          deu.prov_folio+" "+deu.prov_nombre : deu.prov_nombre}}</td>
+                        <td [ngClass]="deu.acr_nombre != 'N/A' ? 'name' : ''">{{deu.acr_folio != 'N/A' ? deu.acr_folio+"
+                          "+deu.acr_nombre : deu.acr_nombre}}</td>
+                      </tr>
+                    </ng-template>
+                    <ng-template pTemplate="emptymessage">
+                      <tr>
+                        <td colspan="7" class="text-center py-4">
+                          <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                          <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                            {{'no_rows' | translate}}
+                          </p>
+                        </td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
+                </div>
+              </div>
+
+              <!-- Botón enviar -->
+              <div class="col-12 row" style="padding:0!important;">
+                <div class="col-12 col-sm-12 col-md-6 col-lg-8 col-xl-8 col-xxl-8"></div>
+                <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-4"
+                  style="padding: 0!important;display: flex;justify-content: end;">
+                  <button id="btnBuscaProvDB" class="btn btn_extend text-bg-success rounded-3"
+                    [ngClass]="!validaAcreedorRegistro(acrInfo.token_cat_acreedores) ? 'disabled' : ''"
+                    [attr.disabled]="!validaAcreedorRegistro(acrInfo.token_cat_acreedores) ? true : null"
+                    [attr.aria-disabled]="!validaAcreedorRegistro(acrInfo.token_cat_acreedores) ? true : null">
+                    <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade bd-example-modal-lg" id="infoAcreeEliminados" tabindex="-1" role="dialog"
+  aria-labelledby="infoAcreeEliminadosLabel" aria-hidden="true">
+  <div class="modal-dialog modal-fullscreen" style="margin: 1%;width: 98%!important;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="infoAcreeEliminadosLabel">ACREEDORES ELIMINADOS</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+          style="background-color: transparent !important;"></button>
+      </div>
+      <div class="modal-body" style="display: block!important;padding: 10px!important;">
+        <p-table #acrDeletedList [value]="arrayCatacreeDeleted" [globalFilterFields]="search_acree_filtro"
+          [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }"
+          [rowsPerPageOptions]="[10,20,30,50,100]">
+          <ng-template #caption>
+            <div class="flex">
+              <p-iconfield iconPosition="left" class="ml-auto">
+                <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                <input pInputText type="text" (input)="acrDeletedList.filterGlobal($event.target.value, 'contains')"
+                  placeholder="{{'bus_car' | translate}}" />
+              </p-iconfield>
+            </div>
+          </ng-template>
+          <ng-template #header>
+            <tr>
+              <th pSortableColumn="folio">folio&nbsp;<p-sortIcon field="folio" /></th>
+              <th pSortableColumn="acr_rfc">rfc&nbsp;<p-sortIcon field="acr_rfc" /></th>
+              <th pSortableColumn="acr_taxId">idTax&nbsp;<p-sortIcon field="acr_taxId" /></th>
+              <th pSortableColumn="acr_titular">acreedor&nbsp;<p-sortIcon field="acr_titular" /></th>
+              <th pSortableColumn="nombre_comercial">{{'comercial_name' | translate}} &nbsp;<p-sortIcon
+                  field="nombre_comercial" /></th>
+              <th pSortableColumn="cuenta_contable">Cuenta contable &nbsp;<p-sortIcon field="cuenta_contable" /></th>
+              <th pSortableColumn="trab_nombre">empleado vinculado&nbsp;<p-sortIcon field="trab_nombre" /></th>
+              <th pSortableColumn="prov_nombre">proveedor vinculado&nbsp;<p-sortIcon field="prov_nombre" /></th>
+              <th pSortableColumn="deu_nombre">deudor vinculado&nbsp;<p-sortIcon field="deu_nombre" /></th>
+              <th class="ultimo"></th>
+              <th class="ultimo"></th>
+            </tr>
+          </ng-template>
+          <ng-template #body let-row_acree>
+            <tr>
+              <td>{{row_acree.folio}}</td>
+              <td>{{row_acree.acr_rfc}}</td>
+              <td>{{row_acree.acr_taxId}}</td>
+              <td [ngClass]="row_acree.acr_titular != 'N/A' ? 'name' : ''">{{row_acree.acr_titular}}</td>
+              <td [ngClass]="row_acree.nombre_comercial == 'N/A' ? '' : 'name'">{{row_acree.nombre_comercial}}</td>
+              <td>{{row_acree.cuenta_contable}}</td>
+              <td [ngClass]="row_acree.trab_nombre != 'N/A' ? 'name' : ''">{{row_acree.trab_folio != 'N/A' ?
+                row_acree.trab_folio+" "+row_acree.trab_nombre : row_acree.trab_nombre}}</td>
+              <td [ngClass]="row_acree.prov_nombre != 'N/A' ? 'name' : ''">{{row_acree.prov_folio != 'N/A' ?
+                row_acree.prov_folio+" "+row_acree.prov_nombre : row_acree.prov_nombre}}</td>
+              <td [ngClass]="row_acree.deu_nombre != 'N/A' ? 'name' : ''">{{row_acree.deu_folio != 'N/A' ?
+                row_acree.deu_folio+" "+row_acree.deu_nombre : row_acree.deu_nombre}}</td>
+              <td class="ultimo">
+                <a class="btn btn_extend text-bg-success rounded-3"
+                  (click)="reviveAcreedor(row_acree.token_cat_acreedores);">
+                  <i class="fa-solid fa-trash-arrow-up"></i>&nbsp;{{'restore_row' | translate}}
+                </a>
+              </td>
+              <td class="ultimo">
+                <a class="btn btn_extend text-bg-danger rounded-3"
+                  (click)="rematarAcreedor(row_acree.token_cat_acreedores);">
+                  <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                </a>
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="11" class="text-center py-4">
+                <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                  {{'no_rows' | translate}}
+                </p>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+      <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade bd-example-modal-lg" id="windowAcreedorRegistro" tabindex="-1" role="dialog"
+  aria-labelledby="windowAcreedorRegistroLabel" aria-hidden="true">
+  <div class="modal-dialog modal-fullscreen" style="margin: 1%;width: 98%!important;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="windowAcreedorRegistroLabel">{{'acree_reg' | translate}}
+        </h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+          style="background-color: transparent !important;"></button>
+      </div>
+      <div class="modal-body">
+        <app-interno-finanzas-catalogos-acreedoresregistro></app-interno-finanzas-catalogos-acreedoresregistro></div>
+      <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

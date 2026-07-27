@@ -1,0 +1,44 @@
+<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco" #vContent>
+	<div class="contenido"><app-loader></app-loader>
+		<nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+		<div class="contenidoPagina">
+      <div class="listas_ps revanecer">
+        <!--Requicision-->
+        <div id="listaRequisi" class="lista-div lista-divNoFlex">
+          <h4>SEGUIMIENTO DE VENTAS</h4>
+          <div class="busqueda">
+            <a class="modal-trigger" href="#modalNewRequisicion"><i class="fa-solid fa-cart-shopping"></i> Nueva venta</a>
+            <div class="input-field">
+              <input class="validate" type="text" id="buscaProvOrden" data-length="13" minlength="12" maxlength="13">
+              <label  for="first_name" id="info_nombre">Escriba el rfc de su proveedor</label>
+            </div>
+          </div>
+          <p-accordion value="0">
+            <p-accordion-panel value="0">
+              <p-accordion-header>cobranza</p-accordion-header>
+              <p-accordion-content>
+                <div class="col-12 row"></div>
+              </p-accordion-content>
+            </p-accordion-panel>
+            <p-accordion-panel value="1">
+              <p-accordion-header>entregas</p-accordion-header>
+              <p-accordion-content>
+                <div class="col-12 row"></div>
+              </p-accordion-content>
+            </p-accordion-panel>
+            <p-accordion-panel value="2">
+              <p-accordion-header>devoluciones</p-accordion-header>
+              <p-accordion-content>
+                <div class="col-12 row"></div>
+              </p-accordion-content>
+            </p-accordion-panel>
+          </p-accordion>
+
+        </div>
+      </div>
+		</div>
+	</div>
+</div>
+
+

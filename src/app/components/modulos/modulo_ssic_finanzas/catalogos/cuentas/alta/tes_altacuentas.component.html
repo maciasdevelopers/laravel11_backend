@@ -1,0 +1,188 @@
+<div class="col-12" *ngIf="viewFormulario">
+  <form class="row formDataCuentas" #formDataCuentas="ngForm" autocomplete="off" (ngSubmit)="regCuentaBan(formDataCuentas);">
+    <div class="col-12 col-sm-12 col-md-12 col-lg-4 col-xl-4 col-xxl-4 input-group">
+      <label class="activeInput">Banco</label>
+      <p-select [options]="catalogoBancos" id="selectedBancoCuenta" optionLabel="nombre_comercial" [filter]="true"
+        filterBy="nombre_comercial" [showClear]="true" [placeholder]="'opt_select' | translate" class="w-full md:w-56"
+        (onChange)="selectListaBanco($event.value);">
+        <ng-template #selectedItem let-selectedOption>
+          <div class="flex items-center gap-2">
+            <div>{{selectedOption.nombre_comercial}}</div>
+          </div>
+        </ng-template>
+        <ng-template let-mon #item>
+          <div class="flex items-center gap-2">
+            <div>{{mon.nombre_comercial}}</div>
+          </div>
+        </ng-template>
+      </p-select>
+    </div>
+    <div class="col-12 col-sm-12 col-md-12 col-lg-4 col-xl-4 col-xxl-4 input_group_pass">
+      <label class="activeInput">No. de contrato</label>
+      <input class="txtPasssContrato validate inputWthPass" id="contratoNuevaCuenta" name="contratoCuenta"
+        type="password" required (keyup)="validaNoContrato($event.target);">
+      <a class="btn" [ngClass]="cuentaBanc.contrato == '' ? 'disabled' : ''"
+        [attr.disabled]="cuentaBanc.contrato == '' ? true : null"
+        [attr.aria-disabled]="cuentaBanc.contrato == '' ? true : null"
+        (click)="cuentaBanc.contrato != '' && verContrato();">
+        <i class="fa-solid" [ngClass]="cuentaBanc.contrato != '' && viewContrato ? 'fa-eye-slash' : 'fa-eye'"></i>
+      </a>
+    </div>
+    <div class="col-12 col-sm-12 col-md-12 col-lg-4 col-xl-4 col-xxl-4 input_group_pass">
+      <label class="activeInput">No. de cuenta</label>
+      <input class="txtPassCuenta validate inputWthPass" name="noCuenta" id="accountNuevaCuenta" type="password"
+        required (keyup)="validaNoCuenta($event.target);">
+      <a class="btn" [ngClass]="cuentaBanc.cuenta == '' ? 'disabled' : ''"
+        [attr.disabled]="cuentaBanc.cuenta == '' ? true : null"
+        [attr.aria-disabled]="cuentaBanc.cuenta == '' ? true : null" (click)="cuentaBanc.cuenta != '' && verCuenta();">
+        <i class="fa-solid" [ngClass]="cuentaBanc.cuenta != '' && viewCuenta ? 'fa-eye-slash' : 'fa-eye'"></i>
+      </a>
+    </div>
+    <div class="col-12 col-sm-12 col-md-12 col-lg-4 col-xl-4 col-xxl-4 input_group_pass">
+      <label class="activeInput">Clabe interbancaria</label>
+      <input class="txtPassClabeInter validate inputWthPass" name="clabeInterCuenta" id="clabeInterNuevaCuenta"
+        type="password" maxlength="18" required (keyup)="validaClabeInter($event.target);">
+      <a class="btn" [ngClass]="cuentaBanc.clabe_inter == '' ? 'disabled' : ''"
+        [attr.disabled]="cuentaBanc.clabe_inter == '' ? true : null"
+        [attr.aria-disabled]="cuentaBanc.clabe_inter == '' ? true : null"
+        (click)="cuentaBanc.clabe_inter != '' && verClabeInter();">
+        <i class="fa-solid"
+          [ngClass]="cuentaBanc.clabe_inter != '' && viewClabeInterbanc ? 'fa-eye-slash' : 'fa-eye'"></i>
+      </a>
+    </div>
+    <div class="col-12 col-sm-12 col-md-12 col-lg-4 col-xl-4 col-xxl-4 input-group">
+      <label class="activeInput">Titular de está cuenta</label>
+      <input class="validate" name="clienteCuenta" type="text" required (keyup)="validaTitular($event.target);">
+    </div>
+    <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-2 col-xxl-2 input-group">
+      <label class="activeInput">Sucursal</label>
+      <input class="txtSucursal validate" name="sucursalCuenta" id="sucursalNuevaCuenta" type="text" required disabled>
+    </div>
+    <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-2 col-xxl-2 input-group">
+      <label class="activeInput">{{'mon_name' | translate}}</label>
+      <p-select [options]="catalogoMonedasApi" id="selectedMonedaCode" optionLabel="_filtro_busqueda" [filter]="true"
+        filterBy="_filtro_busqueda" [showClear]="true" [placeholder]="'opt_select' | translate" class="w-full md:w-56"
+        (onChange)="keyupValidateMonedaApi($event.value);">
+        <ng-template #selectedItem let-selectedOption>
+          <div class="flex items-center gap-2">
+            <div>{{selectedOption.code+" "+selectedOption.langEN}}</div>
+          </div>
+        </ng-template>
+        <ng-template let-mon #item>
+          <div class="flex items-center gap-2">
+            <div>{{mon.code+" "+mon.langEN}}</div>
+          </div>
+        </ng-template>
+      </p-select>
+    </div>
+
+    <div class="input-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4">
+      <label class="activeInput">Cuenta contable</label>
+      <input class="validate" name="titularMonElectronico" type="text" required
+        (keyup)="validaCuentaContable($event.target);">
+    </div>
+
+    <div class="col-12">
+      <div class="explain" style="margin-right: 5px;">
+        <h6 class="title">&Aacute;rea de utilidad:</h6>
+      </div>
+      <div class="col-12 form-check radio_check">
+        <input class="form-check-input" type="radio" value="egresos" (click)="validaAreaEgresos($event.target);">
+        <label class="form-check-label">&nbsp;<i class="fa-solid fa-arrow-up-short-wide"></i>&nbsp;Egresos y cuentas por
+          pagar</label>
+      </div>
+      <div class="col-12 form-check radio_check">
+        <input class="form-check-input" type="radio" value="ingresos" (click)="validaAreaIngresos($event.target);">
+        <label class="form-check-label">&nbsp;<i class="fa-solid fa-arrow-down-short-wide"></i>&nbsp;Ingresos y cuentas
+          por cobrar</label>
+      </div>
+      <div class="col-12 form-check radio_check">
+        <input class="form-check-input" type="radio" value="v_humano" (click)="validaAreaVHumano($event.target);">
+        <label class="form-check-label">&nbsp;Valor humano</label>
+      </div>
+    </div>
+    <div class="col-12 row" id="seccionManejoCuenta">
+      <div class="explain">
+        <h6 class="title">Medios de operaci&oacute;n</h6>
+      </div>
+      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input-group">
+        <label for="txt_cheque" class="active activeSelect" id="lblCheque">Manejo de:</label>
+        <select id="selectManejo" (change)="selectManejoCuenta($event.target);">
+          <option value="" disabled selected>{{'opt_select' | translate}}</option>
+          <option value="chequera">Chequera</option>
+          <option value="creditCard">Tarjetas de cr&eacute;dito</option>
+          <option value="debitCard">Tarjetas de d&eacute;bito</option>
+          <option value="bankToken">Portal bancario</option>
+        </select>
+      </div>
+      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input-group">
+        <label class="activeInput" id="lblReferencia">No. de referencia</label>
+        <input id="txtReferenciaManejo" class="validate" type="text" (keyup)="referenciaManejoCuenta($event.target);">
+      </div>
+      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input-group">
+        <label class="activeInput">Vigencia</label>
+        <input id="txtVigenciaManejo" class="validate"
+          [ngClass]="manejoCuentaTipo == '' || manejoCuentaTipo == 'chequera' ? 'disabled' : ''"
+          [disabled]="manejoCuentaTipo == '' || manejoCuentaTipo == 'chequera' ? true : null"
+          [attr.aria-disabled]="manejoCuentaTipo == '' || manejoCuentaTipo == 'chequera' ? true : null"
+          name="vigenciaCuenta" type="month" placeholder="mm/aa"
+          (change)="(manejoCuentaTipo != '' && manejoCuentaTipo != 'chequera') && vigenciaManejoCuenta($event.target);">
+      </div>
+      <div class="col-12" style="display: flex;justify-content: end;align-items: end;">
+        <a class="btn btn_extend btn text-bg-success rounded-3" [ngClass]="!validaNoReferencia ? 'disabled' : ''"
+          [attr.disabled]="!validaNoReferencia ? true : null" [attr.aria-disabled]="!validaNoReferencia ? true : null"
+          (click)="validaNoReferencia && addManejoCuenta();">
+          <i class="fa-solid fa-plus"></i>&nbsp;{{'btn_add' | translate}}
+        </a>
+      </div>
+      <div class="col-12">
+        <p-table #dt [value]="arrayAdicionales" dataKey="id" [paginator]="true" [rows]="10"
+          [rowsPerPageOptions]="[10,20,30,50,100]" [globalFilterFields]="['nombre']">
+          <ng-template #header>
+            <tr>
+              <th pSortableColumn="clave_view">Manejo de:&nbsp;<p-sortIcon field="clave_view" /></th>
+              <th pSortableColumn="valor">No. de referencia&nbsp;<p-sortIcon field="valor" /></th>
+              <th pSortableColumn="vigencia">Vigencia&nbsp;<p-sortIcon field="vigencia" /></th>
+              <th class="ultimo"></th>
+            </tr>
+          </ng-template>
+          <ng-template #body let-adi>
+            <tr>
+              <td>{{adi.clave_view == 'chequera' ? 'Chequera' : (adi.clave_view == 'creditCard' ? 'Tarjetas de crédito'
+                : (adi.clave_view == 'debitCard' ? 'Tarjetas de débito' : 'Portal bancario'))}}</td>
+              <td>{{adi.valor}}</td>
+              <td>{{adi.vigencia}}</td>
+              <td>
+                <a class="btn btn_extend text-bg-danger rounded-3" (click)="deleteManejoCuenta(adi.num_lista);">
+                  <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                </a>
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="4" class="text-center py-4">
+                <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                  {{'no_rows' | translate}}
+                </p>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+    <div class="col-12 row" style="border-top: solid 1px lightgray!important;padding:10px!important;">
+      <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9"></div>
+      <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3" style="display: flex;justify-content: end;">
+        <button class="btn btn_extend text-bg-success rounded-3" type="submit" name="btnAltaProducto2"
+          [ngClass]="!validaRegistroCuenta ? 'disabled' : ''" [attr.disabled]="!validaRegistroCuenta ? true : null"
+          [attr.aria-disabled]="!validaRegistroCuenta ? true : null">
+          <!--[disabled]="modelProd.genero == '' || modelProd.marca == '' || modelProd.clasificacion == '' || modelProd.stock_max < modelProd.stock_min"-->
+          <i class="fa-solid fa-floppy-disk"
+            style="height: 15px!important;line-height: 15px!important;width: 15px!important;font-size: small!important;"></i>&nbsp;{{'sav_cam'
+          | translate}}</button>
+      </div>
+    </div>
+  </form>
+</div>

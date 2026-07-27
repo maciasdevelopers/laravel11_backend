@@ -1,0 +1,50 @@
+<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco" #vContent>
+  <div class="contenido"><app-loader></app-loader>
+    <nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+    <div class="contenidoPagina">
+      <div class="listas_ps revanecer">
+        <div class="lista-div lista-divNoFlex row">
+          <p-megaMenu [model]="menu_barra_superior" [attr.autoDisplay]="true"></p-megaMenu>
+          <!--<app_interno_ingresos_ventas_mostrador_new></app_interno_ingresos_ventas_mostrador_new>-->
+          <div class="col-12" *ngIf="seccion_ventas == 'app_interno_egresos_ventas_lista'">
+            <div class="col-12 explain">
+              <h6 class="title">Ventas registradas</h6>
+            </div>
+            <app_interno_ingresos_orden_de_venta_lista_general></app_interno_ingresos_orden_de_venta_lista_general>
+          </div>
+          <div class="col-12" *ngIf="seccion_ventas == 'app_interno_egresos_ventas_productos_entrega'">
+            <div class="col-12 explain">
+              <h6 class="title">Entrega de productos al cliente</h6>
+            </div>
+            <!--<app_compras_registro_productos></app_compras_registro_productos>-->
+          </div>
+          <div class="col-12" *ngIf="seccion_ventas == 'app_interno_egresos_ventas_servicios_devengacion'">
+            <div class="col-12 explain">
+              <h6 class="title">Devengaci&oacute;n de servicios al cliente</h6>
+            </div>
+            <!--<app_compras_registro_productos></app_compras_registro_productos>-->
+          </div>
+          <div class="col-12" *ngIf="seccion_ventas == 'app_interno_egresos_ventas_devoluciones'">
+            <div class="col-12 explain">
+              <h6 class="title">Devoluciones sobre ventas</h6>
+            </div>
+            <!--<app_compras_registro_productos></app_compras_registro_productos>-->
+          </div>
+          <div class="col-12" *ngIf="seccion_ventas == 'ventas_registro_directo'">
+            <div class="col-12 explain">
+              <h6 class="title">Registro directo de ventas</h6>
+            </div>
+            <app_interno_ingresos_orden_de_venta_registro></app_interno_ingresos_orden_de_venta_registro>
+          </div>
+          <div class="col-12" *ngIf="seccion_ventas == 'ventas_registro_mostrador'">
+            <div class="col-12 explain">
+              <h6 class="title">Registro de compras de mostrador</h6>
+            </div>
+            <!--<app_compras_registro_productos></app_compras_registro_productos>-->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,220 @@
+<p-table #buyNoFact [value]="listaComprasSinFactura" [globalFilterFields]="searchComprasSinFactura"
+  [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]">
+  <ng-template #caption>
+    <div class="flex" style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;" ngbDropdown>
+      <a class="btn btn_extend" [ngClass]="indicadorCompras == 'hoy' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="verComprasRecibeFacturaDespues('hoy');">
+        <i class="fa-solid fa-calendar-days"></i>&nbsp;Hoy
+      </a>
+      <a class="btn btn_extend" [ngClass]="indicadorCompras == 'esta_semana' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="verComprasRecibeFacturaDespues('esta_semana');">
+        <i class="fa-solid fa-calendar-days"></i>&nbsp;Esta semana
+      </a>
+      <a class="btn btn_extend" [ngClass]="indicadorCompras == 'este_mes' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="verComprasRecibeFacturaDespues('este_mes');">
+        <i class="fa-solid fa-calendar-days"></i>&nbsp;Este mes
+      </a>
+      <a class="btn btn_extend" [ngClass]="indicadorCompras == 'mes_anterior' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="verComprasRecibeFacturaDespues('mes_anterior');">
+        <i class="fa-solid fa-arrow-left"></i>&nbsp;mes anterior
+      </a>
+      <a id="menuDropBuyRangos" class="btn btn_extend" [ngClass]="indicadorCompras == 'otras_fechas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" ngbDropdownToggle>
+        <i class="fa-solid fa-list-ul"></i>&nbsp;otras fechas
+      </a>
+      <div class="dropdown-menu-end menu-despegable" ngbDropdownMenu="menuDropBuyRangos" style="padding: 0!important; margin: 0!important; width: max-content!important; max-height: 400px; overflow-y: auto;">
+        <div class="col-12 input-group">
+          <label for="buy_otras_fechas" class="activeInput">Periodo de fechas</label>
+          <p-datepicker id="buy_otras_fechas" name="buy_otras_fechas" [(ngModel)]="rangoPeriodoCompras" appendTo="body" dateFormat="dd/mm/yy" 
+            placeholder="dd/mm/aaaa" selectionMode="range" (onSelect)="verComprasRecibeFacturaDespues('otras_fechas');" />
+        </div>
+      </div>
+      <a class="btn btn_extend" [ngClass]="indicadorCompras == 'all_partidas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="verComprasRecibeFacturaDespues('all_partidas');">
+        <i class="fa-solid fa-list-ul"></i>&nbsp;todos los registros
+      </a>
+      <p-iconfield iconPosition="left" class="ml-auto">
+        <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+        <input pInputText type="text" (input)="buyNoFact.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+      </p-iconfield>
+    </div>
+  </ng-template>
+  <ng-template #header>
+    <tr>
+      <th rowspan="2" class="ultimo"></th>
+      <th rowspan="2" pSortableColumn="folio_compra">folio de compra&nbsp;<p-sortIcon field="folio_compra" /></th>
+      <th rowspan="2" pSortableColumn="fecha_contabilizacion">{{'fecha_cont' | translate}}&nbsp;<p-sortIcon field="fecha_contabilizacion" /></th>
+      <th rowspan="2" pResizableColumn pSortableColumn="proveedor_folio">folio&nbsp;<p-sortIcon field="proveedor_nombre" /></th>
+      <th rowspan="2" pResizableColumn pSortableColumn="proveedor_nombre">{{'prov' | translate}}&nbsp;<p-sortIcon field="proveedor_nombre" /></th>
+      <th rowspan="2" pResizableColumn pSortableColumn="proveedor_nombre_comercial">{{'comercial_name' | translate}} &nbsp;<p-sortIcon field="proveedor_nombre" /></th>
+      <th colspan="2">Compra a cr&eacute;dito</th>
+      <th rowspan="2" pSortableColumn="compra_moneda">{{'currency' | translate}}&nbsp;<p-sortIcon field="compra_moneda" /></th>
+      <th rowspan="2" pSortableColumn="compra_subtotal">Subtotal&nbsp;<p-sortIcon field="compra_subtotal" /></th>
+      <th rowspan="2" pSortableColumn="compra_descuento">Descuento&nbsp;<p-sortIcon field="compra_descuento" /></th>
+      <th rowspan="2" pSortableColumn="compra_retenciones">Retenciones&nbsp;<p-sortIcon field="compra_retenciones" /></th>
+      <th rowspan="2" pSortableColumn="compra_traslados">Traslados&nbsp;<p-sortIcon field="compra_traslados" /></th>
+      <th rowspan="2" pSortableColumn="importe_total_compra">Total&nbsp;<p-sortIcon field="importe_total_compra" /></th>
+      <th colspan="2">Facturas (CFDI)</th>
+      <th colspan="5"><i class="fa-solid fa-dolly"></i>&nbsp;Orden de recepci&oacute;n</th>
+      <th colspan="5"><i class="fa-solid fa-money-check"></i>&nbsp;Orden de pago</th>
+      <th rowspan="2" class="ultimo"></th>
+      <th colspan="4">Cancelaci&oacute;n de compra</th>
+    </tr>
+    <tr>
+      <th pSortableColumn="compra_a_credito">Tipo&nbsp;<p-sortIcon field="compra_a_credito" /></th>
+      <th pSortableColumn="fecha_vencimiento">Fecha de vencimiento&nbsp;<p-sortIcon field="fecha_vencimiento" /></th>
+      <!--facturas CFDI-->
+      <th pSortableColumn="aplica_recepcion_facturas">Aplica recepci&oacute;n de facturas&nbsp;<p-sortIcon field="aplica_recepcion_facturas" /></th>
+      <th pSortableColumn="recibeFactura">recibi&oacute; Factura&nbsp;<p-sortIcon field="recibeFactura" /></th>
+      <!--ordenes de recepción-->
+      <th pSortableColumn="total_articulos">articulos recibidos&nbsp;<p-sortIcon field="total_articulos" /></th>
+      <th>lugar de recepci&oacute;n</th>
+      <th class="ultimo"></th>
+      <th class="ultimo"></th>
+      <th class="ultimo"></th>
+      <!--ordenes de pago-->
+      <th pSortableColumn="folio_orden_pago">Orden de pago&nbsp;<p-sortIcon field="folio_orden_pago" /></th>
+      <th>Pago realizado</th>
+      <th class="ultimo"></th>
+      <th class="ultimo"></th>
+      <th class="ultimo"></th>
+      <!--cancelacion cancel_buy-->
+      <th class="ultimo"></th>
+      <th pSortableColumn="fecha_cont_cancelacion">fecha de cancelaci&oacute;n&nbsp;<p-sortIcon field="fecha_cont_cancelacion" /></th>
+      <th pSortableColumn="cancela">cancela&nbsp;<p-sortIcon field="cancela" /></th>
+      <th pSortableColumn="compra_comentarios_cancelacion">{{'observ' | translate}}&nbsp;<p-sortIcon field="compra_comentarios_cancelacion" /></th>
+    </tr>
+  </ng-template>
+  <ng-template #body let-cBuy>
+    <tr>
+      <td class="ultimo">
+        <a class="btn bg-blue-600"
+          (click)="showCompraSeleccionadaDesglose(cBuy.token_compras,cBuy.folio_compra);">
+          <i class="fa-solid fa-info"></i>
+        </a>
+      </td>
+      <td>{{cBuy.folio_compra}}</td>
+      <td>{{cBuy.fecha_contabilizacion}}</td>
+      <td>{{cBuy.proveedor_folio}}</td>
+      <td class="name" style="text-transform: uppercase !important;">{{cBuy.proveedor_nombre}}</td>
+      <td class="name" style="text-transform: uppercase !important;">{{cBuy.proveedor_nombre_comercial}}</td>
+      <td>{{cBuy.compra_a_credito}}</td>
+      <td>{{cBuy.fecha_vencimiento}}</td>
+      <td>{{cBuy.compra_moneda}}</td>
+      <td class="td_importes">{{cBuy.compra_subtotal}}</td>
+      <td class="td_importes">{{cBuy.compra_descuento}}</td>
+      <td class="td_importes">{{cBuy.compra_retenciones}}</td>
+      <td class="td_importes">{{cBuy.compra_traslados}}</td>
+      <td class="td_importes">{{cBuy.importe_total_compra}}</td>
+      <!--facturas CFDI-->
+      <td>{{cBuy.aplica_recepcion_facturas}}</td>
+      <td>{{cBuy.recibeFactura === true ? 'Antes' : 'Despues'}}</td>
+      <!--ordenes de recepción-->
+      <td>{{cBuy.articulos_recibidos+" / "+cBuy.total_articulos}}</td>
+      <td>{{cBuy.lugarRecepcionTipo == 'N/A' ? cBuy.lugarRecepcionTipo : cBuy.lugarRecepcionTipo+" "+cBuy.lugarRecepcionDireccion}}</td>
+      <td class="ultimo">
+        <a class="btn btn_extend text-bg-success rounded-3"
+          [ngClass]="!cBuy.status_autorizacion || cBuy.existe_orden_recepcion ? 'disabled' : ''"
+          [attr.disabled]="!cBuy.status_autorizacion || cBuy.existe_orden_recepcion ? true : null"
+          [attr.aria-disabled]="!cBuy.status_autorizacion || cBuy.existe_orden_recepcion ? true : null"
+          (click)="cBuy.status_autorizacion && !cBuy.existe_orden_recepcion && generar_orden_recepcion(cBuy.token_compras,cBuy.proveedor_token)">
+          <i class="fa-solid fa-check-double"></i>&nbsp;
+          {{cBuy.existe_orden_recepcion ? 'Orden ' + cBuy.folio_orden_recepcion : 'Generar orden'}}
+        </a>
+      </td>
+      <td class="ultimo">
+        <a class="btn btn_extend text-bg-success rounded-3"
+          [ngClass]="!cBuy.status_autorizacion || !cBuy.bloqueo_orden_recepcion ? 'disabled' : ''"
+          [attr.disabled]="!cBuy.status_autorizacion || !cBuy.bloqueo_orden_recepcion ? true : null"
+          [attr.aria-disabled]="!cBuy.status_autorizacion || !cBuy.bloqueo_orden_recepcion ? true : null"
+          (click)="cBuy.status_autorizacion && cBuy.bloqueo_orden_recepcion && activar_orden_recepcion(cBuy.token_compras,cBuy.uuid_orden_recepcion)">
+          <i class="fa-solid fa-money-check-dollar"></i>&nbsp;Desbloquear
+        </a>
+      </td>
+      <td class="ultimo">
+        <a class="btn btn_extend text-bg-success rounded-3"
+          [ngClass]="cBuy.status_autorizacion && !cBuy.existe_orden_recepcion ? 'disabled' : ''"
+          [attr.disabled]="cBuy.status_autorizacion && !cBuy.existe_orden_recepcion ? true : null"
+          [attr.aria-disabled]="cBuy.status_autorizacion && !cBuy.existe_orden_recepcion ? true : null"
+          (click)="(cBuy.status_autorizacion && cBuy.existe_orden_recepcion) && showCompraSeleccionadaSeguimientoOrdenRecepcion(cBuy.token_compras,cBuy.folio_compra)">
+          <i class="fa-solid fa-money-check-dollar"></i>&nbsp;Seguimiento
+        </a>
+      </td>
+      <!--ordenes de pago-->
+      <td>{{cBuy.folio_orden_pago == '---' ? '---' : cBuy.folio_orden_pago+" "+cBuy.fecha_contabilizacion_orden_pago}}</td>
+      <td>{{cBuy.pagos_realizados_folio == '---' ? '---' : cBuy.pagos_realizados_folio+" "+cBuy.pagos_realizados_fecha_contabilizacion}}</td>
+      <td class="ultimo">
+        <a class="btn btn_extend text-bg-success rounded-3"
+          [ngClass]="cBuy.status_autorizacion && !cBuy.existe_orden_pago ? 'disabled' : ''"
+          [attr.disabled]="cBuy.status_autorizacion && !cBuy.existe_orden_pago ? true : null"
+          [attr.aria-disabled]="cBuy.status_autorizacion && !cBuy.existe_orden_pago ? true : null"
+          (click)="cBuy.status_autorizacion && !cBuy.existe_orden_pago && generar_orden_pago(cBuy.token_compras,cBuy.proveedor_token)">
+          <i class="fa-solid fa-check-double"></i>&nbsp;
+          {{cBuy.existe_orden_pago ? 'Orden ' + cBuy.folio_orden_pago : 'Generar orden'}}
+        </a>
+      </td>
+      <td class="ultimo">
+        <a class="btn btn_extend text-bg-success rounded-3"
+          [ngClass]="!cBuy.status_autorizacion || !cBuy.bloqueo_orden_pago ? 'disabled' : ''"
+          [attr.disabled]="!cBuy.status_autorizacion || !cBuy.bloqueo_orden_pago ? true : null"
+          [attr.aria-disabled]="!cBuy.status_autorizacion || !cBuy.bloqueo_orden_pago ? true : null"
+          (click)="cBuy.status_autorizacion && cBuy.bloqueo_orden_pago && activar_orden_pago(cBuy.token_compras,cBuy.token_orden_pago)">
+          <i class="fa-solid fa-money-check-dollar"></i>&nbsp;Desbloquear
+        </a>
+      </td>
+      <td class="ultimo">
+        <a class="btn btn_extend text-bg-success rounded-3"
+          [ngClass]="cBuy.status_autorizacion && !cBuy.existe_orden_pago ? 'disabled' : ''"
+          [attr.disabled]="cBuy.status_autorizacion && !cBuy.existe_orden_pago ? true : null"
+          [attr.aria-disabled]="cBuy.status_autorizacion && !cBuy.existe_orden_pago ? true : null"
+          (click)="(cBuy.status_autorizacion && cBuy.existe_orden_pago) && showCompraSeleccionadaSeguimientoOrdenPago(cBuy.token_compras,cBuy.folio_compra)">
+          <i class="fa-solid fa-money-check-dollar"></i>&nbsp;Seguimiento
+        </a>
+      </td>
+      <td class="ultimo">
+        <a class="btn btn_extend text-bg-success rounded-3" [ngClass]="cBuy.status_autorizacion ? 'disabled' : ''"
+          [attr.disabled]="cBuy.status_autorizacion ? true : null"
+          [attr.disabled]="cBuy.status_autorizacion ? true : null"
+          (click)="!cBuy.status_autorizacion && autorizaCompra(cBuy.token_compras);">
+          <i class="fa-solid fa-check-double"></i>&nbsp;Autorizar compra
+        </a>
+      </td>
+      <td class="ultimo">
+        @if (cBuy.cancel_buy) {
+          <a class="btn btn_extend text-bg-danger rounded-3 disabled" disabled aria-disabled="true">
+            <i class="fa-solid fa-clock-rotate-left"></i>&nbsp;Compra cancelada
+          </a>
+        } @else {
+          <a class="btn btn_extend text-bg-danger rounded-3" (click)="compra_realizada_openform_cancelacion(cBuy);">
+            <i class="fa-solid fa-clock-rotate-left"></i>&nbsp;Solicitar cancelaci&oacute;n
+          </a>
+        }
+      </td>
+      <td>{{cBuy.fecha_cont_cancelacion}}</td>
+      <td>{{cBuy.cancela}}</td>
+      <td>{{cBuy.compra_comentarios_cancelacion}}</td>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td colspan="28" class="text-center py-4">
+        <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+        <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+          {{'no_rows' | translate}}
+        </p>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<p-dialog [header]="'Informaci&oacute;n de compras registradas (Datos generales) '+desglose_compra_folio" [modal]="true"
+  [(visible)]="ver_seccion_compra_desglose" [style]="{ width: '50rem' }"
+  [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  <app-desglose-registro-compra></app-desglose-registro-compra>
+</p-dialog>
+
+<p-dialog [header]="'Informaci&oacute;n de compras registradas (Orden de recepci&oacute;n) '+desglose_compra_folio"
+  [modal]="true" [(visible)]="ver_seccion_compra_recepcion" [style]="{ width: '50rem' }"
+  [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  <app-seguimiento-ordenrecepcion-registro-compra></app-seguimiento-ordenrecepcion-registro-compra>
+</p-dialog>
+
+<p-dialog [header]="'Informaci&oacute;n de compras registradas (Orden de pago) '+desglose_compra_folio" [modal]="true"
+  [(visible)]="ver_seccion_compra_pagos" [style]="{ width: '50rem' }"
+  [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  <app-seguimiento-ordenpago-registro-compra></app-seguimiento-ordenpago-registro-compra>
+</p-dialog>

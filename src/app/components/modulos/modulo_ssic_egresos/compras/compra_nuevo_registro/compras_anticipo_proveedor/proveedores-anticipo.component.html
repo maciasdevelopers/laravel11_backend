@@ -1,0 +1,216 @@
+<p-tabs value="0">
+  <p-tablist>
+    <p-tab value="0">Solicitudes de anticipos registradas</p-tab>
+    <p-tab value="1">Registrar solicitud de anticipo</p-tab>
+  </p-tablist>
+  <p-tabpanels>
+    <p-tabpanel value="0">
+      <div class="buscador row" style="margin-top: 10px!important">
+        <div class="content content_light">
+          <div class="col-12 col-sm-6 col-md-3 col-lg-2 btn-group lista_botones" role="group"
+            aria-label="Basic example">
+            <a class="btn btn_extend bg-indigo-600" (click)="listar_anticipos_proveedor();">
+              <i class="fa-solid fa-rotate" style="margin-left: 5px;"></i>&nbsp;{{'list_updt' | translate}}
+            </a>
+          </div>
+        </div>
+      </div>
+      <p-table #listSoliAnticip [value]="solicitudes_anticipos_list"
+        [globalFilterFields]="search_solicitudes_anticipos_list" showGridlines [resizableColumns]="true"
+        [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]">
+        <ng-template #caption>
+          <div class="flex" style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;" ngbDropdown>
+            <a class="btn btn_extend" [ngClass]="indicadorAnticiposList == 'hoy' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_solicitudes_anticipo_proveedor('hoy');">
+              <i class="fa-solid fa-calendar-days"></i>&nbsp;Hoy
+            </a>
+            <a class="btn btn_extend" [ngClass]="indicadorAnticiposList == 'esta_semana' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_solicitudes_anticipo_proveedor('esta_semana');">
+              <i class="fa-solid fa-calendar-days"></i>&nbsp;Esta semana
+            </a>
+            <a class="btn btn_extend" [ngClass]="indicadorAnticiposList == 'este_mes' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_solicitudes_anticipo_proveedor('este_mes');">
+              <i class="fa-solid fa-calendar-days"></i>&nbsp;Este mes
+            </a>
+            <a class="btn btn_extend" [ngClass]="indicadorAnticiposList == 'mes_anterior' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_solicitudes_anticipo_proveedor('mes_anterior');">
+              <i class="fa-solid fa-arrow-left"></i>&nbsp;mes anterior
+            </a>
+            <a id="menuDropAntRangos" class="btn btn_extend" [ngClass]="indicadorAnticiposList == 'otras_fechas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" ngbDropdownToggle>
+              <i class="fa-solid fa-list-ul"></i>&nbsp;otras fechas
+            </a>
+            <div class="dropdown-menu-end menu-despegable" ngbDropdownMenu="menuDropAntRangos" style="padding: 0!important; margin: 0!important; width: max-content!important; max-height: 400px; overflow-y: auto;">
+              <div class="col-12 input-group">
+                <label for="anticipos_otras_fechas" class="activeInput">Periodo de fechas</label>
+                <p-datepicker id="anticipos_otras_fechas" name="anticipos_otras_fechas" [(ngModel)]="rangoPeriodoAnticiposList" appendTo="body" dateFormat="dd/mm/yy" 
+                  placeholder="dd/mm/aaaa" selectionMode="range" (onSelect)="ver_solicitudes_anticipo_proveedor('otras_fechas');" />
+              </div>
+            </div>
+            <a class="btn btn_extend" [ngClass]="indicadorAnticiposList == 'all_partidas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_solicitudes_anticipo_proveedor('all_partidas');">
+              <i class="fa-solid fa-list-ul"></i>&nbsp;todos los registros
+            </a>
+            <p-iconfield iconPosition="left" class="ml-auto">
+              <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+              <input pInputText type="text" (input)="listSoliAnticip.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+            </p-iconfield>
+          </div>
+        </ng-template>
+        <ng-template #header>
+          <tr>
+            <th rowspan="2" class="ultimo"></th>
+            <th pResizableColumn rowspan="2" pSortableColumn="folio">folio&nbsp;<p-sortIcon field="folio" /></th>
+            <th colspan="3">{{'prov' | translate}}</th>
+            <th pResizableColumn rowspan="2" pSortableColumn="fecha_contabilizacion">{{'fecha_cont' | translate}}&nbsp;<p-sortIcon field="fecha_contabilizacion" /></th>
+            <th pResizableColumn rowspan="2" pSortableColumn="forma_pago">{{'f_pago' | translate}}&nbsp;<p-sortIcon field="forma_pago" /></th>
+            <th pResizableColumn rowspan="2" pSortableColumn="tipo_cambio">{{'mon_tipo_cambio' | translate}}&nbsp;<p-sortIcon field="tipo_cambio" /></th>
+            <th pResizableColumn rowspan="2" pSortableColumn="cantidad_anticipo_format">{{'total_import' | translate}}&nbsp;<p-sortIcon field="cantidad_anticipo_format" /></th>
+            <th pResizableColumn rowspan="2" pSortableColumn="observaciones">{{'observ' | translate}}&nbsp;<p-sortIcon field="observaciones" /></th>
+          </tr>
+          <tr>
+            <th pResizableColumn pSortableColumn="proveedor_folio">folio&nbsp;<p-sortIcon field="proveedor_folio" /></th>
+            <th pResizableColumn pSortableColumn="proveedor_nombre">{{'prov' | translate}} &nbsp;<p-sortIcon field="proveedor_nombre" /></th>
+            <th pResizableColumn pSortableColumn="proveedor_nombre_comercial">{{'comercial_name' | translate}}&nbsp;<p-sortIcon field="proveedor_nombre_comercial" /></th>
+          </tr>
+        </ng-template>
+        <ng-template #body let-ant>
+          <tr>
+            <td class="ultimo">
+              <a class="btn bg-blue-600" data-bs-toggle="modal" data-bs-target="#windowAnticipoInfo"
+                (click)="anticipo_desglose(ant.anticipo_uuid);">
+                <i class="fa-solid fa-info"></i>
+              </a>
+            </td>
+            <td>{{ant.anticipo_folio}}</td>
+            <td>{{ant.proveedor_folio}}</td>
+            <td class="name">{{ant.proveedor_nombre}}</td>
+            <td class="name">{{ant.proveedor_nombre_comercial}}</td>
+            <td>{{ant.anticipo_fecha_contabilizacion}}</td>
+            <td>{{ant.anticipo_forma_pago}}</td>
+            <td class="td_importes">{{ant.anticipo_tipo_cambio_format}}</td>
+            <td class="td_importes">{{ant.anticipo_cantidad_anticipo_format}}</td>
+            <td class="name">{{ant.anticipo_observaciones}}</td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="10" class="text-center py-4">
+              <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+              <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                {{'no_rows' | translate}}
+              </p>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+      <div class="modal fade bd-example-modal-lg" id="windowAnticipoInfo" tabindex="-1" role="dialog"
+        aria-labelledby="windowAnticipoInfoLabel" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen" style="margin: 1%;width: 98%!important;">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="windowAnticipoInfoLabel">Informaci&oacute;n de
+                anticipo&nbsp;{{desglose_anticipo_folio}}</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                style="background-color: transparent !important;"></button>
+            </div>
+            <div class="modal-body" *ngFor="let prVd of info_anticipo_desglose">
+            </div>
+            <div class="modal-footer"><button type="button" class="btn btn-secondary"
+                data-bs-dismiss="modal">Close</button></div>
+          </div>
+        </div>
+      </div>
+    </p-tabpanel>
+    <p-tabpanel value="1">
+      <form class="formAddAnticipoNuevo" #formAddAnticipoNuevo="ngForm" autocomplete="off" name="formAddAnticipoNuevo"
+        enctype="multipart/form-data" (ngSubmit)="autoriza_registro && guardaAnticipoProveedor(formAddAnticipoNuevo);">
+        <div class="col-12 row" *ngIf="btnVerAnticipFormulario">
+          <div class="input-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4">
+            <label for="fechaAltaProd" class="activeInput">{{'prov' | translate}}</label>
+            <p-select [options]="lista_proveedores" id="selectedCatProv" optionLabel="nombre" [filter]="true"
+              filterBy="nombre" [showClear]="true" [placeholder]="'opt_select' | translate" class="w-full md:w-56"
+              (onChange)="selectCatProv($event.value);">
+              <ng-template #selectedItem let-selectedOption>
+                <div class="flex items-center gap-2">
+                  <div>{{selectedOption.folio+" "+selectedOption.nombre}}</div>
+                </div>
+              </ng-template>
+              <ng-template let-prov #item>
+                <div class="flex items-center gap-2">
+                  <div>{{prov.folio+" "+prov.nombre}}</div>
+                </div>
+              </ng-template>
+            </p-select>
+          </div>
+          <div class="input-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4">
+            <label for="exampleFormControlInput1" class="activeInput">{{'fecha_cont' | translate}}</label>
+            <input class="datepicker" name="fechaAplicacion" type="date"
+              (change)="validar_fecha_anticipo($event.target)">
+          </div>
+          <div class="input-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4">
+            <label for="exampleFormControlInput1" class="activeInput">{{'f_pago' | translate}}</label>
+            <p-select [options]="listaForma_pago" id="selectedForma_pago" optionLabel="clave,descripcion"
+              [filter]="true" filterBy="clave,descripcion" [showClear]="true" [placeholder]="'opt_select' | translate"
+              class="w-full md:w-56" (onChange)="validaForma_pago($event.value);">
+              <ng-template #selectedItem let-optSelected>
+                <div class="flex items-center gap-2">
+                  <div>{{optSelected.clave+" "+optSelected.descripcion}}</div>
+                </div>
+              </ng-template>
+              <ng-template let-fpag #item>
+                <div class="flex items-center gap-2">
+                  <div>{{fpag.clave+" "+fpag.descripcion}}</div>
+                </div>
+              </ng-template>
+            </p-select>
+          </div>
+          <div class="input-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4">
+            <label for="exampleFormControlInput1" class="activeInput">{{'mon_name' | translate}}</label>
+            <p-select *ngIf="catalogo_monedas_api" [options]="catalogo_monedas_api" id="selectedMonedaCode"
+              optionLabel="_filtro_busqueda" [filter]="true" filterBy="_filtro_busqueda" [showClear]="true"
+              [placeholder]="'opt_select' | translate" class="w-full md:w-56" (onChange)="valMoned($event.value);">
+              <ng-template #selectedItem let-selectedOption>
+                <div class="flex items-center gap-2">
+                  <div>{{selectedOption.code+" "+selectedOption.langEN}}</div>
+                </div>
+              </ng-template>
+              <ng-template let-mon #item>
+                <div class="flex items-center gap-2">
+                  <div>{{mon.code+" "+mon.langEN}}</div>
+                </div>
+              </ng-template>
+            </p-select>
+          </div>
+          <div class="input-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4">
+            <label for="fechaAltaProd" class="activeInput">{{'total_import' | translate}}</label>
+            <input id="ventaNumberPrecioBase" class="validate" type="number"
+              (keyup)="keyupImporteAnticipo($event.target);" (keypress)="onpresNumer($event);">
+          </div>
+          <div class="input-group col-12 col-sm-12 col-md-3 col-lg-3 col-xl-2 col-xxl-2">
+            <label class="activeInput">{{'mon_tipo_cambio' | translate}}</label>
+            <input class="validate" [ngClass]="activaTipoCambio() ? 'disabled' : ''"
+              [attr.disabled]="activaTipoCambio() ? true : null" [attr.aria-disabled]="activaTipoCambio() ? true : null"
+              type="number" min="1" max="100000000000000" [value]="activaTipoCambio() ? tipo_cambio_string : null"
+              (keyup)="!activaTipoCambio() && editTipoCambio($event.target);"
+              (keypress)="!activaTipoCambio() && onpresNumer($event);">
+          </div>
+          <div class="input-group col-12 col-sm-12 col-md-3 col-lg-3 col-xl-2 col-xxl-2">
+            <label for="fechaAltaProd" class="activeInput">{{'total_import_resultant' | translate}}</label>
+            <input id="ventaNumberPrecioBase" class="validate disabled" disabled="true" aria-disabled="true" type="text"
+              [value]="'$'+cantidad_anticipo_resultante">
+          </div>
+          <div class="col-12 input-group">
+            <label for="exampleFormControlTextarea1" class="activeInput">{{'observ' | translate}}</label>
+            <textarea name="large_descript" class="validate" (keyup)="keyupObservaciones($event.target);"
+              (keypress)="onpresAlpha($event);"></textarea>
+          </div>
+        </div>
+        <div class="col-12 row" style="margin-top: 5px!important;">
+          <div class="col-12 col-sm-12 col-md-6 col-lg-8 col-xl-8 col-xxl-9"></div>
+          <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3"
+            style="display: flex !important;justify-content: end!important;">
+            <button class="btn btn_extend text-bg-success rounded-3" [ngClass]="!autoriza_registro ? 'disabled' : ''"
+              [attr.disabled]="!autoriza_registro ? true : null"
+              [attr.aria-disabled]="!autoriza_registro ? true : null">
+              <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}</button>
+          </div>
+        </div>
+      </form>
+    </p-tabpanel>
+  </p-tabpanels>
+</p-tabs>

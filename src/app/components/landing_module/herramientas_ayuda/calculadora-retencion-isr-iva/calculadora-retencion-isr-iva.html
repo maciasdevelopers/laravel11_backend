@@ -1,0 +1,692 @@
+<div class="col-12 row calc_reten">
+  <!--espacio interactivo-->
+  <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-6 col-xxl-6 row"
+    style="display: flex!important;flex-direction: row;flex-wrap: wrap;justify-content: space-between;align-content: baseline;">
+    <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6">
+      <div class="col-12 input-group">
+        <label class="activeInput">Eres: </label>
+        <select class="browser-default" (change)="selecPersonaOrigen($event.target);">
+          <option value="" disabled selected>{{'opt_select' | translate}}</option>
+          <option value="perf">Persona f&iacute;sica</option>
+          <option value="perm">Persona moral</option>
+        </select>
+      </div>
+    </div>
+    <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6">
+      <div class="col-12 input-group">
+        <label class="activeInput">Efect&uacute;as pagos por: </label>
+        <select class="browser-default" [ngClass]="calculo_retencionOrigen == '' ? 'disabled' : ''"
+          [attr.disabled]="calculo_retencionOrigen == '' ? true : null"
+          [attr.aria-disabled]="calculo_retencionOrigen == '' ? true : null"
+          (change)="calculo_retencionOrigen != '' && selecPersonaEfectuaPago($event.target);">
+          <option value="" disabled selected>{{'opt_select' | translate}}</option>
+          <option value="perf">Persona f&iacute;sica</option>
+          <option value="perm">Persona moral</option>
+        </select>
+      </div>
+    </div>
+    <div class="col-12 input-group">
+      <label class="activeInput">Perfiles</label>
+      <select class="browser-default" [ngClass]="!validatePersonasCalc ? 'disabled' : ''"
+        [attr.disabled]="!validatePersonasCalc ? true : null"
+        [attr.aria-disabled]="!validatePersonasCalc ? true : null"
+        (change)="validatePersonasCalc && perfilSeleccionado($event.target);">
+        <option value="" disabled selected>{{'opt_select' | translate}}</option>
+        <option *ngFor="let profile of perfilesCalculo" [value]="profile.clave">{{profile.name}}</option>
+      </select>
+    </div>
+    <div class="col-12 row" style="padding: 0!important;">
+      <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6" style="padding: 0!important;"></div>
+      <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6" style="padding: 0!important;">
+        <div class="col-12 input-group">
+          <label class="activeInput">Decimales</label>
+          <input class="validate" name="producto_regCat" type="text" required [value]="retencion_decimales"
+            (keyup)="validarRetencionDecimales($event.target);">
+        </div>
+      </div>
+    </div>
+    <div class="col-12 row" style="padding: 0!important;">
+      <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6" style="padding: 0!important;"></div>
+      <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6" style="padding: 0!important;">
+        <div class="col-12 input-group">
+          <label class="activeInput">Importe</label>
+          <input class="validate" name="producto_regCat" type="text" required [value]="retencion_importe_view"
+            (keyup)="validarRetencionImporte($event.target);">
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6">
+      <div class="col-12 input-group">
+        <label class="activeInput">IVA al: </label>
+        <ng-select id="selectorIVA" class="correcto" maxlength="2" [items]="opcionesIVA" bindLabel="name"
+          [(ngModel)]="ivaConfigurado" placeholder="{{iva_establecido_percent == 0.16 && !estatusIVA ? '16%' : ''}}"
+          [addTag]="true" (change)="ivaPorcentaje();"></ng-select>
+      </div>
+      <div class="col-12 input-group ley_iva_group">
+        <label class="activeInput">Retencion LIVA</label>
+        <select class="browser-default" id="retencionLIVA_ID" (change)="porcentajeLIVA($event.target)">
+          <option value="" disabled selected>{{'opt_select' | translate}}</option>
+          <option value="0.00"
+            *ngIf="perfil_selected != 'sdp' && perfil_selected != 'ate' && perfil_selected != 'ade'"
+            [disabled]="retencion_iva_liva_percent == 0.00" [selected]="retencion_iva_liva_percent == 0.00">No
+            aplica</option>
+          <option value="0.66"
+            *ngIf="perfil_selected != 'sdp' && perfil_selected != 'ate' && perfil_selected != 'ade'"
+            [disabled]="retencion_iva_liva_percent == 0.66" [selected]="retencion_iva_liva_percent == 0.66">de 2/3
+            del IVA</option>
+          <option value="0.04"
+            *ngIf="perfil_selected != 'sdp' && perfil_selected != 'ate' && perfil_selected != 'ade'"
+            [disabled]="retencion_iva_liva_percent == 0.04" [selected]="retencion_iva_liva_percent == 0.04">de 4%
+            del Importe</option>
+
+          <option value="0.5" *ngIf="perfil_selected == 'sdp'">50% del IVA</option>
+          <option value="1" *ngIf="perfil_selected == 'sdp' || perfil_selected == 'ate' || perfil_selected == 'ade'"
+            [disabled]="(perfil_selected == 'ate' || perfil_selected == 'ade') && retencion_iva_liva_percent == 1"
+            [selected]="(perfil_selected == 'ate' || perfil_selected == 'ade') && retencion_iva_liva_percent == 1">
+            100% del IVA</option>
+        </select>
+      </div>
+      <div class="col-12 input-group">
+        <label class="activeInput">Retencion ISR (%)</label>
+        <input class="validate inputWthPass" id="porcentajeISR_ID" name="producto_regCat"
+          [value]="(retencion_isr_porcentaje)*100" type="text" (keyup)="porcentajeISR($event.target);">
+      </div>
+    </div>
+    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6">
+      <div class="col-12 input-group">
+        <label for="ivap" class="activeInput">+ % IVA</label>
+        <input id="ivap" class="validate" name="producto_regCat" type="text" required [value]="iva_establecido_view"
+          (keyup)="validarRetencionIVA($event.target);">
+      </div>
+      <div class="col-12 input-group">
+        <label class="activeInput">SubTotal</label>
+        <input class="validate" name="producto_regCat" disabled aria-disabled="true" type="text" required
+          [value]="retencion_subtotal_view">
+      </div>
+      <div class="col-12 input-group">
+        <label for="ivap" class="activeInput">-&nbsp;Retenci&oacute;n IVA</label>
+        <input id="ivap" class="validate" name="producto_regCat" type="text" required
+          [value]="retencion_iva_liva_view" [ngClass]="retencion_iva_liva_percent == 0.00 ? 'disabled' : ''"
+          [attr.disabled]="retencion_iva_liva_percent == 0.00 ? true : null"
+          [attr.aria-disabled]="retencion_iva_liva_percent == 0.00 ? true : null"
+          (keyup)="retencion_iva_liva_percent != 0.00 && validarRetencionLIVA($event.target);">
+      </div>
+      <div class="col-12 input-group">
+        <label for="ivap" class="activeInput">-&nbsp;Retenci&oacute;n ISR</label>
+        <input id="ivap" class="validate" name="producto_regCat" type="text" required [value]="retencion_isr_view"
+          (keyup)="validarRetencionISR($event.target);">
+      </div>
+      <div class="col-12 input-group">
+        <label class="activeInput">Total</label>
+        <input class="validate" name="producto_regCat" type="text" required [value]="retencion_total_view"
+          (keyup)="validarInversoImporte($event.target);">
+      </div>
+      <div class="col-12" style="display: flex;justify-content:flex-end;">
+        <a class="btn btn_extend text-bg-danger rounded-3" [ngClass]="!activar_descargaPDF ? 'disabled' : ''"
+          [attr.disabled]="!activar_descargaPDF ? true : null"
+          [attr.aria-disabled]="!activar_descargaPDF ? true : null"
+          style="padding: 0;padding-left: 3px;padding-right: 3px;margin-top: 5px;" target="_blank"
+          (click)="activar_descargaPDF && descarga_servis_PDF()">
+          <i class="fa-solid fa-file-pdf"></i> guardar (calculo de retenciones.pdf)
+        </a>
+      </div>
+    </div>
+  </div>
+  <!--espacio informativo-->
+  <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-6 col-xxl-6" id="seccion_informativo_uno">
+    <!--<h6>Honorarios</h6>-->
+    <div class="col-12" *ngIf="perfil_selected == 'nap'">
+      <!--<h6 class="textoheader">No aplica.</h6>-->
+    </div>
+    <div class="col-12" *ngIf="perfil_selected == 'pfg'">
+      <h6 class="textoheader">Persona f&iacute;sica general.</h6>
+
+      <p class="textoinformativo">
+        Generalmente, se aplican cuando una persona f&iacute;sica presta un servicio o realiza una actividad que
+        est&aacute; sujeta al ISR (Impuesto Sobre la Renta), IVA (Impuesto al Valor Agregado) u otros impuestos, y
+        el
+        receptor del servicio (una empresa o persona moral, com&uacute;nmente) est&aacute; obligado a retener.</p>
+
+      <p class="textoinformativo">¿Qu&eacute; impuestos se retienen?</p>
+      <ol class="textoinformativo">
+        <li>ISR (Impuesto Sobre la Renta):
+          <ol>
+            <li>Se retiene un porcentaje del pago que recibe la persona f&iacute;sica como anticipo del impuesto
+              anual.</li>
+            <li>El porcentaje depende del tipo de actividad (honorarios, arrendamiento, etc.), pero suele rondar el
+              10%.</li>
+          </ol>
+        </li>
+        <li>IVA (Impuesto al Valor Agregado):
+          <ol>
+            <li>Si se causa IVA, se retiene el 10.6667% del total facturado por el servicio (equivalente a 2/3 del
+              IVA del 16%).</li>
+            <li>Esto aplica cuando la persona f&iacute;sica est&aacute; dada de alta en el r&eacute;gimen general o
+              de actividades profesionales.</li>
+          </ol>
+        </li>
+      </ol>
+
+      <p class="textoinformativo">¿Qui&eacute;n las realiza?</p>
+      <ol class="textoinformativo">
+        <li>Generalmente, personas morales (empresas) que pagan a personas f&iacute;sicas tienen la
+          obligaci&oacute;n de retener estos impuestos.</li>
+        <li>Ellas deben entregar constancias a las personas f&iacute;sicas y declarar las retenciones al SAT.</li>
+      </ol>
+
+      <p class="textoinformativo">¿C&oacute;mo se reportan?</p>
+      <ol class="textoinformativo">
+        <li>El retenedor las declara mensualmente en sus pagos provisionales.</li>
+        <li>La persona f&iacute;sica podr&aacute; acreditar esas retenciones en su declaraci&oacute;n anual para
+          reducir su carga fiscal.</li>
+      </ol>
+
+    </div>
+    <div class="col-12" *ngIf="perfil_selected == 'pmg'">
+      <h6 class="textoheader">Persona moral general</h6>
+      <ol class="textoinformativo">
+        <li>Las personas morales retienen impuestos cuando pagan ciertos conceptos, principalmente a personas
+          f&iacute;sicas, y act&uacute;an como agentes retenedores ante el SAT.</li>
+        <li>Las retenciones no son autom&aacute;ticas en todos los pagos: solo se aplican en casos
+          espec&iacute;ficos establecidos en ley, como sueldos, honorarios, arrendamiento, pagos al extranjero, y
+          ciertas operaciones con IVA.</li>
+        <li>La obligaci&oacute;n de retener est&aacute; regulada principalmente por:
+          <ol>
+            <li>Ley del Impuesto sobre la Renta (LISR)</li>
+            <li>Ley del Impuesto al Valor Agregado (LIVA)</li>
+            <li>C&oacute;digo Fiscal de la Federaci&oacute;n (CFF)</li>
+          </ol>
+        </li>
+        <li>La persona moral que retiene debe:
+          <ol>
+            <li>Emitir comprobantes fiscales (CFDI) con el detalle de la retenci&oacute;n.</li>
+            <li>Enterar las retenciones al SAT dentro del plazo legal.</li>
+            <li>Informar estas retenciones en declaraciones mensuales y anuales.</li>
+            <li>Expedir constancias si corresponde (por ejemplo, en sueldos).</li>
+          </ol>
+        </li>
+        <li>La persona moral tambi&eacute;n puede ser sujeta a retenciones, por ejemplo:
+          <ol>
+            <li>En operaciones con el sector p&uacute;blico.</li>
+            <li>En esquemas de subcontrataci&oacute;n o servicios especializados, donde le retienen el 6% de IVA.
+            </li>
+          </ol>
+        </li>
+      </ol>
+
+      <p class="textoinformativo">
+        En resumen, las retenciones en personas morales de r&eacute;gimen general no se aplican en todos los casos,
+        sino solo en situaciones espec&iacute;ficas donde la ley lo exige. Su prop&oacute;sito es facilitar el
+        control fiscal y asegurar que
+        ciertos impuestos lleguen al SAT de forma anticipada.</p>
+
+    </div>
+    <div class="col-12 row" *ngIf="perfil_selected == 'ate'">
+      <h6 class="textoheader">Adquisici&oacute;n o arrendamiento de bienes tangibles a residentes en el extranjero
+        sin establecimiento permanente.</h6>
+      <p class="textoinformativo">
+        La adquisici&oacute;n o arrendamiento de bienes tangibles a residentes en el extranjero sin establecimiento
+        permanente en M&eacute;xico se refiere a las operaciones en las que un residente en M&eacute;xico (persona
+        f&iacute;sica o moral) compra o arrienda bienes f&iacute;sicos (muebles o inmuebles) de una persona o
+        empresa que reside fuera del pa&iacute;s y no tiene establecimiento permanente en territorio nacional.Este
+        tipo de operaci&oacute;n tiene implicaciones fiscales espec&iacute;ficas, sobre todo en cuanto a la
+        retenci&oacute;n de impuestos, deducibilidad, y comprobaci&oacute;n de operaciones con residentes en el
+        extranjero, reguladas por la Ley del ISR y el C&oacute;digo Fiscal de la Federaci&oacute;n.</p>
+      <p>SUSTENTO LEGAL.</p>
+      <ol class="textoinformativo">
+        <li>Ley del Impuesto sobre la Renta (LISR)
+          <ol>
+            <li>Art&iacute;culo 9: Define qu&eacute; se considera establecimiento permanente.</li>
+            <li>Art&iacute;culo 24: Establece los ingresos de fuente de riqueza en M&eacute;xico, incluyendo
+              arrendamientos de bienes usados en territorio nacional.</li>
+            <li>Art&iacute;culo 31: Requisitos de deducciones, incluyendo operaciones con extranjeros.</li>
+            <li>Art&iacute;culo 161: Aplicaci&oacute;n de retenciones cuando se pagan ingresos a residentes en el
+              extranjero.</li>
+          </ol>
+        </li>
+        <li>C&oacute;digo Fiscal de la Federaci&oacute;n (CFF)
+          <ol>
+            <li>Art&iacute;culo 76-A: Requisitos para la documentaci&oacute;n de operaciones con partes relacionadas
+              extranjeras.</li>
+            <li>Art&iacute;culo 179 y 180: Precios de transferencia entre residentes nacionales y extranjeros.</li>
+          </ol>
+        </li>
+        <li>Resoluci&oacute;n Miscel&aacute;nea Fiscal vigente: Contiene reglas espec&iacute;ficas sobre la
+          retenci&oacute;n del ISR e IVA en operaciones con extranjeros.</li>
+      </ol>
+      <ol class="footinformativo">
+        <li>C&aacute;mara de Diputados del H. Congreso de la Uni&oacute;n. (2024). Ley del Impuesto sobre la Renta.
+          &uacute;ltima reforma publicada DOF 08-11-2023. Recuperado de:<a
+            href="https://www.diputados.gob.mx/LeyesBiblio/pdf/LISR.pdf"
+            target="_blank">https://www.diputados.gob.mx/LeyesBiblio/pdf/LISR.pdf</a></li>
+        <li>C&aacute;mara de Diputados del H. Congreso de la Uni&oacute;n. (2024). C&oacute;digo Fiscal de la
+          Federaci&oacute;n. &uacute;ltima reforma publicada DOF 01-01-2024. Recuperado de:<a
+            href="https://www.diputados.gob.mx/LeyesBiblio/pdf/8_010124.pdf"
+            target="_blank">https://www.diputados.gob.mx/LeyesBiblio/pdf/8_010124.pdf</a></li>
+        <li>Servicio de Administraci&oacute;n Tributaria (SAT). (2024). Operaciones con residentes en el extranjero.
+          Recuperado de:<a href="https://www.sat.gob.mx" target="_blank">https://www.sat.gob.mx</a></li>
+        <li>PricewaterhouseCoopers (PwC). (2023). Gu&iacute;a fiscal de M&eacute;xico 2023. Recuperado de:<a
+            href="https://www.pwc.com/mx/es/servicios/fiscales.html"
+            target="_blank">https://www.pwc.com/mx/es/servicios/fiscales.html</a></li>
+      </ol>
+    </div>
+    <div class="col-12 row" *ngIf="perfil_selected == 'hon'">
+      <h6 class="textoheader">Honorarios.</h6>
+      <p class="textoinformativo">
+        Los honorarios son los pagos que una persona f&iacute;sica recibe por la prestaci&oacute;n de servicios
+        profesionales independientes, es decir, cuando un profesional (como un abogado, contador, arquitecto,
+        m&eacute;dico, diseñador, etc.) realiza un servicio a cambio de un pago, sin tener una relaci&oacute;n
+        laboral con el cliente.
+      </p>
+      <p>SUSTENTO LEGAL.</p>
+      <div class="col-12">
+        <ol class="textoinformativo">
+          <li>Ley del Impuesto sobre la Renta (ISR).
+            <ol>
+              <li>Art&iacute;culo 100 Define los ingresos que obtienen las personas f&iacute;sicas por la
+                prestaci&oacute;n de servicios profesionales independientes (honorarios) como parte de los ingresos
+                acumulables.</li>
+              <li>Art&iacute;culo 106 al 110 Regulan el c&aacute;lculo del ISR, deducciones autorizadas, y la
+                obligaci&oacute;n de expedir comprobantes fiscales (CFDI).</li>
+              <li>Art&iacute;culo 113-J (si aplica R&eacute;gimen Simplificado de Confianza) Establece reglas
+                especiales de tributaci&oacute;n si el contribuyente opta por este r&eacute;gimen.</li>
+            </ol>
+          </li>
+          <li>C&oacute;digo Fiscal de la Federaci&oacute;n (CFF).
+            <ol>
+              <li>Art&iacute;culo 29 y 29-A Obligan a expedir Comprobantes Fiscales Digitales (CFDI) por los
+                servicios prestados, incluyendo honorarios.</li>
+            </ol>
+          </li>
+          <li>Ley del Impuesto al Valor Agregado (IVA).
+            <ol>
+              <li>Art&iacute;culo 1 y 14 Indican que los servicios profesionales est&aacute;n gravados con IVA al
+                16%, salvo que est&eacute;n expresamente exentos.</li>
+            </ol>
+          </li>
+        </ol>
+      </div>
+
+      <ol class="footinformativo">
+        <li>C&aacute;mara de Diputados del H. Congreso de la Uni&oacute;n. (2024). Ley del Impuesto sobre la Renta.
+          Diario Oficial de la Federaci&oacute;n. <a href="https://www.diputados.gob.mx/LeyesBiblio/pdf/LISR.pdf"
+            target="_blank">https://www.diputados.gob.mx/LeyesBiblio/pdf/LISR.pdf</a></li>
+        <li>C&aacute;mara de Diputados del H. Congreso de la Uni&oacute;n. (2024). C&oacute;digo Fiscal de la
+          Federaci&oacute;n. Diario Oficial de la Federaci&oacute;n. <a
+            href="http://www.diputados.gob.mx/LeyesBiblio/pdf/CFF.pdf"
+            target="_blank">https://www.diputados.gob.mx/LeyesBiblio/pdf/CFF.pdf</a></li>
+        <li>C&aacute;mara de Diputados del H. Congreso de la Uni&oacute;n. (2024). Ley del Impuesto al Valor
+          Agregado. Diario Oficial de la Federaci&oacute;n. <a
+            href="https://www.diputados.gob.mx/LeyesBiblio/pdf/LIVA.pdf"
+            target="_blank">https://www.diputados.gob.mx/LeyesBiblio/pdf/LIVA.pdf</a></li>
+        <li>Servicio de Administraci&oacute;n Tributaria. (s.f.). Actividades profesionales (servicios
+          profesionales). Gobierno de M&eacute;xico. <a
+            href="https://www.sat.gob.mx/consultas/25685/actividades-profesionales-(servicios-profesionales)"
+            target="_blank">https://www.sat.gob.mx/consultas/25685/actividades-profesionales-(servicios-profesionales)</a>
+        </li>
+        <li>Servicio de Administraci&oacute;n Tributaria. (s.f.). Obligaciones fiscales por honorarios. Gobierno de
+          M&eacute;xico. <a href="https://www.sat.gob.mx/" target="_blank"> https://www.sat.gob.mx/</a></li>
+      </ol>
+    </div>
+    <div class="col-12" *ngIf="perfil_selected == 'ari'">
+      <h6 class="textoheader">Arrendamiento</h6>
+      <p class="textoinformativo">El arrendamiento es un contrato por el cual una de las partes, llamada arrendador,
+        se obliga a conceder el uso o goce temporal de un bien a otra parte, llamada arrendatario, quien a su vez se
+        obliga a pagar por ese uso un precio cierto y determinado</p>
+      <p>SUSTENTO LEGAL.</p>
+      <ol class="textoinformativo">
+        <li>Art&iacute;culo 2398 del C&oacute;digo Civil Federal.
+          "El arrendamiento es un contrato por el cual las dos partes se obligan rec&iacute;procamente, una a
+          conceder el uso o goce temporal de una cosa, y la otra a pagar por ese uso o goce un precio cierto.
+        </li>
+        <li>Art&iacute;culos 2398 al 2425 del C&oacute;digo Civil Federal.
+          Estos art&iacute;culos establecen las disposiciones generales del arrendamiento: obligaciones del
+          arrendador y arrendatario, duraci&oacute;n, forma de pago, causas de terminaci&oacute;n, entre otros.
+        </li>
+        <li>C&oacute;digo Civil para el Distrito Federal.
+          (ahora Ciudad de M&eacute;xico) Tiene disposiciones similares, pero con algunas particularidades locales,
+          especialmente en temas como pr&oacute;rrogas autom&aacute;ticas o requisitos para la desocupaci&oacute;n
+          del inmueble.
+        </li>
+      </ol>
+      <ol class="footinformativo">
+        <li>C&aacute;mara de Diputados del H. Congreso de la Uni&oacute;n. (2023). C&oacute;digo Civil Federal.
+          &uacute;ltima reforma publicada DOF 13-06-2023. Recuperado de: <a
+            href="https://www.diputados.gob.mx/LeyesBiblio/pdf/2_130623.pdf."
+            target="_blank">https://www.diputados.gob.mx/LeyesBiblio/pdf/2_130623.pdf. </a></li>
+        <li>C&aacute;mara de Diputados del H. Congreso de la Uni&oacute;n. (2023). C&oacute;digo Civil para el
+          Distrito Federal. Recuperado de:<a href="https://www.diputados.gob.mx/LeyesBiblio/pdf/CCDF.pdf."
+            target="_blank">https://www.diputados.gob.mx/LeyesBiblio/pdf/CCDF.pdf.</a></li>
+        <li>Garc&iacute;a M&aacute;ynez, E. (2019). Introducci&oacute;n al estudio del derecho (37ª ed.).
+          M&eacute;xico: Porr&uacute;a. (Referencia adicional para el concepto general del contrato)</li>
+      </ol>
+    </div>
+    <div class="col-12" *ngIf="perfil_selected == 'reg'">
+      <h6 class="textoheader">RESICO</h6>
+      <p class="textoinformativo"></p>
+      <p>SUSTENTO LEGAL.<br>El RESICO est&aacute; regulado en el T&iacute;tulo IV, Cap&iacute;tulo II,
+        Secci&oacute;n IV (Personas F&iacute;sicas) y el T&iacute;tulo VII, Cap&iacute;tulo XII (Personas Morales)
+        de la Ley del Impuesto sobre la Renta (LISR).</p>
+      <ol class="textoinformativo">
+        <li> Para personas f&iacute;sicas:
+          <ol>
+            <li>Art&iacute;culos 113-E al 113-J de la Ley del ISR. Aqu&iacute; se establecen los requisitos para
+              tributar bajo RESICO, tasas aplicables, forma de c&aacute;lculo del impuesto y obligaciones.</li>
+          </ol>
+        </li>
+        <li>Para personas morales:
+          <ol>
+            <li>Art&iacute;culos 206 al 210 de la Ley del ISR.Se establecen los lineamientos similares pero
+              adaptados a personas morales con ingresos menores a 35 millones de pesos anuales.</li>
+          </ol>
+        </li>
+        <li>Fundamento complementario:C&oacute;digo Fiscal de la Federaci&oacute;n (CFF): art&iacute;culos sobre
+          inscripci&oacute;n, obligaciones fiscales y uso del buz&oacute;n tributario.
+        </li>
+      </ol>
+      <ol class="footinformativo">
+        <li>C&aacute;mara de Diputados del H. Congreso de la Uni&oacute;n. (2024). Ley del Impuesto sobre la Renta.
+          &uacute;ltima reforma publicada DOF 08-11-2023. Recuperado de:<a
+            href="https://www.diputados.gob.mx/LeyesBiblio/pdf/LISR.pdf"
+            target="_blank">https://www.diputados.gob.mx/LeyesBiblio/pdf/LISR.pdf</a></li>
+        <li>Servicio de Administraci&oacute;n Tributaria (SAT). (2024). R&eacute;gimen Simplificado de Confianza.
+          Recuperado de:<a href="https://www.sat.gob.mx/personas/regimen-simplificado-de-confianza"
+            target="_blank">https://www.sat.gob.mx/personas/regimen-simplificado-de-confianza</a></li>
+        <li>C&aacute;mara de Diputados del H. Congreso de la Uni&oacute;n. (2024). C&oacute;digo Fiscal de la
+          Federaci&oacute;n. Recuperado de:<a href="https://www.diputados.gob.mx/LeyesBiblio/pdf/8_010124.pdf"
+            target="_blank">https://www.diputados.gob.mx/LeyesBiblio/pdf/8_010124.pdf</a></li>
+      </ol>
+    </div>
+    <div class="col-12" *ngIf="perfil_selected == 'spe'">
+      <h6 class="textoheader">Servicios profesionales de residentes en el extranjero</h6>
+      <p class="textoinformativo">Los servicios profesionales de residentes en el extranjero son aquellas
+        actividades intelectuales, t&eacute;cnicas o especializadas (como asesor&iacute;as, consultor&iacute;as,
+        diseño, programaci&oacute;n, entre otros) que no implican una relaci&oacute;n laboral, prestadas por
+        personas f&iacute;sicas o morales que no residen en M&eacute;xico y que no cuentan con un establecimiento
+        permanente en el pa&iacute;s.Cuando una persona o empresa en M&eacute;xico contrata estos servicios, existen
+        obligaciones fiscales como la retenci&oacute;n del Impuesto Sobre la Renta (ISR), y en ciertos casos, del
+        Impuesto al Valor Agregado (IVA), dependiendo del tipo de servicio y su aprovechamiento en M&eacute;xico.
+      </p>
+      <p>SUSTENTO LEGAL.</p>
+      <ol class="textoinformativo">
+        <li> Ley del Impuesto sobre la Renta (LISR).
+          <ol>
+            <li>Art&iacute;culo 1: Obliga a los residentes en M&eacute;xico a retener impuestos cuando pagan a
+              extranjeros sin establecimiento permanente.</li>
+            <li>Art&iacute;culo 9: Define qu&eacute; es un establecimiento permanente.</li>
+            <li>Art&iacute;culo 24, fracci&oacute;n IV: Establece que los ingresos obtenidos por servicios
+              personales independientes prestados por extranjeros se consideran de fuente de riqueza en
+              M&eacute;xico cuando se aprovechan en el pa&iacute;s.</li>
+            <li>Art&iacute;culo 167 y 172: Tasas y tratamiento de ISR sobre ingresos de fuente mexicana obtenidos
+              por residentes en el extranjero.</li>
+          </ol>
+        </li>
+        <li>Ley del IVA.
+          <ol>
+            <li>Art&iacute;culo 1-A, fracci&oacute;n III: Obliga a quienes reciben servicios de extranjeros a
+              retener el IVA, cuando el servicio se aprovecha en territorio nacional.</li>
+            <li>Art&iacute;culo 29: Establece que los servicios prestados por residentes en el extranjero son actos
+              gravados si se aprovechan en M&eacute;xico.</li>
+          </ol>
+        </li>
+        <li>C&oacute;digo Fiscal de la Federaci&oacute;n (CFF).
+          <ol>
+            <li>Art&iacute;culo 31: Requisitos fiscales para la deducibilidad de pagos al extranjero.</li>
+            <li>Art&iacute;culo 76-A y 179–180: Obligaciones en materia de precios de transferencia cuando los
+              servicios son con partes relacionadas extranjeras.</li>
+          </ol>
+        </li>
+      </ol>
+      <ol class="footinformativo">
+        <li>C&aacute;mara de Diputados del H. Congreso de la Uni&oacute;n. (2024). Ley del Impuesto sobre la Renta.
+          &uacute;ltima reforma publicada DOF 08-11-2023. Recuperado de:<a
+            href="https://www.diputados.gob.mx/LeyesBiblio/pdf/LISR.pdf"
+            target="_blank">https://www.diputados.gob.mx/LeyesBiblio/pdf/LISR.pdf </a></li>
+        <li>C&aacute;mara de Diputados del H. Congreso de la Uni&oacute;n. (2024). C&oacute;digo Fiscal de la
+          Federaci&oacute;n. &uacute;ltima reforma publicada DOF 01-01-2024. Recuperado de:<a
+            href="https://www.diputados.gob.mx/LeyesBiblio/pdf/8_010124.pdf"
+            target="_blank">https://www.diputados.gob.mx/LeyesBiblio/pdf/8_010124.pdf</a></li>
+        <li>Servicio de Administraci&oacute;n Tributaria (SAT). (2024). Gu&iacute;a sobre pagos al extranjero.
+          Recuperado de:<a href="https://www.sat.gob.mx" target="_blank">https://www.sat.gob.mx</a></li>
+        <li>KPMG M&eacute;xico. (2023). Gu&iacute;a de impuestos corporativos en M&eacute;xico 2023. Recuperado
+          de:<a href="https://home.kpmg/mx/es/home/insights.html"
+            target="_blank">https://home.kpmg/mx/es/home/insights.html</a></li>
+      </ol>
+    </div>
+    <div class="col-12" *ngIf="perfil_selected == 'com'">
+      <h6 class="textoheader">Comisiones</h6>
+      <p class="textoinformativo">Una comisi&oacute;n es una remuneraci&oacute;n econ&oacute;mica que recibe una
+        persona (comisionista) por llevar a cabo un acto o negocio por cuenta de otra (comitente), ya sea por la
+        venta de bienes, colocaci&oacute;n de servicios, gestiones comerciales, financieras, entre otros. Las
+        comisiones pueden darse en relaciones laborales, civiles, o mercantiles. Dependiendo del contexto, pueden
+        clasificarse como: Comisi&oacute;n mercantil (regulada en el C&oacute;digo de Comercio), ingresos por
+        servicios independientes o asimilables a salarios (seg&uacute;n la Ley del ISR), remuneraciones laborales,
+        si est&aacute;n dentro de una relaci&oacute;n de subordinaci&oacute;n.</p>
+      <p>SUSTENTO LEGAL.</p>
+      <ol class="textoinformativo">
+        <li>C&oacute;digo de Comercio.
+          <ol>
+            <li>Art&iacute;culos 273 al 308: Regulan el contrato de comisi&oacute;n mercantil, donde una persona
+              (comisionista) realiza actos de comercio por cuenta de otra (comitente).</li>
+          </ol>
+        </li>
+        <li>Ley del Impuesto sobre la Renta (LISR).
+          <ol>
+            <li>Art&iacute;culo 94, fracci&oacute;n IV: Las comisiones pueden considerarse asimilables a salarios si
+              provienen de personas f&iacute;sicas o morales que no tienen relaci&oacute;n laboral directa, pero hay
+              subordinaci&oacute;n econ&oacute;mica.</li>
+            <li>Art&iacute;culo 100: Obligaciones de los retenedores en el caso de ingresos asimilables a salarios.
+            </li>
+            <li>Art&iacute;culo 106: Si se prestan los servicios de forma independiente, se consideran ingresos por
+              actividad empresarial o profesional.</li>
+          </ol>
+        </li>
+        <li>Ley del Impuesto al Valor Agregado (LIVA).
+          <ol>
+            <li>Art&iacute;culo 1 y 14: Las comisiones est&aacute;n gravadas con IVA cuando se prestan servicios
+              independientes en territorio nacional.</li>
+          </ol>
+        </li>
+      </ol>
+      <ol class="footinformativo">
+        <li>C&aacute;mara de Diputados del H. Congreso de la Uni&oacute;n. (2024). C&oacute;digo de Comercio.
+          &uacute;ltima reforma publicada DOF 29-01-2024. Recuperado de: <a
+            href="https://www.diputados.gob.mx/LeyesBiblio/pdf/3_290124.pdf"
+            target="_blank">https://www.diputados.gob.mx/LeyesBiblio/pdf/3_290124.pdf</a></li>
+        <li>C&aacute;mara de Diputados del H. Congreso de la Uni&oacute;n. (2024). Ley del Impuesto sobre la Renta.
+          &uacute;ltima reforma publicada DOF 08-11-2023. Recuperado de:<a
+            href="https://www.diputados.gob.mx/LeyesBiblio/pdf/LISR.pdf"
+            target="_blank">https://www.diputados.gob.mx/LeyesBiblio/pdf/LISR.pdf</a></li>
+        <li>C&aacute;mara de Diputados del H. Congreso de la Uni&oacute;n. (2024). Ley del Impuesto al Valor
+          Agregado. &uacute;ltima reforma publicada DOF 08-11-2023. Recuperado de: <a
+            href="https://www.diputados.gob.mx/LeyesBiblio/pdf/LIVA.pdf"
+            target="_blank">https://www.diputados.gob.mx/LeyesBiblio/pdf/LIVA.pdf</a></li>
+        <li>Servicio de Administraci&oacute;n Tributaria (SAT). (2024). Comisiones y otros ingresos por servicios
+          profesionales. Recuperado de:<a href="https://www.sat.gob.mx" target="_blank">https://www.sat.gob.mx</a>
+        </li>
+      </ol>
+    </div>
+    <div class="col-12" *ngIf="perfil_selected == 'fts'">
+      <h6 class="textoheader">Fletes</h6>
+      <p class="textoinformativo">El t&eacute;rmino flete se refiere al servicio de transporte de bienes o
+        mercanc&iacute;as, ya sea por v&iacute;a terrestre, mar&iacute;tima, a&eacute;rea o ferroviaria, a cambio de
+        una contraprestaci&oacute;n econ&oacute;mica. Tambi&eacute;n se le llama “flete” al monto que se paga por
+        ese servicio. El flete puede estar vinculado a un contrato de prestaci&oacute;n de servicios, transporte, o
+        comisi&oacute;n mercantil, dependiendo de la relaci&oacute;n entre las partes.</p>
+      <p>SUSTENTO LEGAL.</p>
+      <ol class="textoinformativo">
+        <li>C&oacute;digo de Comercio.
+          <ol>
+            <li>Art&iacute;culos 575 al 630: Regulan el contrato de transporte terrestre de mercanc&iacute;as,
+              estableciendo derechos y obligaciones del porteador y el cargador, as&iacute; como temas de
+              responsabilidad por p&eacute;rdida o daño.</li>
+          </ol>
+        </li>
+        <li>Ley del Impuesto al Valor Agregado (LIVA).
+          <ol>
+            <li>Art&iacute;culo 1: Establece que est&aacute;n sujetos al IVA los actos o actividades como la
+              prestaci&oacute;n de servicios, incluyendo el transporte de bienes.</li>
+          </ol>
+        </li>
+        <li>Ley del Impuesto sobre la Renta (LISR).
+          <ol>
+            <li>Art&iacute;culo 16 y 17: El ingreso por prestaci&oacute;n de servicios de transporte forma parte de
+              la base gravable.</li>
+            <li>Art&iacute;culo 106 y 110: Regulan ingresos por actividades empresariales y profesionales para
+              personas f&iacute;sicas.</li>
+            <li>Art&iacute;culo 31 y 36: Requisitos de deducibilidad de gastos para personas morales, incluyendo
+              fletes.</li>
+          </ol>
+        </li>
+        <li>C&oacute;digo Fiscal de la Federaci&oacute;n (CFF).
+          <ol>
+            <li>Art&iacute;culo 29 y 29-A: Establecen los requisitos de los comprobantes fiscales digitales (CFDI),
+              aplicables al servicio de flete.</li>
+          </ol>
+        </li>
+      </ol>
+      <ol class="footinformativo">
+        <li>C&aacute;mara de Diputados del H. Congreso de la Uni&oacute;n. (2024). C&oacute;digo de Comercio.
+          &uacute;ltima reforma publicada DOF 29-01-2024.
+          Recuperado de:<a href="https://www.diputados.gob.mx/LeyesBiblio/pdf/3_290124.pdf"
+            target="_blank">https://www.diputados.gob.mx/LeyesBiblio/pdf/3_290124.pdf</a></li>
+        <li>
+          C&aacute;mara de Diputados del H. Congreso de la Uni&oacute;n. (2024). Ley del Impuesto sobre la Renta.
+          &uacute;ltima reforma publicada DOF 08-11-2023.
+          Recuperado de: <a href="https://www.diputados.gob.mx/LeyesBiblio/pdf/LISR.pdf"
+            target="_blank">https://www.diputados.gob.mx/LeyesBiblio/pdf/LISR.pdf</a></li>
+        <li>C&aacute;mara de Diputados del H. Congreso de la Uni&oacute;n. (2024). Ley del Impuesto al Valor
+          Agregado. &uacute;ltima reforma publicada DOF 08-11-2023.
+          Recuperado de:<a href="https://www.diputados.gob.mx/LeyesBiblio/pdf/LIVA.pdf"
+            target="_blank">https://www.diputados.gob.mx/LeyesBiblio/pdf/LIVA.pdf</a></li>
+        <li>Servicio de Administraci&oacute;n Tributaria (SAT). (2024). Complemento Carta Porte.
+          Recuperado de: <a href="https://www.sat.gob.mx/consultas/41524/conoce-el-complemento-carta-porte"
+            target="_blank">https://www.sat.gob.mx/consultas/41524/conoce-el-complemento-carta-porte</a></li>
+      </ol>
+    </div>
+    <div class="col-12" *ngIf="perfil_selected == 'ade'">
+      <h6 class="textoheader">Adquicici&oacute;n de desperdicios</h6>
+      <p class="textoinformativo">La adquisici&oacute;n de desperdicios se refiere a la compra de materiales
+        residuales o sobrantes de procesos productivos o de consumo, como metal, cart&oacute;n, vidrio,
+        pl&aacute;sticos, textiles, electr&oacute;nicos, entre otros, que a&uacute;n pueden tener valor comercial o
+        ser reciclados. Fiscalmente, esta actividad tiene tratamiento especial en el ISR y el IVA, principalmente
+        cuando se adquieren desperdicios a personas f&iacute;sicas no inscritas en el RFC (por ejemplo, recolectores
+        informales).</p>
+      <p>SUSTENTO LEGAL.</p>
+      <ol class="textoinformativo">
+        <li>Ley del Impuesto sobre la Renta (LISR).
+          <ol>
+            <li>Art&iacute;culo 74, fracci&oacute;n IV: Permite deducir la adquisici&oacute;n de desperdicios si se
+              cumplen ciertos requisitos fiscales y si se realizan retenciones al vendedor, cuando este sea una
+              persona f&iacute;sica no inscrita en el RFC.</li>
+            <li>Art&iacute;culo 76, fracci&oacute;n X: Establece la obligaci&oacute;n de efectuar retenci&oacute;n
+              del ISR cuando se adquieran desperdicios de personas f&iacute;sicas no contribuyentes.</li>
+            <li>Art&iacute;culo 113: Trata sobre retenciones a terceros sin RFC o con actividades
+              espor&aacute;dicas.</li>
+          </ol>
+        </li>
+        <li>Ley del Impuesto al Valor Agregado (LIVA).
+          <ol>
+            <li>Art&iacute;culo 1-A, fracci&oacute;n III: Obliga a retener el IVA cuando se adquieren bienes o
+              servicios de ciertos contribuyentes.</li>
+            <li>Art&iacute;culo 5, fracci&oacute;n III: Establece que para que el IVA sea acreditable, debe estar
+              debidamente comprobado con CFDI y retenido cuando aplique.</li>
+          </ol>
+        </li>
+        <li>Reglas de la Resoluci&oacute;n Miscel&aacute;nea Fiscal (RMF).
+          <ol>
+            <li>Reglas como la 2.7.3.1. y otras afines establecen facilidades administrativas para la emisi&oacute;n
+              del CFDI en operaciones con personas f&iacute;sicas que venden desperdicios.</li>
+          </ol>
+        </li>
+      </ol>
+      <ol class="footinformativo">
+        <li>C&aacute;mara de Diputados del H. Congreso de la Uni&oacute;n. (2024). Ley del Impuesto sobre la Renta.
+          &uacute;ltima reforma publicada DOF 08-11-2023. Recuperado de:<a
+            href="https://www.diputados.gob.mx/LeyesBiblio/pdf/LISR.pdf"
+            target="_blank">https://www.diputados.gob.mx/LeyesBiblio/pdf/LISR.pdf</a></li>
+        <li>C&aacute;mara de Diputados del H. Congreso de la Uni&oacute;n. (2024). Ley del Impuesto al Valor
+          Agregado. &uacute;ltima reforma publicada DOF 08-11-2023. Recuperado de: <a
+            href="https://www.diputados.gob.mx/LeyesBiblio/pdf/LIVA.pdf"
+            target="_blank">https://www.diputados.gob.mx/LeyesBiblio/pdf/LIVA.pdf</a></li>
+        <li>Servicio de Administraci&oacute;n Tributaria (SAT). (2024). Gu&iacute;a para la adquisici&oacute;n de
+          desperdicios y bienes a contribuyentes no registrados. Recuperado de:<a href="https://www.sat.gob.mx"
+            target="_blank">https://www.sat.gob.mx</a></li>
+        <li>C&aacute;mara de Diputados del H. Congreso de la Uni&oacute;n. (2024). Resoluci&oacute;n
+          Miscel&aacute;nea Fiscal para 2024.Recuperado de: <a href="https://www.dof.gob.mx/"
+            target="_blank">https://www.dof.gob.mx/</a></li>
+      </ol>
+    </div>
+    <div class="col-12" *ngIf="perfil_selected == 'sdp'">
+      <h6 class="textoheader">Servicios digitales a traves de plataformas tecnol&oacute;gicas</h6>
+      <p class="textoinformativo">Los servicios digitales a trav&eacute;s de plataformas tecnol&oacute;gicas son
+        aquellos que se prestan o distribuyen por medio de aplicaciones, p&aacute;ginas web o sistemas
+        inform&aacute;ticos que operan en internet. Estos servicios pueden ser ofrecidos por residentes en
+        M&eacute;xico o en el extranjero, e incluyen actividades como:<br>Transmisi&oacute;n o descarga de contenido
+        digital (video, m&uacute;sica, ebooks, etc.).<br>Servicios de intermediaci&oacute;n (Uber, Didi, Airbnb,
+        Mercado Libre, etc.).<br>Enseñanza a distancia o software como servicio (SaaS).<br>Venta de bienes o
+        servicios mediante plataformas digitales.<br>Fiscalmente, en M&eacute;xico estos servicios est&aacute;n
+        regulados principalmente en materia de IVA y retenciones, tanto para los usuarios como para los prestadores
+        de servicios digitales, con o sin residencia en el pa&iacute;s.],
+      </p>
+      <p>SUSTENTO LEGAL.</p>
+      <ol class="textoinformativo">
+        <li>Ley del Impuesto al Valor Agregado (LIVA).
+          <ol>
+            <li>Art&iacute;culo 1, fracci&oacute;n IV: Grava la prestaci&oacute;n de servicios digitales por
+              residentes en el extranjero a receptores ubicados en M&eacute;xico.</li>
+            <li>Art&iacute;culo 18-B al 18-L: Definen qu&eacute; son servicios digitales. <br>Establecen las
+              obligaciones fiscales de los proveedores extranjeros. <br>Incluyen reglas sobre inscripci&oacute;n en
+              el RFC, cobro y traslado del IVA, emisi&oacute;n de comprobantes y declaraciones.
+            </li>
+          </ol>
+        </li>
+        <li>Ley del Impuesto sobre la Renta (LISR).
+          <ol>
+            <li>Art&iacute;culo 113-A a 113-G: Regulan la tributaci&oacute;n de personas f&iacute;sicas que obtienen
+              ingresos a trav&eacute;s de plataformas digitales (por enajenaci&oacute;n de bienes, prestaci&oacute;n
+              de servicios, hospedaje, transporte, etc.).<br>Establecen tasas de retenci&oacute;n de ISR aplicables
+              a estas actividades.</li>
+          </ol>
+        </li>
+        <li>C&oacute;digo Fiscal de la Federaci&oacute;n (CFF).
+          <ol>
+            <li>Art&iacute;culo 29 y 29-A: Obligan a emitir CFDI (comprobantes fiscales digitales por internet)
+              tambi&eacute;n en operaciones realizadas por plataformas digitales.
+            </li>
+            <li>Resoluci&oacute;n Miscel&aacute;nea Fiscal (RMF) vigente. Reglas espec&iacute;ficas para la
+              retenci&oacute;n y declaraci&oacute;n del IVA e ISR por plataformas tecnol&oacute;gicas.</li>
+          </ol>
+        </li>
+      </ol>
+      <ol class="footinformativo">
+        <li>C&aacute;mara de Diputados del H. Congreso de la Uni&oacute;n. (2024). Ley del Impuesto al Valor
+          Agregado. &uacute;ltima reforma publicada DOF 08-11-2023. Recuperado de: <a
+            href="https://www.diputados.gob.mx/LeyesBiblio/pdf/LIVA.pdf"
+            target="_blank">https://www.diputados.gob.mx/LeyesBiblio/pdf/LIVA.pdf</a></li>
+        <li>C&aacute;mara de Diputados del H. Congreso de la Uni&oacute;n. (2024). Ley del Impuesto sobre la Renta.
+          &uacute;ltima reforma publicada DOF 08-11-2023. Recuperado de: <a
+            href="https://www.diputados.gob.mx/LeyesBiblio/pdf/LISR.pdf"
+            target="_blank">https://www.diputados.gob.mx/LeyesBiblio/pdf/LISR.pdf</a></li>
+        <li>C&aacute;mara de Diputados del H. Congreso de la Uni&oacute;n. (2024). C&oacute;digo Fiscal de la
+          Federaci&oacute;n. &uacute;ltima reforma publicada DOF 01-01-2024. Recuperado de: <a
+            href="https://www.diputados.gob.mx/LeyesBiblio/pdf/8_010124.pdf"
+            target="_blank">https://www.diputados.gob.mx/LeyesBiblio/pdf/8_010124.pdf</a></li>
+        <li>Servicio de Administraci&oacute;n Tributaria (SAT). (2024). Plataformas digitales - Obligaciones
+          fiscales. Recuperado de:<a href="https://www.sat.gob.mx" target="_blank">https://www.sat.gob.mx</a></li>
+      </ol>
+    </div>
+  </div>
+  <div class="col-12"
+    style="background-color: white;position: absolute;bottom: 0;display: flex;justify-content: center;align-items: center;flex-direction: column;padding: 0;right: 0px!important;box-shadow: 1px 1px 10px;">
+    <p class="footinformativo" style="margin: 0;">
+      El uso de esta herramienta no tiene validez fiscal ni legal, y no sustituye la asesor&iacute;a profesional. si
+      requiere una interpretaci&oacute;n legal o fiscal, consulte a un profesional certificado.
+    </p>
+    <p class="footinformativo" style="margin: 0;margin-bottom: 10px;">
+      SOS-M&eacute;xico no se hace responsable por el uso de la informaci&oacute;n obtenida mediante
+      esta herramienta.
+    </p>
+  </div>
+</div>
+    

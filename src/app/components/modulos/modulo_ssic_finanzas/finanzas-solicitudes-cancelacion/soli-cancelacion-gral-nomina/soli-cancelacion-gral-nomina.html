@@ -1,0 +1,177 @@
+@for (cancd of desglose_solicitud_cancelacion; track $index) {
+  <div class="col-12 explain">
+    <h6 class="title">folio</h6>
+    <h6 class="content">{{cancd.cancel_soli_folio}}</h6>
+  </div>
+  <div class="col-12 explain">
+    <h6 class="title">{{'reem_single' | translate}}</h6>
+    <h6 class="content">{{cancd.doc_anterior_folio}}</h6>
+  </div>
+  <div class="col-12 explain">
+    <h6 class="title">{{'observ' | translate}}</h6>
+    <h6 class="content">{{cancd.cancel_soli_observaciones}}</h6>
+  </div>
+  <div class="col-12 explain">
+    <h6 class="title">cancelaci&oacute;n realizada</h6>
+    <h6 class="content">{{cancd.cancel_soli_cancel_realizada ? ['yes_auth' | translate] : ['not_auth' | translate]}}</h6>
+  </div>
+}
+<div class="col-12 explain">
+  <h6 class="title">{{'ordens_pag' | translate}}</h6>
+</div>
+<p-divider />
+
+<p-table [value]="desgloseSoliCancelacionDispersionPago" dataKey="folio_pagos">
+  <ng-template #header>
+    <tr>
+      <th class="ultimo"></th>
+      <th class="ultimo"></th>
+      <th pResizableColumn pSortableColumn="orden_pago_folio">folio&nbsp;<p-sortIcon field="orden_pago_folio"/></th>
+      <th pResizableColumn pSortableColumn="orden_pago_fecha_contabilizacion">{{'fecha_cont' | translate}}&nbsp;<p-sortIcon field="orden_pago_fecha_contabilizacion"/></th>
+      <th pResizableColumn pSortableColumn="monto_pago">{{'total_import' | translate}}&nbsp;<p-sortIcon field="monto_pago"/></th>
+      <th pResizableColumn pSortableColumn="tipo_cambio">{{'mon_tipo_cambio' | translate}}&nbsp;<p-sortIcon field="tipo_cambio"/></th>
+      <th pResizableColumn pSortableColumn="observacionesPago">{{'observ' | translate}}&nbsp;<p-sortIcon field="observacionesPago"/></th>
+    </tr>
+  </ng-template>
+  <ng-template #body let-pag let-expandedPag="expanded">
+    <tr>
+      <td class="ultimo">
+        <p-button type="button" pButton [pRowToggler]="pag" class="btn btn_extend bg-blue-600" (click)="pag.mostrarTipo = 'movimientos'">
+          <i class="fa-solid" [ngClass]="(expandedPag && pag.mostrarTipo === 'movimientos') ? 'fa-angle-up' : 'fa-angle-down'"></i>&nbsp;movimientos
+        </p-button>
+      </td>
+      <td class="ultimo">
+        <p-button type="button" pButton [pRowToggler]="pag" class="btn btn_extend bg-blue-600" (click)="pag.mostrarTipo = 'trabajadores'">
+          <i class="fa-solid" [ngClass]="(expandedPag && pag.mostrarTipo === 'trabajadores') ? 'fa-angle-up' : 'fa-angle-down'"></i>&nbsp;trabajadores dispersados
+        </p-button>
+      </td>
+      <td>{{pag.folio_pagos}}</td>
+      <td>{{pag.fecha_contabilizacion}}</td>
+      <td class="td_importes">{{pag.monto_pago}}</td>
+      <td class="td_importes">{{pag.tipo_cambio}}</td>
+      <td>{{pag.observacionesPago}}</td>
+    </tr>
+  </ng-template>
+  <ng-template #expandedrow let-pag>
+    <tr>
+      <td colspan="7">
+        @if (pag.mostrarTipo === 'movimientos') {
+          <p-table #opMovimientosDone [value]="pag.lista_actividad_movim" showGridlines [resizableColumns]="true" [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }" 
+            [rowsPerPageOptions]="[10,20,30,50,100]" [globalFilterFields]="['folio_acre_mov','acre_fecha_contabilizacion','movimiento_tipo','movimiento_folio','movimiento_name','monto_aplicado']">
+            <ng-template #caption>
+              <div class="flex">
+                <p-iconfield iconPosition="left" class="ml-auto">
+                  <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                  <input pInputText type="text" (input)="opMovimientosDone.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+                </p-iconfield>
+              </div>
+            </ng-template>
+            <ng-template #header>
+              <tr>
+                <th pResizableColumn pSortableColumn="folio_movimiento">folio&nbsp;<p-sortIcon field="folio_movimiento"/></th>
+                <th pResizableColumn pSortableColumn="acre_fecha_contabilizacion">{{'fecha_cont' | translate}}&nbsp;<p-sortIcon field="acre_fecha_contabilizacion"/></th>
+                <th pResizableColumn pSortableColumn="movimiento_tipo">tipo&nbsp;<p-sortIcon field="movimiento_tipo"/></th>
+                <th pResizableColumn pSortableColumn="movimiento_folio">cuenta&nbsp;<p-sortIcon field="movimiento_folio"/></th>
+                <th pResizableColumn pSortableColumn="monto_aplicado">{{'total_import' | translate}}&nbsp;<p-sortIcon field="monto_aplicado"/></th>
+              </tr>
+            </ng-template>
+            <ng-template #body let-dPay>
+              <tr>
+                <td>{{dPay.folio_movimiento}}</td>
+                <td>{{dPay.fecha_contabilizacion_movimiento}}</td>
+                <td>{{dPay.movimiento_tipo}}</td>
+                <td>{{dPay.movimiento_folio+" "+dPay.movimiento_name}}</td>
+                <td>{{dPay.monto_aplicado}}</td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="5" class="text-center py-4">
+                  <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                  <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                    {{'no_rows' | translate}}
+                  </p>
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        }
+
+        @if (pag.mostrarTipo === 'trabajadores') {
+          <p-table #opMovimientosDone [value]="pag.lista_trabajadores_dispersados" showGridlines [resizableColumns]="true" [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }" 
+            [rowsPerPageOptions]="[10,20,30,50,100]" [globalFilterFields]="['folio_dispersion','nombre_completo','monto']">
+            <ng-template #caption>
+              <div class="flex">
+                <p-iconfield iconPosition="left" class="ml-auto">
+                  <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                  <input pInputText type="text" (input)="opMovimientosDone.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+                </p-iconfield>
+              </div>
+            </ng-template>
+            <ng-template #header>
+              <tr>
+                <th pResizableColumn pSortableColumn="folio_dispersion">folio&nbsp;<p-sortIcon field="folio_dispersion"/></th>
+                <th pResizableColumn pSortableColumn="nombre_completo">{{'personal_name' | translate}}&nbsp;<p-sortIcon field="nombre_completo"/></th>
+                <th pResizableColumn pSortableColumn="monto">{{'total_import' | translate}}&nbsp;<p-sortIcon field="monto"/></th>
+              </tr>
+            </ng-template>
+            <ng-template #body let-trbDisp>
+              <tr>
+                <td>{{trbDisp.folio_dispersion}}</td>
+                <td>{{trbDisp.nombre_completo}}</td>
+                <td>{{trbDisp.monto}}</td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="3" class="text-center py-4">
+                  <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                  <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                    {{'no_rows' | translate}}
+                  </p>
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        }
+      </td>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td colspan="7" class="text-center py-4">
+        <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+        <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+          {{'no_rows' | translate}}
+        </p>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+
+@for (cancd of desglose_solicitud_cancelacion; track $index) {
+  @if (!cancd.cancel_soli_cancel_realizada) {
+    <p-divider />
+    <div class="col-12 explain">
+      <h6 class="title">confirmar cancelación</h6>
+    </div>
+    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+      <label class="activeInput">{{'fecha_cont' | translate}}</label>
+      <input class="validate datepicker" id="fechaContabilizacionPago" name="fechaContabilizacionCompra" type="date" (change)="confirmaCancelacionFechaCont($event.target,cancd.cancel_soli_token);">
+    </div>
+    <div class="col-12 input-group" style="margin-bottom: 10px!important;">
+      <label for="stockmin_regCat" id="lblStockmin" class="activeInput">{{'observ' | translate}}</label>
+      <textarea class="validate" name="large_descript" (keyup)="confirmaCancelacionObserva($event.target,cancd.cancel_soli_token);"></textarea>
+    </div>
+    <div class="col-12" style="display: flex !important;justify-content: end!important;">
+      <a class="btn btn_extend text-bg-success rounded-3" type="submit" name="btnAltaProducto2"
+        [ngClass]="cancd.f_contab_confirma_cancelacion == '' || cancd.comentarios_confirma_cancelacion == '' ? 'disabled' : ''"
+        [attr.disabled]="cancd.f_contab_confirma_cancelacion == '' || cancd.comentarios_confirma_cancelacion == '' ? true : null"
+        [attr.aria-disabled]="cancd.f_contab_confirma_cancelacion == '' || cancd.comentarios_confirma_cancelacion == '' ? true : null"
+        (click)="(cancd.f_contab_confirma_cancelacion != '' && cancd.comentarios_confirma_cancelacion != '') && confirmaCancelPagoNomina(cancd.cancel_soli_token,cancd.f_contab_confirma_cancelacion,cancd.comentarios_confirma_cancelacion);">
+        <i class="fa-solid fa-floppy-disk"
+          style="height: 15px!important;line-height: 15px!important;width: 15px!important;font-size: small!important;"></i>&nbsp;{{'sav_cam' | translate}}
+      </a>
+    </div>
+  }
+}

@@ -1,0 +1,176 @@
+<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco" #vContent>
+	<div class="contenido">
+		<app-loader></app-loader>
+		<nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+		<main class="contenidoPagina">
+			<div class="listas_ps revanecer">
+				<div id="listaClientes" class="lista-div lista-divNoFlex row">
+					<h4>REGISTRO DE IMPUESTOS</h4>
+					<div class="form">
+						<form id="formAddAImp" class="formAddAImp" name="formAddAImp" method="post" enctype="multipart/form-data">
+							<div class="divRegImpuesto row">
+								<div class="col-12 col-sm-12 col-md-3 col-lg-2 col-xl-2 col-xxl-2 dataTabla " id="divImpuestos">
+									<p-accordion value="0">
+										<p-accordion-panel value="0">
+											<p-accordion-header>IMPUESTOS FEDERALES</p-accordion-header>
+											<p-accordion-content>
+												<div class="col-12 row">
+													<div class="scroll">
+														<table class="centered responsive-table striped" id="impuFedTabla">
+															<tbody id="tbFederales">
+																<tr *ngFor="let listaImp of listaImpArray">
+																	<td *ngIf="listaImp.tipo == 001">{{listaImp.concepto}}</td>
+																	<td *ngIf="listaImp.tipo == 001" class="ultimo">
+																		<p class="radio" style="text-align: center;margin: 0;">
+																			<label>
+																				<input name="selectTipoImpu" class="txtSelectImpClass select with-gap"
+																					type="radio" value="{{listaImp.c_token}}" />
+																			</label>
+																		</p>
+																	</td>
+																</tr>
+	
+																<tr>
+																	<td>
+																		<div class="input-field otro" id="inputOtroImp">
+																			<input type="text" name="concepto" id="txtOtroImpu">
+																			<label for="txtOtroImpu" class="activeInput" id="lbltxtOtroImpu">Agregar otro
+																				impuesto</label>
+																		</div>
+																	</td>
+																	<td><a id="btnAddOtroImp" class="btn text-bg-success rounded-3"><i
+																				class="fas fa-plus"></i></a></td>
+																</tr>
+															</tbody>
+														</table>
+													</div>
+												</div>
+											</p-accordion-content>
+										</p-accordion-panel>
+										<p-accordion-panel value="1">
+											<p-accordion-header>IMPUESTOS ESTATALES</p-accordion-header>
+											<p-accordion-content>
+												<p class="m-0">Lorem</p>
+												<div class="col-12 row">
+													<div class="scroll">
+														<table class="centered responsive-table striped" id="impuEstatalesTabla">
+															<tbody id="tbImpEstatales">
+																<tr *ngFor="let listaImp of listaImpArray">
+																	<td *ngIf="listaImp.tipo == 002">{{listaImp.concepto}}</td>
+																	<td *ngIf="listaImp.tipo == 002" class="ultimo">
+																		<p class="radio" style="text-align: center;margin: 0;">
+																			<label>
+																				<input name="selectTipoImpu" class="txtSelectImpClass select with-gap"
+																					type="radio" value="{{listaImp.c_token}}" />
+																			</label>
+																		</p>
+																	</td>
+																</tr>
+																<tr>
+																	<td>
+																		<div class="input-field otro" id="inputOtroImp">
+																			<input type="text" name="concepto" id="txtOtroImpu">
+																			<label for="txtOtroImpu" class="activeInput" id="lbltxtOtroImpu">Agregar otro
+																				impuesto</label>
+																		</div>
+																	</td>
+																	<td><a id="btnAddOtroImp" class="btn text-bg-success rounded-3"><i
+																				class="fas fa-plus"></i></a></td>
+																</tr>
+															</tbody>
+														</table>
+													</div>
+												</div>
+											</p-accordion-content>
+										</p-accordion-panel>
+										<p-accordion-panel value="2">
+											<p-accordion-header>IMPUESTOS LOCALES</p-accordion-header>
+											<p-accordion-content>
+												<div class="col-12 row">
+													<div class="scroll">
+														<table class="centered responsive-table striped" id="impuLocalesTabla">
+															<tbody id="tbImpLocales">
+																<tr *ngFor="let listaImp of listaImpArray">
+																	<td *ngIf="listaImp.tipo == 003">{{listaImp.concepto}}</td>
+																	<td *ngIf="listaImp.tipo == 003" class="ultimo">
+																		<p class="radio" style="text-align: center;margin: 0;">
+																			<label>
+																				<input name="selectTipoImpu" class="txtSelectImpClass select with-gap"
+																					type="radio" value="{{listaImp.c_token}}" />
+																			</label>
+																		</p>
+																	</td>
+																</tr>
+																<tr>
+																	<td>
+																		<div class="input-field otro" id="inputOtroImp">
+																			<input type="text" name="concepto" id="txtOtroImpu">
+																			<label for="txtOtroImpu" class="activeInput" id="lbltxtOtroImpu">Agregar otro
+																				impuesto</label>
+																		</div>
+																	</td>
+																	<td><a id="btnAddOtroImp" class="btn text-bg-success rounded-3"><i
+																				class="fas fa-plus"></i></a></td>
+																</tr>
+															</tbody>
+														</table>
+													</div>
+												</div>
+											</p-accordion-content>
+										</p-accordion-panel>
+									</p-accordion>
+								</div>
+
+								<div class="col-12 col-sm-12 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+									<div class="col-12">
+										<h6 class="errorTh">* Folio registrado</h6>
+										<h6>{{impuestotipoSelected}}</h6>
+									</div>
+
+									<div class="col-12">
+										<h6 class="errorTh">* Alias</h6>
+										<input id="aliasImp" type="text" name="aliasImp" disabled>
+									</div>
+
+									<div class="col-12">
+										<h6 class="errorTh">* Tipo</h6>
+										<select name="tipoSelectImp" id="tipoSelectImp" disabled>
+											<option value="" disabled selected>{{'opt_select' | translate}}</option>
+											<option value="retenido">Retenido</option>
+											<option value="trasladado">Trasladado</option>
+										</select>
+									</div>
+
+									<div class="col-12">
+										<h6 class="errorTh">* Cuota / Porcentaje</h6>
+										<select name="subTipoSelectImp" id="subTipoSelectImp" disabled>
+											<option value="" disabled selected>{{'opt_select' | translate}}</option>
+											<option value="cuota">Cuota</option>
+											<option value="porcentaje">Porcentaje</option>
+										</select>
+									</div>
+
+									<div class="col-12">
+										<h6 class="errorTh">* Importe</h6>
+										<input id="importCatImp" type="text" name="importeImpu" disabled>
+									</div>
+
+									<div class="col s6">
+										<a id="btnRegImpu" class="btn bntRow bntGuardar btn text-bg-success rounded-3" disabled>&#xf044;</a>
+									</div>
+
+									<div class="col s6">
+										<a id="btnDeleteImpu" class="btn bntRow bntGuardar text-bg-danger rounded-3" disabled><i
+												class="fa-solid fa-eraser"></i></a>
+									</div>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</main>
+		<app-footer-inside></app-footer-inside>
+	</div>
+</div>

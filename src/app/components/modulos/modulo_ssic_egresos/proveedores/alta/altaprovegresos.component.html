@@ -1,0 +1,1300 @@
+<!--<p-confirmpopup #confirmPopup acceptLabel="Aceptar" rejectLabel="Cancelar"/>-->
+<p-confirmpopup #cp>
+  <ng-template #headless let-message>
+    <div class="rounded p-4">
+      <i class="fa-solid fa-circle-info"></i>&nbsp;
+      <span>{{ message.message }}</span>
+      <div class="flex items-center gap-2 mt-4">
+        <p-button id="popUpAccept" class="accept" (onClick)="cp.onAccept()" [label]="popUpAccept" size="small" />
+        <p-button id="popUpReject" class="reject" (onClick)="cp.onReject()" [label]="popUpReject" [text]="true"
+          size="small" severity="secondary" />
+      </div>
+    </div>
+  </ng-template>
+</p-confirmpopup>
+
+<div class="form data-reg row" style="margin-top:30px!important;"><!-- noneView-->
+  @if (!validateFoundProv) {
+    <div class="col-12 row" style="padding: 0;margin-bottom: 20px !important;">
+      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6 fase_uno_nac">
+        <div class="card card_fase_uno row">
+          <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 seccion_logo_tipo" style="padding: 0;">
+            <img src="../assets/images/mx_logo.png">
+          </div>
+          <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 seccion_form" style="display: flex;flex-wrap: wrap;flex-direction: column;justify-content: space-between;">
+            <div class="col-12">
+              <h6 class="header_text">proveedor nacional</h6>
+              <ul class="list-group list_opciones">
+                <li id="nacFisBtn" class="list-group-item" (click)="tipoNacionalidadSelectProv($event.target,'nacional','provFisica','nacFisBtn');especificacionesInputRfcProv();">
+                  <i class="fa-solid fa-person"></i>Persona f&iacute;sica
+                </li>
+                <li id="nacMorBtn" class="list-group-item" (click)="tipoNacionalidadSelectProv($event.target,'nacional','provMoral','nacMorBtn');especificacionesInputRfcProv();">
+                  <i class="fa-solid fa-people-group"></i>Persona moral
+                </li>
+              </ul>
+            </div>
+            <div class="col-12 formulario_verificacion">
+              <div class="col-12" style="padding:0!important;">
+                <div class="input-group rfcMayus">
+                  @if (provModelo.tipoProv == '' || provModelo.tipoProv == 'extranjero' || provModelo.subtipoProv == '') {
+                    <label for="first_name" class="activeInput">Escriba su rfc con Homoclave</label>
+                    <input id="verif_rfcProv" class="validate" name="verif_rfcProvMx" type="text" placeholder="Ej. ABCD000000XXX" disabled>
+                  } @else if (provModelo.tipoProv != '' && provModelo.tipoProv == 'nacional' && provModelo.subtipoProv != '' && provModelo.subtipoProv == 'provFisica') {
+                    <label for="first_name" class="activeInput">Escriba su rfc con Homoclave (13 caracteres)</label>
+                    <input id="verif_rfcProv" class="verif_rfc validate inputWthPass" name="verif_rfcProvMx" type="text" autocomplete="off" data-length="13" placeholder="Ej. ABCD000000XXX" maxlength="13" (keyup)="keyupverif_rfcProv($event.target);">
+                  } @else if (provModelo.tipoProv != '' && provModelo.tipoProv == 'nacional' && provModelo.subtipoProv != '' && provModelo.subtipoProv == 'provMoral') {
+                    <label for="first_name" class="activeInput">Escriba su rfc con Homoclave (12 caracteres)</label>
+                    <input id="verif_rfcProv" class="verif_rfc validate inputWthPass" name="verif_rfcProvMx" type="text" autocomplete="off" data-length="12" placeholder="Ej. ABC000000XXX" maxlength="12" (keyup)="keyupverif_rfcProv($event.target);">
+                  }
+                </div>
+              </div>
+              <div class="col-12" style="padding:0!important;">
+                <div class="input-group rfcMayus">
+                  <label for="txtMaternoPF_reg" class="activeInput" id="lblMaterno">Nombre completo / raz&oacute;n social del proveedor</label>
+                  <input id="verifNameProvidder_reg" class="validate" name="verifRfcMaterno" type="text" autocomplete="off" 
+                    [disabled]="provModelo.tipoProv == '' || provModelo.tipoProv == 'extranjero' || provModelo.subtipoProv == '' || provModelo.rfc == ''" 
+                    (keyup)="checkNombreProv($event.target);">
+                </div>
+              </div>
+              <div class="col-12 row" style="padding:0!important;">
+                <div class="col-12 col-sm-12 col-md-6 col-lg-8 col-xl-8 col-xxl-8"></div>
+                <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-4" style="display: flex !important;justify-content: end!important;margin-top: 5px!important;padding: 0!important;margin-bottom: 5px !important;">
+                  <a class="btn btn_extend bg-blue-300" id="btnBuscaProvDB"
+                    [ngClass]="provModelo.tipoProv == '' || provModelo.tipoProv == 'extranjero' || provModelo.subtipoProv == '' || provModelo.rfc == '' || provModelo.name_prov == '' ? 'disabled' : ''"
+                    [attr.disabled]="provModelo.tipoProv == '' || provModelo.tipoProv == 'extranjero' || provModelo.subtipoProv == '' || provModelo.rfc == '' || provModelo.name_prov == '' ? true : null"
+                    [attr.aria-disabled]="provModelo.tipoProv == '' || provModelo.tipoProv == 'extranjero' || provModelo.subtipoProv == '' || provModelo.rfc == '' || provModelo.name_prov == '' ? true : null"
+                    (click)="provModelo.tipoProv != '' && provModelo.tipoProv == 'nacional' && provModelo.subtipoProv != '' && provModelo.name_prov != '' && provModelo.rfc != '' ? funtcBuscaProvDBNac() : null;">
+                    Verificar RFC
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6 fase_uno_ext">
+        <div class="card card_fase_uno row">
+          <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 seccion_logo_tipo" style="padding: 0;">
+            <i class="fa-solid fa-globe"></i>
+          </div>
+          <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 seccion_form" style="display: flex;flex-wrap: wrap;flex-direction: row;">
+            <div class="col-12">
+              <h6 class="header_text">proveedor extranjero</h6>
+              <ul class="list-group list_opciones">
+                <li id="extFisBtn" class="list-group-item" (click)="tipoNacionalidadSelectProv($event.target,'extranjero','provFisica','extFisBtn');especificacionesInputRfcProv();">
+                  <i class="fa-solid fa-person"></i>Persona f&iacute;sica
+                </li>
+                <li id="extMorBtn" class="list-group-item" (click)="tipoNacionalidadSelectProv($event.target,'extranjero','provMoral','extMorBtn');especificacionesInputRfcProv();">
+                  <i class="fa-solid fa-people-group"></i>Persona moral
+                </li>
+              </ul>
+            </div>
+            <div class="col-12 formulario_verificacion">
+              <div class="col-12" style="padding:0!important;">
+                <div class="input-group rfcMayus">
+                  @if (provModelo.tipoProv == '' || provModelo.tipoProv == 'nacional' || provModelo.subtipoProv == '') {
+                    <label for="first_name" class="activeInput">Escriba su rfc</label>
+                    <input class="validate" name="verif_rfcProvMx" type="text" placeholder="Ej. ABCD000000XXX" disabled>
+                  } @else if (provModelo.tipoProv != '' && provModelo.tipoProv == 'extranjero' && provModelo.subtipoProv != '' && provModelo.subtipoProv == 'provMoral') {
+                    <datalist id="listaRfcModelo">
+                      <option value="xaxx010101000"></option>
+                      <option value="xax010101000"></option>
+                      <option value="xexx010101000"></option>
+                    </datalist>
+                    <label for="first_name" class="activeInput">Escriba su rfc</label>
+                    <input id="verif_rfcProv" list="#listaRfcModelo" class="verif_rfc validate" name="verif_rfcProvExt" autocomplete="off" type="text" placeholder="Ej. ABC000000XXX" (keyup)="keyupverif_rfcExtProv($event.target);">
+                  }
+                </div>
+                <div class="input-group rfcMayus">
+                  <label for="first_name" class="activeInput">Escriba Tax ID del proveedor</label>
+                  <input id="verif_idTaxProv" class="verif_rfc validate" name="verif_rfcProvMx" type="text" minlength="9" maxlength="40" autocomplete="off" 
+                    [disabled]="provModelo.tipoProv == '' || provModelo.tipoProv == 'nacional' || provModelo.subtipoProv == ''" (keyup)="keyupverif_TaxIdProv($event.target);">
+                </div>
+              </div>
+              <div class="col-12" style="padding:0!important;">
+                <div class="input-group rfcMayus">
+                  <label for="txtMaternoPF_reg" class="activeInput" id="lblMaterno">Nombre completo / raz&oacute;n social del proveedor</label>
+                  <input id="verifNameProvidderExt_reg" class="validate" name="verifRfcMaterno" type="text" autocomplete="off"
+                    [disabled]="provModelo.tipoProv == '' || provModelo.tipoProv == 'nacional' || provModelo.subtipoProv == '' || provModelo.rfc == ''" (keyup)="checkNombreProv($event.target);">
+                </div>
+              </div>
+              <div class="col-12 row" style="padding:0!important;">
+                <div class="col-12 col-sm-12 col-md-6 col-lg-8 col-xl-8 col-xxl-8"></div>
+                <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-4" style="display: flex !important;justify-content: end!important;margin-top: 5px!important;padding: 0!important;margin-bottom: 5px !important;">
+                  <a class="btn btn_extend bg-blue-300" id="btnBuscaProvDB"
+                    [ngClass]="provModelo.tipoProv == '' || provModelo.tipoProv == 'nacional' || provModelo.subtipoProv == '' || provModelo.rfc == '' || provModelo.name_prov == '' ? 'disabled' : ''"
+                    [attr.disabled]="provModelo.tipoProv == '' || provModelo.tipoProv == 'nacional' || provModelo.subtipoProv == '' || provModelo.rfc == '' || provModelo.name_prov == '' ? true : null"
+                    [attr.aria-disabled]="provModelo.tipoProv == '' || provModelo.tipoProv == 'nacional' || provModelo.subtipoProv == '' || provModelo.rfc == '' || provModelo.name_prov == '' ? true : null"
+                    (click)="provModelo.tipoProv != '' && provModelo.tipoProv == 'extranjero' && provModelo.subtipoProv != '' && provModelo.name_prov != '' && provModelo.rfc != '' ? funtcBuscaProvDBExt() : null;">
+                    Verificar RFC
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  } @else {
+    <div class="col-12" style="border-top: solid 1px lightgray!important;padding: 0 !important;">
+      <form method="post" class="frmAddProv" #frmAddProv="ngForm" [formGroup]="phoneForm" name="frmAddProv" enctype="multipart/form-data" (ngSubmit)="validateToRegistro && solicitaRegistroProveedor(frmAddProv);">
+        <div class="data-reg row">
+          <div class="col-12 row" style="padding: 0;">
+            <div class="col-12 col-sm-4 col-md-4 col-lg-4 col-xl-4 col-xxl-4 explain">
+              <h6 class="title">Clasificaci&oacute;n del proveedor</h6>
+              <h6 class="content">{{vSubClasificacionProv == 'provFisica' ? 'Persona física' : 'Persona moral'}}</h6>
+            </div>
+            <div class="col-12 col-sm-4 col-md-4 col-lg-4 col-xl-4 col-xxl-4 explain">
+              <h6 class="title">Rfc</h6>
+              <h6 class="content">{{provModelo.rfc != '' ? provModelo.rfc : '---'}}</h6>
+            </div>
+            <div class="col-12 col-sm-4 col-md-4 col-lg-4 col-xl-4 col-xxl-4 explain">
+              <h6 class="title">idTax</h6>
+              <h6 class="content">{{provModelo.id_tax != '' ? provModelo.id_tax : '---'}}</h6>
+            </div>
+            <div class="col-12 explain">
+              <h6 class="title">Nombre completo / raz&oacute;n social del proveedor</h6>
+              <h6 class="content" (click)="decideEditarDataProveedor();">{{provModelo.name_prov+" "}}
+                <i class="fa-solid" [ngClass]="!decisionEditNombre ? 'fa-pen-to-square fa-beat' : 'fa-solid fa-caret-up'"></i>
+              </h6>
+            </div>
+            @if (decisionEditNombre) {
+              <div class="col-12 row" style="padding:0!important;">
+                <div class="col-12 col-sm-12 col-md-11 col-lg-11 col-xl-11 col-xxl-11 row" style="padding: 0;">
+                  @switch (provModelo.tipoProv) {
+                    @case ('nacional') {
+                      <div class="input-group rfcMayus col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6" style="padding-left: 0;">
+                        <label for="txtMaternoPF_reg" class="activeInput" id="lblMaterno">Nombre completo / raz&oacute;n social del proveedor</label>
+                        <input id="verifNameProvidder_reg" class="validate" name="verifRfcMaterno" type="text" autocomplete="off" (keyup)="validaNewNombreProv($event.target);">
+                      </div>
+                      <div class="input-group rfcMayus col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6" style="padding-left: 0;">
+                        @switch (provModelo.subtipoProv) {
+                          @case ('provFisica') {
+                            <label class="activeInput">Escriba su rfc con Homoclave (13 caracteres)</label>
+                            <input class="verif_rfc validate inputWthPass" type="text" autocomplete="off" data-length="13" placeholder="Ej. ABCD000000XXX" maxlength="13" (keyup)="validaNewRfcProv($event.target);">
+                          }
+                          @case ('provMoral') {
+                            <label class="activeInput">Escriba su rfc con Homoclave (12 caracteres)</label>
+                            <input class="verif_rfc validate inputWthPass" type="text" autocomplete="off" data-length="12" placeholder="Ej. ABC000000XXX" maxlength="12" (keyup)="validaNewRfcProv($event.target);">
+                          }
+                          @default {
+                            <div></div>
+                          }
+                        }
+                      </div>
+                    }
+                    @case ('extranjero') {
+                      <div class="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-4 col-xxl-4 input-group rfcMayus" style="padding-left: 0;">
+                        <label for="txtMaternoPF_reg" class="activeInput" id="lblMaterno">Nombre completo / raz&oacute;n social del proveedor</label>
+                        <input id="verifNameProvidder_reg" class="validate" name="verifRfcMaterno" type="text" autocomplete="off" (keyup)="validaNewNombreProv($event.target);">
+                      </div>
+                      <div class="input-group rfcMayus col-12 col-sm-12 col-md-4 col-lg-4 col-xl-4 col-xxl-4" style="padding-left: 0;">
+                        @switch (provModelo.subtipoProv) {
+                          @case ('provFisica') {
+                            <label class="activeInput">Escriba su rfc con Homoclave (13 caracteres)</label>
+                            <input class="verif_rfc validate inputWthPass" type="text" autocomplete="off" data-length="13" placeholder="Ej. ABCD000000XXX" maxlength="13" (keyup)="validaNewRfcProv($event.target);">
+                          }
+                          @case ('provMoral') {
+                            <label class="activeInput">Escriba su rfc con Homoclave (12 caracteres)</label>
+                            <input class="verif_rfc validate inputWthPass" type="text" autocomplete="off" data-length="12" placeholder="Ej. ABC000000XXX" maxlength="12" (keyup)="validaNewRfcProv($event.target);">
+                          }
+                          @default {
+                            <div></div>
+                          }
+                        }
+                      </div>
+                      <div class="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-4 col-xxl-4 input-group rfcMayus">
+                        <label for="first_name" class="activeInput">Escriba Tax ID del proveedor</label>
+                        <input id="verif_idTaxProv" class="verif_rfc validate" name="verif_rfcProvMx" type="text" minlength="9" maxlength="40" autocomplete="off" (keyup)="validaNewTaxIdProv($event.target);">
+                      </div>
+                    }
+                    @default {
+                      <div></div>
+                    }
+                  }
+                </div>
+    
+                <div class="col-12 col-sm-12 col-md-1 col-lg-1 col-xl-1 col-xxl-1" style="padding: 0;margin-left: -10px;">
+                  @if ((provModelo.name_prov_back != '' && provModelo.name_prov != provModelo.name_prov_back) || (provModelo.rfc_back != '' && provModelo.rfc != provModelo.rfc_back) || (provModelo.id_tax_back != '' && provModelo.id_tax != provModelo.id_tax_back)) {
+                    <a class="btn btn_extend text-bg-success rounded-3" (click)="guardaNew_DataProveedor();">
+                      <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+                    </a>
+                  } @else {
+                    <a class="btn btn_extend text-bg-success rounded-3 disabled" disabled aria-disabled="true">
+                      <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+                    </a>
+                  }
+                </div>
+              </div>
+            }
+            <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-6 col-xxl-6" style="margin: 0;padding: 0;">
+              <span class="error" style="font-family: 'roboto_cr' !important;font-size: smaller;">* Campos obligatorios</span>
+            </div>
+            <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-6 col-xxl-6" style="margin: 0;padding: 0;">
+              <a class="btn btnGuardar btnRow bg-red-700" style="font-family:'roboto_cr'!important;font-size: smaller;height: 20px;line-height: 20px;" (click)="comeBackPrincipalMenu();">
+                <i class="fa-solid fa-chevron-left"></i>&nbsp;Regresar al menu principal
+              </a>
+            </div>
+          </div>
+          @if (vSubClasificacionProv == 'provFisica') {
+            <p-divider style="z-index: 1000 !important;"/>
+            <div class="col-12 row" style="padding:0!important;">
+              <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain">
+                <h6 class="title">¿Desea habilitar al proveedor para reembolsos?</h6>
+              </div>
+              <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                <label class="form-check-label" for="flexSwitchCheckReverse">No</label>
+                <input class="form-check-input" type="checkbox" (click)="habilitar_prov_para_reembolsos($event.target);">
+                <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+              </div>
+              <div id="infoemail_reembolsos" class="col-12 noneView" style="padding: 0;">
+                <div class="input-group col-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-4">
+                  <label for="txtnomCom_regPF" class="activeInput" id="lblNomComercial">{{'email' | translate}}</label>
+                  <input class="validate" type="email" style="text-transform: lowercase!important;"
+                    (keyup)="keyupEmailForReembolsos($event.target);">
+                </div>
+              </div>
+            </div>
+          }
+          <p-divider style="z-index: 1000 !important;"/>
+          <div class="col-12 row" style="padding:0!important;">
+            <div class="col-12 explain">
+              <h6 class="title">DATOS GENERALES</h6>
+            </div>
+  
+            <div class="input-group col-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-4">
+              <label for="txtnomComercial_reg" class="activeInput" id="lblNomComercial">Nombre comercial</label>
+              <input id="txtnomComercial_reg" class="validate" name="txtnomComercial_reg" type="text" (keyup)="keyupComercialName($event.target);">
+            </div>
+            <div class="input-group col-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-4">
+              @switch (vClasificacionProv) {
+                @case ('nacional') {
+                  <label for="txtcurpPF_reg" class="activeInput">CURP</label>
+                  <input id="txtcurpPF_reg" class="validate" name="txtcurpPF_reg" type="text" (keyup)="keyupCurp($event.target);">
+                }
+                @case ('extranjero') {
+                  <label for="selPaisExtPF_reg" class="activeInput" id="lblselPaisExtPF_reg"><span class="obligatorio">Pa&iacute;s</span></label>
+                  <p-select [options]="arraYpais" id="selPaisExtPF_reg" name="selPaisExtPF_reg" optionLabel="pais" [filter]="true" filterBy="pais" optionValue="token_pais" 
+                    appendTo="body" [showClear]="true" [placeholder]="'opt_select' | translate" class="w-full md:w-56" (onChange)="changePais($event.value);">
+                    <ng-template #selectedItem let-selPais>
+                      <div class="flex items-center gap-2">
+                        <div>{{selPais.pais}}</div>
+                      </div>
+                    </ng-template>
+                    <ng-template let-ltpais #item>
+                      <div class="flex items-center gap-2">
+                        <div>{{ltpais.pais}}</div>
+                      </div>
+                    </ng-template>
+                  </p-select>
+                }
+                @default {
+                  <div></div>
+                }
+              }
+            </div>
+            <div class="input-group input-field-website col-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-4">
+              <label for="txtsitWeb_reg" class="activeInput" id="lblSitioWeb">Sitio web</label>
+              <input id="txtsitWebPF_reg" class="validate" name="txtSitioWebPF" type="text" (change)="changeSitioWeb($event.target);">
+            </div>
+  
+            @switch (vSubClasificacionProv) {
+              @case ('provFisica') {
+                <div class="input-group col-12">
+                  <label for="selRegimenFiscal" class="activeInput"><span class="obligatorio">{{'reg_fis' | translate}}</span></label>
+                  <p-select [options]="PfAllRegFisArray" id="selRegimenFiscal" name="selRegimenFiscal" optionLabel="regimen" [filter]="true" filterBy="regimen" optionValue="token_regimen_fiscal" 
+                    appendTo="body" [showClear]="true" [placeholder]="'opt_select' | translate" class="w-full md:w-56" (onChange)="changeRegimenFiscal($event.value);">
+                    <ng-template #selectedItem let-selRegFis>
+                      <div class="flex items-center gap-2">
+                        <div>{{selRegFis.regimen}}</div>
+                      </div>
+                    </ng-template>
+                    <ng-template let-ltrfis #item>
+                      <div class="flex items-center gap-2">
+                        <div>{{ltrfis.regimen}}</div>
+                      </div>
+                    </ng-template>
+                  </p-select>
+                </div>
+              }
+              @case ('provMoral') {
+                <div class="input-group col-12">
+                  <label for="selRegimenFiscal" class="activeInput"><span class="obligatorio">{{'reg_fis' | translate}}</span></label>
+                  <p-select [options]="PmAllRegFisArray" id="selRegimenFiscal" name="selRegimenFiscal" optionLabel="regimen" [filter]="true" filterBy="regimen" optionValue="token_regimen_fiscal" 
+                    appendTo="body" [showClear]="true" [placeholder]="'opt_select' | translate" class="w-full md:w-56" (onChange)="changeRegimenFiscal($event.value);">
+                    <ng-template #selectedItem let-selRegFis>
+                      <div class="flex items-center gap-2">
+                        <div>{{selRegFis.regimen}}</div>
+                      </div>
+                    </ng-template>
+                    <ng-template let-ltrfis #item>
+                      <div class="flex items-center gap-2">
+                        <div>{{ltrfis.regimen}}</div>
+                      </div>
+                    </ng-template>
+                  </p-select>
+                </div>
+              }
+              @default {
+                <div class="col-12 explain">
+                  <h6 class="title">Seleccione si su proveedor es persona f&iacute;sica o moral</h6>
+                </div>
+              }
+            }
+  
+            <div class="input-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3">
+              <label for="cuentaContableProv" class="activeInput">Cuenta contable</label>
+              <input id="cuentaContableProv" name="cuentaContableProv" class="validate" type="text" (keyup)="keyupValidateCuentaContable($event.target);">
+            </div>
+          </div>
+          <p-divider style="z-index: 1000 !important;"/>
+
+          <div class="col-12 row" style="padding:0!important;">
+            <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain">
+              <h6 class="title">Utilizar informaci&oacute;n de contacto</h6>
+            </div>
+            <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+              <label class="form-check-label" for="flexSwitchCheckReverse">No</label>
+              <input class="form-check-input" type="checkbox" (click)="decideocupaContacto($event.target);">
+              <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+            </div>
+            <div id="decideinfocontacto" class="col-12 noneView" style="padding: 0;">
+              <p-table #listContList [value]="provModelo.listaContactoPersonal" dataKey="nomina_clave" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]" 
+                [globalFilterFields]="['paterno','materno','nombre','area','cargo']">
+                <ng-template #caption>
+                  <div class="flex" style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;">
+                    <p-iconfield iconPosition="left" class="ml-auto" style="margin:0!important;">
+                      <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                      <input pInputText type="text" (input)="listContList.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+                    </p-iconfield>
+                  </div>
+                </ng-template>
+                <ng-template #header>
+                  <tr>
+                    <th>Apellido Paterno</th>
+                    <th>Apellido Materno</th>
+                    <th>Nombre(s)</th>
+                    <th>Area</th>
+                    <th>Cargo</th>
+                    <th class="ultimo"></th>
+                    <th class="ultimo"></th>
+                    <th class="ultimo"></th>
+                  </tr>
+                  <tr>
+                    <td><input id="contPersProvPaterno" class="validate" type="text" (keyup)="keyupPersContPaterno($event.target);"></td>
+                    <td><input id="contPersProvMaterno" class="validate" type="text" (keyup)="keyupPersContMaterno($event.target);"></td>
+                    <td><input id="contPersProvNombres" class="validate" type="text" (keyup)="keyupPersContNombres($event.target);"></td>
+                    <td><input id="contPersProvArea" class="validate" type="text" (keyup)="keyupPersContArea($event.target);"></td>
+                    <td><input id="contPersProvCargo" class="validate" type="text" (keyup)="keyupPersContCargo($event.target);"></td>
+                    <td class="ultimo">
+                      <a id="btnModalPersMailMain" class="btn bg-blue-600" (click)="verModalContEmail();">
+                        <i class="fa-solid fa-at"></i>
+                      </a>
+                    </td>
+                    <td class="ultimo">
+                      <a id="btnModalPersTelMain" class="btn bg-blue-600" (click)="verModalContTelefono();">
+                        <i class="fa-solid fa-phone"></i>
+                      </a>
+                    </td>
+                    <td class="ultimo">
+                      <a id="addInfoContactoP" class="btn btn_extend text-bg-success rounded-3"
+                        [ngClass]="!enableBtnContacto ? 'disabled' : ''"
+                        [attr.disabled]="!enableBtnContacto ? true : null"
+                        [attr.aria-disabled]="!enableBtnContacto ? true : null"
+                        (click)="enableBtnContacto && clickfunctionaddInfoContacto();">
+                        <i class="fa-solid fa-plus"></i>&nbsp;{{'btn_add' | translate}}
+                      </a>
+                    </td>
+                  </tr>
+                </ng-template>
+                <ng-template #body let-contProv let-index="rowIndex">
+                  <tr>
+                    <td>{{contProv.paterno}}</td>
+                    <td>{{contProv.materno}}</td>
+                    <td>{{contProv.nombre}}</td>
+                    <td>{{contProv.area}}</td>
+                    <td>{{contProv.cargo}}</td>
+                    <td>
+                      <p-button type="button" class="btn bg-blue-600"
+                        [ngClass]="contProv.emails.length == 0 ? 'disabled' : ''"
+                        [attr.disabled]="contProv.emails.length == 0 ? true : null"
+                        [attr.aria-disabled]="contProv.emails.length == 0 ? true : null"
+                        (onClick)="contProv.emails.length > 0 && toggleMails($event)">
+                        <i class="fa-solid fa-at"></i>
+                      </p-button>
+                      <p-popover #popOverMails>
+                        <div class="flex flex-col gap-4">
+                          <div>
+                            <span class="font-medium block mb-2">Email de contacto</span>
+                            <ul class="list-group">
+                              <li *ngFor="let mailPers of contProv.emails;index as positionCont" class="list-group-item">
+                                <div>
+                                  <span class="font-medium">{{mailPers}}</span>
+                                </div>
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
+                      </p-popover>
+                    </td>
+                    <td>
+                      <p-button type="button" class="btn bg-blue-600"
+                        [ngClass]="contProv.telefonos.length == 0 ? 'disabled' : ''"
+                        [attr.disabled]="contProv.telefonos.length == 0 ? true : null"
+                        [attr.aria-disabled]="contProv.telefonos.length == 0 ? true : null"
+                        (onClick)="contProv.telefonos.length > 0 && togglePhone($event)">
+                        <i class="fa-solid fa-phone"></i>
+                      </p-button>
+                      <p-popover #popOverPhone>
+                        <div class="flex flex-col gap-4">
+                          <div>
+                            <span class="font-medium block mb-2">Telefonos de contacto</span>
+                            <ul class="list-group">
+                              @for (telPers of contProv.telefonos; track $index) {
+                                <li class="list-group-item">
+                                  <div>
+                                    <span class="font-medium">
+                                      @switch (telPers.etiqueta) {
+                                        @case ('casa') {<i class="fa-solid fa-phone"></i>}
+                                        @case ('movil') {<i class="fa-solid fa-mobile"></i>}
+                                        @case ('trabajo') {<i class="fa-solid fa-phone"></i>}
+                                        @case ('fax') {<i class="fa-solid fa-fax"></i>}
+                                        @case ('otro') {<i class="fa-solid fa-circle-question"></i>}
+                                        @default {
+                                        }
+                                      }
+                                      &nbsp;{{telPers.telefono_complete}}</span>
+                                    <div class="text-sm text-surface-500 dark:text-surface-400">{{telPers.etiqueta+(telPers.extension != '' ? ' ext: '+telPers.extension : '') }}</div>
+                                  </div>
+                                </li>
+                              }
+                            </ul>
+                          </div>
+                        </div>
+                      </p-popover>
+                    </td>
+                    <td class="ultimo">
+                      <a (click)="clickfunctiondeleteRegCont(contProv.num_lista)" class="btn btn_extend text-bg-danger rounded-3">
+                        <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                      </a>
+                    </td>
+                  </tr>
+                  <!--@for (contProv of provModelo.listaContactoPersonal; track $index) {}-->
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                  <tr>
+                    <td colspan="8" class="text-center py-4">
+                      <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                      <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                        {{'no_rows' | translate}}
+                      </p>
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
+          </div>
+          <p-divider style="z-index: 1000 !important;"/>
+          
+          <div class="col-12 row" style="padding:0!important;">
+            <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain">
+              <h6 class="title">¿Cuenta con documentaci&oacute;n fiscal?</h6>
+            </div>
+            <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+              <label class="form-check-label" for="flexSwitchCheckReverse">No</label>
+              <input class="form-check-input" type="checkbox" (click)="decide_docs_fiscales($event.target);">
+              <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+            </div>
+            <div id="decidedocs_fiscales" class="col-12 noneView" style="padding: 0;">
+              <!--situacion fiscal-->
+              <div class="modal fade bd-example-modal-lg" id="scannerSitFiscalProv" tabindex="-1" role="dialog" aria-labelledby="scannerSitFiscalProvLabel" aria-hidden="true">
+                <div class="modal-dialog modal-fullscreen" style="margin: 1%;width: 98%!important;">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="scannerSitFiscalProvLabel">ESCANNER DE CONSTANCIA DE SITUACI&Oacute;N FISCAL</h1>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: transparent !important;"></button>
+                    </div>
+                    <div class="modal-body">
+                      <div class="col-12" style="display:flex;flex-wrap:wrap;justify-content: space-between;">
+                        <div id="readerSitFiscalProv" style="height: 400px;width: 50%;background-color: #353535;border-radius: 8px 0 0 8px;"></div>
+                        <div id="divImgClassSitfiscalProv" class="bg-indigo-600" style="height: 400px;width: 50%;border-radius: 0 8px 8px 0;display: flex;justify-content: center;align-items: center;">
+                          <i class="fa-solid fa-qrcode" style="font-size: 50px;"></i>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div>
+                  </div>
+                </div>
+              </div>
+  
+              <div class="modal fade bd-example-modal-lg" id="windowSitFiscalProv" tabindex="-1" role="dialog" aria-labelledby="windowSitFiscalProvLabel" aria-hidden="true">
+                <div class="modal-dialog modal-fullscreen" style="margin: 1%;width: 98%!important;">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="windowSitFiscalProvLabel">CONSTANCIA DE SITUACI&Oacute;N FISCAL</h1>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: transparent !important;"></button>
+                    </div>
+                    <div class="modal-body">
+                      <div class="col-12">
+                        @if (provModelo.typoSituacionFiscal == 'application/pdf') {
+                          <iframe id="framedocSituacionFiscal" style="width: 100%!important; height: 60vh!important;border-radius: 8px;position: relative;z-index: 0;" [src]="provModelo.htmlSituacionFiscal" frameborder="0"></iframe>
+                        } @else {
+                          <img class="responsive-img" style="width: 100% !important;max-width: 100% !important;height: 100% !important;border-radius: 8px;position: relative;z-index: 0;" [src]="provModelo.htmlSituacionFiscal">
+                        }
+                      </div>
+                    </div>
+                    <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div>
+                  </div>
+                </div>
+              </div>
+  
+              <!--cumplimientos-->
+              <div class="modal fade bd-example-modal-lg" id="scannerOpinionCumplimientoProv" tabindex="-1" role="dialog" aria-labelledby="scannerOpinionCumplimientoProvLabel" aria-hidden="true">
+                <div class="modal-dialog modal-fullscreen" style="margin: 1%;width: 98%!important;">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="scannerOpinionCumplimientoProvLabel">ESCANNER DE CONSTANCIA DE OPINI&Oacute;N DE CUMPLIMIENTO DE OBLIGACIONES FISCALES</h1>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: transparent !important;"></button>
+                    </div>
+                    <div class="modal-body">
+                      <div class="col-12" style="display:flex;flex-wrap:wrap;justify-content: space-between;">
+                        <div id="readerOpinionCumplimientoProv" style="height: 400px;width: 100%;margin-top: 100px;background-color: #353535;border-radius: 8px;">
+                        </div>
+                        <div id="divImgClassCumplimientoObFiscalProv" class="bg-indigo-600" style="height: 400px;width: 50%;border-radius: 0 8px 8px 0;display: flex;justify-content: center;align-items: center;">
+                          <i class="fa-solid fa-qrcode" style="font-size: 50px;"></i>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="modal-footer"><button type="button" class="btn btn-secondary"
+                        data-bs-dismiss="modal">Close</button></div>
+                  </div>
+                </div>
+              </div>
+  
+              <div class="modal fade bd-example-modal-lg" id="windowOpinionCumplimientoProv" tabindex="-1" role="dialog" aria-labelledby="windowOpinionCumplimientoProvLabel" aria-hidden="true">
+                <div class="modal-dialog modal-fullscreen" style="margin: 1%;width: 98%!important;">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="windowOpinionCumplimientoProvLabel">CONSTANCIA DE OPINI&Oacute;N DE CUMPLIMIENTO DE OBLIGACIONES FISCALES</h1>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: transparent !important;"></button>
+                    </div>
+                    <div class="modal-body">
+                      <div class="col-12">
+                        @if (provModelo.typoCumplimientoObFiscales == 'application/pdf') {
+                          <iframe style="width: 100%!important; height: 60vh!important;border-radius: 8px;position: relative;z-index: 0;" [src]="provModelo.htmlCumplimientoObFiscales" frameborder="0"></iframe>
+                        } @else {
+                          <img class="responsive-img" style="width: 100% !important;max-width: 100% !important;height: 100% !important;border-radius: 8px;position: relative;z-index: 0;" [src]="provModelo.htmlCumplimientoObFiscales">
+                        }
+                      </div>
+                    </div>
+                    <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div>
+                  </div>
+                </div>
+              </div>
+  
+              <!--contratos-->
+              <div class="modal fade bd-example-modal-lg" id="scannerContratosProv" tabindex="-1" role="dialog" aria-labelledby="scannerContratosProvLabel" aria-hidden="true">
+                <div class="modal-dialog modal-fullscreen" style="margin: 1%;width: 98%!important;">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="scannerContratosProvLabel">ESCANNER DE CONSTANCIA DE CONTRATOS</h1>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: transparent !important;"></button>
+                    </div>
+                    <div class="modal-body">
+                      <div class="col-12" style="display:flex;flex-wrap:wrap;justify-content: space-between;">
+                        <div id="readerContratosProv" style="height: 400px;width: 100%;margin-top: 100px;background-color: #353535;border-radius: 8px;">
+                        </div>
+                        <div id="divImgClassContratosProv" class="bg-indigo-600" style="height: 400px;width: 50%;border-radius: 0 8px 8px 0;display: flex;justify-content: center;align-items: center;">
+                          <i class="fa-solid fa-qrcode" style="font-size: 50px;"></i>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div>
+                  </div>
+                </div>
+              </div>
+  
+              <div class="modal fade bd-example-modal-lg" id="windowContratosProv" tabindex="-1" role="dialog" aria-labelledby="windowContratosProvLabel" aria-hidden="true">
+                <div class="modal-dialog modal-fullscreen" style="margin: 1%;width: 98%!important;">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="windowContratosProvLabel">Contratos</h1>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: transparent !important;"></button>
+                    </div>
+                    <div class="modal-body">
+                      <div class="col-12">
+                        @if (provModelo.typoContratos == 'application/pdf') {
+                          <iframe style="width: 100%!important; height: 60vh!important;border-radius: 8px;position: relative;z-index: 0;" [src]="provModelo.htmlContratos" frameborder="0"></iframe>
+                        } @else {
+                          <img class="responsive-img" style="width: 100% !important;max-width: 100% !important;height: 100% !important;border-radius: 8px;position: relative;z-index: 0;" [src]="provModelo.htmlContratos">
+                        }
+                      </div>
+                    </div>
+                    <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div>
+                  </div>
+                </div>
+              </div>
+  
+              <table class="centered white">
+                <thead>
+                  <tr>
+                    <th style="width: 400px!important;"></th>
+                    <th>{{'file_name' | translate}}</th>
+                    <th class="ultimo"></th>
+                    <th class="ultimo"></th>
+                    <th class="ultimo"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr id="trDocSitFiscal">
+                    <td>Constancia de situaci&oacute;n fiscal</td>
+                    <td>
+                      <div class="mb-3" style="margin: 0!important;">
+                        <input class="form-control" type="file" id="file_situacion_fiscal" (change)="cargaDocssitfiscal($event);" placeholder="CONSTANCIA DE SITUACION FISCAL" style="padding: 0;line-height: 30px;width: 100%!important;">
+                      </div>
+                    </td>
+                    <td class="ultimo">
+                        <a class="btn btn_extend text-bg-primary" data-bs-toggle="modal" (click)="clickEscannersitfiscal();" data-bs-target="#scannerSitFiscalProv"><i class="fa-solid fa-qrcode"></i></a>
+                    </td>
+                    @if (provModelo.htmlSituacionFiscal != '') {
+                      <td class="ultimo">
+                        <a class="btn btn_extend text-bg-primary" data-bs-toggle="modal" data-bs-target="#windowSitFiscalProv">
+                          <i class="fa-regular fa-hand-pointer"></i>
+                        </a>
+                      </td>
+                      <td class="ultimo">
+                        <a class="btn btn_extend text-bg-danger rounded-3" (click)="deleteDocSitfiscal();">
+                          <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                        </a>
+                      </td>
+                    } @else {
+                      <td class="ultimo">
+                        <a class="btn btn_extend text-bg-primary rounded-4 disabled" disabled aria-disabled="true">
+                          <i class="fa-regular fa-hand-pointer"></i>
+                        </a>
+                      </td>
+                      <td class="ultimo">
+                        <a class="btn btn_extend text-bg-danger rounded-3 disabled" disabled aria-disabled="true">
+                          <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                        </a>
+                      </td>
+                    }
+                  </tr>
+                  <tr id="trDocCumplimientoObFiscales">
+                    <td>Constancia de cumplimiento de obligaciones fiscales</td>
+                    <td>
+                      <div class="mb-3" style="margin: 0!important;">
+                        <input class="form-control" type="file" id="file_cumplimiento_obfisc" placeholder="CONSTANCIA DE OPINION DE CUMPLIMIENTO DE OBLICACIONES FISCALES"
+                          (change)="cargaDocscumplimiento($event);" style="padding: 0;line-height: 30px;width: 100%!important;">
+                      </div>
+                    </td>
+                    <td class="ultimo">
+                      <a class="btn btn_extend text-bg-primary" data-bs-toggle="modal" (click)="clickEscannercumplimiento();" data-bs-target="#scannerOpinionCumplimientoProv">
+                        <i class="fa-solid fa-qrcode"></i>
+                      </a>
+                    </td>
+                    @if (provModelo.htmlCumplimientoObFiscales != '') {
+                      <td class="ultimo">
+                        <a class="btn btn_extend text-bg-primary" data-bs-toggle="modal" data-bs-target="#windowOpinionCumplimientoProv">
+                          <i class="fa-regular fa-hand-pointer"></i>
+                        </a>
+                      </td>
+                      <td class="ultimo">
+                        <a class="btn btn_extend text-bg-danger rounded-3" (click)="deleteDocCumplimientoObFiscales();">
+                          <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                        </a>
+                      </td>
+                    } @else {
+                      <td class="ultimo">
+                        <a class="btn btn_extend text-bg-primary rounded-4 disabled" disabled aria-disabled="true">
+                          <i class="fa-regular fa-hand-pointer"></i>
+                        </a>
+                      </td>
+                      <td class="ultimo">
+                        <a class="btn btn_extend text-bg-danger rounded-3 disabled" disabled aria-disabled="true">
+                          <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                        </a>
+                      </td>
+                    }
+                  </tr>
+                  <tr id="trDocContratos">
+                    <td>Contratos</td>
+                    <td>
+                      <div class="mb-3" style="margin: 0!important;">
+                        <input class="form-control" type="file" id="file_contratos" (change)="cargaDocsContratos($event);"
+                          placeholder="Contratos" style="padding: 0;line-height: 30px;width: 100%!important;">
+                      </div>
+                    </td>
+                    <td class="ultimo">
+                      <a class="btn btn_extend text-bg-primary" data-bs-toggle="modal" (click)="clickEscannercontratos();"
+                        data-bs-target="#scannerContratosProv"><i class="fa-solid fa-qrcode"></i></a>
+                    </td>
+                    @if (provModelo.htmlContratos != '') {
+                      <td class="ultimo">
+                        <a class="btn btn_extend text-bg-primary" data-bs-toggle="modal" data-bs-target="#windowContratosProv">
+                          <i class="fa-regular fa-hand-pointer"></i>
+                        </a>
+                      </td>
+                      <td class="ultimo">
+                        <a class="btn btn_extend text-bg-danger rounded-3" (click)="deleteDocContratos();">
+                          <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                        </a>
+                      </td>
+                    } @else {
+                      <td class="ultimo">
+                        <a class="btn btn_extend text-bg-primary rounded-4 disabled" disabled aria-disabled="true">
+                          <i class="fa-regular fa-hand-pointer"></i>
+                        </a>
+                      </td>
+                      <td class="ultimo">
+                        <a class="btn btn_extend text-bg-danger rounded-3 disabled" disabled aria-disabled="true">
+                          <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                        </a>
+                      </td>
+                    }
+                  </tr>
+                </tbody>
+              </table>
+  
+              <div class="center evidenciaReg col-12" style="background-color:#fff;border-radius:30px!important;">
+                <ngx-file-drop dropZoneLabel="Drop files here" (onFileDrop)="dropped($event)" (onFileOver)="fileOver($event)" (onFileLeave)="fileLeave($event)">
+                  <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
+                    <a class="btn btn_load_file" type="button" style="color: #0782d0 !important;" (click)="openFileSelector()">
+                      {{'load_files' | translate}} / {{'browse_files' | translate}}
+                    </a>                    
+                  </ng-template>
+                </ngx-file-drop>
+  
+                <div class="upload-table">
+                  <table class="centered white">
+                    <thead>
+                      <tr>
+                        <th>{{'file' | translate}}</th>
+                        <th class="ultimo"></th>
+                      </tr>
+                    </thead>
+                    <tbody class="upload-name-style" *ngIf="files.length != 0">
+                      <tr *ngFor="let item of files; index as i">
+                        <td><strong>{{ item.relativePath }}</strong></td>
+                        <td class="ultimo">
+                          <a class="btn text-bg-danger rounded-3" (click)="deleteAnexos(i);">
+                            <i class="fa-solid fa-eraser"></i>
+                          </a>
+                        </td>
+                      </tr>
+                    </tbody>
+                    <tbody class="upload-name-style" *ngIf="files.length == 0">
+                      <tr>
+                        <td colspan="2">{{'no_rows' | translate}}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+          <p-divider style="z-index: 1000 !important;"/>
+          
+          <div class="col-12 row" style="padding:0!important;">
+            <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain">
+              <h6 class="title">¿Ofrece credito?</h6>
+            </div>
+            <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+              <label class="form-check-label" for="flexSwitchCheckReverse">No</label>
+              <input class="form-check-input" type="checkbox" (click)="aceptaCreditoProv($event.target);">
+              <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+            </div>
+            <div id="decidecredito" class="col-12 row noneView" style="padding: 0;">
+              <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+                <label for="creditoMonedaProv" class="activeInput" id="lblCreditoMonedaProv">Moneda</label>
+                <p-select [options]="catalogo_monedas_api" id="creditoMonedaProv" name="creditoMonedaProv" [(ngModel)]="prorrateo_moneda_opcion" optionLabel="_filtro_busqueda" [filter]="true"
+                  filterBy="_filtro_busqueda" [showClear]="true" [placeholder]="'opt_select' | translate"
+                  class="w-full md:w-56" (onChange)="monedaChange($event.value);">
+                  <ng-template #selectedItem let-selectedOption>
+                    <div class="flex items-center gap-2">
+                      <div>{{selectedOption.code+" "+selectedOption.langEN}}</div>
+                    </div>
+                  </ng-template>
+                  <ng-template let-mon #item>
+                    <div class="flex items-center gap-2">
+                      <div>{{mon.code+" "+mon.langEN}}</div>
+                    </div>
+                  </ng-template>
+                </p-select>
+              </div>
+              <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+                <label for="creditoLimiteProv" class="activeInput" id="lblCreditoLimiteProv">L&iacute;mite de credito</label>
+                <input id="creditoLimiteProv" class="validate" name="creditoLimiteProv" type="number" pattern="[0-9]*" (keyup)="keyupLimiteCredito($event.target);">
+              </div>
+              <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+                <label for="creditoDiasDePagoProv" class="activeInput" id="lblCreditoDiasDePagoProv">D&iacute;as de pago</label>
+                <input id="creditoDiasDePagoProv" class="validate" name="creditoDiasDePagoProv" type="number" (keyup)="keyupDiasPagoCredito($event.target);">
+              </div>
+              <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+                <label for="creditoComiCompDeDiasDeCredProv" class="activeInput" id="lblCreditoComiCompDeDiasDeCredProv">Comienzo del computo de d&iacute;as de cr&eacute;dito</label>
+                <p-select [options]="cred_comienza_pago" id="creditoComiCompDeDiasDeCredProv" name="creditoComiCompDeDiasDeCredProv" optionLabel="clave" [filter]="true" filterBy="clave" optionValue="valor" 
+                  appendTo="body" [showClear]="true" [placeholder]="'opt_select' | translate" class="w-full md:w-56" (onChange)="changeComienzaPagoProv($event.value);">
+                  <ng-template #selectedItem let-selComi>
+                    <div class="flex items-center gap-2">
+                      <div>{{selComi.clave}}</div>
+                    </div>
+                  </ng-template>
+                  <ng-template let-ltComi #item>
+                    <div class="flex items-center gap-2">
+                      <div>{{ltComi.clave}}</div>
+                    </div>
+                  </ng-template>
+                </p-select>
+              </div>
+            </div>
+          </div>
+          <p-divider style="z-index: 1000 !important;"/>
+          
+          <div class="col-12 row" style="padding:0!important;">
+            <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain">
+              <h6 class="title">¿Tiene forma de pago?</h6>
+            </div>
+            <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+              <label class="form-check-label" for="flexSwitchCheckReverse">No</label>
+              <input class="form-check-input" type="checkbox" (click)="tieneFormaPagoProv($event.target);">
+              <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+            </div>
+            <div id="decideformapago" class="col-12 noneView" style="padding: 0;">
+              <div class="modal fade bd-example-modal-lg" id="scannerEstadoCuentaProv" tabindex="-1" role="dialog" aria-labelledby="scannerEstadoCuentaProvLabel" aria-hidden="true">
+                <div class="modal-dialog modal-fullscreen" style="margin: 1%;width: 98%!important;">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="scannerEstadoCuentaProvLabel">ESCANNER DE ESTADO DE CUENTA</h1>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: transparent !important;"></button>
+                    </div>
+                    <div class="modal-body">
+                      <div class="col-12" style="display:flex;flex-wrap:wrap;justify-content: space-between;">
+                        <div id="readerEstadoCuenta" style="height: 400px;width: 100%;margin-top: 100px;background-color: #353535;border-radius: 8px;">
+                        </div>
+                        <div id="divImgClassEstadoCuenta" class="bg-indigo-600" style="height: 400px;width: 50%;border-radius: 0 8px 8px 0;display: flex;justify-content: center;align-items: center;">
+                          <i class="fa-solid fa-qrcode" style="font-size: 50px;"></i>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div>
+                  </div>
+                </div>
+              </div>
+  
+              <div class="modal fade bd-example-modal-lg" id="windowEstadoCuenta" tabindex="-1" role="dialog" aria-labelledby="windowEstadoCuentaLabel" aria-hidden="true">
+                <div class="modal-dialog modal-fullscreen" style="margin: 1%;width: 98%!important;">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="windowEstadoCuentaLabel">ESTADO DE CUENTA</h1>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: transparent !important;"></button>
+                    </div>
+                    <div class="modal-body">
+                      <div class="col-12">
+                        @if (provModelo.typoEstadoCuenta == 'application/pdf') {
+                          <iframe style="width: 100%!important; height: 60vh!important;border-radius: 8px;position: relative;z-index: 0;" [src]="provModelo.htmlEstadoCuenta" frameborder="0"></iframe>
+                        } @else {
+                          <img class="responsive-img" style="width: 100% !important;max-width: 100% !important;height: 100% !important;border-radius: 8px;position: relative;z-index: 0;" [src]="provModelo.htmlCumplimientoObFiscales">
+                        }
+                      </div>
+                    </div>
+                    <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div>
+                  </div>
+                </div>
+              </div>
+  
+              <div class="input-group col-12">
+                <label class="activeInput">Forma de pago</label>
+                <datalist id="fpago_listReem">
+                  <option *ngFor="let fpago of arraYFormaPago" [value]="fpago.forma">{{"clave "+fpago.clave}}</option>
+                </datalist>
+                <input list="fpago_listReem" name="browser" type="text" (change)="changeFormaPagoAltaProv($event.target);">
+              </div>
+  
+              @if (provModelo.tknFormaPagoProv == 'RkxGMTRidG44ZWJJYVh0dUlDK1o4Zz09OjoxMjM0NTY3ODEyMzQ1Njc4') {
+                <table class="centered white">
+                  <thead>
+                    <tr>
+                      <th colspan="4">Estado de cuenta reciente</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <div class="mb-3" style="margin: 0!important;">
+                          <input class="form-control" type="file" id="file_estado_cuenta" (change)="cargaDocsEstadoCuenta($event);" placeholder="ESTADO DE CUENTA" style="padding: 0;line-height: 30px;width: 100%!important;">
+                        </div>
+                      </td>
+                      <td class="ultimo">
+                        <a class="btn btn_extend text-bg-primary" data-bs-toggle="modal" (click)="clickEscannerEstadoCuenta();" data-bs-target="#scannerEstadoCuentaProv">
+                          <i class="fa-solid fa-qrcode"></i>
+                        </a>
+                      </td>
+                      @if (provModelo.htmlEstadoCuenta != '') {
+                        <td class="ultimo">
+                          <a class="btn btn_extend text-bg-primary" data-bs-toggle="modal" data-bs-target="#windowEstadoCuenta">
+                            <i class="fa-regular fa-hand-pointer"></i>
+                          </a>
+                        </td>
+                        <td class="ultimo">
+                          <a class="btn btn_extend text-bg-danger rounded-3" (click)="deleteDocEstadoCuenta();">
+                            <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                          </a>
+                        </td>
+                      } @else {
+                        <td class="ultimo">
+                          <a class="btn btn_extend text-bg-primary rounded-4 disabled" disabled aria-disabled="true">
+                            <i class="fa-regular fa-hand-pointer"></i>
+                          </a>
+                        </td>
+                        <td class="ultimo">
+                          <a class="btn btn_extend text-bg-danger rounded-3 disabled" disabled aria-disabled="true">
+                            <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                          </a>
+                        </td>
+                      }
+                    </tr>
+                  </tbody>
+                </table>
+    
+                <table class="centered white">
+                  <thead>
+                    <tr id="trDocEstadoCuenta">
+                      <th colspan="2">referencia de pago</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Por clabe interbancaria</td>
+                      <td class="ultimo">
+                        <div class="form-check radio_check" style="display: flex;justify-content: center;">
+                          <input class="form-check-input" id="txtClabeInt" name="clabeInt" type="radio"
+                            (click)="decideTipoReferenciaPago($event.target,'clabeInterbancaria');">
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Por convenio</td>
+                      <td class="ultimo">
+                        <div class="form-check radio_check" style="display: flex;justify-content: center;">
+                          <input class="form-check-input" id="txtConvenio" name="convenio" type="radio"
+                            (click)="decideTipoReferenciaPago($event.target,'convenio');">
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Por linea de captura</td>
+                      <td class="ultimo">
+                        <div class="form-check radio_check" style="display: flex;justify-content: center;">
+                          <input class="form-check-input" id="txtLineaCap" name="lineaCap" type="radio"
+                            (click)="decideTipoReferenciaPago($event.target,'lineaCaptura');">
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              }
+  
+              @if (provModelo.tipoReferenciaPago == 'ci') {
+                <div class="col-12">
+                  <div class="input-group col-12" style="display: flex;justify-content: start;align-items: center;">
+                    <label class="activeInput" style="margin-right:5px;"><span class="obligatorio">Clabe interbancaria</span></label>
+                    <input class="validate" type="text" (keyup)="keyupClabeIntBanc_banco($event.target)" (keypress)="keypressClabeIntBanc($event);" maxlength="3" style="border-radius: 8px!important;width: 60px;">
+                    <label class="activeInput" style="font-size: 20px;font-weight: bold;width: 20px;color: #353535;text-align: center;">-</label>
+                    <input class="validate" type="text" (keyup)="keyupClabeIntBanc_plaza($event.target)" (keypress)="keypressClabeIntBanc($event);" maxlength="3" style="border-radius: 8px!important;width: 60px;">
+                    <label class="activeInput" style="font-size: 20px;font-weight: bold;width: 20px;color: #353535;text-align: center;">-</label>
+                    <input class="validate" name="txtClabeIntBanc" type="text" style="border-radius: 8px!important;width: 150px;" (keyup)="keyupClabeIntBanc_cuenta($event.target)" (keypress)="keypressClabeIntBanc($event);" maxlength="11">
+                    <label class="activeInput" style="font-size: 20px;font-weight: bold;width: 20px;color: #353535;text-align: center;">-</label>
+                    <input class="validate" name="txtClabeIntBanc" type="text" style="border-radius: 8px!important;width: 60px;" (keyup)="keyupClabeIntBanc_control($event.target)" (keypress)="keypressClabeIntBanc($event);" maxlength="1">
+                  </div>
+                  <h6 class="input-group col-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-4"
+                    style="margin: 0;height: 30px;line-height: 30px;">{{provModelo.clabeInterbancariaPago}}</h6>
+                </div>
+              }
+            </div>
+          </div>
+          <p-divider style="z-index: 1000 !important;"/>
+          
+          <div class="col-12 row" style="padding:0!important;">
+            <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain">
+              <h6 class="title">¿Recibe factura antes o despues del pago?</h6>
+            </div>
+            <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+              <label class="form-check-label" for="flexSwitchCheckReverse">Despues</label>
+              <input class="form-check-input" type="checkbox" (click)="recibeFactAntesDespues($event.target);">
+              <label class="form-check-label" for="flexSwitchCheckReverse">Antes</label>
+            </div>
+          </div>
+          <p-divider style="z-index: 1000 !important;"/>
+          
+          <div class="col-12 row" style="padding:0!important;">
+            <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain">
+              <h6 class="title">¿Recibes el producto o servicio antes o despues del pago?</h6>
+            </div>
+            <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+              <label class="form-check-label" for="flexSwitchCheckReverse">Despues</label>
+              <input class="form-check-input" type="checkbox" (click)="recibeProdAntesDespues($event.target);">
+              <label class="form-check-label" for="flexSwitchCheckReverse">Antes</label>
+            </div>
+          </div>
+          <p-divider style="z-index: 1000 !important;"/>
+          
+          <div class="col-12 row" style="padding:0!important;">
+            <div class="col-12 explain">
+              <h6 class="title">DIRECCIONES (UBICACI&Oacute;N)</h6>
+            </div>
+            
+            @switch (vClasificacionProv) {
+              @case ('extranjero') {
+                <div class="col-12 row">
+                  <label class="activeInput"><span class="obligatorio">Direcci&oacute;n completa</span></label>
+                  <textarea class="validate" name="txtCodPostalSucExt" (keyup)="keyupUbicaciontxtCodPostalExt($event.target);" id="txtCodPostalUbicacionExt" minlength="5" style="max-height: 80px!important;"></textarea>
+                </div>
+              }
+              @case ('nacional') {
+                <div class="col-12 row" style="padding: 0;">
+                  <ul class="list-group collection_postales" style="margin-top: 0;">
+                    <li class="list-group-item">
+                      <div class="busqueda row">
+                        <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6" style="display: flex;justify-content: flex-start;margin: auto;padding: 0;height: 30px;line-height: 30px;">
+                          <h6>C&oacute;digo postal: </h6>
+                        </div>
+                        <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6 field_buscar">
+                          <input class="validate" type="text" placeholder="{{'bus_car' | translate}}" (keyup)="buscaCodPostalDipomex($event.target);">
+                        </div>
+                      </div>
+                    </li>
+                    <li class="list-group-item">Estado: {{provModelo.dipomex_cod_postal_estado}}</li>
+                    <li class="list-group-item">Municipio: {{provModelo.dipomex_cod_postal_municipio}}</li>
+                    <li class="list-group-item">C&oacute;digo postal: {{provModelo.dipomex_cod_postal_cp}}</li>
+                    @if (provModelo.dipomex_cod_postal_colonias.length == 0) {
+                      <li class="list-group-item">Colonias: ---</li>
+                    } @else {
+                      <li class="list-group-item itemFor">Colonias: 
+                        @for (col of provModelo.dipomex_cod_postal_colonias; track $index) {
+                          <p (click)="seleccionaColoniaCPDipomex(col);">{{col}}</p>
+                        }
+                      </li>
+                    }
+                    @if (provModelo.dipomex_cod_postal_colonia_vinculada != '') {
+                      <li class="list-group-item itemColoniaSeleted">Colonia seleccionada:{{provModelo.dipomex_cod_postal_colonia_vinculada}}</li>
+                    }
+                  </ul>
+  
+                  @if (provModelo.dipomex_cod_postal_cp != '' && provModelo.dipomex_cod_postal_cp == ('unk_nown' | translate)) {
+                    <div class="col-12">
+                      <p-table id="newdireccionNac_nuevo_registro" [value]="provModelo.newdireccionNac_nuevo_registro">
+                        <ng-template #header>
+                          <tr>
+                            <th>Estado</th>
+                            <th>Municipio</th>
+                            <th>C&oacute;digo postal</th>
+                            <th>Colonia</th>
+                            <th class="ultimo"></th>
+                          </tr>
+                        </ng-template>
+                        <ng-template #body let-impVig let-i="rowIndex">
+                          <tr>
+                            <td><input id="newDipoMexEstado" class="validate" type="text" (keyup)="keyupCPostal_EstName($event.target);"></td>
+                            <td><input id="newDipoMexMunicipio" class="validate" type="text" (keyup)="keyupCPostal_Municipio($event.target);"></td>
+                            <td><input id="newDipoMexCP" class="validate" type="text" (keyup)="keyupCPostal_CP($event.target);"></td>
+                            <td><input id="newDipoMexColonia" class="validate" type="text" (keyup)="keyupCPostal_Colonia($event.target);"></td>
+                            <td class="ultimo">
+                              <a class="btn btn_extend text-bg-success rounded-3"
+                                [ngClass]="!validateCPostalDesconocido ? 'disabled' : ''"
+                                [attr.disabled]="!validateCPostalDesconocido ? true : null"
+                                [attr.aria-disabled]="!validateCPostalDesconocido ? true : null"
+                                (click)="validateCPostalDesconocido && addListPostalPrime($event);">
+                                <i class="fa-solid fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+                              </a>
+                            </td>
+                          </tr>
+                        </ng-template>
+                      </p-table>
+                      <p-table id="listnewdireccionNac" [value]="provModelo.listnewdireccionNac" responsiveLayout="scroll" class="w-100">
+                        <ng-template pTemplate="header">
+                          <tr>
+                            <th>Estado</th>
+                            <th>Municipio</th>
+                            <th>Código postal</th>
+                            <th>Colonia</th>
+                            <th class="ultimo"></th>
+                          </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-newCP let-pos="rowIndex">
+                          <tr>
+                            <td>{{ newCP.estado }}</td>
+                            <td>{{ newCP.municipio }}</td>
+                            <td>{{ newCP.codigo_postal }}</td>
+                            <td>{{ newCP.colonia }}</td>
+                            <td class="ultimo">
+                              <a class="btn btn_extend text-bg-danger rounded-3" (click)="deleteListCPostal($event,pos);">
+                                <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                              </a>
+                            </td>
+                          </tr>
+                        </ng-template>
+                        <ng-template pTemplate="emptymessage">
+                          <tr>
+                            <td colspan="5" class="text-center py-4">
+                              <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                              <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                {{'no_rows' | translate}}
+                              </p>
+                            </td>
+                          </tr>
+                        </ng-template>
+                      </p-table>
+                    </div>
+                  }
+                </div>
+              }
+              @default {
+              }
+            }
+          </div>
+          <p-divider style="z-index: 1000 !important;"/>
+          
+          <div class="col-12 row" style="display: flex;justify-content: end;">
+            <button class="btn btn_extend text-bg-success rounded-3" [ngClass]="!validateToRegistro ? 'disabled' : ''"
+              [attr.disabled]="!validateToRegistro ? true : null" [attr.aria-disabled]="!validateToRegistro ? true : null">
+              <i class="fa-solid fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+            </button>
+          </div>
+        </div>
+        
+        <p-dialog header="Email de contacto" class="responsive" [(visible)]="viewMailContModal" [modal]="true" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="false">
+          <p-table #listEmailContList [value]="contPersMailList" dataKey="nomina_clave" [globalFilterFields]="['paterno','materno','nombre','area','cargo']">
+            <ng-template #caption>
+              <div class="flex" style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;">
+                <p-iconfield iconPosition="left" class="ml-auto" style="margin:0!important;">
+                  <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                  <input pInputText type="text" (input)="listEmailContList.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+                </p-iconfield>
+              </div>
+            </ng-template>
+            <ng-template #header>
+              <tr>
+                <th>{{'email' | translate}}</th>
+                <th class="ultimo"></th>
+              </tr>
+              <tr>
+                <td><input id="contPersProvEmail" class="validate" type="email" style="text-transform: lowercase!important;" (keyup)="keyupPersContEmail($event.target);"></td>
+                <td class="ultimo">
+                  <a class="btn btn_extend text-bg-success rounded-3"
+                    [ngClass]="txtMailPersonalProvv_reg == '' ? 'disabled' : ''"
+                    [attr.disabled]="txtMailPersonalProvv_reg == '' ? true : null"
+                    [attr.aria-disabled]="txtMailPersonalProvv_reg == '' ? true : null"
+                    (click)="txtMailPersonalProvv_reg != '' && addMailContacto();">
+                    <i class="fa-solid fa-plus"></i>&nbsp;{{'btn_add' | translate}}
+                  </a>
+                </td>
+              </tr>
+            </ng-template>
+            <ng-template #body let-mailPers let-index="rowIndex">
+              <tr>
+                <td>{{mailPers}}</td>
+                <td class="ultimo">
+                  <a class="btn btn_extend text-bg-danger rounded-3" (click)="deleteMailContacto(index);">
+                    <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                  </a>
+                </td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="2" class="text-center py-4">
+                  <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                  <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                    {{'no_rows' | translate}}
+                  </p>
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </p-dialog>
+        
+        <p-dialog header="Telefonos de contacto" class="responsive" [(visible)]="viewTelefonoContModal" [modal]="true" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="false">
+          <p-table #listEmailContList [value]="contPersMailList" dataKey="nomina_clave" [globalFilterFields]="['etiqueta','telefono_complete','extension']">
+            <ng-template #caption>
+              <div class="flex" style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;">
+                <p-iconfield iconPosition="left" class="ml-auto" style="margin:0!important;">
+                  <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                  <input pInputText type="text" (input)="listEmailContList.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+                </p-iconfield>
+              </div>
+            </ng-template>
+            <ng-template #header>
+              <tr>
+                <th>Tipo de tel&eacute;fono</th>
+                <th>Tel&eacute;fono</th>
+                <th>Extensi&oacute;n</th>
+                <th class="ultimo"></th>
+              </tr>
+              <tr>
+                <td>
+                  <div class="col-12 input-group">
+                    <p-select [options]="tipos_telefonos" id="etiquetaCont_regProv" name="etiquetaCont_regProv" optionLabel="clave" [filter]="true" filterBy="clave" optionValue="valor" 
+                      appendTo="body" [showClear]="true" [placeholder]="'opt_select' | translate" class="w-full md:w-56" (onChange)="telefonoTipoCont_regChange($event.value);">
+                      <ng-template #selectedItem let-selEtq>
+                        <div class="flex items-center gap-2">
+                          <div>{{selEtq.clave}}</div>
+                        </div>
+                      </ng-template>
+                      <ng-template let-ltEtq #item>
+                        <div class="flex items-center gap-2">
+                          <div>{{ltEtq.clave}}</div>
+                        </div>
+                      </ng-template>
+                    </p-select>
+                  </div>
+                </td>
+                <td>
+                  <ngx-material-intl-tel-input id="txtTelefonoCont_regProv" [fieldControl]="phoneForm.get('telefono')" [preferredCountries]="preferredCountries"
+                    [enablePlaceholder]="true" maxLength="15" name="phone"
+                    (input)="probarTextPhone();telefonoKeyupNumeroCont_reg($event.target);">
+                  </ngx-material-intl-tel-input>
+                </td>
+                <td>
+                  <input class="validate" type="number" id="txtExtension_regProv" (keyup)="telefonoKeyupExtension_reg($event.target);">
+                </td>
+                <td class="ultimo">
+                  <a class="btn btn_extend text-bg-success rounded-3"
+                    [ngClass]="!validaPhoneContacto ? 'disabled' : ''"
+                    [attr.disabled]="!validaPhoneContacto ? true : null"
+                    [attr.aria-disabled]="!validaPhoneContacto ? true : null"
+                    (click)="validaPhoneContacto && addPhoneContacto();">
+                    <i class="fa-solid fa-plus"></i>&nbsp;{{'btn_add' | translate}}
+                  </a>
+                </td>
+              </tr>
+            </ng-template>
+            <ng-template #body let-telPers let-index="rowIndex">
+              <tr>
+                <td>{{telPers.etiqueta}}</td>
+                <td>{{telPers.telefono_complete}}</td>
+                <td>{{telPers.extension}}</td>
+                <td class="ultimo">
+                  <a class="btn_extend btn text-bg-danger rounded-3" (click)="deletePhoneContacto(index);">
+                    <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                  </a>
+                </td>
+              </tr>
+              <!--@for (telPers of contPersTelefonoList; track $index) {}-->
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="4" class="text-center py-4">
+                  <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                  <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                    {{'no_rows' | translate}}
+                  </p>
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </p-dialog>
+        
+      </form>
+    </div>
+  }
+</div>

@@ -1,0 +1,57 @@
+<div id="loadingSeccion" class="progress loadingpage loadingBlue" #loadingBlue>
+	<div class="preloader"></div>
+	<h6 class="h6loadingSeccion" #h6loadingSeccion>usuario verificado, ¡Bienvenido!</h6>
+</div>
+<!--<header><h1>Encabezado</h1></header>-->
+<div id="vContent" class="marco noneView" #vContent>
+	<div class="contenido">
+    <header class="sticky-top">
+			<nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+		</header>
+		<main id="mainContenidoModProyectos" class="contenidoPagina contenidoModProyectos">
+			<article class="listas_ps revanecer">
+        <div class="fmAlta lista-divNoFlex row">
+          <div class="col-12">
+            <!--plantillas-->
+            <div class="col-12 card card_registro">
+              <div class="card-content" style="height: 100%;display: flex;flex-wrap: wrap;align-items: center;">
+                <span class="card-title" style="margin-bottom: 5px;font-weight: bold;text-transform: capitalize;color:#353535;">Plantillas predeterminadas</span>
+                <div style="width: 100%!important;">
+                  <table id="datatable_ListaTareas" class="display nowrap mdl-data-table white centered table_show_register" style="width:100%!important;margin:0!important;">
+                    <thead>
+                      <tr>
+                        <th>folio.</th>
+                        <th>{{'fecha_reg' | translate}}</th>
+                        <th>{{'title' | translate}}</th>
+                        <th>{{'lid_team' | translate}}</th>
+                        <th>{{'upload_evid' | translate}}</th>
+                        <th>{{'del_evid_auth_perm' | translate}}</th>
+                        <th class="ultimo"></th>
+                      </tr>
+                    </thead>
+                    <tbody class="registro_tarea">
+                      <tr *ngFor="let temp of listaPlantillas">
+                        <td>{{temp.template_lista}}</td>
+                        <td>{{temp.fecha_registro}}</td>
+                        <td>{{temp.template_titulo}}</td>
+                        <td>{{temp.template_lider_nombre}}</td>
+          
+                        <td *ngIf="temp.template_upload_evd == true">{{'oblig' | translate}}</td>
+                        <td *ngIf="temp.template_upload_evd == false">{{'no_oblig' | translate}}</td>
+          
+                        <td *ngIf="temp.permiso_delete_evd == true">{{'allowed' | translate}}</td>
+                        <td *ngIf="temp.permiso_delete_evd == false">{{'not_allowed' | translate}}</td>
+          
+                        <td class="ultimo"><a class="btn btn_extend text-bg-danger rounded-3 btnRemoveTarea"><i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}</a></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+		</main>
+	</div>
+</div>

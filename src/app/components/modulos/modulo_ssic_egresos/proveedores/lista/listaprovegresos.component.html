@@ -1,0 +1,1680 @@
+<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco" #vContent>
+  <div class="contenido"><app-loader></app-loader>
+    <nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+    <main class="contenidoPagina">
+      <div class="listas_ps revanecer">
+        <div id="listaProveedores" class="lista-div lista-divNoFlex">
+          <h4 class="col-12">CATALOGO DE PROVEEDORES</h4>
+
+          <div class="col-12">
+            <div class="btn-group lista_botones col" role="group" aria-label="Basic example">
+              <a class="btn btn_extend bg-indigo-600 disabled" disabled aria-disabled="true" (click)="buscarScannRfcProv();">buscar por codigo QR</a>
+              <a class="btn btn_extend bg-indigo-600" (click)="provAuthSoliVer();"><i class="fa-solid fa-plus"></i>&nbsp;Autorizaci&oacute;n de proveedores</a>
+              <a class="btn btn_extend bg-indigo-600" (click)="provUserVincVer();"><i class="fa-solid fa-plus"></i>&nbsp;Vinculaci&oacute;n a usuarios</a>
+              <a class="btn btn_extend bg-indigo-600"(click)="lista_proveedores(indicador_proveedores_general);lista_proveedores_mx(indicador_proveedores_mx);lista_proveedores_ext(indicador_proveedores_ext);">
+                <i class="fa-solid fa-rotate"></i>&nbsp;{{'list_updt' | translate}}
+              </a>
+              <a class="btn btn_extend bg-indigo-600" (click)="verProveedoresEliminados();"><i class="fa-solid fa-trash"></i>&nbsp;Proveedores eliminados</a>
+              <a class="btn btn_extend bg-indigo-600" (click)="verBitacoraProveedor();"><i class="fa-solid fa-timeline"></i>&nbsp;bitacora de actividad</a>
+              <a class="btn btn_extend bg-green-600 descarga_lista_excel"
+                [ngClass]="list_proveedores_general.length == 0 ? 'disabled' : ''"
+                [attr.disabled]="list_proveedores_general.length == 0 ? true : null"
+                [attr.aria-disabled]="list_proveedores_general.length == 0 ? true : null"
+                (click)="list_proveedores_general.length > 0 && descarga_excel_provs_general();">
+                <i class="fa-solid fa-file-excel" style="margin-left: 5px;"></i>&nbsp;descargar
+              </a>
+            </div>
+          </div>
+
+          <p-tabs value="0">
+            <p-tablist>
+              <p-tab value="0" (click)="lista_proveedores(indicador_proveedores_general);">Catálogo general de proveedores</p-tab><!---->
+              <p-tab value="1" (click)="lista_proveedores_mx(indicador_proveedores_mx);">Catálogo de proveedores nacionales</p-tab><!---->
+              <p-tab value="2" (click)="lista_proveedores_ext(indicador_proveedores_ext);">Catálogo de proveedores extranjeros</p-tab><!---->
+              <p-tab value="3">{{'prov_reg' | translate}}</p-tab>
+            </p-tablist>
+            <p-tabpanels>
+              <p-tabpanel value="0">
+                <p-table #prvGralList [value]="list_proveedores_general" showGridlines [resizableColumns]="true"
+                  columnResizeMode="expand" [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]"
+                  [globalFilterFields]="['token_cat_proveedores','folio','nombre','nombre_comercial','pais','rfc_generico','rfc_prov','tax_id_prov','cuenta_contable','autorizado','auth_fecha']">
+                  <ng-template #caption>
+                    <div class="flex" style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;" ngbDropdown>
+                      <a class="btn btn_extend" [ngClass]="indicador_proveedores_general == 'hoy' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="lista_proveedores('hoy');">
+                        <i class="fa-solid fa-calendar-days"></i>&nbsp;Hoy
+                      </a>
+                      <a class="btn btn_extend" [ngClass]="indicador_proveedores_general == 'esta_semana' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="lista_proveedores('esta_semana');">
+                        <i class="fa-solid fa-calendar-days"></i>&nbsp;Esta semana
+                      </a>
+                      <a class="btn btn_extend" [ngClass]="indicador_proveedores_general == 'este_mes' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="lista_proveedores('este_mes');">
+                        <i class="fa-solid fa-calendar-days"></i>&nbsp;Este mes
+                      </a>
+                      <a class="btn btn_extend" [ngClass]="indicador_proveedores_general == 'mes_anterior' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="lista_proveedores('mes_anterior');">
+                        <i class="fa-solid fa-arrow-left"></i>&nbsp;mes anterior
+                      </a>
+                      <a id="menuDropProvGralRangos" class="btn btn_extend" [ngClass]="indicador_proveedores_general == 'otras_fechas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" ngbDropdownToggle>
+                        <i class="fa-solid fa-list-ul"></i>&nbsp;otras fechas
+                      </a>
+                      <div class="dropdown-menu-end menu-despegable" ngbDropdownMenu="menuDropProvGralRangos" style="padding: 0!important; margin: 0!important; width: max-content!important; max-height: 400px; overflow-y: auto;">
+                        <div class="col-12 input-group">
+                          <label for="prov_gral_otras_fechas" class="activeInput">Periodo de fechas</label>
+                          <p-datepicker id="prov_gral_otras_fechas" name="prov_gral_otras_fechas" [(ngModel)]="rangoPeriodoProveedoresGeneral" appendTo="body" dateFormat="dd/mm/yy" 
+                            placeholder="dd/mm/aaaa" selectionMode="range" (onSelect)="lista_proveedores('otras_fechas');" />
+                        </div>
+                      </div>
+                      <a class="btn btn_extend" [ngClass]="indicador_proveedores_general == 'all_partidas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="lista_proveedores('all_partidas');">
+                        <i class="fa-solid fa-list-ul"></i>&nbsp;todos los registros
+                      </a>
+                      <p-iconfield iconPosition="left" class="ml-auto">
+                        <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                        <input pInputText type="text" (input)="prvGralList.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+                      </p-iconfield>
+                    </div>
+                  </ng-template>
+                  <ng-template #header>
+                    <tr>
+                      <th class="ultimo"></th>
+                      <th pResizableColumn pSortableColumn="folio">folio&nbsp;<p-sortIcon field="folio" /></th>
+                      <th pResizableColumn pSortableColumn="nombre">{{'prov' | translate}} &nbsp;<p-sortIcon field="nombre" /></th>
+                      <th pResizableColumn pSortableColumn="nombre_comercial">{{'comercial_name' | translate}}&nbsp;<p-sortIcon field="nombre_comercial" /></th>
+                      <th pResizableColumn pSortableColumn="pais">pais&nbsp;<p-sortIcon field="pais" /></th>
+                      <th pResizableColumn pSortableColumn="rfc_generico">rfc generico&nbsp;<p-sortIcon field="rfc_generico" /></th>
+                      <th pResizableColumn pSortableColumn="rfc_prov">rfc&nbsp;<p-sortIcon field="rfc_prov" /></th>
+                      <th pResizableColumn pSortableColumn="tax_id_prov">idTax&nbsp;<p-sortIcon field="tax_id_prov" /></th>
+                      <th pResizableColumn pSortableColumn="cuenta_contable">Cuenta contable &nbsp;<p-sortIcon field="cuenta_contable" /></th>
+                      <th pResizableColumn pSortableColumn="autorizado">{{'yes_auth' | translate}} &nbsp;<p-sortIcon field="autorizado" /></th>
+                      <th class="ultimo"></th>
+                    </tr>
+                  </ng-template>
+                  <ng-template #body let-row_prov>
+                    <tr>
+                      <td class="ultimo">
+                        <a class="btn bg-blue-600" (click)="infoProvDetalle(row_prov.token_cat_proveedores);">
+                          <i class="fa-solid fa-info"></i>
+                        </a>
+                      </td>
+                      <td>{{row_prov.folio}}</td>
+                      <td class="name">{{row_prov.nombre}}</td>
+                      <td class="name">{{row_prov.nombre_comercial}}</td>
+                      <td>{{row_prov.pais}}</td>
+                      <td>{{row_prov.rfc_generico}}</td>
+                      <td>{{row_prov.rfc_prov}}</td>
+                      <td>{{row_prov.tax_id_prov}}</td>
+                      <td>{{row_prov.cuenta_contable}}</td>
+                      <td class="ultimo">
+                        <a class="btn btn_extend" [ngClass]="row_prov.autorizado == true ? 'text-bg-success rounded-3' : 'bg-blue-300'"
+                          (click)="row_prov.autorizado == false && solicita_auth_prov(row_prov.token_cat_proveedores);">
+                          <i class="fa-solid"
+                            [ngClass]="row_prov.autorizado == true ? 'fa-check-double' : 'fa-check'"></i>
+                          {{row_prov.autorizado == true ? row_prov.auth_fecha : ['auth_solicita' | translate]}}
+                        </a>
+                      </td>
+                      <td class="ultimo">
+                        <a class="btn btn_extend text-bg-danger rounded-3" [class.disabled]="row_prov.utilizado"
+                          [attr.disabled]="row_prov.utilizado ? true : null"
+                          [attr.aria-disabled]="row_prov.utilizado ? 'true' : null"
+                          (click)="!row_prov.utilizado && matarProveedor(row_prov.token_cat_proveedores);"><i
+                            class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                        </a>
+                      </td>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="emptymessage">
+                    <tr>
+                      <td colspan="11" class="text-center py-4">
+                        <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                        <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                          {{'no_rows' | translate}}
+                        </p>
+                      </td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+              </p-tabpanel>
+              <p-tabpanel value="1">
+                <p-table #mxListProvs [value]="list_proveedores_mx" showGridlines [resizableColumns]="true"
+                  [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }"
+                  [rowsPerPageOptions]="[10,20,30,50,100]"
+                  [globalFilterFields]="['token_cat_proveedores','folio','nombre','nombre_comercial','rfc_generico','rfc_prov','cuenta_contable','autorizado','auth_fecha']">
+                  <ng-template #caption>
+                    <div class="flex" style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;" ngbDropdown>
+                      <a class="btn btn_extend" [ngClass]="indicador_proveedores_mx == 'hoy' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="lista_proveedores_mx('hoy');">
+                        <i class="fa-solid fa-calendar-days"></i>&nbsp;Hoy
+                      </a>
+                      <a class="btn btn_extend" [ngClass]="indicador_proveedores_mx == 'esta_semana' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="lista_proveedores_mx('esta_semana');">
+                        <i class="fa-solid fa-calendar-days"></i>&nbsp;Esta semana
+                      </a>
+                      <a class="btn btn_extend" [ngClass]="indicador_proveedores_mx == 'este_mes' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="lista_proveedores_mx('este_mes');">
+                        <i class="fa-solid fa-calendar-days"></i>&nbsp;Este mes
+                      </a>
+                      <a class="btn btn_extend" [ngClass]="indicador_proveedores_mx == 'mes_anterior' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="lista_proveedores_mx('mes_anterior');">
+                        <i class="fa-solid fa-arrow-left"></i>&nbsp;mes anterior
+                      </a>
+                      <a id="menuDropMXProvRangos" class="btn btn_extend" [ngClass]="indicador_proveedores_mx == 'otras_fechas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" ngbDropdownToggle>
+                        <i class="fa-solid fa-list-ul"></i>&nbsp;otras fechas
+                      </a>
+                      <div class="dropdown-menu-end menu-despegable" ngbDropdownMenu="menuDropMXProvRangos" style="padding: 0!important; margin: 0!important; width: max-content!important; max-height: 400px; overflow-y: auto;">
+                        <div class="col-12 input-group">
+                          <label for="mx_prov_otras_fechas" class="activeInput">Periodo de fechas</label>
+                          <p-datepicker id="mx_prov_otras_fechas" name="mx_prov_otras_fechas" [(ngModel)]="rangoPeriodoProveedoresMX" appendTo="body" dateFormat="dd/mm/yy" 
+                            placeholder="dd/mm/aaaa" selectionMode="range" (onSelect)="lista_proveedores_mx('otras_fechas');" />
+                        </div>
+                      </div>
+                      <a class="btn btn_extend" [ngClass]="indicador_proveedores_mx == 'all_partidas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="lista_proveedores_mx('all_partidas');">
+                        <i class="fa-solid fa-list-ul"></i>&nbsp;todos los registros
+                      </a>
+                      <p-iconfield iconPosition="left" class="ml-auto">
+                        <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                        <input pInputText type="text" (input)="mxListProvs.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+                      </p-iconfield>
+                    </div>
+                  </ng-template>
+                  <ng-template #header>
+                    <tr>
+                      <th class="ultimo"></th>
+                      <th pResizableColumn pSortableColumn="folio">folio&nbsp;<p-sortIcon field="folio" /></th>
+                      <th pResizableColumn pSortableColumn="nombre">{{'prov' | translate}} &nbsp;<p-sortIcon field="nombre" /></th>
+                      <th pResizableColumn pSortableColumn="nombre_comercial">{{'comercial_name' | translate}}&nbsp;<p-sortIcon field="nombre_comercial" /></th>
+                      <th pResizableColumn pSortableColumn="rfc_generico">rfc generico&nbsp;<p-sortIcon field="rfc_generico" /></th>
+                      <th pResizableColumn pSortableColumn="rfc_prov">rfc&nbsp;<p-sortIcon field="rfc_prov" /></th>
+                      <th pResizableColumn pSortableColumn="cuenta_contable">Cuenta contable &nbsp;<p-sortIcon field="cuenta_contable" /></th>
+                      <th pResizableColumn pSortableColumn="autorizado">{{'yes_auth' | translate}} &nbsp;<p-sortIcon field="autorizado" /></th>
+                      <th class="ultimo"></th>
+                    </tr>
+                  </ng-template>
+                  <ng-template #body let-provmx>
+                    <tr>
+                      <td class="ultimo">
+                        <a class="btn bg-blue-600"
+                          (click)="infoProvDetalle(provmx.token_cat_proveedores)">
+                          <i class="fa-solid fa-info"></i>
+                        </a>
+                      </td>
+                      <td>{{provmx.folio}}</td>
+                      <td class="name">{{provmx.nombre}}</td>
+                      <td class="name">{{provmx.nombre_comercial}}</td>
+                      <td>{{provmx.rfc_generico}}</td>
+                      <td>{{provmx.rfc_prov}}</td>
+                      <td>{{provmx.cuenta_contable}}</td>
+                      <td class="ultimo">
+                        <a class="btn btn_extend"
+                          [ngClass]="provmx.autorizado == true ? 'text-bg-success rounded-3' : 'bg-blue-300'"
+                          (click)="provmx.autorizado == false && solicita_auth_prov(provmx.token_cat_proveedores);">
+                          <i class="fa-solid"
+                            [ngClass]="provmx.autorizado == true ? 'fa-check-double' : 'fa-check'"></i>
+                          {{provmx.autorizado == true ? provmx.auth_fecha : ['auth_solicita' | translate]}}
+                        </a>
+                      </td>
+                      <td class="ultimo">
+                        <a class="btn btn_extend text-bg-danger rounded-3" [class.disabled]="provmx.utilizado"
+                          [attr.disabled]="provmx.utilizado ? true : null"
+                          [attr.aria-disabled]="provmx.utilizado ? 'true' : null"
+                          (click)="!provmx.utilizado && matarProveedor(provmx.token_cat_proveedores);"><i
+                            class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                        </a>
+                      </td>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="emptymessage">
+                    <tr>
+                      <td colspan="9" class="text-center py-4">
+                        <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                        <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                          {{'no_rows' | translate}}
+                        </p>
+                      </td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+              </p-tabpanel>
+              <p-tabpanel value="2">
+                <p-table #extListProvs [value]="list_proveedores_ext" showGridlines [resizableColumns]="true"
+                  [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }"
+                  [rowsPerPageOptions]="[10,20,30,50,100]"
+                  [globalFilterFields]="['token_cat_proveedores','folio','nombre','nombre_comercial','pais','rfc_generico','rfc_prov','tax_id_prov','cuenta_contable','autorizado','auth_fecha']">
+                  <ng-template #caption>
+                    <div class="flex" style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;" ngbDropdown>
+                      <a class="btn btn_extend" [ngClass]="indicador_proveedores_ext == 'hoy' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="lista_proveedores_ext('hoy');">
+                        <i class="fa-solid fa-calendar-days"></i>&nbsp;Hoy
+                      </a>
+                      <a class="btn btn_extend" [ngClass]="indicador_proveedores_ext == 'esta_semana' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="lista_proveedores_ext('esta_semana');">
+                        <i class="fa-solid fa-calendar-days"></i>&nbsp;Esta semana
+                      </a>
+                      <a class="btn btn_extend" [ngClass]="indicador_proveedores_ext == 'este_mes' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="lista_proveedores_ext('este_mes');">
+                        <i class="fa-solid fa-calendar-days"></i>&nbsp;Este mes
+                      </a>
+                      <a class="btn btn_extend" [ngClass]="indicador_proveedores_ext == 'mes_anterior' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="lista_proveedores_ext('mes_anterior');">
+                        <i class="fa-solid fa-arrow-left"></i>&nbsp;mes anterior
+                      </a>
+                      <a id="menuDropEXTPRVRangos" class="btn btn_extend" [ngClass]="indicador_proveedores_ext == 'otras_fechas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" ngbDropdownToggle>
+                        <i class="fa-solid fa-list-ul"></i>&nbsp;otras fechas
+                      </a>
+                      <div class="dropdown-menu-end menu-despegable" ngbDropdownMenu="menuDropEXTPRVRangos" style="padding: 0!important; margin: 0!important; width: max-content!important; max-height: 400px; overflow-y: auto;">
+                        <div class="col-12 input-group">
+                          <label for="ext_prv_otras_fechas" class="activeInput">Periodo de fechas</label>
+                          <p-datepicker id="ext_prv_otras_fechas" name="ext_prv_otras_fechas" [(ngModel)]="rangoPeriodoProveedoresEXT" appendTo="body" dateFormat="dd/mm/yy" 
+                            placeholder="dd/mm/aaaa" selectionMode="range" (onSelect)="lista_proveedores_ext('otras_fechas');" />
+                        </div>
+                      </div>
+                      <a class="btn btn_extend" [ngClass]="indicador_proveedores_ext == 'all_partidas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="lista_proveedores_ext('all_partidas');">
+                        <i class="fa-solid fa-list-ul"></i>&nbsp;todos los registros
+                      </a>
+                      <p-iconfield iconPosition="left" class="ml-auto">
+                        <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                        <input pInputText type="text" (input)="extListProvs.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+                      </p-iconfield>
+                    </div>
+                  </ng-template>
+                  <ng-template #header>
+                    <tr>
+                      <th class="ultimo"></th>
+                      <th pResizableColumn pSortableColumn="folio">folio&nbsp;<p-sortIcon field="folio" /></th>
+                      <th pResizableColumn pSortableColumn="nombre">{{'prov' | translate}} &nbsp;<p-sortIcon field="nombre" /></th>
+                      <th pResizableColumn pSortableColumn="nombre_comercial">{{'comercial_name' | translate}}&nbsp;<p-sortIcon field="nombre_comercial" /></th>
+                      <th pResizableColumn pSortableColumn="pais">pais&nbsp;<p-sortIcon field="pais" /></th>
+                      <th pResizableColumn pSortableColumn="rfc_generico">rfc generico&nbsp;<p-sortIcon field="rfc_generico" /></th>
+                      <th pResizableColumn pSortableColumn="rfc_prov">rfc&nbsp;<p-sortIcon field="rfc_prov" /></th>
+                      <th pResizableColumn pSortableColumn="tax_id_prov">idTax&nbsp;<p-sortIcon field="tax_id_prov" /></th>
+                      <th pResizableColumn pSortableColumn="cuenta_contable">Cuenta contable &nbsp;<p-sortIcon field="cuenta_contable" /></th>
+                      <th pResizableColumn pSortableColumn="autorizado">{{'yes_auth' | translate}} &nbsp;<p-sortIcon field="autorizado" /></th>
+                      <th class="ultimo"></th>
+                    </tr>
+                  </ng-template>
+                  <ng-template #body let-prov_ext>
+                    <tr>
+                      <td class="ultimo">
+                        <a class="btn bg-blue-600"
+                          (click)="infoProvDetalle(prov_ext.token_cat_proveedores)">
+                          <i class="fa-solid fa-info"></i>
+                        </a>
+                      </td>
+                      <td>{{prov_ext.folio}}</td>
+                      <td class="name">{{prov_ext.nombre}}</td>
+                      <td class="name">{{prov_ext.nombre_comercial}}</td>
+                      <td>{{prov_ext.pais}}</td>
+                      <td>{{prov_ext.rfc_generico}}</td>
+                      <td>{{prov_ext.rfc_prov}}</td>
+                      <td>{{prov_ext.tax_id_prov}}</td>
+                      <td>{{prov_ext.cuenta_contable}}</td>
+                      <td class="ultimo">
+                        <a class="btn btn_extend"
+                          [ngClass]="prov_ext.autorizado == true ? 'text-bg-success rounded-3' : 'bg-blue-300'"
+                          (click)="prov_ext.autorizado == false && solicita_auth_prov(prov_ext.token_cat_proveedores);">
+                          <i class="fa-solid"
+                            [ngClass]="prov_ext.autorizado == true ? 'fa-check-double' : 'fa-check'"></i>
+                          {{prov_ext.autorizado == true ? prov_ext.auth_fecha : ['auth_solicita' | translate]}}
+                        </a>
+                      </td>
+                      <td class="ultimo">
+                        <a class="btn btn_extend text-bg-danger rounded-3" [class.disabled]="prov_ext.utilizado"
+                          [attr.disabled]="prov_ext.utilizado ? true : null"
+                          [attr.aria-disabled]="prov_ext.utilizado ? 'true' : null"
+                          (click)="!prov_ext.utilizado && matarProveedor(prov_ext.token_cat_proveedores);"><i
+                            class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                        </a>
+                      </td>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="emptymessage">
+                    <tr>
+                      <td colspan="11" class="text-center py-4">
+                        <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                        <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                          {{'no_rows' | translate}}
+                        </p>
+                      </td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+              </p-tabpanel>
+              <p-tabpanel value="3">
+                <app-interno-egresos-catalogos-altaprov></app-interno-egresos-catalogos-altaprov>
+              </p-tabpanel>
+            </p-tabpanels>
+          </p-tabs>
+        </div>
+      </div>
+    </main>
+    <app-footer-inside></app-footer-inside>
+  </div>
+</div>
+
+<p-dialog header="Identificaci&oacute;n de proveedor por QR" [modal]="true" [(visible)]="window_prov_by_qr_view" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  <div class="col-12">
+    <div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+    <div id="viewScannerQrRfcProv" class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2 noneView" style="height: 400px;width: 100%;margin-top: 100px;background-color: #353535;border-radius: 8px;"></div>
+    <div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+  </div>
+</p-dialog>
+
+<p-dialog header="AUTORIZACI&Oacute;N DE PROVEEDORES" [modal]="true" [(visible)]="window_prov_auth_soli_view" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  <app-interno-egresos-catalogos-proveedores-autorizacion></app-interno-egresos-catalogos-proveedores-autorizacion>
+</p-dialog>
+
+<p-dialog header="Vinculaci&oacute;n a usuarios" [modal]="true" [(visible)]="window_prov_user_vinc_view" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  <app_prov_vinculacion_usuarios></app_prov_vinculacion_usuarios>
+</p-dialog>
+
+<p-dialog header="Informaci&oacute;n del proveedor" [modal]="true" [(visible)]="window_prov_detalle_view" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  @for (prVd of provDetalleData; track $index) {
+    <div class="card-content col-12 row" style="align-items: start!important;align-items: start!important;flex-direction: row;height:auto!important;">
+      <div class="col-12">
+        <span class="card-title">{{prVd.folio_proveedor+" "+prVd.nombre_proveedor_header}}</span>
+      </div>
+      <div class="col-12 inside">
+        <p-tabs value="0">
+          <p-tablist>
+            <p-tab value="0">Datos generales del proveedor</p-tab>
+            <p-tab value="1">Saldo a favor {{provDetalleSaldoTotalAFavor}}</p-tab>
+            <p-tab value="2">Anticipos {{provDetalleAnticipoTotal}}</p-tab>
+          </p-tablist>
+          <p-tabpanels>
+            <p-tabpanel value="0">
+              <div class="col-12 row" style="padding: 0 !important;">
+                <div class="col-12 col-sm-4 col-md-4 col-lg-4 col-xl-4 col-xxl-4 explain">
+                  <h6 class="title">Clasificaci&oacute;n del proveedor</h6>
+                  <h6 class="content">{{prVd.subClasificacionAll}}</h6>
+                </div>
+                <div class="col-12 col-sm-4 col-md-4 col-lg-4 col-xl-4 col-xxl-4 explain">
+                  <h6 class="title">Rfc/idTax</h6>
+                  <h6 class="content">{{prVd.identificador+" "}}<i class="fa-solid fa-pen-to-square fa-beat"></i>
+                  </h6>
+                </div>
+                @if (prVd.subClasificacionSimple == 'PF') {
+                  <p-divider />
+                  <div class="col-12 row" style="padding:0!important;">
+                    <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain">
+                      <h6 class="title">¿Desea habilitar al proveedor para reembolsos?</h6>
+                    </div>
+                    <div
+                      class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                      <label class="form-check-label" for="flexSwitchCheckReverse">No</label>
+                      <input class="form-check-input" type="checkbox" [checked]="prVd.habilitado_para_reembolsos"
+                        (click)="habilita_para_reembolsos($event.target);">
+                      <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                    </div>
+  
+                    <div id="infoemail_det_reembolsos" class="col-12"
+                      [ngClass]="prVd.habilitado_para_reembolsos ? '' : 'noneView'" style="padding: 0;">
+                      <div class="input-group col-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-4">
+                        <label for="txtnomCom_regPF" class="activeInput" id="lblNomComercial">{{'email' |
+                          translate}}</label>
+                        <input class="validate" type="email" style="text-transform: lowercase!important;"
+                          (keyup)="keyupEmailForReembolsos($event.target);">
+                      </div>
+                    </div>
+  
+                    <div class="col-12 row" style="display: flex;justify-content: end;">
+                      <a class="btn btn_extend text-bg-success rounded-3"
+                        [ngClass]="email_para_reembolsos == '' ? 'disabled' : ''"
+                        [attr.disabled]="email_para_reembolsos == '' ? true : null"
+                        [attr.aria-disabled]="email_para_reembolsos == '' ? true : null"
+                        (click)="habilitar_prov_para_reembolsos(prVd.token_proveedor);">
+                        <i class="fa-solid fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+                      </a>
+                    </div>
+                  </div>
+                }
+                @if (prVd.clasificacion == 'nacional') {
+                  <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6 input-group rfcMayus">
+                    <label for="txtMaternoPF_reg" class="activeInput" id="lblMaterno">Nombre completo / raz&oacute;n social del proveedor</label>
+                    <input id="verifNameClientee_reg" class="validate" name="verifRfcMaterno" type="text" autocomplete="off" [attr.value]="prVd.nombre_proveedor" (keyup)="validaNewNombreProv($event.target);">
+                  </div>
+                  <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6 input-group">
+                    <label class="activeInput">{{prVd.subClasificacionSimple == 'PF' ? 'Escriba su rfc con Homoclave (13 caracteres)' :'Escriba su rfc con Homoclave (12 caracteres)'}}</label>
+                    <input class="verif_rfc validate inputWthPass" type="text" autocomplete="off"
+                      [attr.value]="prVd.rfc_prov" [attr.data-length]="prVd.subClasificacionSimple == 'PF' ? 13 : 12"
+                      [attr.maxlength]="prVd.subClasificacionSimple == 'PF' ? 13 : 12" placeholder="Ej. ABC000000XXX"
+                      (keyup)="validaNewRfcProv($event.target);">
+                  </div>
+                }
+                @if (prVd.clasificacion == 'extranjero') {
+                  <div class="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-4 col-xxl-4 input-group rfcMayus" style="padding-left: 0;">
+                    <label for="txtMaternoPF_reg" class="activeInput" id="lblMaterno">Nombre completo / raz&oacute;n social del proveedor</label>
+                    <input id="verifNameClientee_reg" class="validate" name="verifRfcMaterno" type="text" autocomplete="off" (keyup)="validaNewNombreProv($event.target);">
+                  </div>
+                  <div class="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-4 col-xxl-4" style="padding-left: 0;">
+                    <div class="input-group rfcMayus">
+                      <label class="activeInput">{{prVd.subClasificacionSimple == 'PF' ? 'Escriba su rfc con Homoclave (13 caracteres)' :'Escriba su rfc con Homoclave (12 caracteres)'}}</label>
+                      <input class="verif_rfc validate inputWthPass" type="text" autocomplete="off"
+                        [attr.value]="prVd.rfc_prov"
+                        [attr.data-length]="prVd.subClasificacionSimple == 'PF' ? 13 : 12"
+                        [attr.maxlength]="prVd.subClasificacionSimple == 'PF' ? 13 : 12"
+                        placeholder="Ej. ABC000000XXX" (keyup)="validaNewRfcProv($event.target);">
+                    </div>
+                  </div>
+                  <div class="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-4 col-xxl-4 input-group rfcMayus">
+                    <label for="first_name" class="activeInput">Escriba Tax ID del proveedor</label>
+                    <input id="verif_idTaxClient" class="verif_rfc validate" name="verif_rfcClientMx" type="text"
+                      minlength="9" maxlength="40" autocomplete="off" (keyup)="validaNewTaxIdProv($event.target);">
+                  </div>
+                }
+  
+                <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-4 input-group">
+                  <label for="txtnomCom_regPF" class="activeInput" id="lblNomComercial">Nombre comercial{{prVd.nombre_comercial == "" ? ": Este proveedor no cuenta con nombre comercial" : " "+prVd.nombre_comercial}}</label>
+                  <input class="validate" name="txtNomComercialPF" type="text" [attr.value]="prVd.nombre_comercial != '' ? prVd.nombre_comercial : ''" (keyup)="keyupComercialName($event.target);" id="txtnomCom_regPF">
+                </div>
+                <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-4 input-group input-field-website">
+                  <label for="txtsitWeb_reg" class="activeInput" id="lblSitioWeb">Sitio web{{prVd.sitio_web == "" ? ": Este proveedor no tiene un sitio web" : " "+prVd.sitio_web}}</label>
+                  <input class="validate" name="txtSitioWebPF" type="text" [attr.value]="prVd.sitio_web != '' ? prVd.sitio_web : ''" (change)="changeSitioWeb($event.target);" id="txtsitWebPF_reg">
+                </div>
+                <div class="col-12 col-sm-12 col-md-12 col-lg-4 col-xl-4 col-xxl-4 input-group">
+                  <label for="selRegimenFiscal" class="active activeInput obligatorios">R&eacute;gimen fiscal{{" "+prVd.regimen_fiscal_descripcion+" "}}<span class="obligatorio">* Obligatorio</span></label>
+                  @switch (prVd.subClasificacionSimple) {
+                    @case ('PF') {
+                      <select id="selRegimenFiscal" class="browser-default" name="selRegimenFiscal" (change)="changeRegimenFiscal($event.target);">
+                        <option value="" disabled selected>{{'opt_select' | translate}}</option>
+                        @for (ltrfis of PfAllRegFisArray; track $index) {
+                          <option value="{{ltrfis.token_regimen_fiscal}}"
+                            [attr.disabled]="prVd.regimen_fiscal_token == ltrfis.token_regimen_fiscal ? true : null"
+                            [attr.selected]="prVd.regimen_fiscal_token == ltrfis.token_regimen_fiscal ? true : null">
+                            {{ltrfis.regimen}}
+                          </option>
+                        }
+                      </select>
+                    }
+                    @case ('extranjero') {
+                      <select id="selRegimenFiscal" class="browser-default" name="selRegimenFiscal" (change)="changeRegimenFiscal($event.target);">
+                        <option value="" disabled selected>{{'opt_select' | translate}}</option>
+                        @for (ltrfis of PmAllRegFisArray; track $index) {
+                          <option value="{{ltrfis.token_regimen_fiscal}}"
+                            [attr.disabled]="prVd.regimen_fiscal_token == ltrfis.token_regimen_fiscal ? true : null"
+                            [attr.selected]="prVd.regimen_fiscal_token == ltrfis.token_regimen_fiscal ? true : null">
+                            {{ltrfis.regimen}}
+                          </option>
+                        }
+                      </select>
+                    }
+                    @default {
+                      <div></div>
+                    }
+                  }
+                </div>
+                <div class="input-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3">
+                  <label for="cuentaContableProd" class="activeInput">Cuenta contable</label>
+                  <input id="cuentaContableProd" class="validate" name="cuentaContableProd" type="text" [attr.value]="prVd.cuenta_contable != '' ? prVd.cuenta_contable : ''" (keyup)="keyupValidateCuentaContable($event.target);">
+                </div>
+  
+                <div class="col-12 row" style="display: flex;justify-content: end;">
+                  <a class="btn btn_extend text-bg-success rounded-3"
+                    [ngClass]="validaGeneralesPrv() ? 'disabled' : ''"
+                    [attr.disabled]="validaGeneralesPrv() ? true : null"
+                    [attr.aria-disabled]="validaGeneralesPrv() ? true : null"
+                    (click)="!validaGeneralesPrv() && guardaNew_DataPrv(prVd.token_proveedor,prVd.clasificacion,prVd.subClasificacionSimple,prVd.rfc_prov_edit,prVd.tax_id_prov,prVd.nombre_proveedor_edit,
+                      prVd.nombre_comercial_edit,prVd.sitio_web_edit,prVd.regimen_fiscal_token_edit,prVd.cuenta_contable_edit);">
+                    <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+                  </a>
+                </div>
+              </div>
+              <p-divider />
+              <div class="col-12 row" style="padding:0!important;">
+                <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain">
+                  <h6 class="title">Utiliza informaci&oacute;n de contacto</h6>
+                </div>
+                <div
+                  class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                  <label class="form-check-label" for="flexSwitchCheckReverse">No</label>
+                  <input class="form-check-input" type="checkbox" [checked]="prVd.tiene_contacto_registrado == true"
+                    (click)="decideocupaContacto($event.target);">
+                  <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                </div>
+  
+                <div id="decideinfocontacto" class="col-12" [ngClass]="prVd.tiene_contacto_registrado_edit == false ? 'noneView' : ''" style="padding: 0;">
+                  <div class="col-12 card card_main" style="margin-bottom: 5px!important;">
+                    <div class="card-content">
+                      <span class="card-title">Registrar nuevo contacto</span>
+                      <div class="inside">
+                        <p-table #dt [value]="nuevo_contacto_form" dataKey="id">
+                          <ng-template pTemplate="header">
+                            <tr>
+                              <th>Apellido Paterno</th>
+                              <th>Apellido Materno</th>
+                              <th>Nombre(s)</th>
+                              <th>&Aacute;rea</th>
+                              <th>Cargo</th>
+                              <th class="ultimo"></th>
+                              <th class="ultimo"></th>
+                              <th class="ultimo"></th>
+                            </tr>
+                          </ng-template>
+                          <ng-template #body let-cont let-editing="editing">
+                            <tr>
+                              <td>
+                                <input id="contPersClientPaterno" class="validate" type="text" (keyup)="keyupPersNewContPaterno($event.target);" [(ngModel)]="cont.apellidoPaterno">
+                              </td>
+                              <td>
+                                <input id="contPersClientMaterno" class="validate" type="text" (keyup)="keyupPersNewContMaterno($event.target);" [(ngModel)]="cont.apellidoMaterno">
+                              </td>
+                              <td>
+                                <input id="contPersClientNombres" class="validate" type="text" (keyup)="keyupPersNewContNombres($event.target);" [(ngModel)]="cont.nombres">
+                              </td>
+                              <td>
+                                <input id="contPersClientArea" class="validate" type="text" (keyup)="keyupPersNewContArea($event.target);" [(ngModel)]="cont.area">
+                              </td>
+                              <td>
+                                <input id="contPersClientCargo" class="validate" type="text" (keyup)="keyupPersNewContCargo($event.target);" [(ngModel)]="cont.cargo">
+                              </td>
+                              <td class="ultimo">
+                                <a class="btn btn_extend bg-indigo-600" (click)="verNewEmailsReg(cont);">
+                                  <i class="fa-solid fa-at" style="width: 25px !important;height: 25px !important;line-height: 25px !important;font-size: 15px;text-align: center;"></i>
+                                  &nbsp;{{'email_reg' | translate}}
+                                </a>
+                              </td>
+                              <td class="ultimo">
+                                <a class="btn btn_extend bg-indigo-600" (click)="verNewTelefonosReg(cont);">
+                                  <i class="fa-solid fa-phone" style="width: 25px !important;height: 25px !important;line-height: 25px !important;font-size: 15px;text-align: center;"></i>
+                                  &nbsp;{{'phone_reg' | translate}}
+                                </a>
+                              </td>
+                              <td class="ultimo">
+                                <a class="btn btn_extend text-bg-success rounded-3"
+                                  [ngClass]="!enableBtnContacto() ? 'disabled' : ''"
+                                  [attr.disabled]="!enableBtnContacto() ? true : null"
+                                  [attr.aria-disabled]="!enableBtnContacto() ? true : null"
+                                  (click)="enableBtnContacto() && registraNuevoContacto(prVd.token_proveedor);">
+                                  <i class="fa-solid fa-plus"></i>&nbsp;{{'btn_add' | translate}}
+                                </a>
+                              </td>
+                            </tr>
+                            @if (cont === nuevoContactoEmails) {
+                              <tr>
+                                <td colspan="8">
+                                  <div class="col-12">
+                                    <ol class="list-group list-group-numbered">
+                                      <li class="list-group-item">
+                                        <div class="col-12 row">
+                                          <div
+                                            class="input-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6">
+                                            <label for="fechaAltaProd" class="activeInput">{{'email' | translate}}</label>
+                                            <input id="contPersClientNewEmail" class="validate" type="email" style="text-transform: lowercase!important;" (keyup)="keyupPersNewContEmail($event.target);">
+                                          </div>
+                                          <div class="input-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6" style="display: flex;margin-top: 5px;justify-content: end;">
+                                            <a class="btn btn_extend text-bg-success rounded-3"
+                                              [ngClass]="personal_contacto_email == '' ? 'disabled' : ''"
+                                              [attr.disabled]="personal_contacto_email == '' ? true : null"
+                                              [attr.aria-disabled]="personal_contacto_email == '' ? true : null"
+                                              (click)="personal_contacto_email != '' && addMailNewContacto();">
+                                              <i class="fa-solid fa-plus"></i>&nbsp;{{'btn_add' | translate}}
+                                            </a>
+                                          </div>
+                                        </div>
+                                      </li>
+                                      @for (mailPers of personal_contacto_email_lista; track $index; let mail_i = $index) {
+                                        <li class="list-group-item d-flex justify-content-between align-items-start">
+                                          <div class="ms-2 me-auto">
+                                            <div class="fw-bold">{{mailPers}}</div>
+                                          </div>
+                                          <a (click)="deleteMailNewContacto(mail_i); enableBtnContacto();" class="btn btn_extend deleteRegCont text-bg-danger rounded-3 badge">
+                                            <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                                          </a>
+                                        </li>
+                                      }
+                                    </ol>
+                                  </div>
+                                </td>
+                              </tr>
+                            }
+                            @else if (cont === nuevoContactoPhone) {
+                              <tr>
+                                <td colspan="8">
+                                  <ol class="list-group list-group-numbered">
+                                    <li class="list-group-item">
+                                      <div class="col-12 row">
+                                        <div class="input-group col-12">
+                                          <form #f="ngForm" [formGroup]="formPhone">
+                                            <ngx-material-intl-tel-input [fieldControl]="formPhone.get('phone')"
+                                              [preferredCountries]="preferredCountries" [enablePlaceholder]="true"
+                                              maxLength="15" name="phone"
+                                              (keyup)="probarNewTextPhone();contNewTelefonoNumero($event.target);enableBtnContacto();"
+                                              id="txtTelefonoNewCont_regClient">
+                                            </ngx-material-intl-tel-input>
+                                          </form>
+                                        </div>
+                                        <div class="input-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6">
+                                          <label for="fechaAltaProd" class="activeInput">Tipo de tel&eacute;fono</label>
+                                          <select class="browser-default" name="txtEtiquetaFiscal" id="etiquetaNewCont_regClient" (change)="contNewTelefonoTipoChange($event.target);">
+                                            <option value="" disabled selected>{{'opt_select' | translate}}</option>
+                                            <option value="casa">casa</option>
+                                            <option value="movil">movil</option>
+                                            <option value="trabajo">Trabajo</option>
+                                            <option value="fax">fax</option>
+                                            <option value="otro">otro</option>
+                                          </select>
+                                        </div>
+                                        <div class="input-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6">
+                                          <label for="fechaAltaProd" class="activeInput">Extensi&oacute;n</label>
+                                          <input class="validate" type="number" (keyup)="contNewTelefonoExtension($event.target);" (keyup)="enableBtnContacto();" id="txtExtensionNewCont_regClient">
+                                        </div>
+                                      </div>
+                                      <div class="col-12 row">
+                                        <div class="input-group col-12 col-sm-12 col-md-8 col-lg-8 col-xl-9 col-xxl-9">
+                                        </div>
+                                        <div class="input-group col-12 col-sm-12 col-md-4 col-lg-4 col-xl-3 col-xxl-3" style="display: flex;margin-top: 5px;justify-content: end;">
+                                          <a class="btn btn_extend text-bg-success rounded-3"
+                                            [ngClass]="personal_contacto_phone_etiqueta == '' || personal_contacto_phone_numero == '' ? 'disabled' : ''"
+                                            [attr.disabled]="personal_contacto_phone_etiqueta == '' || personal_contacto_phone_numero == '' ? true : null"
+                                            [attr.aria-disabled]="personal_contacto_phone_etiqueta == '' || personal_contacto_phone_numero == '' ? true : null"
+                                            (click)="(personal_contacto_phone_etiqueta != '' && personal_contacto_phone_numero != '') && addPhoneNewContacto();">
+                                            <i class="fa-solid fa-plus"></i>&nbsp;{{'btn_add' | translate}}</a>
+                                        </div>
+                                      </div>
+                                    </li>
+                                    @for (telPers of personal_contacto_telefono_lista; track $index; let phone_i = $index) {
+                                      <li class="list-group-item d-flex justify-content-between align-items-start">
+                                        <div class="ms-2 me-auto">
+                                          <div class="fw-bold">{{telPers.telefono_complete}}</div>
+                                          {{telPers.etiqueta+" Ext."+telPers.extension}}
+                                        </div>
+                                        <a (click)="deleteNewPhoneContacto(phone_i); enableBtnContacto();" class="btn btn_extend deleteRegCont text-bg-danger rounded-3 badge">
+                                          <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                                        </a>
+                                      </li>
+                                    }
+                                  </ol>
+                                </td>
+                              </tr>
+                            }
+                          </ng-template>
+                        </p-table>
+                      </div>
+                    </div>
+                  </div>
+  
+                  <div class="col-12 card card_main">
+                    <div class="card-content">
+                      <span class="card-title">Contactos registrados</span>
+                      <div class="inside">
+                        <p-table #dt [value]="prVd.contacto_registrado" dataKey="id" [paginator]="true" [rows]="10"
+                          [rowsPerPageOptions]="[10,20,30,50,100]" [globalFilterFields]="['nombre']">
+                          <ng-template pTemplate="header">
+                            <tr>
+                              <th pSortableColumn="paterno">Apellido Paterno&nbsp;<p-sortIcon field="paterno" />
+                              </th>
+                              <th pSortableColumn="materno">Apellido Materno&nbsp;<p-sortIcon field="materno" />
+                              </th>
+                              <th pSortableColumn="nombre">Nombre(s)&nbsp;<p-sortIcon field="nombre" /></th>
+                              <th pSortableColumn="area_contacto">&Aacute;rea&nbsp;<p-sortIcon
+                                  field="area_contacto" /></th>
+                              <th pSortableColumn="cargo_contacto">Cargo&nbsp;<p-sortIcon field="cargo_contacto" />
+                              </th>
+                              <th class="ultimo"></th>
+                              <th class="ultimo"></th>
+                              <th class="ultimo"></th>
+                            </tr>
+                          </ng-template>
+                          <ng-template #body let-cont>
+                            <tr>
+                              <td><input id="contPersClientPaterno" class="validate" [value]="cont.paterno" type="text" (keyup)="keyupPersListContPaterno(cont.token_contacto,$event.target);"></td>
+                              <td><input id="contPersClientMaterno" class="validate" [value]="cont.materno" type="text" (keyup)="keyupPersListContMaterno(cont.token_contacto,$event.target);"></td>
+                              <td><input id="contPersClientNombres" class="validate" [value]="cont.nombre" type="text" (keyup)="keyupPersListContNombres(cont.token_contacto,$event.target);"></td>
+                              <td><input id="contPersClientArea" class="validate" [value]="cont.area_contacto" type="text" (keyup)="keyupPersListContArea(cont.token_contacto,$event.target);"></td>
+                              <td><input id="contPersClientArea" class="validate" [value]="cont.cargo_contacto" type="text" (keyup)="keyupPersListContCargo(cont.token_contacto,$event.target);"></td>
+                              <td>
+                                <a class="btn btn_extend text-bg-success rounded-3"
+                                  [ngClass]="!validaBtnUpdateContPers(cont.token_contacto) ? 'disabled' : ''"
+                                  [attr.disabled]="!validaBtnUpdateContPers(cont.token_contacto) ? true : null"
+                                  [attr.aria-disabled]="!validaBtnUpdateContPers(cont.token_contacto) ? true : null"
+                                  (click)="validaBtnUpdateContPers(cont.token_contacto) && guardaNombresContacto(prVd.token_proveedor,cont.token_contacto,cont.paterno_edit,cont.materno_edit,cont.nombre_edit,cont.area_contacto_edit,cont.cargo_contacto_edit);">
+                                  <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}</a>
+                              </td>
+                              <td>
+                                <a class="btn btn_extend bg-indigo-600" (click)="verEmails(cont);">
+                                  <i class="fa-solid fa-at"
+                                    style="width: 25px !important;height: 25px !important;line-height: 25px !important;font-size: 15px;text-align: center;"></i>&nbsp;{{'email_catalogo'
+                                  | translate}}
+                                </a>
+                              </td>
+                              <td>
+                                <a class="btn btn_extend bg-indigo-600" (click)="verTelefonos(cont);">
+                                  <i class="fa-solid fa-phone"
+                                    style="width: 25px !important;height: 25px !important;line-height: 25px !important;font-size: 15px;text-align: center;"></i>&nbsp;{{'phone_catalog'
+                                  | translate}}
+                                </a>
+                              </td>
+                            </tr>
+                            @if (cont === contactoSeleccionadoEmails) {
+                              <tr>
+                                <td colspan="8">
+                                  <div class="col-12">
+                                    <div class="col-12 explain explain_column">
+                                      <h6 class="title">{{'email_reg' | translate}}</h6>
+                                      <div class="col-12 row">
+                                        <div
+                                          class="input-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6">
+                                          <label for="fechaAltaProd" class="activeInput">{{'email' |
+                                            translate}}</label>
+                                          <input id="contPersClientEmail" class="validate" type="email"
+                                            style="text-transform: lowercase!important;"
+                                            (keyup)="keyupPersContNewEmail($event.target);">
+                                        </div>
+                                        <div class="input-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6"
+                                          style="display: flex;margin-top: 5px;justify-content: end;align-items: flex-end;">
+                                          <a class="btn btn_extend text-bg-success rounded-3"
+                                            [ngClass]="txtMailPersonalClient_reg == '' ? 'disabled' : ''"
+                                            [attr.disabled]="txtMailPersonalClient_reg == '' ? true : null"
+                                            [attr.aria-disabled]="txtMailPersonalClient_reg == '' ? true : null"
+                                            (click)="txtMailPersonalClient_reg != '' && addMailContacto(prVd.token_proveedor,cont.token_contacto);">
+                                            <i class="fa-solid fa-plus"></i>&nbsp;{{'btn_add' | translate}}
+                                          </a>
+                                        </div>
+                                      </div>
+                                    </div>
+  
+                                    <div class="col-12 explain explain_column">
+                                      <h6 class="title">{{'email_catalogo' | translate}}</h6>
+                                      <div class="col-12">
+                                        <div class="col-12 row">
+                                          <p-table #mailcontPrv [value]="cont.correos" dataKey="idEmails"
+                                            [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]"
+                                            [globalFilterFields]="['correo']">
+                                            <ng-template #caption>
+                                              <div class="flex">
+                                                <p-iconfield iconPosition="left" class="ml-auto">
+                                                  <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                                                  <input pInputText type="text"
+                                                    (input)="mailcontPrv.filterGlobal($event.target.value, 'contains')"
+                                                    placeholder="{{'bus_car' | translate}}" />
+                                                </p-iconfield>
+                                              </div>
+                                            </ng-template>
+                                            <ng-template #header>
+                                              <tr>
+                                                <th>No.</th>
+                                                <th>email</th>
+                                                <th class="ultimo"></th>
+                                                <th class="ultimo"></th>
+                                              </tr>
+                                            </ng-template>
+                                            <ng-template #body let-mail let-i="rowIndex">
+                                              <tr>
+                                                <td>{{i+1}}</td>
+                                                <td>
+                                                  <input class="validate" [value]="mail.correo" type="email"
+                                                    style="text-transform: lowercase!important;"
+                                                    (keyup)="keyupPersContEmail(cont.token_contacto,mail.token_correo,$event.target);">
+                                                </td>
+                                                <td class="ultimo">
+                                                  <a class="btn btn_extend text-bg-success rounded-3"
+                                                    [ngClass]="mail.correo_edit == mail.correo ? 'disabled' : ''"
+                                                    [attr.disabled]="mail.correo_edit == mail.correo ? true : null"
+                                                    [attr.aria-disabled]="mail.correo_edit == mail.correo ? true : null"
+                                                    (click)="mail.correo_edit != mail.correo && updateEMailContacto(prVd.token_proveedor,cont.token_contacto,mail.token_correo,mail.correo_edit);">
+                                                    <i class="fa-solid fa-floppy-disk"
+                                                      style="height: 15px!important;line-height: 15px!important;width: 15px!important;font-size: small!important;"></i>&nbsp;{{'sav_cam'
+                                                    | translate}}
+                                                  </a>
+                                                </td>
+                                                <td class="ultimo">
+                                                  <a class="btn btn_extend deleteRegCont text-bg-danger rounded-3 badge"
+                                                    (click)="deleteEMailContacto(prVd.token_proveedor,cont.token_contacto,mail.token_correo);">
+                                                    <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                                                  </a>
+                                                </td>
+                                              </tr>
+                                            </ng-template>
+                                            <ng-template pTemplate="emptymessage">
+                                              <tr>
+                                                <td colspan="4" class="text-center py-4">
+                                                  <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                                                  <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                                    {{'no_rows' | translate}}
+                                                  </p>
+                                                </td>
+                                              </tr>
+                                            </ng-template>
+                                          </p-table>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </td>
+                              </tr>
+                            }
+                            @else if (cont === contactoSeleccionadoPhone) {
+                              <tr>
+                                <td colspan="8">
+                                  <div class="col-12">
+                                    <div class="col-12 explain explain_column">
+                                      <h6 class="title">{{'phone_reg' | translate}}</h6>
+                                      <div class="col-12">
+                                        <div class="col-12 row">
+                                          <div class="input-group col-12 col-sm-12 col-md-12 col-lg-4 col-xl-4 col-xxl-4">
+                                            <form #f="ngForm" [formGroup]="formPhone" style="z-index:1!important">
+                                              <ngx-material-intl-tel-input [fieldControl]="formPhone.get('phone')"
+                                                [preferredCountries]="preferredCountries" [enablePlaceholder]="true"
+                                                (keyup)="probarTextNewPhone();telefonoKeyupNewNumeroCont_reg($event.target);"
+                                                maxLength="15" name="phone">
+                                              </ngx-material-intl-tel-input>
+                                            </form>
+                                          </div>
+                                          <div class="input-group col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-4">
+                                            <label for="fechaAltaProd" class="activeInput">Tipo de tel&eacute;fono</label>
+                                            <select class="browser-default" name="txtEtiquetaFiscal" id="etiquetaCont_regClient"
+                                              (change)="telefonoTipoNewCont_regChange($event.target);"
+                                              style="width: 100%!important;height: 30px!important;font-size: 1rem!important;line-height: 30px!important;">
+                                              <option value="" disabled selected>{{'opt_select' | translate}}</option>
+                                              <option value="casa">casa</option>
+                                              <option value="movil">movil</option>
+                                              <option value="trabajo">Trabajo</option>
+                                              <option value="fax">fax</option>
+                                              <option value="otro">otro</option>
+                                            </select>
+                                          </div>
+                                          <div class="input-group col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-4">
+                                            <label for="fechaAltaProd" class="activeInput">Extensi&oacute;n</label>
+                                            <input class="validate" type="number"
+                                              (keyup)="telefonoKeyupNewExtension_reg($event.target);">
+                                          </div>
+                                        </div>
+                                        <div class="col-12 row">
+                                          <div class="input-group col-12 col-sm-12 col-md-8 col-lg-8 col-xl-9 col-xxl-9"></div>
+                                          <div class="input-group col-12 col-sm-12 col-md-4 col-lg-4 col-xl-3 col-xxl-3"
+                                            style="display: flex;margin-top: 5px;justify-content: end;">
+                                            <a class="btn btn_extend text-bg-success rounded-3"
+                                              [ngClass]="txtEtiquetaPersonal == '' || txtPhonePersonalAll == '' ? 'disabled' : ''"
+                                              [attr.disabled]="txtEtiquetaPersonal == '' || txtPhonePersonalAll == '' ? true : null"
+                                              [attr.aria-disabled]="txtEtiquetaPersonal == '' || txtPhonePersonalAll == '' ? true : null"
+                                              (click)="(txtEtiquetaPersonal != '' && txtPhonePersonalAll != '') && addPhoneContacto(prVd.token_proveedor,cont.token_contacto);">
+                                              <i class="fa-solid fa-plus"></i>&nbsp;{{'btn_add' | translate}}</a>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div class="col-12 explain explain_column">
+                                      <h6 class="title">{{'phone_catalog' | translate}}</h6>
+                                      <div class="col-12">
+                                        <div class="col-12 row">
+                                          <p-table #telefonosPrv [value]="cont.telefonos" dataKey="idPhone" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]" [globalFilterFields]="['etiqueta']">
+                                            <ng-template #caption>
+                                              <div class="flex">
+                                                <p-iconfield iconPosition="left" class="ml-auto">
+                                                  <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                                                  <input pInputText type="text"
+                                                    (input)="telefonosPrv.filterGlobal($event.target.value, 'contains')"
+                                                    placeholder="{{'bus_car' | translate}}" />
+                                                </p-iconfield>
+                                              </div>
+                                            </ng-template>
+                                            <ng-template #header>
+                                              <tr>
+                                                <th>No.</th>
+                                                <th pSortableColumn="etiqueta">Etiqueta&nbsp;<p-sortIcon field="etiqueta" /></th>
+                                                <th>{{'teléfono'}}</th>
+                                                <th>{{'extensión'}}</th>
+                                                <th class="ultimo"></th>
+                                                <th class="ultimo"></th>
+                                              </tr>
+                                            </ng-template>
+                                            <ng-template #body let-tel let-i="rowIndex">
+                                              <tr>
+                                                <td>{{i+1}}</td>
+                                                <td>
+                                                  <select class="browser-default" name="txtEtiquetaFiscal" id="etiquetaCont_regClient"
+                                                    (change)="telefonoTipoCont_regChange(cont.token_contacto,tel.token_telefono,$event.target);"
+                                                    style="width: 100%!important;height: 30px!important;font-size: 1rem!important;line-height: 30px!important;">
+                                                    <option value="" disabled selected>{{'opt_select' | translate}}</option>
+                                                    <option value="casa" [attr.disabled]="tel.etiqueta == 'casa' ? true : null"
+                                                      [attr.selected]="tel.etiqueta == 'casa' ? true : null">casa</option>
+                                                    <option value="movil" [attr.disabled]="tel.etiqueta == 'movil' ? true : null"
+                                                      [attr.selected]="tel.etiqueta == 'movil' ? true : null">movil</option>
+                                                    <option value="trabajo" [attr.disabled]="tel.etiqueta == 'trabajo' ? true : null"
+                                                      [attr.selected]="tel.etiqueta == 'trabajo' ? true : null">Trabajo</option>
+                                                    <option value="fax" [attr.disabled]="tel.etiqueta == 'fax' ? true : null"
+                                                      [attr.selected]="tel.etiqueta == 'fax' ? true : null">fax</option>
+                                                    <option value="otro" [attr.disabled]="tel.etiqueta == 'otro' ? true : null"
+                                                      [attr.selected]="tel.etiqueta == 'otro' ? true : null">otro</option>
+                                                  </select>
+                                                </td>
+                                                <td>
+                                                  <form #f="ngForm">
+                                                    <ngx-material-intl-tel-input [fieldControl]="tel.phoneForm.get('phone')"
+                                                      [preferredCountries]="tel.preferredCountries" [enablePlaceholder]="true"
+                                                      (keyup)="probarTextPhone(cont.token_contacto,tel.token_telefono);telefonoKeyupNumeroCont_reg(cont.token_contacto,tel.token_telefono,$event.target);"
+                                                      maxLength="15" name="phone">
+                                                    </ngx-material-intl-tel-input>
+                                                  </form>
+                                                </td>
+                                                <td>
+                                                  <input class="validate" type="number" [value]="tel.extension != '---' ? tel.extension : ''"
+                                                    (keyup)="telefonoKeyupExtension_reg(cont.token_contacto,tel.token_telefono,$event.target);">
+                                                </td>
+                                                <td class="ultimo">
+                                                  <a class="btn btn_extend text-bg-success rounded-3 badge"
+                                                    [ngClass]="!validaBtnUpdateTelContPers(cont.token_contacto,tel.token_telefono) ? 'disabled' : ''"
+                                                    [attr.disabled]="!validaBtnUpdateTelContPers(cont.token_contacto,tel.token_telefono) ? true : null"
+                                                    [attr.aria-disabled]="!validaBtnUpdateTelContPers(cont.token_contacto,tel.token_telefono) ? true : null"
+                                                    (click)="validaBtnUpdateTelContPers(cont.token_contacto,tel.token_telefono) && updatePhoneContacto(prVd.token_proveedor,cont.token_contacto,tel.token_telefono,tel.etiqueta_edit,tel.telefono_edit,tel.extension_edit);">
+                                                    <i class="fa-solid fa-floppy-disk"
+                                                      style="height: 15px!important;line-height: 15px!important;width: 15px!important;font-size: small!important;"></i>&nbsp;{{'sav_cam'
+                                                    | translate}}
+                                                  </a>
+                                                </td>
+                                                <td class="ultimo">
+                                                  <a (click)="deletePhoneContacto(prVd.token_proveedor,cont.token_contacto,tel.token_telefono);"
+                                                    class="btn btn_extend deleteRegCont text-bg-danger rounded-3 badge"><i
+                                                      class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}</a>
+                                                </td>
+                                              </tr>
+                                            </ng-template>
+                                            <ng-template pTemplate="emptymessage">
+                                              <tr>
+                                                <td colspan="6" class="text-center py-4">
+                                                  <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                                                  <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                                    {{'no_rows' | translate}}
+                                                  </p>
+                                                </td>
+                                              </tr>
+                                            </ng-template>
+                                          </p-table>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </td>
+                              </tr>
+                            }
+                          </ng-template>
+                          <ng-template pTemplate="emptymessage">
+                            <tr>
+                              <td colspan="8" class="text-center py-4">
+                                <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                                <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                  {{'no_rows' | translate}}
+                                </p>
+                              </td>
+                            </tr>
+                          </ng-template>
+                        </p-table>
+                      </div>
+                    </div>
+                  </div>
+                </div>                              
+              </div>
+              <p-divider />
+              <div class="col-12 row" style="padding:0!important;">
+                <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain">
+                  <h6 class="title">¿Cuenta con documentaci&oacute;n fiscal?</h6>
+                </div>
+                <div
+                  class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                  <label class="form-check-label" for="flexSwitchCheckReverse">No</label>
+                  <input class="form-check-input" type="checkbox" [checked]="prVd.tieneCreditoAsignado_edit"
+                    (click)="decide_docs_fiscales($event.target);">
+                  <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                </div>
+              
+                <div id="decidedocs_fiscales" class="col-12 noneView" style="padding: 0;">
+                  <p-table #prvDocsAdj [value]="prVd.docs_adjuntos" dataKey="id" [paginator]="true" [rows]="10"
+                    [rowsPerPageOptions]="[10,20,30,50,100]" [globalFilterFields]="['tipo_documento','name_documento']">
+                    <ng-template #caption>
+                      <div class="flex">
+                        <p-iconfield iconPosition="left" class="ml-auto">
+                          <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                          <input pInputText type="text" (input)="prvDocsAdj.filterGlobal($event.target.value, 'contains')"
+                            placeholder="{{'bus_car' | translate}}" />
+                        </p-iconfield>
+                      </div>
+                    </ng-template>
+                    <ng-template #header>
+                      <tr>
+                        <th>No.</th>
+                        <th pSortableColumn="name_documento">{{'file_name' | translate}}&nbsp;<p-sortIcon field="name_documento" />
+                        </th>
+                        <th class="ultimo"></th>
+                      </tr>
+                    </ng-template>
+                    <ng-template #body let-docs let-i="rowIndex">
+                      <tr>
+                        <td>{{i+1}}</td>
+                        <td>{{docs.tipo_documento+" ("+docs.name_documento+")"}}</td>
+                        <td class="ultimo"><a class="btn btn_extend text-bg-primary rounded-4" href="{{docs.url}}" target="_blank"><i class="fa-solid fa-globe"></i></a></td>
+                      </tr>
+                    </ng-template>
+                    <ng-template pTemplate="emptymessage">
+                      <tr>
+                        <td colspan="3" class="text-center py-4">
+                          <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                          <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                            {{'no_rows' | translate}}
+                          </p>
+                        </td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
+                </div>
+              </div>
+              <p-divider />
+              <div class="col-12 row" style="padding:0!important;">
+                <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain">
+                  <h6 class="title">¿Ofrece credito?</h6>
+                </div>
+                <div
+                  class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                  <label class="form-check-label" for="flexSwitchCheckReverse">No</label>
+                  <input class="form-check-input" type="checkbox" [checked]="prVd.tieneCreditoAsignado"
+                    (click)="aceptaCreditoProv($event.target);">
+                  <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                </div>
+                <div id="decidecredito" class="col-12" [ngClass]="prVd.tieneCreditoAsignado_edit == false ? 'noneView' : ''" style="padding: 0;">
+                  <div class="col-12 row" style="margin-bottom: 5px!important;">
+                    <p-table #prvGralList [value]="prVd.creditos" showGridlines [resizableColumns]="true" columnResizeMode="expand" [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]"
+                      [globalFilterFields]="['moneda_code','limite','dias','comienza']">
+                      <ng-template #caption>
+                        <div class="flex" style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;" ngbDropdown>
+                          <p-iconfield iconPosition="left" class="ml-auto">
+                            <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                            <input pInputText type="text" (input)="prvGralList.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+                          </p-iconfield>
+                        </div>
+                      </ng-template>
+                      <ng-template #header>
+                        <tr>
+                          <th pResizableColumn pSortableColumn="moneda_code">Moneda&nbsp;<p-sortIcon field="moneda_code" /></th>
+                          <th pResizableColumn pSortableColumn="limite">L&iacute;mite de credito&nbsp;<p-sortIcon field="limite" /></th>
+                          <th pResizableColumn pSortableColumn="dias">D&iacute;as de pago&nbsp;<p-sortIcon field="dias" /></th>
+                          <th pResizableColumn pSortableColumn="comienza">Comienzo del computo de d&iacute;as de cr&eacute;dito&nbsp;<p-sortIcon field="comienza" /></th>
+                          <th class="ultimo"></th>
+                          <th class="ultimo"></th>
+                        </tr>
+                      </ng-template>
+                      <ng-template #body let-crd>
+                        <tr>
+                          <td>
+                            <datalist id="inputListMonClient">
+                              @for (arraMon of listaMonedas; track $index) {
+                                <option [value]="arraMon.langEN">{{"código "+arraMon.code+", "+arraMon.decimales+" decimales"}}</option>
+                              }
+                            </datalist>
+                            <input class="validate" list="inputListMonClient" type="text" [value]="crd.acepta == true ? crd.moneda_code : ''" (change)="credMonedaChange(crd.token_creditos,$event.target);">
+                          </td>
+                          <td><input class="validate" name="txtlimiteCredito" type="number" pattern="[0-9]*" [value]="crd.acepta == true ? crd.limite : ''" (keyup)="credLimiteCredito(crd.token_creditos,$event.target);"></td>
+                          <td><input class="validate" name="txtdiaspagoCredit" type="number" [value]="crd.acepta == true ? crd.dias : ''" (keyup)="credDiasPagoCredito(crd.token_creditos,$event.target);"></td>
+                          <td>
+                            <select name="selectComienzaPago" class="browser-default" (change)="credComienzaPagoProv(crd.token_creditos,$event.target);" style="width: 100%!important;height: 30px!important;font-size: 1rem!important;line-height: 30px!important;">
+                              <option value="" disabled selected>SELECCIONE UNA OPCIÓN</option>
+                              <option value="cada.inicio.mes" [attr.disabled]="crd.comienza == 'cada.inicio.mes' ? true : null" [attr.selected]="crd.comienza == 'cada.inicio.mes' ? true : null">
+                                Cada inicio de mes
+                              </option>
+                              <option value="sistem.emite.orden.pago" [attr.disabled]="crd.comienza == 'sistem.emite.orden.pago' ? true : null" [attr.selected]="crd.comienza == 'sistem.emite.orden.pago' ? true : null">
+                                Se emite/env&iacute;a orden de pago
+                              </option>
+                              <option value="serecibe.facturadel.proveedor" [attr.disabled]="crd.comienza == 'serecibe.facturadel.proveedor' ? true : null" [attr.selected]="crd.comienza == 'serecibe.facturadel.proveedor' ? true : null">
+                                Se recibe factura del proveedor
+                              </option>
+                              <option value="producto.sale.bodegas.proveedor" [attr.disabled]="crd.comienza == 'producto.sale.bodegas.proveedor' ? true : null" [attr.selected]="crd.comienza == 'producto.sale.bodegas.proveedor' ? true : null">
+                                El producto salga de las bodegas del proveedor
+                              </option>
+                              <option value="producto.recibido.nuestras.bodegas" [attr.disabled]="crd.comienza == 'producto.recibido.nuestras.bodegas' ? true : null" [attr.selected]="crd.comienza == 'producto.recibido.nuestras.bodegas' ? true : null">
+                                El producto es recibido en nuestras bodegas
+                              </option>
+                            </select>
+                          </td>
+                          <td class="ultimo">
+                            <a class="btn btn_extend text-bg-success rounded-3"
+                              [ngClass]="!creditosValidate(crd.token_creditos) ? 'disabled' : ''"
+                              [attr.disabled]="!creditosValidate(crd.token_creditos) ? true : null"
+                              [attr.aria-disabled]="!creditosValidate(crd.token_creditos) ? true : null"
+                              (click)="creditosValidate(crd.token_creditos) && seccionCreditosProv(prVd.token_proveedor,crd);">
+                              <i class="fa-solid" [ngClass]="crd.token_creditos != '' ? 'fa-floppy-disk' : 'fa-plus'"
+                                style="height: 15px!important;line-height: 15px!important;width: 15px!important;font-size: small!important;"></i>&nbsp;
+                              {{prVd.token_creditos != '' ? ['sav_cam' | translate] : ['btn_add' | translate]}}
+                            </a>
+                          </td>
+                          <td class="ultimo">
+                            <a class="btn btn_extend text-bg-danger rounded-3" [ngClass]="prVd.token_creditos == '' ? 'disabled' : ''"
+                              [attr.disabled]="prVd.token_creditos == '' ? true : null"
+                              [attr.aria-disabled]="prVd.token_creditos == '' ? true : null"
+                              (click)="prVd.token_creditos != '' && elimninaCreditosProv(prVd.token_proveedor,prVd.token_creditos);">
+                              <i class="fa-solid fa-solid fa-eraser"></i>&nbsp;cr&eacute;dito
+                            </a>
+                          </td>
+                        </tr>
+                      </ng-template>
+                      <ng-template pTemplate="emptymessage">
+                        <tr>
+                          <td colspan="6" class="text-center py-4">
+                            <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                            <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                              {{'no_rows' | translate}}
+                            </p>
+                          </td>
+                        </tr>
+                      </ng-template>
+                    </p-table>
+                  </div>
+                </div>
+              </div>
+              <p-divider />
+              <div class="col-12" style="padding:0!important;">
+                <div class="col-12 row" style="padding: 0!important;">
+                  <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain">
+                    <h6 class="title">¿Cuenta con forma de pago?</h6>
+                  </div>
+                  <div
+                    class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                    <label class="form-check-label" for="flexSwitchCheckReverse">No</label>
+                    <input class="form-check-input" type="checkbox" [checked]="prVd.forma_pago_tiene == true"
+                      (click)="tieneFormaPagoProv($event.target);">
+                    <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                  </div>
+                </div>
+                <div id="decideformapagoDetail" class="col-12" [ngClass]="prVd.forma_pago_tiene_edit == false ? 'noneView' : ''" style="padding: 0;">
+                  <div class="input-group col-12">
+                    <label class="activeInput">Forma de pago</label>
+                    <datalist id="fpago_listReem">
+                      @for (fpago of listaFormasPagoIn; track $index) {
+                        <option [value]="fpago.forma">{{"clave "+fpago.clave}}</option>
+                      }
+                    </datalist>
+                    <input list="fpago_listReem" name="browser" type="text" [value]="prVd.forma_pago_tiene == true ? prVd.forma_pago_concepto : ''" (change)="changeFormaPagoAltaProv($event.target);">
+                  </div>
+            
+                  @if (prVd.forma_pago_token == 'RkxGMTRidG44ZWJJYVh0dUlDK1o4Zz09OjoxMjM0NTY3ODEyMzQ1Njc4') {
+                    <table class="centered white">
+                      <thead>
+                        <tr>
+                          <th colspan="4">Estado de cuenta reciente</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>
+                            <div class="mb-3" style="margin: 0!important;">
+                              <input class="form-control" type="file" id="file_estado_cuenta" (change)="cargaDocsEstadoCuenta($event);" placeholder="ESTADO DE CUENTA" style="padding: 0;line-height: 30px;width: 100%!important;">
+                            </div>
+                          </td>
+                          <td class="ultimo">
+                            <a class="btn btn_extend text-bg-primary" data-bs-toggle="modal" (click)="clickEscannerEstadoCuenta();"
+                              data-bs-target="#scannerEstadoCuentaProv"><i class="fa-solid fa-qrcode"></i></a>
+                          </td>
+                          <td class="ultimo">
+                            @if (htmlEstadoCuenta != '') {
+                            <a class="btn btn_extend text-bg-primary" data-bs-toggle="modal" data-bs-target="#windowEstadoCuenta">
+                              <i class="fa-regular fa-hand-pointer"></i>
+                            </a>
+                            } @else {
+                              <a class="btn btn_extend text-bg-primary rounded-4 disabled" disabled aria-disabled="true">
+                                <i class="fa-regular fa-hand-pointer"></i>
+                              </a>
+                            }
+                          </td>
+                          <td class="ultimo">
+                            @if (htmlEstadoCuenta != '') {
+                            <a class="btn btn_extend text-bg-danger rounded-3" (click)="deleteDocEstadoCuenta();">
+                              <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                            </a>
+                            } @else {
+                              <a class="btn btn_extend text-bg-danger rounded-3 disabled" disabled aria-disabled="true">
+                                <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                              </a>
+                            }
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                
+                    <table class="centered white">
+                      <thead>
+                        <tr id="trDocEstadoCuenta">
+                          <th colspan="2">referencia de pago</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>Por clabe interbancaria</td>
+                          <td class="ultimo">
+                            <div class="form-check radio_check" style="display: flex;justify-content: center;">
+                              <input class="form-check-input" id="txtClabeInt" name="clabeInt" type="radio"
+                                (click)="decideTipoReferenciaPago($event.target,'clabeInterbancaria');">
+                            </div>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>Por convenio</td>
+                          <td class="ultimo">
+                            <div class="form-check radio_check" style="display: flex;justify-content: center;">
+                              <input class="form-check-input" id="txtConvenio" name="convenio" type="radio"
+                                (click)="decideTipoReferenciaPago($event.target,'convenio');">
+                            </div>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>Por linea de captura</td>
+                          <td class="ultimo">
+                            <div class="form-check radio_check" style="display: flex;justify-content: center;">
+                              <input class="form-check-input" id="txtLineaCap" name="lineaCap" type="radio"
+                                (click)="decideTipoReferenciaPago($event.target,'lineaCaptura');">
+                            </div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  }
+              
+                  @if (prVd.forma_pago_tipo_referencia == 'ci') {
+                    <div class="col-12">
+                      <div class="input-group col-12" style="display: flex;justify-content: start;align-items: center;">
+                        <label class="activeInput" style="margin-right:5px;"><span class="obligatorio">Clabe interbancaria</span></label>
+                        <input class="validate" type="text" (keyup)="keyupClabeIntBanc_banco($event.target)" (keypress)="keypressClabeIntBanc($event);" maxlength="3" style="border-radius: 8px!important;width: 60px;">
+                        <label class="activeInput" style="font-size: 20px;font-weight: bold;width: 20px;color: #353535;text-align: center;">-</label>
+                        <input class="validate" type="text" (keyup)="keyupClabeIntBanc_plaza($event.target)" (keypress)="keypressClabeIntBanc($event);" maxlength="3" style="border-radius: 8px!important;width: 60px;">
+                        <label class="activeInput" style="font-size: 20px;font-weight: bold;width: 20px;color: #353535;text-align: center;">-</label>
+                        <input class="validate" name="txtClabeIntBanc" type="text" style="border-radius: 8px!important;width: 150px;" (keyup)="keyupClabeIntBanc_cuenta($event.target)" (keypress)="keypressClabeIntBanc($event);" maxlength="11">
+                        <label class="activeInput" style="font-size: 20px;font-weight: bold;width: 20px;color: #353535;text-align: center;">-</label>
+                        <input class="validate" name="txtClabeIntBanc" type="text" style="border-radius: 8px!important;width: 60px;" (keyup)="keyupClabeIntBanc_control($event.target)" (keypress)="keypressClabeIntBanc($event);" maxlength="1">
+                      </div>
+                      <h6 class="input-group col-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-4" style="margin: 0;height: 30px;line-height: 30px;">{{clabeInterbancariaPago}}</h6>
+                    </div>
+                  }
+                </div>
+                @if ((prVd.forma_pago_tiene_edit != prVd.forma_pago_tiene) || (prVd.forma_pago_tiene_edit == true && prVd.forma_pago_tiene == true)) {
+                  <div class="col-12 row" style="margin-bottom: 5px!important;">
+                    <div class="input-group col-12 col-sm-12 col-md-8 col-lg-8 col-xl-9 col-xxl-9"></div>
+                    <div class="input-group col-12 col-sm-12 col-md-4 col-lg-4 col-xl-3 col-xxl-3" style="display: flex;margin-top: 5px;justify-content: end;">
+                      <a class="btn btn_extend text-bg-success rounded-3"
+                        [ngClass]="!validaFormaPago(prVd.token_proveedor) ? 'disabled' : ''"
+                        [attr.disabled]="!validaFormaPago(prVd.token_proveedor) ? true : null"
+                        [attr.aria-disabled]="!validaFormaPago(prVd.token_proveedor) ? true : null"
+                        (click)="validaFormaPago(prVd.token_proveedor) && saveFormaPagoProv(prVd.token_proveedor);">
+                        <i class="fa-solid" [ngClass]="prVd.forma_pago_tiene == true ? 'fa-floppy-disk' : 'fa-plus'"></i>&nbsp;{{prVd.forma_pago_tiene == true ? ['sav_cam' | translate] : ['btn_add' | translate]}}
+                      </a>
+                    </div>
+                  </div>
+                }
+              </div>
+              <p-divider />
+              <div class="col-12 row" style="padding:0!important;">
+                <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain">
+                  <h6 class="title">¿Recibe factura antes o despues del pago?</h6>
+                </div>
+                <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                  <label class="form-check-label" for="flexSwitchCheckReverse">Despues</label>
+                  <input class="form-check-input" type="checkbox"
+                    (click)="recibeFactAntesDespues(prVd.token_proveedor,$event.target);" [checked]="prVd.emisionFacturas == true">
+                  <label class="form-check-label" for="flexSwitchCheckReverse">Antes</label>
+                </div>
+              </div>
+              <p-divider />
+              <div class="col-12 row" style="padding:0!important;">
+                <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain">
+                  <h6 class="title">¿Recibes el producto o servicio antes o despues del pago?</h6>
+                </div>
+                <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                  <label class="form-check-label" for="flexSwitchCheckReverse">Despues</label>
+                  <input class="form-check-input" type="checkbox"
+                    (click)="recibeProdAntesDespues(prVd.token_proveedor,$event.target);" [checked]="prVd.envioArtAfterCobro == true">
+                  <label class="form-check-label" for="flexSwitchCheckReverse">Antes</label>
+                </div>
+              </div>
+              <p-divider />
+              <div class="col-12" style="padding:0!important;">
+                <div class="col-12 explain">
+                  <h6 class="title">DIRECCIONES (UBICACI&Oacute;N)</h6>
+                </div>
+                @for (dir of prVd.arrayUbicacion; track $index) {
+                  <div class="col-12 row" style="padding: 0;">
+                    <div class="col-12 explain">
+                      <h6 class="title">Pa&iacute;s</h6>
+                      <h6 class="content">{{dir.pais}}<strong>Clase</strong>{{' '+dir.clase+' '}}<strong>Tipo</strong>{{' '+dir.tipo_direccion}}</h6>
+                    </div>
+                    @if (dir.pais == 'México') {
+                      <div class="col-12" style="padding:0!important;">
+                        <div class="col-12 row" style="padding: 0;">
+                          <div class="col-12 explain row">
+                            <div class="col-12 card card_main" style="margin-bottom: 5px!important;">
+                              <div class="card-content">
+                                <div class="inside">
+                                  <p-table #dt [value]="nuevo_contacto_form" dataKey="id">
+                                    <ng-template pTemplate="header">
+                                      <tr>
+                                        <th pSortableColumn="estado_main">Estado&nbsp;<p-sortIcon field="estado_main" /></th>
+                                        <th pSortableColumn="municipio_main">Municipio&nbsp;<p-sortIcon field="municipio_main" /></th>
+                                        <th pSortableColumn="c_postal_main">C&oacute;digo postal&nbsp;<p-sortIcon field="c_postal_main" /></th>
+                                        <th pSortableColumn="colonia_main">Colonia&nbsp;<p-sortIcon field="colonia_main" /></th>
+                                        <th class="ultimo"></th>
+                                      </tr>
+                                    </ng-template>
+                                    <ng-template #body let-ubi let-editing="editing">
+                                      <tr>
+                                        <td>{{dir.estado_main}}</td>
+                                        <td>{{dir.municipio_main}}</td>
+                                        <td>{{dir.c_postal_main}}</td>
+                                        <td>{{dir.colonia_main}}</td>
+                                        <td class="ultimo">
+                                          <a class="btn btn_extend bg-indigo-600" (click)="verEditUbicacion(ubi);">
+                                            <i class="fa-solid fa-pen-to-square"
+                                              style="height: 15px!important;line-height: 15px!important;width: 15px!important;font-size: small!important;"></i>&nbsp;{{'perm_edit' | translate}}
+                                          </a>
+                                        </td>
+                                      </tr>
+                                      @if (ubi === editUbicacionSeccion) {
+                                        <tr>
+                                          <td colspan="5">
+                                            <div class="col-12 card card_main" style="margin-bottom: 5px!important;">
+                                              <div class="card-content">
+                                                <div class="inside">
+                                                  <ul class="list-group collection_postales" style="margin-top: 0;padding: 0;">
+                                                    <li class="list-group-item" style="padding: 0;">
+                                                      <div class="busqueda row">
+                                                        <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6"
+                                                          style="display: flex;justify-content: flex-start;margin: auto;padding: 0;height: 30px;line-height: 30px;">
+                                                          <h6>C&oacute;digo postal: </h6>
+                                                        </div>
+                                                        <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6 field_buscar">
+                                                          <input class="validate" type="text" placeholder="{{'bus_car' | translate}}"
+                                                            (keyup)="buscaCodPostalDipomex($event.target);">
+                                                        </div>
+                                                      </div>
+                                                    </li>
+                                                    <li class="list-group-item">Estado: {{dipomex_cod_postal_estado}}</li>
+                                                    <li class="list-group-item">Municipio: {{dipomex_cod_postal_municipio}}</li>
+                                                    <li class="list-group-item">C&oacute;digo postal: {{dipomex_cod_postal_cp}}</li>
+                                                    @if (dipomex_cod_postal_colonias.length > 0) {
+                                                      <li class="list-group-item itemFor">Colonias:
+                                                        @for (col of dipomex_cod_postal_colonias; track $index) {
+                                                          <p [ngClass]="dir.colonia_edit == col ? 'disabledView' : ''" [attr.disabled]="dir.colonia_edit == col ? true : null"
+                                                            [attr.aria-disabled]="dir.colonia_edit == col ? true : null" (click)="dir.colonia_edit != col && seleccionaColoniaCPDipomex(col);">{{col}}</p>
+                                                        }
+                                                      </li>
+                                                    } @else {
+                                                      <li class="list-group-item">Colonias:---</li>
+                                                    }
+                                                    @if (dipomex_cod_postal_colonia_vinculada != '') {
+                                                      <li class="list-group-item itemColoniaSeleted">Colonia seleccionada: {{dipomex_cod_postal_colonia_vinculada}}</li>
+                                                    }
+                                                  </ul>
+                    
+                                                  <div class="col-12 row">
+                                                    <div class="input-group col-12 col-sm-12 col-md-8 col-lg-8 col-xl-9 col-xxl-9"></div>
+                                                    <div class="input-group col-12 col-sm-12 col-md-4 col-lg-4 col-xl-3 col-xxl-3"
+                                                      style="display: flex;margin-top: 5px;justify-content: end;">
+                                                      <a class="btn btn_extend text-bg-success rounded-3"
+                                                        [ngClass]="!validateDipoMexUbica ? 'disabled' : ''"
+                                                        [attr.disabled]="!validateDipoMexUbica ? true : null"
+                                                        [attr.aria-disabled]="!validateDipoMexUbica ? true : null"
+                                                        (click)="validateDipoMexUbica && actualizaUbicaDipoMexProv(prVd.token_proveedor,dir.token_direccion);">
+                                                        <i class="fa-solid fa-floppy-disk"
+                                                          style="height: 15px!important;line-height: 15px!important;width: 15px!important;font-size: small!important;"></i>&nbsp;{{'sav_cam'
+                                                        | translate}}
+                                                      </a>
+                                                    </div>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            </div>
+                    
+                                            @if (dipomex_cod_postal_cp != '' && dipomex_cod_postal_cp == ('unk_nown' | translate)) {
+                                              <div class="col-12 card card_main" style="margin-bottom: 5px!important;">
+                                                <div class="card-content">
+                                                  <div class="inside">
+                                                    <p-table #dt [value]="nuevo_contacto_form" dataKey="id">
+                                                      <ng-template pTemplate="header">
+                                                        <tr>
+                                                          <th pSortableColumn="estado_main">Estado&nbsp;<p-sortIcon field="estado_main" /></th>
+                                                          <th pSortableColumn="municipio_main">Municipio&nbsp;<p-sortIcon field="municipio_main" /></th>
+                                                          <th pSortableColumn="c_postal_main">C&oacute;digo postal&nbsp;<p-sortIcon field="c_postal_main" />
+                                                          </th>
+                                                          <th pSortableColumn="colonia_main">Colonia&nbsp;<p-sortIcon field="colonia_main" /></th>
+                                                          <th class="ultimo"></th>
+                                                        </tr>
+                                                      </ng-template>
+                                                      <ng-template #body let-cont let-editing="editing">
+                                                        <tr>
+                                                          <td><input id="newDipoMexEstado" class="validate" type="text" [value]="dir.estado_main" (keyup)="keyupCPostal_EstName($event.target,dir.token_direccion);"></td>
+                                                          <td><input id="newDipoMexMunicipio" class="validate" type="text" [value]="dir.municipio_main" (keyup)="keyupCPostal_Municipio($event.target,dir.token_direccion);"></td>
+                                                          <td><input id="newDipoMexCP" class="validate" type="text" [value]="dir.c_postal_main" (keyup)="keyupCPostal_CP($event.target,dir.token_direccion);"></td>
+                                                          <td><input id="newDipoMexColonia" class="validate" type="text" [value]="dir.colonia_main" (keyup)="keyupCPostal_Colonia($event.target,dir.token_direccion);"></td>
+                                                          <td class="ultimo">
+                                                            <a class="btn btn_extend text-bg-success rounded-3"
+                                                              [ngClass]="!validatecPostal(dir.token_direccion) ? 'disabled' : ''"
+                                                              [attr.disabled]="!validatecPostal(dir.token_direccion) ? true : null"
+                                                              [attr.aria-disabled]="!validatecPostal(dir.token_direccion) ? true : null"
+                                                              (click)="validatecPostal(dir.token_direccion) && actualizaUbicacionProv(prVd.token_proveedor,dir.token_direccion);"><i
+                                                                class="fa-solid fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}</a>
+                                                          </td>
+                                                        </tr>
+                                                      </ng-template>
+                                                      <ng-template pTemplate="emptymessage">
+                                                        <tr>
+                                                          <td colspan="5" class="text-center py-4">
+                                                            <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                                                            <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                                              {{'no_rows' | translate}}
+                                                            </p>
+                                                          </td>
+                                                        </tr>
+                                                      </ng-template>
+                                                    </p-table>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            }
+                                          </td>
+                                        </tr>
+                                      }
+                                    </ng-template>
+                                    <ng-template pTemplate="emptymessage">
+                                      <tr>
+                                        <td colspan="5" class="text-center py-4">
+                                          <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                                          <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                            {{'no_rows' | translate}}
+                                          </p>
+                                        </td>
+                                      </tr>
+                                    </ng-template>
+                                  </p-table>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    } @else {
+                      <div class="col-12" style="padding:0!important;">
+                        <div class="col-12 row" style="padding: 0;">
+                          <div class="col-12 sm-6 lg-3 lx-3 explain">
+                            <h6 class="title">C&oacute;digo postal</h6>
+                            <h6 class="content">{{dir.cod_postalext}}</h6>
+                          </div>
+                          <div class="input-group col-12 row" style="padding: 0!important;">
+                            <label for="selPaisExtPF_reg" class="active activeSelect" id="lblselPaisExtPF_reg">{{'dir_complete' |
+                              translate}}<span class="obligatorio">* Obligatorio</span></label>
+                            <textarea id="txtCodPostalUbicacionExt" class="materialize-textarea validate" name="txtCodPostalSucExt"
+                              minlength="5"></textarea>
+                          </div>
+                        </div>
+                      </div>
+                    }
+                  </div>
+                }
+              </div>
+            </p-tabpanel>
+            <p-tabpanel value="1">
+              <div class="col-12">
+                <div class="btn-group lista_botones col" role="group" aria-label="ejemplo">
+                  <a class="btn btn_extend bg-indigo-600" (click)="infoProvDetalleSaldoAFavor(prVd.token_proveedor);">
+                    <i class="fa-solid fa-rotate" style="margin-left: 5px;"></i>&nbsp;{{'list_updt' | translate}}
+                  </a>
+                </div>
+              </div>
+              <div class="col-12">
+                <p-table [value]="provDetalleSaldoAFavor" [tableStyle]="{ 'min-width': '50rem' }" dataKey="id" [paginator]="true"
+                  [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]" [globalFilterFields]="['nombre']">
+                  <ng-template #header>
+                    <tr>
+                      <th pSortableColumn="fecha_de_registro">{{'fecha_reg' | translate}}&nbsp;<p-sortIcon field="fecha_de_registro" /></th>
+                      <th pSortableColumn="fecha_aplicacion">{{'fecha_aplica' | translate}}&nbsp;<p-sortIcon field="fecha_aplicacion" /></th>
+                      <th pSortableColumn="monto_real_format">{{'total_import' | translate}}&nbsp;<p-sortIcon field="monto_real_format" /></th>
+                    </tr>
+                  </ng-template>
+                  <ng-template #body let-sald>
+                    <tr>
+                      <td>{{sald.fecha_de_registro}}</td>
+                      <td>{{sald.fecha_aplicacion}}</td>
+                      <td class="td_importes">{{sald.monto_real_format}}</td>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="emptymessage">
+                    <tr>
+                      <td colspan="3" class="text-center py-4">
+                        <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                        <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                          {{'no_rows' | translate}}
+                        </p>
+                      </td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+              </div>
+            </p-tabpanel>
+            <p-tabpanel value="2">
+              <p-table [value]="provDetalleAnticipo" [tableStyle]="{ 'min-width': '50rem' }" dataKey="id" [paginator]="true"
+                [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]" [globalFilterFields]="['nombre']">
+                <ng-template #header>
+                  <tr>
+                    <th pSortableColumn="folio">folio&nbsp;<p-sortIcon field="folio" /></th>
+                    <th pSortableColumn="fecha_registro">{{'fecha_reg' | translate}}&nbsp;<p-sortIcon field="fecha_registro" /></th>
+                    <th pSortableColumn="fecha_aplicacion">{{'fecha_aplica' | translate}}&nbsp;<p-sortIcon field="fecha_aplicacion" /></th>
+                    <th pSortableColumn="forma_pago">{{'f_pago' | translate}}&nbsp;<p-sortIcon field="forma_pago" /></th>
+                    <th pSortableColumn="tipo_cambio">{{'mon_tipo_cambio' | translate}}&nbsp;<p-sortIcon field="tipo_cambio" /></th>
+                    <th pSortableColumn="cantidad_anticipo_format">{{'total_import' | translate}}&nbsp;<p-sortIcon field="cantidad_anticipo_format" /></th>
+                    <th pSortableColumn="observaciones">{{'observ' | translate}}&nbsp;<p-sortIcon field="observaciones" /></th>
+                  </tr>
+                </ng-template>
+                <ng-template #body let-ant>
+                  <tr>
+                    <td>{{ant.folio}}</td>
+                    <td>{{ant.fecha_registro}}</td>
+                    <td>{{ant.fecha_aplicacion}}</td>
+                    <td>{{ant.forma_pago}}</td>
+                    <td class="td_importes">{{ant.tipo_cambio}}</td>
+                    <td class="td_importes">{{ant.cantidad_anticipo_format}}</td>
+                    <td>{{ant.observaciones}}</td>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                  <tr>
+                    <td colspan="7" class="text-center py-4">
+                      <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                      <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                        {{'no_rows' | translate}}
+                      </p>
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </p-tabpanel>
+          </p-tabpanels>
+        </p-tabs>
+      </div>
+    </div>
+  }
+</p-dialog>
+
+<p-dialog header="PROVEEDORES ELIMINADOS" [modal]="true" [(visible)]="window_prov_deleted_view" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  <p-table #prvDeletedGral [value]="arrayCatProvDeleted" showGridlines [resizableColumns]="true" columnResizeMode="expand" [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }"
+    [rowsPerPageOptions]="[10,20,30,50,100]" [globalFilterFields]="['token_cat_proveedores','folio','nombre','nombre_comercial','pais','rfc_generico','rfc_prov','tax_id_prov','cuenta_contable','autorizado','auth_fecha']">
+    <ng-template #caption>
+      <div class="flex">
+        <p-iconfield iconPosition="left" class="ml-auto">
+          <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+          <input pInputText type="text" (input)="prvDeletedGral.filterGlobal($event.target.value, 'contains')"
+            placeholder="{{'bus_car' | translate}}" />
+        </p-iconfield>
+      </div>
+    </ng-template>
+    <ng-template #header>
+      <tr>
+        <th pResizableColumn pSortableColumn="folio">folio&nbsp;<p-sortIcon field="folio" /></th>
+        <th pResizableColumn pSortableColumn="nombre">{{'prov' | translate}} &nbsp;<p-sortIcon field="nombre" /></th>
+        <th pResizableColumn pSortableColumn="nombre_comercial">{{'comercial_name' | translate}} &nbsp;<p-sortIcon field="nombre_comercial" /></th>
+        <th pResizableColumn pSortableColumn="pais">pais&nbsp;<p-sortIcon field="pais" /></th>
+        <th pResizableColumn pSortableColumn="rfc_generico">rfc generico&nbsp;<p-sortIcon field="rfc_generico" /></th>
+        <th pResizableColumn pSortableColumn="rfc_prov">rfc&nbsp;<p-sortIcon field="rfc_prov" /></th>
+        <th pResizableColumn pSortableColumn="tax_id_prov">idTax&nbsp;<p-sortIcon field="tax_id_prov" /></th>
+        <th pResizableColumn pSortableColumn="cuenta_contable">Cuenta contable &nbsp;<p-sortIcon field="cuenta_contable" /></th>
+        <th class="ultimo"></th>
+        <th class="ultimo"></th>
+      </tr>
+    </ng-template>
+    <ng-template #body let-prvDel>
+      <tr>
+        <td>{{prvDel.folio}}</td>
+        <td class="name">{{prvDel.nombre}}</td>
+        <td class="name">{{prvDel.nombre_comercial}}</td>
+        <td>{{prvDel.pais}}</td>
+        <td>{{prvDel.rfc_generico}}</td>
+        <td>{{prvDel.rfc_prov}}</td>
+        <td>{{prvDel.tax_id_prov}}</td>
+        <td>{{prvDel.cuenta_contable}}</td>
+        <td class="ultimo">
+          <a class="btn btn_extend text-bg-success rounded-3"
+            (click)="reviveProveedor(prvDel.token_cat_proveedores);">
+            <i class="fa-solid fa-trash-arrow-up"></i>&nbsp;{{'restore_row' | translate}}
+          </a>
+        </td>
+        <td class="ultimo">
+          <a class="btn btn_extend text-bg-danger rounded-3"
+            (click)="rematarProveedor(prvDel.token_cat_proveedores);">
+            <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+          </a>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="10" class="text-center py-4">
+          <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+          <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+            {{'no_rows' | translate}}
+          </p>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</p-dialog>
+
+<p-dialog header="Bitacora de actividad" [modal]="true" [(visible)]="window_prov_bitacora_view" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  <p-table #bitacoraProv [value]="arraybitacoraProv" showGridlines [resizableColumns]="true" columnResizeMode="expand" [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]"
+    [globalFilterFields]="['folio_bitacora','fecha_bitacora','folio_relacionado','actividad','usuario_relacionado']">
+    <ng-template #caption>
+      <div class="flex" style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;" ngbDropdown>
+        <p-iconfield iconPosition="left" class="ml-auto">
+          <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+          <input pInputText type="text" (input)="bitacoraProv.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+        </p-iconfield>
+      </div>
+    </ng-template>
+    <ng-template #header>
+      <tr>
+        <th>folio</th>
+        <th>fecha</th>
+        <th>prov relacionado</th>
+        <th>actividad</th>
+        <th>realizo</th>
+      </tr>
+    </ng-template>
+    <ng-template #body let-bita_act>
+      <tr>
+        <td>{{bita_act.folio_bitacora}}</td>
+        <td>{{bita_act.fecha_bitacora}}</td>
+        <td>{{bita_act.folio_relacionado}}</td>
+        <td>{{bita_act.actividad}}</td>
+        <td>{{bita_act.usuario_relacionado}}</td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="5" class="text-center py-4">
+          <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+          <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+            {{'no_rows' | translate}}
+          </p>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</p-dialog>

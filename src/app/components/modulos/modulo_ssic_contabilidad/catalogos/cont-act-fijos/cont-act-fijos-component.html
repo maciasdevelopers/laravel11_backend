@@ -1,0 +1,430 @@
+<bienvenido-component></bienvenido-component>
+
+<div id="vContent" class="marco" #vContent>
+  <div class="contenido"><app-loader></app-loader>
+    <nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+    <div class="contenidoPagina">
+      <div class="listas_ps revanecer">
+        <div id="listaActivos" class="lista-div lista-divNoFlex row">
+          <h4 class="col-12">CATALOGO DE ACTIVOS FIJOS</h4>
+          <div class="col-12">
+            <div class="btn-group lista_botones col" role="group" arial-label="Basic example">
+              <a class="btn btn_extend bg-indigo-600" (click)="listActFijosTrue(indicadorActivosGeneral);">
+                <i class="fa-solid fa-rotate"></i>&nbsp;{{'list_updt' | translate}}
+              </a>
+              <a class="btn btn_extend bg-green-600 descarga_lista_excel"
+                [ngClass]="listActivosCont.length == 0 ? 'disabled' : ''"
+                [attr.disabled]="listActivosCont.length == 0 ? true : null"
+                [attr.aria-disabled]="listActivosCont.length == 0 ? true : null"
+                (click)="listActivosCont.length > 0 && descarga_excel_activos_fijos();">
+                <i class="fa-solid fa-file-excel" style="margin-left: 5px;"></i>&nbsp;descargar
+              </a>
+            </div>
+          </div>
+
+          <p-table #fijListTrue [value]="listActivosCont"
+            [globalFilterFields]="['token_act_fijos','folio_activo','categoria','tipo_depreciacion_desc','deprec_contable','deprec_fiscal','periodo_deprec']"
+            showGridlines [resizableColumns]="true" [paginator]="true" [rows]="10"
+            [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]">
+            <ng-template #caption>
+              <div class="flex" style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;" ngbDropdown>
+                <a class="btn btn_extend" [ngClass]="indicadorActivosGeneral == 'hoy' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="listActFijosTrue('hoy');">
+                  <i class="fa-solid fa-calendar-days"></i>&nbsp;Hoy
+                </a>
+                <a class="btn btn_extend" [ngClass]="indicadorActivosGeneral == 'esta_semana' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="listActFijosTrue('esta_semana');">
+                  <i class="fa-solid fa-calendar-days"></i>&nbsp;Esta semana
+                </a>
+                <a class="btn btn_extend"  [ngClass]="indicadorActivosGeneral == 'este_mes' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="listActFijosTrue('este_mes');">
+                  <i class="fa-solid fa-calendar"></i>&nbsp;Este mes
+                </a>
+                <a class="btn btn_extend" [ngClass]="indicadorActivosGeneral == 'mes_anterior' ? ' bg-indigo-600' : ' bg-blue-600'" style="margin-right:5px!important;" (click)="listActFijosTrue('mes_anterior');">
+                  <i class="fa-solid fa-arrow-left"></i>&nbsp;mes anterior
+                </a>
+                <a id="menuDropActRangos" class="btn btn_extend" [ngClass]="indicadorActivosGeneral == 'otras_fechas' ? ' bg-indigo-600' : 'bg-blue-600'" style="margin-right:5px!important;" ngbDropdownToggle>
+                  <i class="fa-solid fa-list-ul"></i>&nbsp;otras fechas
+                </a>
+                <div class="dropdown-menu-end menu-despegable" ngbDropdownMenu="menuDropActRangos" style="padding: 0!important; margin: 0!important; width: max-content!important; max-height: 400px; overflow-y: auto;">
+                  <div class="col-12 input-group">
+                    <label for="act_contab_otras_fechas" class="activeInput">Periodo de fechas</label>
+                    <p-datepicker id="act_contab_otras_fechas" name="act_contab_otras_fechas" [(ngModel)]="rangoPeriodoActivos"
+                      appendTo="body" dateFormat="dd/mm/yy" placeholder="dd/mm/aaaa" selectionMode="range"
+                      (onSelect)="listActFijosTrue('otras_fechas');" />
+                  </div>
+                </div>
+                <a class="btn btn_extend" [ngClass]="indicadorActivosGeneral == 'all_partidas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="listActFijosTrue('all_partidas');">
+                  <i class="fa-solid fa-list-ul"></i>&nbsp;todos los registros
+                </a>
+                <p-iconfield iconPosition="left" class="ml-auto">
+                  <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                  <input pInputText type="text" (input)="fijListTrue.filterGlobal($event.target.value, 'contains')"
+                    placeholder="{{'bus_car' | translate}}" />
+                </p-iconfield>
+              </div>
+            </ng-template>
+            <ng-template #header>
+              <tr>
+                <th rowspan="2" class="ultimo"></th>
+                <th colspan="3" pSortableColumn="folio_activo">familia&nbsp;<p-sortIcon field="folio_activo"/></th>
+                <th rowspan="2" pSortableColumn="articulo">Articulo&nbsp;<p-sortIcon field="articulo"/></th>
+                <th rowspan="2" pSortableColumn="folio_activof_unidad">folio de unidad&nbsp;<p-sortIcon field="folio_activof_unidad"/></th>
+                <th colspan="5">recepci&oacute;n</th>
+                <th colspan="5">Depreciaci&oacute;n contable&nbsp;</th>
+                <th colspan="5">Depreciaci&oacute;n fiscal&nbsp;</th>
+                <th rowspan="2">{{'observ' | translate}}</th>
+                <th rowspan="2">Fecha de depreciaci&oacute;n</th>
+                <th rowspan="2" class="ultimo"></th>
+                <th rowspan="2" class="ultimo"></th>
+              </tr>
+              <tr>
+                <th pSortableColumn="folio_activo">folio&nbsp;<p-sortIcon field="folio_activo"/></th>
+                <th pSortableColumn="categoria">Categoria&nbsp;<p-sortIcon field="categoria"/></th>
+                <th pSortableColumn="categoria_cuenta_contable">Cuenta contable&nbsp;<p-sortIcon field="categoria_cuenta_contable"/></th>
+
+                <th pSortableColumn="cantidad">cantidad&nbsp;<p-sortIcon field="cantidad"/></th>
+                <th pSortableColumn="unidad_medida">unidad de medida&nbsp;<p-sortIcon field="unidad_medida"/></th>
+                <th pSortableColumn="fecha_recep">Fecha de recepci&oacute;n&nbsp;<p-sortIcon field="fecha_recep"/></th>
+                <th pSortableColumn="folio_recep">Folio&nbsp;<p-sortIcon field="folio_recep"/></th>
+                <th>{{'observ' | translate}}</th>
+
+                <th pSortableColumn="deprec_contable_tipo">Tipo&nbsp;<p-sortIcon field="deprec_contable_tipo"/></th>
+                <th pSortableColumn="deprec_contable_periodo">Periodo&nbsp;<p-sortIcon field="deprec_contable_periodo"/></th>
+                <th pSortableColumn="deprec_contable_importe">Importe&nbsp;<p-sortIcon field="deprec_contable_importe"/></th>
+                <th pSortableColumn="deprec_contable_cuenta">Cuenta contable&nbsp;<p-sortIcon field="deprec_contable_cuenta"/></th>
+                <th pSortableColumn="deprec_contable_cuenta_dos">Cuenta contable dos<p-sortIcon field="deprec_contable_cuenta_dos"/></th>
+                <th pSortableColumn="deprec_fiscal_tipo">Tipo&nbsp;<p-sortIcon field="deprec_fiscal_tipo"/></th>
+                <th pSortableColumn="deprec_fiscal_periodo">Periodo&nbsp;<p-sortIcon field="deprec_fiscal_periodo"/></th>
+                <th pSortableColumn="deprec_fiscal_importe">Importe&nbsp;<p-sortIcon field="deprec_fiscal_importe"/></th>
+                <th pSortableColumn="deprec_fiscal_cuenta">Cuenta contable&nbsp;<p-sortIcon field="deprec_fiscal_cuenta"/></th>
+                <th pSortableColumn="deprec_fiscal_cuenta_dos">Cuenta contable dos&nbsp;<p-sortIcon field="deprec_fiscal_cuenta_dos"/></th>
+              </tr>
+            </ng-template>
+            <ng-template #body let-actf>
+              <tr>
+                <td>
+                  <a class="btn bg-blue-600 position-relative" (click)="verActivoFijoToDeprec(actf.token_activof_unidad);" style="display: inline-flex;align-items: center;justify-content: center;">
+                    <i class="fa-solid fa-info"></i>
+                    @if (actf.hay_deprec_pendiente) {
+                      <span class="badge_list">1</span>
+                    }
+                  </a>
+                </td>
+                <td>{{actf.folio_activo}}</td>
+                <td>{{actf.categoria}}</td>
+                <td>{{actf.categoria_cuenta_contable}}</td>
+                <td>{{actf.articulo}}</td>
+                <td>{{actf.folio_activof_unidad}}</td>
+                <td>{{actf.cantidad}}</td>
+                <td>{{actf.unidad_medida}}</td>
+                <td>{{actf.fecha_recep}}</td>
+                <td>{{actf.folio_recep}}</td>
+                <td>{{actf.unidad_observaciones}}</td>
+                <td>{{actf.deprec_contable_tipo}}</td>
+                <td>{{actf.deprec_contable_periodo}}</td>
+                <td>{{actf.deprec_contable_importe}}</td>
+                <td>{{actf.deprec_contable_cuenta}}</td>
+                <td>{{actf.deprec_contable_cuenta_dos}}</td>
+                <td>{{actf.deprec_fiscal_tipo}}</td>
+                <td>{{actf.deprec_fiscal_periodo}}</td>
+                <td>{{actf.deprec_fiscal_importe}}</td>
+                <td>{{actf.deprec_fiscal_cuenta}}</td>
+                <td>{{actf.deprec_fiscal_cuenta_dos}}</td>
+                <td>{{actf.activo_observaciones}}</td>
+                <td>
+                  @if (actf.fecha_inicio_depreciacion == '') {
+                    <input type="date" name="receptFechaCont" (change)="iniciar_deprec_fecha($event.target,actf);">
+                  } @else {
+                    {{actf.fecha_inicio_depreciacion}}
+                  }
+                </td>
+                <td class="ultimo">
+                  <a class="btn text-bg-success rounded-3"
+                    [ngClass]="!activo_valida_deprec_save_fecha(actf) ? 'disabled' : ''"
+                    [attr.disabled]="!activo_valida_deprec_save_fecha(actf) ? true : null"
+                    [attr.aria-disabled]="!activo_valida_deprec_save_fecha(actf) ? true : null"
+                    (click)="activo_valida_deprec_save_fecha(actf) && activo_guarda_deprec_fecha(actf);">
+                    <i class="fa-solid fa-floppy-disk"></i>
+                  </a>
+                </td>
+                <td class="ultimo">
+                  @if (!actf.depreciacion_bloqueada) {
+                    <a class="btn btn_extend bg-lock" (click)="activo_lock_deprec(actf);">
+                      <i class="fa-solid fa-lock"></i>&nbsp;{{'lock_deprec' | translate}}
+                    </a>
+                  } @else {
+                    <a class="btn btn_extend bg-unlock" (click)="activo_unlock_deprec(actf);">
+                      <i class="fa-solid fa-unlock"></i>&nbsp;{{'unlock_deprec' | translate}}
+                    </a>
+                  }
+                </td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="25" class="text-center py-4">
+                  <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                  <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                    {{'no_rows' | translate}}
+                  </p>
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p-dialog header="Depreciaciones de activos" [(visible)]="modal_activo_deprec_detalle" [modal]="true" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  <p-tabs value="0">
+    <p-tablist>
+      <p-tab value="0">Depreciaciones</p-tab>
+      <p-tab value="1">Mejoras</p-tab>
+    </p-tablist>
+    <p-tabpanels>
+      <p-tabpanel value="0">
+        <div class="col-12 explain">
+          <h6 class="title">Depreciaciones pendientes</h6>
+        </div>
+        <div class="col-12 row">
+          @for (actf of deprec_pendientes_activo; track $index) {
+            <div class="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-2 col-xxl-2 explain explain_column" style="margin-right: 0!important;">
+              <h6 class="title">Folio de unidad</h6>
+              <h6 class="content">{{actf.folio_activof_unidad}}</h6>
+            </div>
+            <div class="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-2 col-xxl-2 explain explain_column" style="margin-right: 0!important;">
+              <h6 class="title">Serie</h6>
+              <h6 class="content">{{actf.unidad_serie}}</h6>
+            </div>
+            <div class="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-2 col-xxl-2 explain explain_column" style="margin-right: 0!important;">
+              <h6 class="title">Otros</h6>
+              <h6 class="content">{{actf.unidad_otros}}</h6>
+            </div>
+            <div class="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-2 col-xxl-2 explain explain_column" style="margin-right: 0!important;">
+              <h6 class="title">{{'observ' | translate}}</h6>
+              <h6 class="content">{{actf.unidad_observaciones}}</h6>
+            </div>
+            <div class="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-2 col-xxl-2 explain explain_column" style="margin-right: 0!important;">
+              <h6 class="title">Costo de adquisici&oacute;n</h6>
+              <h6 class="content">{{actf.costo_adquisicion}}</h6>
+            </div>
+            <div class="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-2 col-xxl-2 explain explain_column" style="margin-right: 0!important;">
+              <h6 class="title">Inicio de depreciaci&oacute;n</h6>
+              <h6 class="content">{{actf.fecha_inicio_depreciacion}}</h6>
+            </div>
+            <div class="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-2 col-xxl-2 explain explain_column" style="margin-right: 0!important;">
+              <h6 class="title">&Uacute;ltimo corte contable</h6>
+              <h6 class="content">{{actf.fecha_ultimo_corte_contable}}</h6>
+            </div>
+            <div class="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-2 col-xxl-2 explain explain_column" style="margin-right: 0!important;">
+              <h6 class="title">P&oacute;ximo corte contable</h6>
+              <h6 class="content">{{actf.fecha_proximo_corte_contable}}</h6>
+            </div>
+            <div class="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-2 col-xxl-2 explain explain_column" style="margin-right: 0!important;">
+              <h6 class="title">&Uacute;ltimo corte fiscal</h6>
+              <h6 class="content">{{actf.fecha_ultimo_corte_fiscal}}</h6>
+            </div>
+            <div class="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-2 col-xxl-2 explain explain_column" style="margin-right: 0!important;">
+              <h6 class="title">P&oacute;ximo corte fiscal</h6>
+              <h6 class="content">{{actf.fecha_proximo_corte_fiscal}}</h6>
+            </div>
+            <div class="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-2 col-xxl-2 explain explain_column" style="margin-right: 0!important;">
+              <h6 class="title">Mejoras entre depreciaci&oacute;n</h6>
+              <h6 class="content">{{actf.mejoras_entre_deprec}}</h6>
+            </div>
+            
+            <div class="col-12 row" style="display: flex;justify-content: end;padding-top: 0;padding-bottom: 0;margin-top: 10px!important;">
+              <div style="width: max-content;padding: 0;">
+                <div class="btn-group lista_botones col" role="group" aria-label="Basic example">
+                  @if (!actf.depreciacion_bloqueada) {
+                    <a class="btn btn_extend bg-lock" style="border-right: 2px white solid;" name="btn_lock_deprec" (click)="open_form_lock_deprec();">
+                      <i class="fa-solid fa-lock" style="margin-left: 5px;"></i>&nbsp;{{'lock_deprec' | translate}}
+                    </a>
+                  } @else {
+                    <a class="btn btn_extend bg-unlock" style="border-right: 2px white solid;" name="btn_unlock_deprec" (click)="open_form_unlock_deprec();">
+                      <i class="fa-solid fa-unlock" style="margin-left: 5px;"></i>&nbsp;{{'unlock_deprec' | translate}}
+                    </a>
+                  }
+                  <a class="btn btn_extend text-bg-success rounded-3" name="btn_save_deprec" 
+                    [ngClass]="actf.depreciacion_bloqueada ? 'disabled' : ''"
+                    [attr.disabled]="actf.depreciacion_bloqueada ? true : null" 
+                    [attr.aria-disabled]="actf.depreciacion_bloqueada ? true : null"
+                    (click)="!actf.depreciacion_bloqueada && open_form_new_deprec();"
+                  >
+                    <i class="fa-regular fa-floppy-disk" style="margin-left: 5px;"></i>&nbsp;{{'save_deprec' | translate}}
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            @if (lock_deprec_view_form) {
+              <form class="formDataLockDepreciacion" #formDataLockDepreciacion="ngForm" autocomplete="off" (ngSubmit)="activo_det_lock_deprec(actf,formDataLockDepreciacion);" style="padding: 0!important;">
+                <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input-group">
+                  <label class="activeInput" for="deprecNewFechaCont">{{'fecha_cont' | translate}}</label>
+                  <input id="deprecNewFechaCont" class="validate" type="date" name="deprecNewFechaCont" (change)="changeLockDeprecFechaCont($event.target);">
+                </div>
+                
+                <div class="col-12" style="display: flex !important;justify-content: end!important;">
+                  <button class="btn btn_extend text-bg-success rounded-3" type="submit" name="btnAltaProducto2" [ngClass]="lock_deprec_fecha_contabilizacion == '' ? 'disabled' : ''" 
+                    [attr.disabled]="lock_deprec_fecha_contabilizacion == '' ? true : null" [attr.aria-disabled]="lock_deprec_fecha_contabilizacion == '' ? true : null">
+                    <i class="fa-solid fa-floppy-disk" style="height: 15px!important;line-height: 15px!important;width: 15px!important;font-size: small!important;"></i>&nbsp;{{'sav_cam' | translate}}</button>
+                </div>
+              </form>
+            }
+
+            @if (unlock_deprec_view_form) {
+              <form class="formDataUnlockDepreciacion" #formDataUnlockDepreciacion="ngForm" autocomplete="off" (ngSubmit)="activo_det_unlock_deprec(actf,formDataUnlockDepreciacion);" style="padding: 0!important;">
+                <div class="col-12 row" style="padding: 0!important;">
+                  <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input-group">
+                    <label class="activeInput" for="deprecUnlockFechaDesbloqueo">Fecha de desbloqueo</label>
+                    <input id="deprecUnlockFechaDesbloqueo" class="validate" type="date" name="deprecUnlockFechaDesbloqueo" (change)="changeUnlockDeprecFechaDeDesbloqueo($event.target);">
+                  </div>
+
+                  <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input-group">
+                    <label class="activeInput" for="deprecUnlockFechaProximoCorte">Fecha de reinicio de depreciaci&oacute;n</label>
+                    <input id="deprecUnlockFechaProximoCorte" class="validate" type="date" name="deprecUnlockFechaProximoCorte" (change)="changeUnlockDeprecFechaProximoCorte($event.target);">
+                  </div>
+
+                  <div class="col-12" style="display: flex !important;justify-content: end!important;">
+                    <button class="btn btn_extend text-bg-success rounded-3" type="submit" name="btnAltaProducto2" [ngClass]="!validaUnlockDeprecFecha ? 'disabled' : ''" 
+                      [attr.disabled]="!validaUnlockDeprecFecha ? true : null" [attr.aria-disabled]="!validaUnlockDeprecFecha ? true : null">
+                      <i class="fa-solid fa-floppy-disk" style="height: 15px!important;line-height: 15px!important;width: 15px!important;font-size: small!important;"></i>&nbsp;{{'sav_cam' | translate}}</button>
+                  </div>
+                </div>
+              </form>
+            }
+
+            @if (new_deprec_view_form_registro) {
+              <form class="formDataDepreciacion" #formDataDepreciacion="ngForm" autocomplete="off" (ngSubmit)="activo_guarda_depreciacion(actf,formDataDepreciacion);" style="padding: 0!important;">
+                <div class="col-12 row" style="padding: 0!important;">
+                  <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input-group">
+                    <label class="activeInput" for="deprecNewFechaCont">{{'fecha_cont' | translate}}</label>
+                    <input id="deprecNewFechaCont" class="validate" type="date" name="deprecNewFechaCont" (change)="changeDeprecFechaContabilizacion($event.target);">
+                  </div>
+  
+                  <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input-group">
+                    <label class="activeInput" for="deprecNewGastoContable">Gasto contable</label>
+                    <input id="deprecNewGastoContable" class="validate" type="number" name="deprecNewGastoContable" [value]="actf.ultimo_deprec_importe_contable" (keyup)="changeDeprecGastoContable($event.target);">
+                  </div>
+  
+                  <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input-group">
+                    <label class="activeInput" for="deprecNewDeduccionInversion">Deducci&oacute;n de inversi&oacute;n</label>
+                    <input id="deprecNewDeduccionInversion" class="validate" type="number" name="deprecNewDeduccionInversion" [value]="actf.ultimo_deprec_importe_fiscal" (keyup)="changeDeprecDeduccionInversion($event.target);">
+                  </div>
+  
+                  <div class="col-12 input-group">
+                    <label class="activeInput" for="deprecNewComments">{{'observ' | translate}}</label>
+                    <textarea id="deprecNewComments" class="validate" name="deprecNewComments" (keyup)="keyupDeprecObservaciones($event.target);"></textarea>
+                  </div>
+  
+                  <div class="col-12" style="display: flex !important;justify-content: end!important;">
+                    <button class="btn btn_extend text-bg-success rounded-3" type="submit" name="btnAltaProducto2" [ngClass]="!validaDeprecNew ? 'disabled' : ''" [attr.disabled]="!validaDeprecNew ? true : null" 
+                      [attr.aria-disabled]="!validaDeprecNew ? true : null">
+                      <i class="fa-solid fa-floppy-disk" style="height: 15px!important;line-height: 15px!important;width: 15px!important;font-size: small!important;"></i>&nbsp;{{'sav_cam' | translate}}</button>
+                  </div>
+                </div>
+              </form>
+            }
+          }
+        </div>
+        
+        <div class="col-12 explain">
+          <h6 class="title">Depreciaciones registradas</h6>
+        </div>
+        <p-table #fijListTrue [value]="deprec_registradas_activo" showGridlines [resizableColumns]="true" [tableStyle]="{ 'min-width': '50rem' }"
+          [globalFilterFields]="['fecha_legible','deprec_concepto','mejoras_contables','contable_monto','valor_en_libros_contable','mejoras_de_inversion','fiscal_monto','valor_actualizado_de_inversion']">
+          <ng-template #caption>
+            <div class="flex">
+              <p-iconfield iconPosition="left" class="ml-auto">
+                <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                <input pInputText type="text" (input)="fijListTrue.filterGlobal($event.target.value, 'contains')"
+                  placeholder="{{'bus_car' | translate}}" />
+              </p-iconfield>
+            </div>
+          </ng-template>
+          <ng-template #header>
+            <tr>
+              <th rowspan="2" pSortableColumn="fecha_legible">Periodo&nbsp;<p-sortIcon field="fecha_legible"/></th>
+              <th rowspan="2" pSortableColumn="deprec_concepto">Concepto&nbsp;<p-sortIcon field="deprec_concepto"/></th>
+              <th colspan="3">Gasto Contable&nbsp;</th>
+              <th colspan="3">Deducci&oacute;n de inversi&oacute;n&nbsp;</th>
+            </tr>
+            <tr>
+              <th pSortableColumn="mejoras_contables">Mejoras&nbsp;<p-sortIcon field="mejoras_contables"/></th>
+              <th pSortableColumn="contable_monto">Gasto Contable&nbsp;<p-sortIcon field="contable_monto"/></th>
+              <th pSortableColumn="valor_en_libros_contable">Valor en libros contable&nbsp;<p-sortIcon field="valor_en_libros_contable"/></th>
+
+              <th pSortableColumn="mejoras_de_inversion">Mejoras de inversión&nbsp;<p-sortIcon field="mejoras_de_inversion"/></th>
+              <th pSortableColumn="fiscal_monto">Deducci&oacute;n de inversi&oacute;n&nbsp;<p-sortIcon field="fiscal_monto"/></th>
+              <th pSortableColumn="valor_actualizado_de_inversion">Valor actualizado de la inversi&oacute;n&nbsp;<p-sortIcon field="valor_actualizado_de_inversion"/></th>
+            </tr>
+          </ng-template>
+          <ng-template #body let-ldeprec>
+            <tr>
+              <td>{{ldeprec.fecha_legible}}</td>
+              <td>{{ldeprec.deprec_concepto}}</td>
+              <td class="td_importes">{{ldeprec.mejoras_contables}}</td>
+              <td class="td_importes">{{ldeprec.contable_monto}}</td>
+              <td class="td_importes">{{ldeprec.valor_en_libros_contable}}</td>
+              <td class="td_importes">{{ldeprec.mejoras_de_inversion}}</td>
+              <td class="td_importes">{{ldeprec.fiscal_monto}}</td>
+              <td class="td_importes">{{ldeprec.valor_actualizado_de_inversion}}</td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="8" class="text-center py-4">
+                <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                  {{'no_rows' | translate}}
+                </p>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </p-tabpanel>
+      <p-tabpanel value="1">
+        <p-table #fijListTrue [value]="mejoras_registradas_activo" showGridlines [resizableColumns]="true" [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }"
+          [globalFilterFields]="['folio_incremento','fecha_contabilizacion_incremento','prorrateo','compra','incremento']" [rowsPerPageOptions]="[10,20,30,50,100]">
+          <ng-template #caption>
+            <div class="flex">
+              <p-iconfield iconPosition="left" class="ml-auto">
+                <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                <input pInputText type="text" (input)="fijListTrue.filterGlobal($event.target.value, 'contains')"
+                  placeholder="{{'bus_car' | translate}}" />
+              </p-iconfield>
+            </div>
+          </ng-template>
+          <ng-template #header>
+            <tr>
+              <th pSortableColumn="folio_incremento">folio&nbsp;<p-sortIcon field="folio_incremento"/></th>
+              <th pSortableColumn="fecha_contabilizacion_incremento">{{'fecha_cont' | translate}}&nbsp;<p-sortIcon field="fecha_contabilizacion_incremento"/></th>
+              <th pSortableColumn="prorrateo">prorrateo&nbsp;<p-sortIcon field="prorrateo"/></th>
+              <th pSortableColumn="compra">compra&nbsp;<p-sortIcon field="compra"/></th>
+              <th pSortableColumn="incremento">incremento&nbsp;<p-sortIcon field="incremento"/></th>
+            </tr>
+          </ng-template>
+          <ng-template #body let-actf>
+            <tr>
+              <td>{{actf.folio_incremento}}</td>
+              <td>{{actf.fecha_contabilizacion_incremento}}</td>
+              <td>{{actf.prorrateo}}</td>
+              <td>{{actf.compra}}</td>
+              <td class="td_importes">{{actf.incremento}}</td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="5" class="text-center py-4">
+                <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                  {{'no_rows' | translate}}
+                </p>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </p-tabpanel>
+    </p-tabpanels>
+  </p-tabs>
+</p-dialog>

@@ -1,0 +1,270 @@
+ div.modal-fullscreen {
+    width: 95% !important;
+    max-width: 100% !important;
+    height: 95% !important;
+}
+
+.modal-fixed-footer div.modal-content div.content{
+    height: calc(100% - 105px);
+}
+
+.modal-fixed-footer div.modal-footer{
+    display: flex;
+    justify-content: right;
+    align-items: center;
+}
+
+div.open div.contenido{
+    overflow-y: overlay;
+    width: 97%;
+    height: 90%;
+    max-height: 90%;
+    border-radius: 13px;
+    outline: 0;
+    position: fixed;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    background-color: white;
+}
+
+div.open div.contenidoSmall{
+    width: 50%!important;
+    min-height: 50%!important;
+    height: auto!important;
+    max-height: 90%!important;
+}
+
+div.open div.contenidoSmall div.header{
+    width: 50%!important;
+}
+
+div.open div.contenidoModalLogin{
+    width: auto;
+    height: auto;
+}
+
+div.open div.contenido div.header{
+    height: 50px;
+    width: 97%;
+    /*box-shadow: 1px 1px 10px 1px rgba(0,0,0,0.3)!important;*/
+    z-index: 9;
+    border-radius: 8px 8px 0 0;
+    /*background-color: #D3D3D3;*/
+    background-color: white;
+    position: fixed;
+    display: flex;
+    align-items: center;
+
+    flex-wrap: wrap;
+    flex-direction: row;
+    align-content: center;
+    justify-content: space-between;
+}
+
+div.open div.contenidoModalLogin div.card div.card-header{
+    height: 50px;
+    width: 97%;
+    /*box-shadow: 1px 1px 10px 1px rgba(0,0,0,0.3)!important;*/
+    z-index: 9;
+    border-radius: 8px 8px 0 0;
+    position: fixed;
+    display: flex;
+    align-items: center;
+
+    flex-wrap: wrap;
+    flex-direction: row;
+    align-content: center;
+    justify-content: space-between;
+}
+
+.modalNotificaciones div.contenido div.header{
+    background-color: #2962ff;
+}
+
+div.open div.contenido div.header h4,
+div.open div.contenidoModalLogin div.card div.card-header h4{
+    width: calc(100% - 35px)!important;
+    height: 30px;
+    line-height: 32px;
+    border-radius: 8px;
+    padding: 0;
+    /*color: #e7e7ea;*/
+    font-size: 20px;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin: 0;
+}
+
+div.open div.contenidoModalLogin div.card div.card-header h4{
+  background-color: #353535;
+}
+
+div.open div.contenido div.modal-content div.form{
+    background-color: #f8f9fc; 
+}
+
+div.open div.contenido div.modal-content-blue div.form{
+    background-color: #1e88e5;
+}
+
+div.open div.contenido div.modal-content-black div.form{
+    background-color: #757575;
+}
+
+
+div.open div.contenido div.modal-content div.form div.contenido-modal{
+    border-radius: 8px;
+    margin: 10px!important;
+    padding: 10px;
+}
+
+div.open div.contenidoModalLogin{
+    width: auto;
+    height: auto;
+}
+
+div.open div.contenidoModalLogin div.card div.card-header{
+    height: 30px!important;
+    line-height: 30px!important;
+    width: 100%!important;
+    position: relative!important;
+    padding-left: 10px!important;
+    padding-right: 10px!important;
+    flex-direction: column!important;
+}
+
+div.open div.contenidoModalLogin div.card div.card-header h4{
+    width: calc(100% - 35px)!important;
+    height: 30px!important;
+    background-color: transparent!important;
+    color: #353535!important;
+    font-weight: bold;
+}
+
+div.open div.contenidoModalLogin div.card div.card-content{
+    padding: 10px!important;
+}
+
+div.open div.contenidoModalLogin div.card div.card-content div.spaceButton{
+    margin: 0!important;
+    display: flex;
+    justify-content: center;
+}
+
+div.open div.contenidoModalLogin div.card div.card-content div.spaceButton a.passrec{
+    color: #353535;
+    font-family: cursive;
+}
+
+div.open div.contenidoModalLogin div.card div.card-content div.spaceButton:hover{
+    background-color: #353535!important;
+    border-radius: 8px;
+}
+
+div.open div.contenidoModalLogin div.card div.card-content div.spaceButton:hover a.passrec{
+    color: #fff!important;
+}
+
+.modalNotificaciones div.contenido div.header h4{
+    background-color: transparent!important;
+}
+
+div.open div.contenido div.header h4.tHeadModal{
+    width: 65%!important;
+    margin-left: 10px;
+}
+
+div.open div.contenido div.header h4 img{
+    height: 30px;
+    width: 30px;
+    border-radius: 50%;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+a.modal-close{
+    margin-right: 5px;
+    font-family: ubuntu, FontAwesome;
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+    border-radius: 50%;
+    background-color: #FF0000;
+    color: #fff;
+}
+
+div.open div.contenido div.header a.modal-close{
+    width: 30px!important;
+    height: 30px!important;
+    line-height: 30px!important;
+}
+
+.modal-fixed-footer a.modal-close{
+    width: 25px!important;
+    height: 25px!important;
+    line-height: 25px!important;
+}
+
+a.modal-close i{
+    width:25px!important;
+    height:25px!important;
+    line-height:25px!important;
+    font-size:15px;
+    text-align:center;
+}
+
+div.open div.contenido div.modal-content{
+    margin-top: 50px!important;
+    padding: 0!important;
+    width: 100%;
+    /*min-height: 490px;
+    height: 100%;*/
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+div.open div.contenido div.loadingmodal{
+    height: 100%;
+    animation-name: fly-cycle;
+    animation-timing-function: steps(10);
+    animation-iteration-count: infinite;
+    animation-duration: 1s;
+    animation-delay: -0.5s;
+    padding: 10%;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    flex-direction: column;
+    background-color: #353535;
+}
+
+@media screen and (max-width: 600px) {
+    div.open div.contenidoSmall{
+        width: 97%!important;
+        min-height: 50%!important;
+        height: auto!important;
+        max-height: 90%!important;
+    }
+
+    div.open div.contenidoSmall div.header{
+        width: 97%!important;
+    }
+
+	div.open div.contenido div.header h4,
+	div.open div.contenidoModalLogin div.card div.card-header h4{
+		width: calc(100% - 35px)!important;
+		height: 30px;
+		line-height: 32px;
+		border-radius: 8px;
+		padding: 0;
+		/*color: #e7e7ea;*/
+		font-size: 10px;
+		display: flex;
+		justify-content: center;
+		flex-wrap: wrap;
+		margin: 0;
+	}
+}

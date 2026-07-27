@@ -1,0 +1,1320 @@
+<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco" #vContent>
+  <div class="contenido"><app-loader></app-loader>
+    <nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+    <main class="contenidoPagina">
+      <article class="listas_ps revanecer">
+        <div id="listaClientes" class="lista-div lista-divNoFlex">
+          <h4>CATALOGO DE CLIENTES</h4>
+
+          <div class="col-12">
+            <div class="btn-group lista_botones col" role="group" aria-label="Basic example">
+              <a class="btn btn_extend bg-indigo-600 disabled" disabled aria-disabled="true" (click)="buscarScannRfcCliente();">buscar por codigo QR</a>
+              <a class="btn btn_extend bg-indigo-600" (click)="listaGeneralClientes();listaMXClientes();listaEXTClientes();listaClientesEliminados();">
+                <i class="fa-solid fa-rotate"></i>&nbsp;{{'list_updt' | translate}}
+              </a>
+              <a class="btn btn_extend bg-indigo-600" (click)="listaClientesEliminados();"><i class="fa-solid fa-trash"></i>&nbsp;Clientes eliminados</a>
+              <a class="btn btn_extend bg-indigo-600" (click)="verBitacoraCliente();"><i class="fa-solid fa-timeline"></i>&nbsp;bitacora de actividad</a>
+              <a class="btn btn_extend bg-green-600 descarga_lista_excel"
+                [ngClass]="list_clientes_general.length == 0 ? 'disabled' : ''"
+                [attr.disabled]="list_clientes_general.length == 0 ? true : null"
+                [attr.aria-disabled]="list_clientes_general.length == 0 ? true : null">
+                <i class="fa-solid fa-file-excel" style="margin-left: 5px;"></i>&nbsp;descargar
+              </a>
+            </div>
+          </div>
+
+          <p-tabs value="0">
+            <p-tablist>
+              <p-tab value="0" (click)="listaGeneralClientes();">Catálogo general de clientes</p-tab>
+              <p-tab value="1" (click)="listaMXClientes();">Catálogo de clientes nacionales</p-tab>
+              <p-tab value="2" (click)="listaEXTClientes();">Catálogo de clientes extranjeros</p-tab>
+              <p-tab value="3">{{'client_reg' | translate}}</p-tab>
+            </p-tablist>
+            <p-tabpanels>
+              <p-tabpanel value="0">
+                <p-table #prvGralList [value]="list_clientes_general" showGridlines [resizableColumns]="true"
+                  columnResizeMode="expand" [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]"
+                  [globalFilterFields]="['token_cat_clientes','folio','nombre','nombre_comercial','pais','rfc_generico','rfc_client','tax_id_client','cuenta_contable','autorizado','auth_fecha']">
+                  <ng-template #caption>
+                    <div class="flex" style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;" ngbDropdown>
+                      <a class="btn btn_extend" [ngClass]="indicador_clientes_general == 'hoy' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="verCatGeneralClientes('hoy');">
+                        <i class="fa-solid fa-calendar-days"></i>&nbsp;Hoy
+                      </a>
+                      <a class="btn btn_extend" [ngClass]="indicador_clientes_general == 'esta_semana' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="verCatGeneralClientes('esta_semana');">
+                        <i class="fa-solid fa-calendar-days"></i>&nbsp;Esta semana
+                      </a>
+                      <a class="btn btn_extend" [ngClass]="indicador_clientes_general == 'este_mes' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="verCatGeneralClientes('este_mes');">
+                        <i class="fa-solid fa-calendar-days"></i>&nbsp;Este mes
+                      </a>
+                      <a class="btn btn_extend" [ngClass]="indicador_clientes_general == 'mes_anterior' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="verCatGeneralClientes('mes_anterior');">
+                        <i class="fa-solid fa-arrow-left"></i>&nbsp;mes anterior
+                      </a>
+                      <a id="menuDropClientGralRangos" class="btn btn_extend" [ngClass]="indicador_clientes_general == 'otras_fechas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" ngbDropdownToggle>
+                        <i class="fa-solid fa-list-ul"></i>&nbsp;otras fechas
+                      </a>
+                      <div class="dropdown-menu-end menu-despegable" ngbDropdownMenu="menuDropClientGralRangos" style="padding: 0!important; margin: 0!important; width: max-content!important; max-height: 400px; overflow-y: auto;">
+                        <div class="col-12 input-group">
+                          <label for="client_gral_otras_fechas" class="activeInput">Periodo de fechas</label>
+                          <p-datepicker id="client_gral_otras_fechas" name="client_gral_otras_fechas" [(ngModel)]="rangoPeriodoClientesGeneral" appendTo="body" dateFormat="dd/mm/yy" 
+                            placeholder="dd/mm/aaaa" selectionMode="range" (onSelect)="verCatGeneralClientes('otras_fechas');" />
+                        </div>
+                      </div>
+                      <a class="btn btn_extend" [ngClass]="indicador_clientes_general == 'all_partidas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="verCatGeneralClientes('all_partidas');">
+                        <i class="fa-solid fa-list-ul"></i>&nbsp;todos los registros
+                      </a>
+                      <p-iconfield iconPosition="left" class="ml-auto">
+                        <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                        <input pInputText type="text" (input)="prvGralList.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+                      </p-iconfield>
+                    </div>
+                  </ng-template>
+                  <ng-template #header>
+                    <tr>
+                      <th class="ultimo"></th>
+                      <th pResizableColumn pSortableColumn="folio">folio&nbsp;<p-sortIcon field="folio" /></th>
+                      <th pResizableColumn pSortableColumn="nombre">{{'client' | translate}} &nbsp;<p-sortIcon field="nombre" /></th>
+                      <th pResizableColumn pSortableColumn="nombre_comercial">{{'comercial_name' | translate}}&nbsp;<p-sortIcon field="nombre_comercial" /></th>
+                      <th pResizableColumn pSortableColumn="pais">pais&nbsp;<p-sortIcon field="pais" /></th>
+                      <th pResizableColumn pSortableColumn="rfc_generico">rfc generico&nbsp;<p-sortIcon field="rfc_generico" /></th>
+                      <th pResizableColumn pSortableColumn="rfc_client">rfc&nbsp;<p-sortIcon field="rfc_client" /></th>
+                      <th pResizableColumn pSortableColumn="tax_id_client">idTax&nbsp;<p-sortIcon field="tax_id_client" /></th>
+                      <th pResizableColumn pSortableColumn="cuenta_contable">Cuenta contable &nbsp;<p-sortIcon field="cuenta_contable" /></th>
+                      <th pResizableColumn pSortableColumn="autorizado">{{'yes_auth' | translate}} &nbsp;<p-sortIcon field="autorizado" /></th>
+                      <th class="ultimo"></th>
+                    </tr>
+                  </ng-template>
+                  <ng-template #body let-clientGen>
+                    <tr>
+                      <td class="ultimo">
+                        <a class="btn bg-blue-600" (click)="functViewClienteData(clientGen.token_cat_clientes);">
+                          <i class="fa-solid fa-info"></i>
+                        </a>
+                      </td>
+                      <td>{{clientGen.folio_client}}</td>
+                      <td class="name">{{clientGen.nombre}}</td>
+                      <td class="name">{{clientGen.nombre_comercial}}</td>
+                      <td>{{clientGen.pais}}</td>
+                      <td>{{clientGen.rfc_generico}}</td>
+                      <td>{{clientGen.rfc}}</td>
+                      <td>{{clientGen.tax_id_client}}</td>
+                      <td>{{clientGen.cuenta_contable}}</td>
+                      <td class="ultimo">
+                        <a class="btn btn_extend"
+                          [ngClass]="clientGen.autorizado == true ? 'text-bg-success rounded-3' : 'bg-blue-300'"
+                          (click)="clientGen.autorizado == false && solicitarValidacionCliente(clientGen.token_cat_clientes);">
+                          <i class="fa-solid"
+                            [ngClass]="clientGen.autorizado == true ? 'fa-check-double' : 'fa-check'"></i>
+                          {{clientGen.autorizado == true ? clientGen.auth_fecha : ['auth_solicita' | translate]}}
+                        </a>
+                      </td>
+                      <td class="ultimo">
+                        <a class="btn btn_extend text-bg-danger rounded-3" [class.disabled]="clientGen.utilizado"
+                          [attr.disabled]="clientGen.utilizado ? true : null"
+                          [attr.aria-disabled]="clientGen.utilizado ? 'true' : null"
+                          (click)="!clientGen.utilizado && matarCliente(clientGen.token_cat_clientes);"><i
+                            class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                        </a>
+                      </td>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="emptymessage">
+                    <tr>
+                      <td colspan="11" class="text-center py-4">
+                        <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                        <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                          {{'no_rows' | translate}}
+                        </p>
+                      </td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+              </p-tabpanel>
+              <p-tabpanel value="1">
+                <p-table #mxListProvs [value]="list_clientes_mx" showGridlines [resizableColumns]="true"
+                  [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }"
+                  [rowsPerPageOptions]="[10,20,30,50,100]"
+                  [globalFilterFields]="['token_cat_clientes','folio','nombre','nombre_comercial','rfc_generico','rfc_client','cuenta_contable','autorizado','auth_fecha']">
+                  <ng-template #caption>
+                    <div class="flex" style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;" ngbDropdown>
+                      <a class="btn btn_extend" [ngClass]="indicador_clientes_mx == 'hoy' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="verMXClientes('hoy');">
+                        <i class="fa-solid fa-calendar-days"></i>&nbsp;Hoy
+                      </a>
+                      <a class="btn btn_extend" [ngClass]="indicador_clientes_mx == 'esta_semana' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="verMXClientes('esta_semana');">
+                        <i class="fa-solid fa-calendar-days"></i>&nbsp;Esta semana
+                      </a>
+                      <a class="btn btn_extend" [ngClass]="indicador_clientes_mx == 'este_mes' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="verMXClientes('este_mes');">
+                        <i class="fa-solid fa-calendar-days"></i>&nbsp;Este mes
+                      </a>
+                      <a class="btn btn_extend" [ngClass]="indicador_clientes_mx == 'mes_anterior' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="verMXClientes('mes_anterior');">
+                        <i class="fa-solid fa-arrow-left"></i>&nbsp;mes anterior
+                      </a>
+                      <a id="menuDropClientMXRangos" class="btn btn_extend" [ngClass]="indicador_clientes_mx == 'otras_fechas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" ngbDropdownToggle>
+                        <i class="fa-solid fa-list-ul"></i>&nbsp;otras fechas
+                      </a>
+                      <div class="dropdown-menu-end menu-despegable" ngbDropdownMenu="menuDropClientMXRangos" style="padding: 0!important; margin: 0!important; width: max-content!important; max-height: 400px; overflow-y: auto;">
+                        <div class="col-12 input-group">
+                          <label for="mx_client_otras_fechas" class="activeInput">Periodo de fechas</label>
+                          <p-datepicker id="mx_client_otras_fechas" name="mx_client_otras_fechas" [(ngModel)]="rangoPeriodoClientesMX" appendTo="body" dateFormat="dd/mm/yy" 
+                            placeholder="dd/mm/aaaa" selectionMode="range" (onSelect)="verMXClientes('otras_fechas');" />
+                        </div>
+                      </div>
+                      <a class="btn btn_extend" [ngClass]="indicador_clientes_mx == 'all_partidas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="verMXClientes('all_partidas');">
+                        <i class="fa-solid fa-list-ul"></i>&nbsp;todos los registros
+                      </a>
+                      <p-iconfield iconPosition="left" class="ml-auto">
+                        <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                        <input pInputText type="text" (input)="mxListProvs.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+                      </p-iconfield>
+                    </div>
+                  </ng-template>
+                  <ng-template #header>
+                    <tr>
+                      <th class="ultimo"></th>
+                      <th pResizableColumn pSortableColumn="folio">folio&nbsp;<p-sortIcon field="folio" /></th>
+                      <th pResizableColumn pSortableColumn="nombre">{{'client' | translate}} &nbsp;<p-sortIcon field="nombre" /></th>
+                      <th pResizableColumn pSortableColumn="nombre_comercial">{{'comercial_name' | translate}}&nbsp;<p-sortIcon field="nombre_comercial" /></th>
+                      <th pResizableColumn pSortableColumn="rfc_generico">rfc generico&nbsp;<p-sortIcon field="rfc_generico" /></th>
+                      <th pResizableColumn pSortableColumn="rfc_client">rfc&nbsp;<p-sortIcon field="rfc_client" /></th>
+                      <th pResizableColumn pSortableColumn="cuenta_contable">Cuenta contable &nbsp;<p-sortIcon field="cuenta_contable" /></th>
+                      <th pResizableColumn pSortableColumn="autorizado">{{'yes_auth' | translate}} &nbsp;<p-sortIcon field="autorizado" /></th>
+                      <th class="ultimo"></th>
+                    </tr>
+                  </ng-template>
+                  <ng-template #body let-clientMx>
+                    <tr>
+                      <td class="ultimo">
+                        <a class="btn bg-blue-600" (click)="functViewClienteData(clientMx.token_cat_clientes)">
+                          <i class="fa-solid fa-info"></i>
+                        </a>
+                      </td>
+                      <td>{{clientMx.folio}}</td>
+                      <td class="name">{{clientMx.nombre}}</td>
+                      <td class="name">{{clientMx.nombre_comercial}}</td>
+                      <td>{{clientMx.rfc_generico}}</td>
+                      <td>{{clientMx.rfc_client}}</td>
+                      <td>{{clientMx.cuenta_contable}}</td>
+                      <td class="ultimo">
+                        <a class="btn btn_extend"
+                          [ngClass]="clientMx.autorizado == true ? 'text-bg-success rounded-3' : 'bg-blue-300'"
+                          (click)="clientMx.autorizado == false && solicitarValidacionCliente(clientMx.token_cat_clientes);">
+                          <i class="fa-solid"
+                            [ngClass]="clientMx.autorizado == true ? 'fa-check-double' : 'fa-check'"></i>
+                          {{clientMx.autorizado == true ? clientMx.auth_fecha : ['auth_solicita' | translate]}}
+                        </a>
+                      </td>
+                      <td class="ultimo">
+                        <a class="btn btn_extend text-bg-danger rounded-3" [class.disabled]="clientMx.utilizado"
+                          [attr.disabled]="clientMx.utilizado ? true : null"
+                          [attr.aria-disabled]="clientMx.utilizado ? 'true' : null"
+                          (click)="!clientMx.utilizado && matarCliente(clientMx.token_cat_clientes);"><i
+                            class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                        </a>
+                      </td>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="emptymessage">
+                    <tr>
+                      <td colspan="9" class="text-center py-4">
+                        <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                        <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                          {{'no_rows' | translate}}
+                        </p>
+                      </td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+              </p-tabpanel>
+              <p-tabpanel value="2">
+                <p-table #extListProvs [value]="list_clientes_ext" showGridlines [resizableColumns]="true"
+                  [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }"
+                  [rowsPerPageOptions]="[10,20,30,50,100]"
+                  [globalFilterFields]="['token_cat_clientes','folio','nombre','nombre_comercial','pais','rfc_generico','rfc_client','tax_id_client','cuenta_contable','autorizado','auth_fecha']">
+                  <ng-template #caption>
+                    <div class="flex" style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;" ngbDropdown>
+                      <a class="btn btn_extend" [ngClass]="indicador_clientes_ext == 'hoy' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="verEXTClientes('hoy');">
+                        <i class="fa-solid fa-calendar-days"></i>&nbsp;Hoy
+                      </a>
+                      <a class="btn btn_extend" [ngClass]="indicador_clientes_ext == 'esta_semana' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="verEXTClientes('esta_semana');">
+                        <i class="fa-solid fa-calendar-days"></i>&nbsp;Esta semana
+                      </a>
+                      <a class="btn btn_extend" [ngClass]="indicador_clientes_ext == 'este_mes' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="verEXTClientes('este_mes');">
+                        <i class="fa-solid fa-calendar-days"></i>&nbsp;Este mes
+                      </a>
+                      <a class="btn btn_extend" [ngClass]="indicador_clientes_ext == 'mes_anterior' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="verEXTClientes('mes_anterior');">
+                        <i class="fa-solid fa-arrow-left"></i>&nbsp;mes anterior
+                      </a>
+                      <a id="menuDropClientEXTRangos" class="btn btn_extend" [ngClass]="indicador_clientes_ext == 'otras_fechas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" ngbDropdownToggle>
+                        <i class="fa-solid fa-list-ul"></i>&nbsp;otras fechas
+                      </a>
+                      <div class="dropdown-menu-end menu-despegable" ngbDropdownMenu="menuDropClientEXTRangos" style="padding: 0!important; margin: 0!important; width: max-content!important; max-height: 400px; overflow-y: auto;">
+                        <div class="col-12 input-group">
+                          <label for="ext_client_otras_fechas" class="activeInput">Periodo de fechas</label>
+                          <p-datepicker id="ext_client_otras_fechas" name="ext_client_otras_fechas" [(ngModel)]="rangoPeriodoClientesEXT" appendTo="body" dateFormat="dd/mm/yy" 
+                            placeholder="dd/mm/aaaa" selectionMode="range" (onSelect)="verEXTClientes('otras_fechas');" />
+                        </div>
+                      </div>
+                      <a class="btn btn_extend" [ngClass]="indicador_clientes_ext == 'all_partidas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="verEXTClientes('all_partidas');">
+                        <i class="fa-solid fa-list-ul"></i>&nbsp;todos los registros
+                      </a>
+                      <p-iconfield iconPosition="left" class="ml-auto">
+                        <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                        <input pInputText type="text" (input)="extListProvs.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+                      </p-iconfield>
+                    </div>
+                  </ng-template>
+                  <ng-template #header>
+                    <tr>
+                      <th class="ultimo"></th>
+                      <th pResizableColumn pSortableColumn="folio">folio&nbsp;<p-sortIcon field="folio" /></th>
+                      <th pResizableColumn pSortableColumn="nombre">{{'client' | translate}} &nbsp;<p-sortIcon field="nombre" /></th>
+                      <th pResizableColumn pSortableColumn="nombre_comercial">{{'comercial_name' | translate}}&nbsp;<p-sortIcon field="nombre_comercial" /></th>
+                      <th pResizableColumn pSortableColumn="pais">pais&nbsp;<p-sortIcon field="pais" /></th>
+                      <th pResizableColumn pSortableColumn="rfc_generico">rfc generico&nbsp;<p-sortIcon field="rfc_generico" /></th>
+                      <th pResizableColumn pSortableColumn="rfc_client">rfc&nbsp;<p-sortIcon field="rfc_client" /></th>
+                      <th pResizableColumn pSortableColumn="tax_id_client">idTax&nbsp;<p-sortIcon field="tax_id_client" /></th>
+                      <th pResizableColumn pSortableColumn="cuenta_contable">Cuenta contable &nbsp;<p-sortIcon field="cuenta_contable" /></th>
+                      <th pResizableColumn pSortableColumn="autorizado">{{'yes_auth' | translate}} &nbsp;<p-sortIcon field="autorizado" /></th>
+                      <th class="ultimo"></th>
+                    </tr>
+                  </ng-template>
+                  <ng-template #body let-clientExt>
+                    <tr>
+                      <td class="ultimo">
+                        <a class="btn bg-blue-600" (click)="functViewClienteData(clientExt.token_cat_clientes)">
+                          <i class="fa-solid fa-info"></i>
+                        </a>
+                      </td>
+                      <td>{{clientExt.folio}}</td>
+                      <td class="name">{{clientExt.nombre}}</td>
+                      <td class="name">{{clientExt.nombre_comercial}}</td>
+                      <td>{{clientExt.pais}}</td>
+                      <td>{{clientExt.rfc_generico}}</td>
+                      <td>{{clientExt.rfc_client}}</td>
+                      <td>{{clientExt.tax_id_client}}</td>
+                      <td>{{clientExt.cuenta_contable}}</td>
+                      <td class="ultimo">
+                        <a class="btn btn_extend"
+                          [ngClass]="clientExt.autorizado == true ? 'text-bg-success rounded-3' : 'bg-blue-300'"
+                          (click)="clientExt.autorizado == false && solicitarValidacionCliente(clientExt.token_cat_clientes);">
+                          <i class="fa-solid"
+                            [ngClass]="clientExt.autorizado == true ? 'fa-check-double' : 'fa-check'"></i>
+                          {{clientExt.autorizado == true ? clientExt.auth_fecha : ['auth_solicita' | translate]}}
+                        </a>
+                      </td>
+                      <td class="ultimo">
+                        <a class="btn btn_extend text-bg-danger rounded-3" [class.disabled]="clientExt.utilizado"
+                          [attr.disabled]="clientExt.utilizado ? true : null"
+                          [attr.aria-disabled]="clientExt.utilizado ? 'true' : null"
+                          (click)="!clientExt.utilizado && matarCliente(clientExt.token_cat_clientes);"><i
+                            class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                        </a>
+                      </td>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="emptymessage">
+                    <tr>
+                      <td colspan="11" class="text-center py-4">
+                        <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                        <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                          {{'no_rows' | translate}}
+                        </p>
+                      </td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+              </p-tabpanel>
+              <p-tabpanel value="3">
+                <app-interno-ingresos-catalogos-altaclient></app-interno-ingresos-catalogos-altaclient>
+              </p-tabpanel>
+            </p-tabpanels>
+          </p-tabs>
+
+          <div class="modal fade bd-example-modal-lg" id="windowClienteInfo" tabindex="-1" role="dialog" aria-labelledby="windowClienteInfoLabel" aria-hidden="true">
+            <div class="modal-dialog modal-fullscreen" style="margin: 1%;width: 98%!important;">
+              <div class="modal-content" *ngFor="let clientRow of detalleClienteArray">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="windowClienteInfoLabel">Informaci&oacute;n del
+                    cliente</h1>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                    style="background-color: transparent !important;"></button>
+                </div>
+                <div class="modal-body">
+                  <div class="card-content col-12 row"
+                    style="align-items: start!important;align-items: start!important;flex-direction: row;height:auto!important;">
+                    <div class="col-12">
+                      <span class="card-title">{{clientRow.folio_cliente+" "+clientRow.nombre_cliente}}</span>
+                    </div>
+                    <div class="col-12 inside">
+                      <div class="col-12" style="border-top: solid 1px lightgray!important;padding: 0 !important;">
+                        <div class="col-12 row" style="padding: 0;">
+                          <div class="col-12 col-sm-4 col-md-4 col-lg-4 col-xl-4 col-xxl-4 explain">
+                            <h6 class="title">Clasificaci&oacute;n del cliente</h6>
+                            <h6 class="content">{{clientRow.subClasificacionAll}}</h6>
+                          </div>
+                          <div class="col-12 col-sm-4 col-md-4 col-lg-4 col-xl-4 col-xxl-4 explain">
+                            <h6 class="title">Rfc/idTax</h6>
+                            <h6 class="content">{{clientRow.identificador+" "}}<i
+                                class="fa-solid fa-pen-to-square fa-beat"></i></h6>
+                          </div>
+
+                          <div class="col-12 row" style="padding:0!important;">
+                            <div class="col-12 col-sm-12 col-md-11 col-lg-11 col-xl-11 col-xxl-11 row" style="padding: 0;" *ngIf="clientRow.clasificacion == 'nacional'">
+                              <div class="input-group rfcMayus col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6" style="padding-left: 0;">
+                                <label for="txtMaternoPF_reg" class="activeInput" id="lblMaterno">Nombre completo / raz&oacute;n social del cliente</label>
+                                <input id="verifNameClientee_reg" class="validate" name="verifRfcMaterno" type="text" autocomplete="off" [attr.value]="clientRow.nombre_cliente" (keyup)="validaNewNombreClient($event.target);">
+                              </div>
+                              <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6" style="padding-left: 0;">
+                                <div class="input-group rfcMayus">
+                                  <label class="activeInput">{{clientRow.subClasificacionSimple == 'PF' ? 'Escriba su rfc con Homoclave (13 caracteres)' :'Escriba su rfc con Homoclave (12 caracteres)'}}</label>
+                                  <input class="verif_rfc validate inputWthPass" type="text" autocomplete="off"
+                                    [attr.value]="clientRow.rfc_client"
+                                    [attr.data-length]="clientRow.subClasificacionSimple == 'PF' ? 13 : 12"
+                                    [attr.maxlength]="clientRow.subClasificacionSimple == 'PF' ? 13 : 12"
+                                    placeholder="Ej. ABC000000XXX" (keyup)="validaNewRfcClient($event.target);">
+                                </div>
+                              </div>
+                            </div>
+
+                            <div class="col-12 col-sm-12 col-md-11 col-lg-11 col-xl-11 col-xxl-11 row" style="padding: 0;" *ngIf="clientRow.tipoClient == 'extranjero'">
+                              <div class="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-4 col-xxl-4 input-group rfcMayus" style="padding-left: 0;">
+                                <label for="txtMaternoPF_reg" class="activeInput" id="lblMaterno">Nombre completo / raz&oacute;n social del cliente</label>
+                                <input id="verifNameClientee_reg" class="validate" name="verifRfcMaterno" type="text" autocomplete="off" (keyup)="validaNewNombreClient($event.target);">
+                              </div>
+                              <div class="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-4 col-xxl-4" style="padding-left: 0;">
+                                <div class="input-group rfcMayus">
+                                  <label class="activeInput">{{clientRow.subClasificacionSimple == 'PF' ? 'Escriba su rfc con Homoclave (13 caracteres)' :'Escriba su rfc con Homoclave (12 caracteres)'}}</label>
+                                  <input class="verif_rfc validate inputWthPass" type="text" autocomplete="off"
+                                    [attr.value]="clientRow.rfc_client"
+                                    [attr.data-length]="clientRow.subClasificacionSimple == 'PF' ? 13 : 12"
+                                    [attr.maxlength]="clientRow.subClasificacionSimple == 'PF' ? 13 : 12"
+                                    placeholder="Ej. ABC000000XXX" (keyup)="validaNewRfcClient($event.target);">
+                                </div>
+                              </div>
+                              <div class="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-4 col-xxl-4 input-group rfcMayus">
+                                <label for="first_name" class="activeInput">Escriba Tax ID del cliente</label>
+                                <input id="verif_idTaxClient" class="verif_rfc validate" name="verif_rfcClientMx"
+                                  type="text" minlength="9" maxlength="40" autocomplete="off"
+                                  (keyup)="validaNewTaxIdClient($event.target);">
+                              </div>
+                            </div>
+
+                            <div class="input-group col-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-4" style="padding-left: 0;">
+                              <label for="txtnomCom_regPF" class="activeInput" id="lblNomComercial">Nombre comercial{{clientRow.nombre_comercial == "---" ? " Este cliente no cuenta con nombre comercial" : " "+clientRow.nombre_comercial}}</label>
+                              <input class="validate" name="txtNomComercialPF" type="text" [attr.value]="clientRow.nombre_comercial != '---' ? clientRow.nombre_comercial : ''" 
+                                (keyup)="keyupComercialName($event.target);" id="txtnomCom_regPF">
+                            </div>
+                            <div class="input-group input-field-website col-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-4" style="padding-left: 0;">
+                              <label for="txtsitWeb_reg" class="activeInput" id="lblSitioWeb">Sitio web{{clientRow.sitio_web == "---" ? " Este cliente no tiene un sitio web" : " "+clientRow.sitio_web}}</label>
+                              <input class="validate" name="txtSitioWebPF" type="text" [attr.value]="clientRow.sitio_web != '---' ? clientRow.sitio_web : ''"
+                                (change)="changeSitioWeb($event.target);" id="txtsitWebPF_reg">
+                            </div>
+                            <div class="input-group col-12" style="padding-left: 0;">
+                              <label for="selRegimenFiscal" class="active activeInput obligatorios">R&eacute;gimen fiscal{{" "+clientRow.regimen_fiscal_descripcion+" "}}<span class="obligatorio">* Obligatorio</span></label>
+                              <select *ngIf="clientRow.subClasificacionSimple == 'PF'" id="selRegimenFiscal" class="browser-default" name="selRegimenFiscal" (change)="changeRegimenFiscal($event.target);">
+                                <option value="" disabled selected>{{'opt_select' | translate}}</option>
+                                <option *ngFor="let ltrfis of PfAllRegFisArray" value="{{ltrfis.token_regimen_fiscal}}" 
+                                  [attr.disabled]="clientRow.regimen_fiscal_token == ltrfis.token_regimen_fiscal ? true : null"
+                                  [attr.selected]="clientRow.regimen_fiscal_token == ltrfis.token_regimen_fiscal ? true : null">
+                                  {{ltrfis.regimen}}</option>
+                              </select>
+                              <select *ngIf="clientRow.subClasificacionSimple == 'PM'" id="selRegimenFiscal" class="browser-default" name="selRegimenFiscal" (change)="changeRegimenFiscal($event.target);">
+                                <option value="" disabled selected>{{'opt_select' | translate}}</option>
+                                <option *ngFor="let ltrfis of PmAllRegFisArray" value="{{ltrfis.token_regimen_fiscal}}"
+                                  [attr.disabled]="clientRow.regimen_fiscal_token == ltrfis.token_regimen_fiscal ? true : null"
+                                  [attr.selected]="clientRow.regimen_fiscal_token == ltrfis.token_regimen_fiscal ? true : null">
+                                  {{ltrfis.regimen}}</option>
+                              </select>
+                            </div>
+
+                            <div class="col-12 row">
+                              <div class="input-group col-12 col-sm-12 col-md-8 col-lg-8 col-xl-9 col-xxl-9"></div>
+                              <div class="input-group col-12 col-sm-12 col-md-4 col-lg-4 col-xl-3 col-xxl-3" style="display: flex;margin-top: 3px;margin-bottom: 3px;justify-content: end;">
+                                <a class="btn btn_extend text-bg-success rounded-3"
+                                  [ngClass]="validaGeneralesCliente() ? 'disabled' : ''"
+                                  [attr.disabled]="validaGeneralesCliente() ? true : null"
+                                  [attr.aria-disabled]="validaGeneralesCliente() ? true : null" (click)="!validaGeneralesCliente() && guardaNew_DataCliente(clientRow.token_cliente,clientRow.tipoClient,clientRow.subClasificacionSimple,clientRow.rfc_client_edit,clientRow.tax_id_client,clientRow.nombre_cliente_edit,
+																		clientRow.nombre_comercial_edit,clientRow.sitio_web_edit,clientRow.regimen_fiscal_token_edit);">
+                                  <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}</a>
+                              </div>
+                            </div>
+
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-12 row" style="border-top: solid 2px lightgray!important;padding: 0 !important;">
+                        <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain">
+                          <h6 class="title">Utiliza informaci&oacute;n de contacto</h6>
+                        </div>
+                        <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                          <label class="form-check-label" for="flexSwitchCheckReverse">No</label>
+                          <input class="form-check-input" type="checkbox"
+                            [checked]="clientRow.tiene_contacto_registrado == true"
+                            (click)="decideocupaContacto($event.target);">
+                          <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                        </div>
+
+                        <!-- *ngIf="clientRow.contacto_registrado.length > 0"-->
+                        <div id="decideinfocontacto" class="col-12" [ngClass]="clientRow.tiene_contacto_registrado_edit == false ? 'noneView' : ''" style="padding: 0;">
+                          <div class="col-12 card card_main" style="margin-bottom: 5px!important;">
+                            <div class="card-content">
+                              <span class="card-title">Registrar nuevo contacto</span>
+                              <div class="inside">
+                                <p-table #dt [value]="nuevo_contacto_form" dataKey="id">
+                                  <ng-template pTemplate="header">
+                                    <tr>
+                                      <th>Apellido Paterno</th>
+                                      <th>Apellido Materno</th>
+                                      <th>Nombre(s)</th>
+                                      <th>&Aacute;rea</th>
+                                      <th>Cargo</th>
+                                      <th class="ultimo"></th>
+                                      <th class="ultimo"></th>
+                                      <th class="ultimo"></th>
+                                    </tr>
+                                  </ng-template>
+                                  <ng-template pTemplate="body" let-cont let-editing="editing">
+                                    <tr>
+                                      <td><input id="contPersClientPaterno" class="validate" type="text" (keyup)="keyupPersNewContPaterno($event.target);" [(ngModel)]="cont.apellidoPaterno"></td>
+                                      <td><input id="contPersClientMaterno" class="validate" type="text" (keyup)="keyupPersNewContMaterno($event.target);" [(ngModel)]="cont.apellidoMaterno"></td>
+                                      <td><input id="contPersClientNombres" class="validate" type="text" (keyup)="keyupPersNewContNombres($event.target);" [(ngModel)]="cont.nombres"></td>
+                                      <td><input id="contPersClientArea" class="validate" type="text" (keyup)="keyupPersNewContArea($event.target);" [(ngModel)]="cont.area"></td>
+                                      <td><input id="contPersClientCargo" class="validate" type="text" (keyup)="keyupPersNewContCargo($event.target);" [(ngModel)]="cont.cargo"></td>
+                                      <td class="ultimo">
+                                        <a class="btn btn_extend bg-indigo-600" (click)="verNewEmailsReg(cont);">
+                                          <i class="fa-solid fa-at" style="width: 25px !important;height: 25px !important;line-height: 25px !important;font-size: 15px;text-align: center;"></i>
+                                          &nbsp;{{'email_reg' | translate}}
+                                        </a>
+                                      </td>
+                                      <td class="ultimo">
+                                        <a class="btn btn_extend bg-indigo-600" (click)="verNewTelefonosReg(cont);">
+                                          <i class="fa-solid fa-phone" style="width: 25px !important;height: 25px !important;line-height: 25px !important;font-size: 15px;text-align: center;"></i>
+                                          &nbsp;{{'phone_reg' | translate}}
+                                        </a>
+                                      </td>
+                                      <td class="ultimo">
+                                        <a class="btn btn_extend text-bg-success rounded-3"
+                                          [ngClass]="!enableBtnContacto() ? 'disabled' : ''"
+                                          [attr.disabled]="!enableBtnContacto() ? true : null"
+                                          [attr.aria-disabled]="!enableBtnContacto() ? true : null"
+                                          (click)="enableBtnContacto() && registraNuevoContacto(clientRow.token_cliente);">
+                                          <i class="fa-solid fa-plus"></i>&nbsp;{{'btn_add' | translate}}
+                                        </a>
+                                      </td>
+                                    </tr>
+                                    <tr *ngIf="cont === nuevoContactoEmails">
+                                      <td colspan="8">
+                                        <div class="col-12">
+                                          <ol class="list-group list-group-numbered">
+                                            <li class="list-group-item">
+                                              <div class="col-12 row">
+                                                <div
+                                                  class="input-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6">
+                                                  <label for="fechaAltaProd" class="activeInput">{{'email' |
+                                                    translate}}</label>
+                                                  <input id="contPersClientNewEmail" class="validate" type="email"
+                                                    style="text-transform: lowercase!important;"
+                                                    (keyup)="keyupPersNewContEmail($event.target);">
+                                                </div>
+                                                <div
+                                                  class="input-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6"
+                                                  style="display: flex;margin-top: 5px;justify-content: end;">
+                                                  <a class="btn btn_extend text-bg-success rounded-3"
+                                                    [ngClass]="personal_contacto_email == '' ? 'disabled' : ''"
+                                                    [attr.disabled]="personal_contacto_email == '' ? true : null"
+                                                    [attr.aria-disabled]="personal_contacto_email == '' ? true : null"
+                                                    (click)="personal_contacto_email != '' && addMailNewContacto();">
+                                                    <i class="fa-solid fa-plus"></i>&nbsp;{{'btn_add' | translate}}
+                                                  </a>
+                                                </div>
+                                              </div>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between align-items-start"
+                                              *ngFor="let mailPers of personal_contacto_email_lista;index as i">
+                                              <div class="ms-2 me-auto">
+                                                <div class="fw-bold">{{mailPers}}</div>
+                                              </div>
+                                              <a (click)="deleteMailNewContacto(i); enableBtnContacto();"
+                                                class="btn btn_extend deleteRegCont text-bg-danger rounded-3 badge"><i
+                                                  class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}</a>
+                                            </li>
+                                          </ol>
+                                        </div>
+                                      </td>
+                                    </tr>
+                                    <tr *ngIf="cont === nuevoContactoPhone">
+                                      <td colspan="8">
+                                        <ol class="list-group list-group-numbered">
+                                          <li class="list-group-item">
+                                            <div class="col-12 row">
+                                              <div class="input-group col-12">
+                                                <form #f="ngForm" [formGroup]="formPhone">
+                                                  <ngx-material-intl-tel-input [fieldControl]="formPhone.get('phone')"
+                                                    [preferredCountries]="preferredCountries" [enablePlaceholder]="true"
+                                                    maxLength="15" name="phone"
+                                                    (keyup)="probarNewTextPhone();contNewTelefonoNumero($event.target);enableBtnContacto();"
+                                                    id="txtTelefonoNewCont_regClient">
+                                                  </ngx-material-intl-tel-input>
+                                                </form>
+                                              </div>
+                                              <div
+                                                class="input-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6">
+                                                <label for="fechaAltaProd" class="activeInput">Tipo de
+                                                  tel&eacute;fono</label>
+                                                <select class="browser-default" name="txtEtiquetaFiscal"
+                                                  id="etiquetaNewCont_regClient"
+                                                  (change)="contNewTelefonoTipoChange($event.target);">
+                                                  <option value="" disabled selected>{{'opt_select' | translate}}
+                                                  </option>
+                                                  <option value="casa">casa</option>
+                                                  <option value="movil">movil</option>
+                                                  <option value="trabajo">Trabajo</option>
+                                                  <option value="fax">fax</option>
+                                                  <option value="otro">otro</option>
+                                                </select>
+                                              </div>
+                                              <div
+                                                class="input-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6">
+                                                <label for="fechaAltaProd" class="activeInput">Extensi&oacute;n</label>
+                                                <input class="validate" type="number"
+                                                  (keyup)="contNewTelefonoExtension($event.target);"
+                                                  (keyup)="enableBtnContacto();" id="txtExtensionNewCont_regClient">
+                                              </div>
+                                            </div>
+                                            <div class="col-12 row">
+                                              <div
+                                                class="input-group col-12 col-sm-12 col-md-8 col-lg-8 col-xl-9 col-xxl-9">
+                                              </div>
+                                              <div
+                                                class="input-group col-12 col-sm-12 col-md-4 col-lg-4 col-xl-3 col-xxl-3"
+                                                style="display: flex;margin-top: 5px;justify-content: end;">
+                                                <a class="btn btn_extend text-bg-success rounded-3"
+                                                  [ngClass]="personal_contacto_phone_etiqueta == '' || personal_contacto_phone_numero == '' ? 'disabled' : ''"
+                                                  [attr.disabled]="personal_contacto_phone_etiqueta == '' || personal_contacto_phone_numero == '' ? true : null"
+                                                  [attr.aria-disabled]="personal_contacto_phone_etiqueta == '' || personal_contacto_phone_numero == '' ? true : null"
+                                                  (click)="(personal_contacto_phone_etiqueta != '' && personal_contacto_phone_numero != '') && addPhoneNewContacto();">
+                                                  <i class="fa-solid fa-plus"></i>&nbsp;{{'btn_add' | translate}}</a>
+                                              </div>
+                                            </div>
+                                          </li>
+                                          <li class="list-group-item d-flex justify-content-between align-items-start"
+                                            *ngFor="let telPers of personal_contacto_telefono_lista;index as position">
+                                            <div class="ms-2 me-auto">
+                                              <div class="fw-bold">{{telPers.telefono_complete}}</div>
+                                              {{telPers.etiqueta+" Ext."+telPers.extension}}
+                                            </div>
+                                            <a (click)="deleteNewPhoneContacto(position); enableBtnContacto();"
+                                              class="btn btn_extend deleteRegCont text-bg-danger rounded-3 badge"><i
+                                                class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}</a>
+                                          </li>
+                                        </ol>
+                                      </td>
+                                    </tr>
+                                  </ng-template>
+                                  <ng-template pTemplate="emptymessage">
+                                    <tr>
+                                      <td colspan="8" class="text-center py-4">
+                                        <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                                        <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                          {{'no_rows' | translate}}
+                                        </p>
+                                      </td>
+                                    </tr>
+                                  </ng-template>
+                                </p-table>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="col-12 card card_main">
+                            <div class="card-content">
+                              <span class="card-title">Contactos registrados</span>
+                              <div class="inside">
+                                <p-table #dt [value]="clientRow.contacto_registrado" dataKey="id" [paginator]="true"
+                                  [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]"
+                                  [globalFilterFields]="['nombre']">
+                                  <ng-template pTemplate="header">
+                                    <tr>
+                                      <th pSortableColumn="paterno">Apellido Paterno&nbsp;<p-sortIcon field="paterno" /></th>
+                                      <th pSortableColumn="materno">Apellido Materno&nbsp;<p-sortIcon field="materno" /></th>
+                                      <th pSortableColumn="nombre">Nombre(s)&nbsp;<p-sortIcon field="nombre" /></th>
+                                      <th pSortableColumn="area_contacto">&Aacute;rea&nbsp;<p-sortIcon field="area_contacto" /></th>
+                                      <th pSortableColumn="cargo_contacto">Cargo&nbsp;<p-sortIcon field="cargo_contacto" /></th>
+                                      <th class="ultimo"></th>
+                                      <th class="ultimo"></th>
+                                      <th class="ultimo"></th>
+                                    </tr>
+                                  </ng-template>
+                                  <ng-template pTemplate="body" let-cont>
+                                    <tr>
+                                      <td><input id="contPersClientPaterno" class="validate" [value]="cont.paterno" type="text" (keyup)="keyupPersListContPaterno(cont.token_contacto,$event.target);"></td>
+                                      <td><input id="contPersClientMaterno" class="validate" [value]="cont.materno" type="text" (keyup)="keyupPersListContMaterno(cont.token_contacto,$event.target);"></td>
+                                      <td><input id="contPersClientNombres" class="validate" [value]="cont.nombre" type="text" (keyup)="keyupPersListContNombres(cont.token_contacto,$event.target);"></td>
+                                      <td><input id="contPersClientArea" class="validate" [value]="cont.area_contacto" type="text" (keyup)="keyupPersListContArea(cont.token_contacto,$event.target);"></td>
+                                      <td><input id="contPersClientArea" class="validate" [value]="cont.cargo_contacto" type="text" (keyup)="keyupPersListContCargo(cont.token_contacto,$event.target);"></td>
+                                      <td>
+                                        <a class="btn btn_extend text-bg-success rounded-3"
+                                          [ngClass]="!validaBtnUpdateContPers(cont.token_contacto) ? 'disabled' : ''"
+                                          [attr.disabled]="!validaBtnUpdateContPers(cont.token_contacto) ? true : null"
+                                          [attr.aria-disabled]="!validaBtnUpdateContPers(cont.token_contacto) ? true : null"
+                                          (click)="validaBtnUpdateContPers(cont.token_contacto) && guardaNombresContacto(clientRow.token_cliente,cont.token_contacto,cont.paterno_edit,cont.materno_edit,cont.nombre_edit,cont.area_contacto_edit,cont.cargo_contacto_edit);">
+                                          <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}</a>
+                                      </td>
+                                      <td>
+                                        <a class="btn btn_extend bg-indigo-600" (click)="verEmails(cont);">
+                                          <i class="fa-solid fa-at" style="width: 25px !important;height: 25px !important;line-height: 25px !important;font-size: 15px;text-align: center;"></i>&nbsp;{{'email_catalogo' | translate}}
+                                        </a>
+                                      </td>
+                                      <td>
+                                        <a class="btn btn_extend bg-indigo-600" (click)="verTelefonos(cont);">
+                                          <i class="fa-solid fa-phone" style="width: 25px !important;height: 25px !important;line-height: 25px !important;font-size: 15px;text-align: center;"></i>&nbsp;{{'phone_catalog' | translate}}
+                                        </a>
+                                      </td>
+                                    </tr>
+                                    <tr *ngIf="cont === contactoSeleccionadoEmails">
+                                      <td colspan="8">
+                                        <div class="col-12">
+                                          <div class="col-12 explain explain_column">
+                                            <h6 class="title">{{'email_reg' | translate}}</h6>
+                                            <div class="col-12 row">
+                                              <div class="input-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6">
+                                                <label for="fechaAltaProd" class="activeInput">{{'email' | translate}}</label>
+                                                <input id="contPersClientEmail" class="validate" type="email" style="text-transform: lowercase!important;" (keyup)="keyupPersContNewEmail($event.target);">
+                                              </div>
+                                              <div class="input-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6" style="display: flex;margin-top: 5px;justify-content: end;align-items: flex-end;">
+                                                <a class="btn btn_extend text-bg-success rounded-3"
+                                                  [ngClass]="txtMailPersonalClient_reg == '' ? 'disabled' : ''"
+                                                  [attr.disabled]="txtMailPersonalClient_reg == '' ? true : null"
+                                                  [attr.aria-disabled]="txtMailPersonalClient_reg == '' ? true : null"
+                                                  (click)="txtMailPersonalClient_reg != '' && addMailContacto(clientRow.token_cliente,cont.token_contacto);">
+                                                  <i class="fa-solid fa-plus"></i>&nbsp;{{'btn_add' | translate}}
+                                                </a>
+                                              </div>
+                                            </div>
+                                          </div>
+
+                                          <div class="col-12 explain explain_column">
+                                            <h6 class="title">{{'email_catalogo' | translate}}</h6>
+                                            <div class="col-12">
+                                              <div class="buscador row" style="margin-bottom: 10px!important">
+                                                <div class="content content_light">
+                                                  <div class="col-12 row_buscador">
+                                                    <input class="datasearch" type="text"
+                                                      [(ngModel)]="cont.filtro_correos" autocomplete="on"
+                                                      placeholder="{{'bus_car' | translate}}">
+                                                  </div>
+                                                </div>
+                                              </div>
+                                              <div class="col-12 row">
+                                                <!--[value]="cont.correos | filter:cont.filtro_correos"-->
+                                                <p-table #de [value]="cont.correos" dataKey="idEmails" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]" [globalFilterFields]="['nombre']">
+                                                  <ng-template pTemplate="header">
+                                                    <tr>
+                                                      <th>No.</th>
+                                                      <th pSortableColumn="correo">email&nbsp;<p-sortIcon field="correo" /></th>
+                                                      <th class="ultimo"></th>
+                                                      <th class="ultimo"></th>
+                                                    </tr>
+                                                  </ng-template>
+                                                  <ng-template pTemplate="body" let-mail let-i="rowIndex">
+                                                    <tr>
+                                                      <td>{{i+1}}</td>
+                                                      <td>
+                                                        <input class="validate" [value]="mail.correo" type="email" style="text-transform: lowercase!important;" (keyup)="keyupPersContEmail(cont.token_contacto,mail.token_correo,$event.target);">
+                                                      </td>
+                                                      <td class="ultimo">
+                                                        <a class="btn btn_extend text-bg-success rounded-3"
+                                                          [ngClass]="mail.correo_edit == mail.correo ? 'disabled' : ''"
+                                                          [attr.disabled]="mail.correo_edit == mail.correo ? true : null"
+                                                          [attr.aria-disabled]="mail.correo_edit == mail.correo ? true : null"
+                                                          (click)="mail.correo_edit != mail.correo && updateEMailContacto(clientRow.token_cliente,cont.token_contacto,mail.token_correo,mail.correo_edit);">
+                                                          <i class="fa-solid fa-floppy-disk" style="height: 15px!important;line-height: 15px!important;width: 15px!important;font-size: small!important;"></i>&nbsp;{{'sav_cam' | translate}}
+                                                        </a>
+                                                      </td>
+                                                      <td class="ultimo">
+                                                        <a class="btn btn_extend deleteRegCont text-bg-danger rounded-3 badge"
+                                                          (click)="deleteEMailContacto(clientRow.token_cliente,cont.token_contacto,mail.token_correo);">
+                                                          <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                                                        </a>
+                                                      </td>
+                                                    </tr>
+                                                  </ng-template>
+                                                  <ng-template pTemplate="emptymessage">
+                                                    <tr>
+                                                      <td colspan="4" class="text-center py-4">
+                                                        <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                                                        <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                                          {{'no_rows' | translate}}
+                                                        </p>
+                                                      </td>
+                                                    </tr>
+                                                  </ng-template>
+                                                </p-table>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </td>
+                                    </tr>
+                                    <tr *ngIf="cont === contactoSeleccionadoPhone">
+                                      <td colspan="8">
+                                        <div class="col-12">
+                                          <div class="col-12 explain explain_column">
+                                            <h6 class="title">{{'phone_reg' | translate}}</h6>
+                                            <div class="col-12">
+                                              <div class="col-12 row">
+                                                <div class="input-group col-12 col-sm-12 col-md-12 col-lg-4 col-xl-4 col-xxl-4">
+                                                  <form #f="ngForm" [formGroup]="formPhone" style="z-index:1!important">
+                                                    <ngx-material-intl-tel-input [fieldControl]="formPhone.get('phone')"
+                                                      [preferredCountries]="preferredCountries" [enablePlaceholder]="true"
+                                                      (keyup)="probarTextNewPhone();telefonoKeyupNewNumeroCont_reg($event.target);"
+                                                      maxLength="15" name="phone">
+                                                    </ngx-material-intl-tel-input>
+                                                  </form>
+                                                </div>
+                                                <div class="input-group col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-4">
+                                                  <label for="fechaAltaProd" class="activeInput">Tipo de tel&eacute;fono</label>
+                                                  <select class="browser-default" name="txtEtiquetaFiscal" id="etiquetaCont_regClient" (change)="telefonoTipoNewCont_regChange($event.target);"
+                                                    style="width: 100%!important;height: 30px!important;font-size: 1rem!important;line-height: 30px!important;">
+                                                    <option value="" disabled selected>{{'opt_select' | translate}}</option>
+                                                    <option value="casa">casa</option>
+                                                    <option value="movil">movil</option>
+                                                    <option value="trabajo">Trabajo</option>
+                                                    <option value="fax">fax</option>
+                                                    <option value="otro">otro</option>
+                                                  </select>
+                                                </div>
+                                                <div class="input-group col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-4">
+                                                  <label for="fechaAltaProd" class="activeInput">Extensi&oacute;n</label>
+                                                  <input class="validate" type="number" (keyup)="telefonoKeyupNewExtension_reg($event.target);">
+                                                </div>
+                                              </div>
+                                              <div class="col-12 row">
+                                                <div class="input-group col-12 col-sm-12 col-md-8 col-lg-8 col-xl-9 col-xxl-9">
+                                                </div>
+                                                <div class="input-group col-12 col-sm-12 col-md-4 col-lg-4 col-xl-3 col-xxl-3" style="display: flex;margin-top: 5px;justify-content: end;">
+                                                  <a class="btn btn_extend text-bg-success rounded-3"
+                                                    [ngClass]="txtEtiquetaPersonal == '' || txtPhonePersonalAll == '' ? 'disabled' : ''"
+                                                    [attr.disabled]="txtEtiquetaPersonal == '' || txtPhonePersonalAll == '' ? true : null"
+                                                    [attr.aria-disabled]="txtEtiquetaPersonal == '' || txtPhonePersonalAll == '' ? true : null"
+                                                    (click)="(txtEtiquetaPersonal != '' && txtPhonePersonalAll != '') && addPhoneContacto(clientRow.token_cliente,cont.token_contacto);">
+                                                    <i class="fa-solid fa-plus"></i>&nbsp;{{'btn_add' | translate}}</a>
+                                                </div>
+                                              </div>
+                                            </div>
+                                          </div>
+            
+                                          <div class="col-12 explain explain_column">
+                                            <h6 class="title">{{'phone_catalog' | translate}}</h6>
+                                            <div class="col-12">
+                                              <div class="buscador row" style="margin-bottom: 10px!important">
+                                                <div class="content content_light">
+                                                  <div class="col-12 row_buscador">
+                                                    <input class="datasearch" type="text" [(ngModel)]="searchTelefonos"
+                                                      autocomplete="on" placeholder="{{'bus_car' | translate}}">
+                                                  </div>
+                                                </div>
+                                              </div>
+                                              <div class="col-12 row">
+                                                <!--[value]="cont.telefonos | filter:searchTelefonos"-->
+                                                <p-table #dt [value]="cont.telefonos" dataKey="idPhone" [paginator]="true"
+                                                  [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]"
+                                                  [globalFilterFields]="['etiqueta']">
+                                                  <ng-template pTemplate="header">
+                                                    <tr>
+                                                      <th>No.</th>
+                                                      <th pSortableColumn="etiqueta">Etiqueta&nbsp;<p-sortIcon field="etiqueta" /></th>
+                                                      <th>{{'teléfono'}}</th>
+                                                      <th>{{'extensión'}}</th>
+                                                      <th class="ultimo"></th>
+                                                      <th class="ultimo"></th>
+                                                    </tr>
+                                                  </ng-template>
+                                                  <ng-template pTemplate="body" let-tel let-i="rowIndex">
+                                                    <tr>
+                                                      <td>{{i+1}}</td>
+                                                      <td>
+                                                        <select class="browser-default" name="txtEtiquetaFiscal" id="etiquetaCont_regClient" (change)="telefonoTipoCont_regChange(cont.token_contacto,tel.token_telefono,$event.target);"
+                                                          style="width: 100%!important;height: 30px!important;font-size: 1rem!important;line-height: 30px!important;">
+                                                          <option value="" disabled selected>{{'opt_select' | translate}}</option>
+                                                          <option value="casa" [attr.disabled]="tel.etiqueta == 'casa' ? true : null" [attr.selected]="tel.etiqueta == 'casa' ? true : null">casa</option>
+                                                          <option value="movil" [attr.disabled]="tel.etiqueta == 'movil' ? true : null" [attr.selected]="tel.etiqueta == 'movil' ? true : null">movil</option>
+                                                          <option value="trabajo" [attr.disabled]="tel.etiqueta == 'trabajo' ? true : null" [attr.selected]="tel.etiqueta == 'trabajo' ? true : null">Trabajo</option>
+                                                          <option value="fax" [attr.disabled]="tel.etiqueta == 'fax' ? true : null" [attr.selected]="tel.etiqueta == 'fax' ? true : null">fax</option>
+                                                          <option value="otro" [attr.disabled]="tel.etiqueta == 'otro' ? true : null" [attr.selected]="tel.etiqueta == 'otro' ? true : null">otro</option>
+                                                        </select>
+                                                      </td>
+                                                      <td>
+                                                        <form #f="ngForm">
+                                                          <ngx-material-intl-tel-input [fieldControl]="tel.phoneForm.get('phone')"
+                                                            [preferredCountries]="tel.preferredCountries" [enablePlaceholder]="true"
+                                                            (keyup)="probarTextPhone(cont.token_contacto,tel.token_telefono);telefonoKeyupNumeroCont_reg(cont.token_contacto,tel.token_telefono,$event.target);"
+                                                            maxLength="15" name="phone">
+                                                          </ngx-material-intl-tel-input>
+                                                        </form>
+                                                      </td>
+                                                      <td>
+                                                        <input class="validate" type="number"
+                                                          [value]="tel.extension != '---' ? tel.extension : ''"
+                                                          (keyup)="telefonoKeyupExtension_reg(cont.token_contacto,tel.token_telefono,$event.target);">
+                                                      </td>
+                                                      <td class="ultimo">
+                                                        <a class="btn btn_extend text-bg-success rounded-3 badge"
+                                                          [ngClass]="!validaBtnUpdateTelContPers(cont.token_contacto,tel.token_telefono) ? 'disabled' : ''"
+                                                          [attr.disabled]="!validaBtnUpdateTelContPers(cont.token_contacto,tel.token_telefono) ? true : null"
+                                                          [attr.aria-disabled]="!validaBtnUpdateTelContPers(cont.token_contacto,tel.token_telefono) ? true : null"
+                                                          (click)="validaBtnUpdateTelContPers(cont.token_contacto,tel.token_telefono) && updatePhoneContacto(clientRow.token_cliente,cont.token_contacto,tel.token_telefono,tel.etiqueta_edit,tel.telefono_edit,tel.extension_edit);">
+                                                          <i class="fa-solid fa-floppy-disk"
+                                                            style="height: 15px!important;line-height: 15px!important;width: 15px!important;font-size: small!important;"></i>&nbsp;{{'sav_cam'
+                                                          | translate}}
+                                                        </a>
+                                                      </td>
+                                                      <td class="ultimo">
+                                                        <a (click)="deletePhoneContacto(clientRow.token_cliente,cont.token_contacto,tel.token_telefono);"
+                                                          class="btn btn_extend deleteRegCont text-bg-danger rounded-3 badge"><i
+                                                            class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}</a>
+                                                      </td>
+                                                    </tr>
+                                                  </ng-template>
+                                                  <ng-template pTemplate="emptymessage">
+                                                    <tr>
+                                                      <td colspan="6" class="text-center py-4">
+                                                        <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                                                        <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                                          {{'no_rows' | translate}}
+                                                        </p>
+                                                      </td>
+                                                    </tr>
+                                                  </ng-template>
+                                                </p-table>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </td>
+                                    </tr>
+                                  </ng-template>
+                                  <ng-template pTemplate="emptymessage">
+                                    <tr>
+                                      <td colspan="8" class="text-center py-4">
+                                        <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                                        <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                          {{'no_rows' | translate}}
+                                        </p>
+                                      </td>
+                                    </tr>
+                                  </ng-template>
+                                </p-table>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-12" *ngIf="clientRow.tiene_docs_fiscales == true" style="border-top: solid 1px lightgray!important;padding: 0 !important;">
+                        <div class="col-12 explain">
+                          <h6 class="title">¿Cuenta con documentaci&oacute;n fiscal?</h6>
+                          <div class="col-12 row" style="padding: 0;">
+                            <div class="buscador row" style="margin-bottom: 10px!important">
+                              <div class="content content_light">
+                                <div class="col-12 row_buscador">
+                                  <input class="datasearch" type="text" [(ngModel)]="searchDocs" autocomplete="on"
+                                    placeholder="{{'bus_car' | translate}}">
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-12 row">
+                              <!--[value]="clientRow.docs_adjuntos | filter:searchDocs"-->
+                              <p-table #dt [value]="clientRow.docs_adjuntos" dataKey="id" [paginator]="true" [rows]="10"
+                                [rowsPerPageOptions]="[10,20,30,50,100]" [globalFilterFields]="['nombre']">
+                                <ng-template pTemplate="header">
+                                  <tr>
+                                    <th>No.</th>
+                                    <th>{{'file_name' | translate}}</th>
+                                    <th class="ultimo"></th>
+                                  </tr>
+                                </ng-template>
+                                <ng-template pTemplate="body" let-docs let-i="rowIndex">
+                                  <tr>
+                                    <td>{{i+1}}</td>
+                                    <td>{{docs.tipo_documento+" ("+docs.name_documento+")"}}</td>
+                                    <td class="ultimo"><a class="btn btn_extend text-bg-primary rounded-4" href="{{docs.url}}"
+                                        target="_blank"><i class="fa-solid fa-globe"></i></a></td>
+                                  </tr>
+                                </ng-template>
+                                <ng-template pTemplate="emptymessage">
+                                  <tr>
+                                    <td colspan="3" class="text-center py-4">
+                                      <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                                      <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                        {{'no_rows' | translate}}
+                                      </p>
+                                    </td>
+                                  </tr>
+                                </ng-template>
+                              </p-table>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-12 row" style="border-top: solid 2px lightgray!important;padding: 0 !important;">
+                        <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain">
+                          <h6 class="title">¿Tiene una l&iacute;nea de cr&eacute;dito activa?</h6>
+                        </div>
+                        <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                          <label class="form-check-label" for="flexSwitchCheckReverse">No</label>
+                          <input class="form-check-input" type="checkbox" [checked]="clientRow.tieneCreditoAsignado == true" (click)="aceptaCreditoClient($event.target);">
+                          <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                        </div>
+                        <div id="decidecredito" class="col-12" [ngClass]="clientRow.tieneCreditoAsignado_edit == false ? 'noneView' : ''" style="padding: 0;">
+                          <div class="col-12 row" style="margin-bottom: 5px!important;">
+                            <table class="centered white">
+                              <thead>
+                                <tr>
+                                  <th>Moneda</th>
+                                  <th>L&iacute;mite de credito</th>
+                                  <th>D&iacute;as de pago</th>
+                                  <th>Comienzo del computo de d&iacute;as de cr&eacute;dito</th>
+                                  <th class="ultimo"></th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr>
+                                  <td>
+                                    <datalist id="inputListMonClient">
+                                      <option *ngFor="let arraMon of arrayMonedas" [value]="arraMon.langEN">{{"código "+arraMon.code+", "+arraMon.decimales+" decimales"}}</option>
+                                    </datalist>
+                                    <input class="validate" list="inputListMonClient" type="text" [value]="clientRow.tieneCreditoAsignado == true ? clientRow.creditos_moneda_code : ''" (change)="credMonedaChange($event.target);">
+                                  </td>
+                                  <td><input class="validate" name="txtlimiteCredito" type="number" pattern="[0-9]*" [value]="clientRow.tieneCreditoAsignado == true ? clientRow.creditos_limite : ''" (keyup)="credLimiteCredito($event.target);"></td>
+                                  <td><input class="validate" name="txtdiaspagoCredit" type="number" [value]="clientRow.tieneCreditoAsignado == true ? clientRow.creditos_dias : ''" (keyup)="credDiasPagoCredito($event.target);"></td>
+                                  <td>
+                                    <select name="selectComienzaPago" class="browser-default" (change)="credComienzaPagoClient($event.target);" style="width: 100%!important;height: 30px!important;font-size: 1rem!important;line-height: 30px!important;">
+                                      <option value="" disabled selected>SELECCIONE UNA OPCIÓN</option>
+                                      <option value="cada.inicio.mes"
+                                        [attr.disabled]="clientRow.creditos_comienza == 'cada.inicio.mes' ? true : null"
+                                        [attr.selected]="clientRow.creditos_comienza == 'cada.inicio.mes' ? true : null">Cada inicio de mes
+                                      </option>
+                                      <option value="sistem.emite.orden.pago"
+                                        [attr.disabled]="clientRow.creditos_comienza == 'sistem.emite.orden.pago' ? true : null"
+                                        [attr.selected]="clientRow.creditos_comienza == 'sistem.emite.orden.pago' ? true : null">Se
+                                        emite/env&iacute;a orden de pago</option>
+                                      <option value="serecibe.facturadel.cliente"
+                                        [attr.disabled]="clientRow.creditos_comienza == 'serecibe.facturadel.cliente' ? true : null"
+                                        [attr.selected]="clientRow.creditos_comienza == 'serecibe.facturadel.cliente' ? true : null">Se
+                                        recibe factura del cliente</option>
+                                      <option value="producto.sale.bodegas.cliente"
+                                        [attr.disabled]="clientRow.creditos_comienza == 'producto.sale.bodegas.cliente' ? true : null"
+                                        [attr.selected]="clientRow.creditos_comienza == 'producto.sale.bodegas.cliente' ? true : null">El
+                                        producto salga de las bodegas del cliente</option>
+                                      <option value="producto.recibido.nuestras.bodegas"
+                                        [attr.disabled]="clientRow.creditos_comienza == 'producto.recibido.nuestras.bodegas' ? true : null"
+                                        [attr.selected]="clientRow.creditos_comienza == 'producto.recibido.nuestras.bodegas' ? true : null">
+                                        El producto es recibido en nuestras bodegas</option>
+                                    </select>
+                                  </td>
+                                  <td class="ultimo">
+                                    <a class="btn btn_extend text-bg-success rounded-3" [ngClass]="!bool_valida_creditos ? 'disabled' : ''"
+                                      [attr.disabled]="!bool_valida_creditos ? true : null"
+                                      [attr.aria-disabled]="!bool_valida_creditos ? true : null"
+                                      (click)="bool_valida_creditos && seccionCreditosCliente(clientRow.token_cliente);">
+                                      <i class="fa-solid" [ngClass]="clientRow.creditos_token_creditos != '' ? 'fa-floppy-disk' : 'fa-plus'"
+                                        style="height: 15px!important;line-height: 15px!important;width: 15px!important;font-size: small!important;"></i>&nbsp;
+                                      {{clientRow.creditos_token_creditos != '' ? ['sav_cam' | translate] : ['btn_add' | translate]}}
+                                    </a>
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                    
+                          <div class="col-12 row" *ngIf="clientRow.creditos_token_creditos != ''">
+                            <div class="input-group col-12 col-sm-12 col-md-8 col-lg-8 col-xl-9 col-xxl-9"></div>
+                            <div class="input-group col-12 col-sm-12 col-md-4 col-lg-4 col-xl-3 col-xxl-3" style="display: flex;margin-top: 5px;justify-content: end;">
+                              <a class="btn btn_extend text-bg-success rounded-3"
+                                (click)="elimninaCreditosCliente(clientRow.token_cliente,clientRow.creditos_token_creditos);">
+                                <i class="fa-solid fa-solid fa-eraser"
+                                  style="height: 15px!important;line-height: 15px!important;width: 15px!important;font-size: small!important;"></i>&nbsp;cr&eacute;dito
+                              </a>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-12" style="border-top: solid 1px lightgray!important;padding:0!important;">
+                        <div class="col-12 row">
+                          <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain">
+                            <h6 class="title">¿Cuenta con forma de cobro preferencial?</h6>
+                          </div>
+                          <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                            <label class="form-check-label" for="flexSwitchCheckReverse">No</label>
+                            <input class="form-check-input" type="checkbox" [checked]="clientRow.forma_cobro_pref_tiene == true"
+                              (click)="tieneFormaCobroClient($event.target);">
+                            <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                          </div>
+                        </div>
+                        <div id="decideformacobroDetail" class="col-12" [ngClass]="clientRow.forma_cobro_pref_tiene_edit == false ? 'noneView' : ''" style="padding: 0;">
+                          <div class="input-group col-12">
+                            <label class="activeInput">Forma de cobro</label>
+                            <datalist id="fpago_listReem">
+                              <option *ngFor="let fpago of listaFormasCobroIn" [value]="fpago.forma">{{"clave "+fpago.clave}}</option>
+                            </datalist>
+                            <input list="fpago_listReem" name="browser" type="text"
+                              [value]="clientRow.forma_cobro_pref_tiene == true ? clientRow.forma_cobro_pref_concepto : ''"
+                              (change)="changeFormaCobroAltaClient($event.target);">
+                          </div>
+                        </div>
+                        <div class="col-12 row" style="margin-bottom: 5px!important;" *ngIf="(clientRow.forma_cobro_pref_tiene_edit != clientRow.forma_cobro_pref_tiene) || (clientRow.forma_cobro_pref_tiene_edit == true && clientRow.forma_cobro_pref_tiene == true)">
+                          <div class="input-group col-12 col-sm-12 col-md-8 col-lg-8 col-xl-9 col-xxl-9"></div>
+                          <div class="input-group col-12 col-sm-12 col-md-4 col-lg-4 col-xl-3 col-xxl-3" style="display: flex;margin-top: 5px;justify-content: end;">
+                            <a class="btn btn_extend text-bg-success rounded-3" [ngClass]="!validaFormaCobro() ? 'disabled' : ''"
+                              [attr.disabled]="!validaFormaCobro() ? true : null" [attr.aria-disabled]="!validaFormaCobro() ? true : null"
+                              (click)="validaFormaCobro() && saveFormaCobroCliente(clientRow.token_cliente);">
+                              <i class="fa-solid" [ngClass]="clientRow.forma_cobro_pref_tiene == true ? 'fa-floppy-disk' : 'fa-plus'"></i>&nbsp;{{clientRow.forma_cobro_pref_tiene == true ? ['sav_cam' | translate] : ['btn_add' | translate]}}
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-12 row" style="border-top: solid 2px lightgray!important;padding: 0 !important;">
+                        <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain">
+                          <h6 class="title">¿Se emite factura al cliente antes o despues del cobro?</h6>
+                        </div>
+                        <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                          <label class="form-check-label" for="flexSwitchCheckReverse">Despues</label>
+                          <input class="form-check-input" type="checkbox" (click)="emitirFactAntesDespues(clientRow.token_cliente,$event.target);" [checked]="clientRow.emisionFacturas == true">
+                          <label class="form-check-label" for="flexSwitchCheckReverse">Antes</label>
+                        </div>
+                      </div>
+                      <div class="col-12 row" style="border-top: solid 2px lightgray!important;padding: 0 !important;">
+                        <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain">
+                          <h6 class="title">¿Se entrega el producto o servicio antes o despues del cobro?</h6>
+                        </div>
+                        <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                          <label class="form-check-label" for="flexSwitchCheckReverse">Despues</label>
+                          <input class="form-check-input" type="checkbox" (click)="entregaDeProdAntesDespues(clientRow.token_cliente,$event.target);" [checked]="clientRow.envioArtAfterCobro == true">
+                          <label class="form-check-label" for="flexSwitchCheckReverse">Antes</label>
+                        </div>
+                      </div>
+                      <div class="col-12" style="border-top: solid 1px lightgray!important;padding:0!important;">
+                        <div class="col-12 explain">
+                          <h6 class="title">DIRECCIONES (UBICACI&Oacute;N)</h6>
+                        </div>
+                        <div class="col-12 row" style="padding: 0;" *ngFor="let dir of clientRow.ubicaciones">
+                          <div class="col-12 explain">
+                            <h6 class="title">Pa&iacute;s</h6>
+                            <h6 class="content">{{dir.pais}}&nbsp;<strong>Clase</strong>{{' '+dir.clase+' '}}<strong>Tipo</strong>{{' '+dir.tipo_direccion}}</h6>
+                          </div>
+                          <div class="col-12" style="padding: 0 !important;" *ngIf="dir.pais == 'México'">
+                            <div class="col-12 row" style="padding: 0;">
+                              <div class="col-12 explain row">
+                                <div class="col-12 card card_main" style="margin-bottom: 5px!important;">
+                                  <div class="card-content">
+                                    <div class="inside">
+                                      <p-table #dt [value]="nuevo_contacto_form" dataKey="id">
+                                        <ng-template pTemplate="header">
+                                          <tr>
+                                            <th pSortableColumn="estado_main">Estado&nbsp;<p-sortIcon field="estado_main" /></th>
+                                            <th pSortableColumn="municipio_main">Municipio&nbsp;<p-sortIcon field="municipio_main" /></th>
+                                            <th pSortableColumn="c_postal_main">C&oacute;digo postal&nbsp;<p-sortIcon
+                                                field="c_postal_main" /></th>
+                                            <th pSortableColumn="colonia_main">Colonia&nbsp;<p-sortIcon field="colonia_main" /></th>
+                                            <th class="ultimo"></th>
+                                          </tr>
+                                        </ng-template>
+                                        <ng-template pTemplate="body" let-ubi let-editing="editing">
+                                          <tr>
+                                            <td>{{dir.estado_main}}</td>
+                                            <td>{{dir.municipio_main}}</td>
+                                            <td>{{dir.c_postal_main}}</td>
+                                            <td>{{dir.colonia_main}}</td>
+                                            <td class="ultimo">
+                                              <a class="btn btn_extend bg-indigo-600" (click)="verEditUbicacion(ubi);">
+                                                <i class="fa-solid fa-pen-to-square"
+                                                  style="height: 15px!important;line-height: 15px!important;width: 15px!important;font-size: small!important;"></i>&nbsp;{{'perm_edit'
+                                                | translate}}
+                                              </a>
+                                            </td>
+                                          </tr>
+                                          <tr *ngIf="ubi === editUbicacionSeccion">
+                                            <td colspan="5">
+                                              <div class="col-12 card card_main" style="margin-bottom: 5px!important;">
+                                                <div class="card-content">
+                                                  <div class="inside">
+                                                    <ul class="list-group collection_postales" style="margin-top: 0;padding: 0;">
+                                                      <li class="list-group-item" style="padding: 0;">
+                                                        <div class="busqueda row">
+                                                          <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6"
+                                                            style="display: flex;justify-content: flex-start;margin: auto;padding: 0;height: 30px;line-height: 30px;">
+                                                            <h6>C&oacute;digo postal: </h6>
+                                                          </div>
+                                                          <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6 field_buscar">
+                                                            <input class="validate" type="text" placeholder="{{'bus_car' | translate}}"
+                                                              (keyup)="buscaCodPostalDipomex($event.target);">
+                                                          </div>
+                                                        </div>
+                                                      </li>
+                                                      <li class="list-group-item">Estado: {{dipomex_cod_postal_estado}}</li>
+                                                      <li class="list-group-item">Municipio: {{dipomex_cod_postal_municipio}}</li>
+                                                      <li class="list-group-item">C&oacute;digo postal: {{dipomex_cod_postal_cp}}</li>
+                                                      <li class="list-group-item" *ngIf="dipomex_cod_postal_colonias.length == 0">Colonias: ---</li>
+                                                      <li class="list-group-item itemFor" *ngIf="dipomex_cod_postal_colonias.length > 0">
+                                                        Colonias:
+                                                        <p *ngFor="let col of dipomex_cod_postal_colonias" [ngClass]="dir.colonia_edit == col ? 'disabledView' : ''" [attr.disabled]="dir.colonia_edit == col ? true : null"
+                                                          [attr.aria-disabled]="dir.colonia_edit == col ? true : null" (click)="dir.colonia_edit != col && seleccionaColoniaCPDipomex(col);">{{col}}</p>
+                                                      </li>
+                                                      <li class="list-group-item itemColoniaSeleted" *ngIf="dipomex_cod_postal_colonia_vinculada != ''">Colonia seleccionada:{{dipomex_cod_postal_colonia_vinculada}}</li>
+                                                    </ul>
+                    
+                                                    <div class="col-12 row">
+                                                      <div class="input-group col-12 col-sm-12 col-md-8 col-lg-8 col-xl-9 col-xxl-9"></div>
+                                                      <div class="input-group col-12 col-sm-12 col-md-4 col-lg-4 col-xl-3 col-xxl-3" style="display: flex;margin-top: 5px;justify-content: end;">
+                                                        <a class="btn btn_extend text-bg-success rounded-3"
+                                                          [ngClass]="!validateDipoMexUbica ? 'disabled' : ''"
+                                                          [attr.disabled]="!validateDipoMexUbica ? true : null"
+                                                          [attr.aria-disabled]="!validateDipoMexUbica ? true : null"
+                                                          (click)="validateDipoMexUbica && actualizaUbicaDipoMexCliente(clientRow.token_cliente,dir.token_direccion);">
+                                                          <i class="fa-solid fa-floppy-disk"
+                                                            style="height: 15px!important;line-height: 15px!important;width: 15px!important;font-size: small!important;"></i>&nbsp;{{'sav_cam'
+                                                          | translate}}
+                                                        </a>
+                                                      </div>
+                                                    </div>
+                                                  </div>
+                                                </div>
+                                              </div>
+                    
+                                              <div class="col-12 card card_main" style="margin-bottom: 5px!important;" *ngIf="dipomex_cod_postal_cp != '' && dipomex_cod_postal_cp == ('unk_nown' | translate)">
+                                                <div class="card-content">
+                                                  <div class="inside">
+                                                    <p-table #dt [value]="nuevo_contacto_form" dataKey="id">
+                                                      <ng-template pTemplate="header">
+                                                        <tr>
+                                                          <th pSortableColumn="estado_main">Estado&nbsp;<p-sortIcon field="estado_main" /></th>
+                                                          <th pSortableColumn="municipio_main">Municipio&nbsp;<p-sortIcon field="municipio_main" /></th>
+                                                          <th pSortableColumn="c_postal_main">C&oacute;digo postal&nbsp;<p-sortIcon field="c_postal_main" /></th>
+                                                          <th pSortableColumn="colonia_main">Colonia&nbsp;<p-sortIcon field="colonia_main" /></th>
+                                                          <th class="ultimo"></th>
+                                                        </tr>
+                                                      </ng-template>
+                                                      <ng-template pTemplate="body" let-cont let-editing="editing">
+                                                        <tr>
+                                                          <td><input id="newDipoMexEstado" class="validate" type="text" [value]="dir.estado_main" (keyup)="keyupCPostal_EstName($event.target,dir.token_direccion);"></td>
+                                                          <td><input id="newDipoMexMunicipio" class="validate" type="text" [value]="dir.municipio_main" (keyup)="keyupCPostal_Municipio($event.target,dir.token_direccion);"></td>
+                                                          <td><input id="newDipoMexCP" class="validate" type="text" [value]="dir.c_postal_main" (keyup)="keyupCPostal_CP($event.target,dir.token_direccion);"></td>
+                                                          <td><input id="newDipoMexColonia" class="validate" type="text" [value]="dir.colonia_main" (keyup)="keyupCPostal_Colonia($event.target,dir.token_direccion);"></td>
+                                                          <td class="ultimo">
+                                                            <a class="btn btn_extend text-bg-success rounded-3" [ngClass]="!validatecPostal(dir.token_direccion) ? 'disabled' : ''"
+                                                              [attr.disabled]="!validatecPostal(dir.token_direccion) ? true : null" [attr.aria-disabled]="!validatecPostal(dir.token_direccion) ? true : null"
+                                                              (click)="validatecPostal(dir.token_direccion) && actualizaUbicacionCliente(clientRow.token_cliente,dir.token_direccion);">
+                                                              <i class="fa-solid fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+                                                            </a>
+                                                          </td>
+                                                        </tr>
+                                                      </ng-template>
+                                                      <ng-template pTemplate="emptymessage">
+                                                        <tr>
+                                                          <td colspan="5" class="text-center py-4">
+                                                            <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                                                            <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                                              {{'no_rows' | translate}}
+                                                            </p>
+                                                          </td>
+                                                        </tr>
+                                                      </ng-template>
+                                                    </p-table>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            </td>
+                                          </tr>
+                                        </ng-template>
+                                        <ng-template pTemplate="emptymessage">
+                                          <tr>
+                                            <td colspan="5" class="text-center py-4">
+                                              <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                                              <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                                {{'no_rows' | translate}}
+                                              </p>
+                                            </td>
+                                          </tr>
+                                        </ng-template>
+                                      </p-table>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-12" style="padding: 0 !important;" *ngIf="dir.pais != 'México'">
+                            <div class="col-12 row" style="padding: 0;">
+                              <div class="col-12 sm-6 lg-3 lx-3 explain">
+                                <h6 class="title">C&oacute;digo postal</h6>
+                                <h6 class="content">{{dir.cod_postalext}}</h6>
+                              </div>
+                              <div class="input-group col-12 row" style="padding: 0!important;">
+                                <label for="selPaisExtPF_reg" class="active activeSelect" id="lblselPaisExtPF_reg">{{'dir_complete' | translate}}<span class="obligatorio">* Obligatorio</span></label>
+                                <textarea id="txtCodPostalUbicacionExt" class="materialize-textarea validate" name="txtCodPostalSucExt" minlength="5"></textarea>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div>
+              </div>
+            </div>
+          </div>
+                                    
+          <div class="modal fade bd-example-modal-lg" id="modalClientesEliminados" tabindex="-1" role="dialog" aria-labelledby="modalClientesEliminadosEQLabel" aria-hidden="true">
+            <div class="modal-dialog modal-fullscreen" style="margin: 1%;width: 98%!important;">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="modalClientesEliminadosEQLabel">Clientes eliminados</h1>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: transparent !important;"></button>
+                </div>
+          
+                <div class="modal-body">
+                  <div class="col-12 row" *ngIf="view_bool_deleted_catalogos == true">
+                    <table id="table_ing_client_deleted" class="display nowrap mdl-data-table white centered" style="width:100%!important;margin:0!important;">
+                      <thead>
+                        <tr>
+                          <th>Folio</th>
+                          <th>pais</th>
+                          <th>rfc / idTax</th>
+                          <th>Cliente</th>
+                          <th class="ultimo"></th>
+                          <th class="ultimo"></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr *ngFor="let delClient of catClientEliminados">
+                          <td>{{delClient.folio_client}}</td>
+                          <td>{{delClient.pais}}</td>
+                          <td>{{delClient.rfc}}</td>
+                          <td>{{delClient.nombre}}</td>
+                          <td class="ultimo">
+                            <a class="btn btn_extend text-bg-success rounded-3" (click)="restauraCliente(delClient.token_cat_clientes);">
+                              <i class="fa-solid fa-trash-arrow-up"></i>&nbsp;{{'restore_row' | translate}}
+                            </a>
+                          </td>
+                          <td class="ultimo">
+                            <a class="btn btn_extend text-bg-danger rounded-3" (click)="eliminaPermCliente(delClient.token_cat_clientes);">
+                              <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                            </a>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <div class="modal-footer"></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </article>
+    </main>
+    <app-footer-inside></app-footer-inside>
+  </div>
+</div>

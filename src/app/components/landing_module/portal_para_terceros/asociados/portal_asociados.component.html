@@ -1,0 +1,229 @@
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a routerLink="/">sos-mexico.com.mx</a></li>
+    <li class="breadcrumb-item active" aria-current="page">{{'reem_list' | translate}}</li>
+    <li class="breadcrumb-item active" aria-current="page" *ngIf="detalleVentaRegistrada.length > 0">
+      <a id="btnLoginOut" class="lgout blue-button" (click)="lgoutFunct();"><i class="fa-solid fa-power-off"></i></a>
+    </li>
+  </ol>
+</nav>
+<div class="col-12 contenido_principal listas_ps revanecer">
+  <div class="col-12 row" *ngIf="detalleVentaRegistrada.length == 0">
+    <div class="col-12 col-sm-3 col-md-3 col-lg-4 col-xl-4 col-xxl-4"></div>
+    <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-4">
+      <div class="col-12 card card_main" style="background-color: gainsboro!important;">
+        <div class="card-content">
+          <span class="card-title">Portal para asociados</span>
+          <div class="inside">
+            <form class="row formAddProdCat" #formAddProdCat="ngForm" autocomplete="off" enctype="multipart/form-data" (ngSubmit)="onLoginAssociates(formAddProdCat);">
+              <div class="mb-3">
+                <label for="basic-url" class="activeInput form-label">{{'login_code_access' | translate}}</label><!--login_code_access_error-->
+                <div class="input-group">
+                  <input type="text" class="form-control" aria-describedby="basic-addon3 basic-addon4" (keyup)="validateCodAccesoAssociates($event.target);">
+                </div>
+              </div>
+              <div class="mb-3">
+                <label for="basic-url" class="activeInput form-label">{{'login_password' | translate}}</label><!--login_password_error-->
+                <div class="input-group">
+                  <input type="password" class="form-control" aria-describedby="basic-addon3 basic-addon4" (keyup)="validatePasswordAssociates($event.target)">
+                </div>
+              </div>
+              <div class="mb-3">
+                <label for="basic-url" class="activeInput form-label">{{'fact_venta' | translate}}</label>
+                <div class="input-group">
+                  <input type="text" class="form-control" aria-describedby="basic-addon3 basic-addon4" (keyup)="validateFactVentaAssociates($event.target);">
+                </div>
+              </div>
+              <div class="col-12" style="display: flex;justify-content: flex-end;margin-bottom: 10px;">
+                <button type="submit" class="btn btn-primary" [disabled]="acceso_codigo == '' || acceso_password == '' || acceso_folio_venta == ''"><i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'log_in' | translate}}</button>
+              </div>
+              <div class="progress col-12 row" *ngIf="modulo_progresbar == true" style="margin-top: 5px;padding: 0;">
+								<div id="progress_assocLog" class="progress-bar progress-bar-striped bg-success" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+							</div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-sm-3 col-md-3 col-lg-4 col-xl-4 col-xxl-4"></div>
+  </div>
+
+  <div class="col-12 lista-div lista-divNoFlex row" *ngIf="detalleVentaRegistrada.length > 0">
+    <div class="col-12 card card_main" style="background-color: gainsboro!important;">
+      <div class="card-content">
+        <span class="card-title">Portal para asociados</span>
+        <div class="inside">
+          <div class="col-12 row" *ngFor="let vnt of detalleVentaRegistrada">
+            <div class="col-12 explain" style="height: 20px;">
+              <h6 class="title">Folio de esta venta registrada:</h6>
+              <h6 class="content">{{vnt.folio_venta}}</h6>
+            </div>
+            <div class="col-12 explain" style="height: 20px;">
+              <h6 class="title">{{'kliente' | translate}}</h6>
+              <h6 class="content">{{vnt.cliente}}</h6>
+            </div>
+            <div class="col-12 explain" style="height: 20px;">
+              <h6 class="title">Punto de venta</h6>
+              <h6 class="content">{{vnt.punto_venta}}</h6>
+            </div>
+
+            <div class="col-12 explain" style="height: 20px;">
+              <h6 class="title">Subtotal</h6>
+              <h6 class="content">{{vnt.mx_venta_subtotal+" "+vnt.moneda_code+" / "+vnt.cnvr_venta_subtotal+" "+vnt.moneda_conv_code}}</h6>
+            </div>
+
+            <div class="col-12 explain" style="height: 20px;">
+              <h6 class="title">Descuento total</h6>
+              <h6 class="content">{{vnt.mx_venta_descuento+" "+vnt.moneda_code+" / "+vnt.cnvr_venta_descuento+" "+vnt.moneda_conv_code}}</h6>
+            </div>
+
+            <div class="col-12 explain" style="height: 20px;">
+              <h6 class="title">Impuestos trasladados</h6>
+              <h6 class="content">{{vnt.mx_venta_traslados+" "+vnt.moneda_code+" / "+vnt.cnvr_venta_traslados+" "+vnt.moneda_conv_code}}</h6>
+            </div>
+
+            <div class="col-12 explain" style="height: 20px;">
+              <h6 class="title">Impuestos retenidos</h6>
+              <h6 class="content">{{vnt.mx_venta_retenciones+" "+vnt.moneda_code+" / "+vnt.cnvr_venta_retenciones+" "+vnt.moneda_conv_code}}</h6>
+            </div>
+
+            <div class="col-12 explain" style="height: 20px;">
+              <h6 class="title">Importe total</h6>
+              <h6 class="content">{{vnt.mx_venta_importe_total+" "+vnt.moneda_code+" / "+vnt.cnvr_venta_importe_total+" "+vnt.moneda_conv_code}}</h6>
+            </div>
+
+            <div class="col-12 explain" style="height: 20px;">
+              <h6 class="title">Punto de venta</h6>
+              <h6 class="content">{{vnt.mx_venta_importe_string+" "+vnt.moneda_code+" / "+vnt.cnvr_venta_importe_string+" "+vnt.moneda_conv_code}}</h6>
+            </div>
+
+            <table id="tablaArticulosListadoPVenta" class="display nowrap mdl-data-table white centered" style="width:100%!important;margin:0!important;">
+              <thead>
+                <tr>
+                  <th class="ultimo"></th>
+                  <th>Producto / servicio</th>
+                  <th>Precio sin impuestos</th>
+                  <th>Cantidad</th>
+                  <th><i class="fas fa-gifts"></i>&nbsp;Descuentos</th>
+                  <th>Subtotal</th>
+                  <th>Importe</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr id="trDataVentas" *ngFor="let listaPVentas of vnt.detalle_venta" class="{{listaPVentas.relClientServ}}">
+                  <!--<td id="tdTknVenta" class="noneView">{{listaPVentas.token_articulo}}</td>-->
+                  <td class="img_dat"><div class="col-12"><img class="circle optimizedImage" fill ngSrc="{{listaPVentas.logotipo}}" alt=""></div>	</td>
+                  <td>{{listaPVentas.concepto}}</td>
+                  <td>{{listaPVentas.precio_bruto+" "+vnt.moneda_code+" / "+listaPVentas.precio_bruto_convert+" "+vnt.moneda_conv_code}}</td>
+                  <td>{{listaPVentas.cantidad}}</td>
+                  <td>{{listaPVentas.descuento_total+" "+vnt.moneda_code+" / "+listaPVentas.descuento_total_convert+" "+vnt.moneda_conv_code}}</td><!--descuentos-->
+                  <td>{{listaPVentas.subtotalAfterDescuentos+" "+vnt.moneda_code+" / "+listaPVentas.subtotalAfterDescuentos_convert+" "+vnt.moneda_conv_code}}</td><!--descuentos-->
+                  <td class="tdImportePartida">{{listaPVentas.importe_total+" "+vnt.moneda_code+" / "+listaPVentas.importe_total_convert+" "+vnt.moneda_conv_code}}</td>
+                </tr>
+              </tbody>
+            </table>
+            <form class="row formSoliFact" #formSoliFact="ngForm" autocomplete="off" enctype="multipart/form-data" (ngSubmit)="registraSolicitudFactura(formSoliFact);">
+
+							<div class="col-12">
+								<div class="card card_fase_uno row">
+									<div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 seccion_logo_tipo" style="padding: 0;">
+										<img src="../assets/images/mx_logo.png">
+									</div>
+									<div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 seccion_form" style="padding: 0;">
+										<h6 class="header_text">solicitar facturaci&oacute;n</h6>
+										<ul class="col-12 list-group list_opciones">
+											<li id="fisicaBtnRS" class="list-group-item" (click)="soliFactura_tipoRS('rsFisica','fisicaBtnRS');soliFactura_especificaciones();"><i class="fa-solid fa-person"></i>Persona f&iacute;sica</li>
+											<li id="moralBtnRS" class="list-group-item" (click)="soliFactura_tipoRS('rsMoral','moralBtnRS');soliFactura_especificaciones();"><i class="fa-solid fa-people-group"></i>Persona moral</li>
+										</ul>
+										<div class="col-12 formulario_verificacion row">
+											<div class="col-12 input-group rfcFacturaSoli">
+                        <label id="lbl_rsocial" for="first_name" class="activeInput">{{razon_social_tipo == '' ? 'Escriba su rfc con Homoclave' : (razon_social_tipo == 'rsFisica' ? 'Escriba su rfc con Homoclave (13 caracteres)' : 'Escriba su rfc con Homoclave (12 caracteres)')}}</label>
+                        <input id="rs_rfc_row" class="validate" name="rs_rfc_row" type="text" [attr.disabled]="razon_social_tipo == '' ? true : null" 
+                          [attr.placeholder]="razon_social_tipo == '' ? 'Ej. ABCD000000XXX' : (razon_social_tipo == 'rsFisica' ? 'Ej. ABCD000000XXX' : 'Ej. ABC000000XXX')"
+                          [attr.data-length]="razon_social_tipo == '' ? 0 : (razon_social_tipo == 'rsFisica' ? 13 : 12)" 
+                          [attr.maxlength]="razon_social_tipo == '' ? 0 : (razon_social_tipo == 'rsFisica' ? 13 : 12)" (keyup)="soliFactura_rfcKeyUp($event.target);">
+                      </div>
+											<div class="col-12 input-group rfcFacturaSoli">
+                        <label for="txtMaternoPF_reg"class="activeInput" id="lblMaterno">Nombre completo / raz&oacute;n social</label>
+                        <input id="verifNameRSocial" class="validate" name="verifRfcMaterno" type="text" autocomplete="off" [disabled]="razon_social_tipo == '' || razon_social_rfc == ''"
+                          (keyup)="soliFactura_rsocialKeyUp($event.target);">
+                      </div>
+											<div class="col-12 input-group rfcFacturaSoli">
+                        <datalist id="dataListUsoCFDIPF">
+                          <option *ngFor="let uso of lista_uso_cfdi_pf" [value]="uso.clave_uso">{{"Uso de cfdi: "+uso.uso_cfdi+" ("+uso.descripcion_cfdi+")"}}</option>
+                        </datalist>
+                        <datalist id="dataListUsoCFDIPM">
+                          <option *ngFor="let uso of lista_uso_cfdi_pm" [value]="uso.clave_uso">{{"Uso de cfdi: "+uso.uso_cfdi+" ("+uso.descripcion_cfdi+")"}}</option>
+                        </datalist>
+                        <label for="txtMaternoPF_reg"class="activeInput" id="lblMaterno">Uso de cfdi</label>
+                        <input id="verifNameRSocial" class="validate" name="verifRfcMaterno" type="text" autocomplete="off" [disabled]="razon_social_tipo == '' || razon_social_rfc == '' || razon_social_name == ''"
+                          [attr.list]="razon_social_tipo == 'rsFisica' ? 'dataListUsoCFDIPF' : 'dataListUsoCFDIPM'" (keyup)="soliFactura_UsoCFDIChange($event.target);">
+                      </div>
+                      <div class="col-12 input-group rfcFacturaSoli">
+                        <datalist id="dataListRegFisPF">
+                          <option *ngFor="let reg of lista_regimen_fiscal_pf" [value]="reg.clave">{{"Descripción: "+reg.descripcion}}</option>
+                        </datalist>
+                        <datalist id="dataListRegFisPM">
+                          <option *ngFor="let reg of lista_regimen_fiscal_pm" [value]="reg.clave">{{"Descripción: "+reg.descripcion}}</option>
+                        </datalist>
+                        <label for="txtMaternoPF_reg"class="activeInput" id="lblMaterno">{{'reg_fis' | translate}}</label>
+                        <input id="verifNameRSocial" class="validate" name="verifRfcMaterno" type="text" autocomplete="off" [disabled]="razon_social_tipo == '' || razon_social_rfc == '' || razon_social_name == '' || razon_social_uso_cfdi == ''"
+                          [attr.list]="razon_social_tipo == 'rsFisica' ? 'dataListRegFisPF' : 'dataListRegFisPM'" (keyup)="soliFactura_RegimenFiscalChange($event.target);">
+                      </div>
+
+                      <div class="col-12 row">
+                        <ul class="list-group collection_postales" style="margin-top: 10px;padding: 0;">
+                          <li class="list-group-item">
+                            <div class="busqueda row">
+                              <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6" style="display: flex;justify-content: flex-start;margin: auto;padding: 0;height: 30px;line-height: 30px;">
+                                <h6>C&oacute;digo postal: </h6>
+                              </div>
+                              <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6 field_buscar">
+                                <input class="validate" type="text" placeholder="{{'bus_car' | translate}}" (keyup)="soliFactura_buscaCP($event.target);">
+                              </div>
+                            </div>
+                          </li>
+                          <li class="list-group-item">Estado: {{dirModelo.dipomex_cod_postal_estado}}</li>
+                          <li class="list-group-item">Municipio: {{dirModelo.dipomex_cod_postal_municipio}}</li>
+                          <li class="list-group-item">C&oacute;digo postal: {{dirModelo.dipomex_cod_postal_cp}}</li>
+                          <li class="list-group-item" *ngIf="dirModelo.dipomex_cod_postal_colonias.length == 0">Colonias: ---</li>
+                          <li class="list-group-item itemFor" *ngIf="dirModelo.dipomex_cod_postal_colonias.length > 0">Colonias: <p *ngFor="let col of dirModelo.dipomex_cod_postal_colonias" (click)="soliFactura_ColoniaCP(col);">{{col}}</p></li>
+                          <li class="list-group-item itemColoniaSeleted" *ngIf="dirModelo.dipomex_cod_postal_colonia_vinculada != ''">Colonia seleccionada: {{dirModelo.dipomex_cod_postal_colonia_vinculada}}</li>
+                        </ul>
+                      </div>
+
+                      <div class="col-12 input-group">
+                        <label class="activeInput">{{'dir_fiscal' | translate}}</label>
+                        <textarea class="validate register" name="txtDescripTar" style="max-height: 80px!important;" (keyup)="soliFactura_DirFiscal($event.target);" id="txtNameTar"></textarea>
+                      </div>
+
+                      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6 input-group rfcFacturaSoli">
+                        <label for="basic-url" class="activeInput form-label">{{'email' | translate}}</label>
+                        <input type="text" class="form-control" aria-describedby="basic-addon3 basic-addon4" (keyup)="soliFactura_Email($event.target);">
+                      </div>
+                      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6 input-group rfcFacturaSoli">
+                        <label for="basic-url" class="activeInput form-label">{{'phone' | translate}}:</label>
+                        <form #f="ngForm" [formGroup]="phoneForm" (ngSubmit)="probarTextPhone();soliFactura_Phone($event.target);">
+                          <ngx-material-intl-tel-input [fieldControl]="phoneForm.get('telefono')" [preferredCountries]="preferredCountries" [enablePlaceholder]="true" maxLength="15" name="phone"></ngx-material-intl-tel-input>
+                        </form>
+                        <!--<pre>{{ f.form.value | json }}</pre>-->
+                      </div>
+                      <div class="col-12" style="display: flex;justify-content: flex-end;margin-top: 10px;margin-bottom: 10px;">
+                        <button type="submit" class="btn btn_extend bg-blue-300" [ngClass]="!listoToRegistro ? 'disabled' : ''"
+                          [attr.disabled]="!listoToRegistro ? true : null"
+                          [attr.aria-disabled]="!listoToRegistro ? true : null">Solicitar Factura</button>
+                      </div>
+                      <div class="progress col-12 row" *ngIf="modulo_progresbar == true" style="margin-top: 5px;padding: 0;">
+                        <div id="progress_assocLog" class="progress-bar progress-bar-striped bg-success" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                      </div>
+										</div>
+									</div>
+								</div>
+							</div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

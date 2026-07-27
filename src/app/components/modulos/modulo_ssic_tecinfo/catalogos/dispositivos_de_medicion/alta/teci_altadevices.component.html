@@ -1,0 +1,189 @@
+<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco" #vContent>
+	<div class="contenido">
+		<app-loader></app-loader>
+		<nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+		<main class="contenidoPagina">
+			<div class="listas_ps revanecer">
+				<div id="formDisp" class="fmAlta">
+					<h4>REGISTRO DE DISPOSITIVOS</h4>
+					<form class="row formDataDispositivo" #formDataDispositivo="ngForm" autocomplete="off"
+						(ngSubmit)="regDispositivo(formDataDispositivo);">
+						<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+							<div class="input-field">
+								<select name="tipoDispositivo" (change)="validaTipoDisp($event.target,dispositiv);">
+									<option value="" disabled selected>{{'opt_select' | translate}}</option>
+									<option *ngFor="let lisTipo of arrayTipoDips" value="{{lisTipo.token_tipo_disp}}">{{lisTipo.tipo}}
+									</option>
+								</select>
+								<label class="active activeSelect">Tipo de dispositivo</label>
+							</div>
+						</div>
+						<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+							<div class="input-field">
+								<input class="validate" name="aliasDispositivo" type="text" required
+									(keyup)="validaAliasDisp($event.target,dispositiv);">
+								<label class="activeInput">Alias</label>
+							</div>
+						</div>
+						<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+							<div class="input-field">
+								<input class="validate" name="serieDispositivo" type="text" required
+									(keyup)="validaSerie($event.target,dispositiv);">
+								<label class="activeInput">No. serie</label>
+							</div>
+						</div>
+						<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+							<div class="input-field">
+								<input class="datepicker validate" name="vigenciaDispositivo" type="month" required
+									(change)="validaVigencia($event.target,dispositiv);">
+								<label class="activeInput">Vigencia</label>
+							</div>
+						</div>
+
+						<p-accordion value="0">
+							<p-accordion-panel value="0">
+								<p-accordion-header>Vincular a una caja</p-accordion-header>
+								<p-accordion-content>
+									<div class="col-12 row">
+										<table class="centered responsive-table" cellspacing="0" cellpadding="0">
+											<thead>
+												<tr>
+													<th>Caja</th>
+													<th>Alias</th>
+													<th>Vigencia</th>
+													<th class="ultimo"></th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr *ngFor="let trCajaMon of arrayCajaMonedero">
+													<td>{{trCajaMon.caja}}</td>
+													<td>{{trCajaMon.alias}}</td>
+													<td></td>
+													<td>
+														<p>
+															<label>
+																<input class="select with-gap" value="{{trCajaMon.token_caja}}" name="selectCajaMon"
+																	type="radio" (click)="selectCajaDisp($event.target,dispositiv);" />
+															</label>
+														</p>
+													</td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+								</p-accordion-content>
+							</p-accordion-panel>
+							<p-accordion-panel value="1">
+								<p-accordion-header>Vincular a una cuenta bancaria</p-accordion-header>
+								<p-accordion-content>
+									<div class="col-12 row">
+										<table class="centered responsive-table" cellspacing="0" cellpadding="0">
+											<thead>
+												<tr>
+													<th>Cuenta</th>
+													<th>Vigencia</th>
+													<th class="ultimo"></th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr *ngFor="let trCuentaMon of arrayCuentaMonedero">
+													<td>{{trCuentaMon.nombre_comercial+" - "+trCuentaMon.cuenta}}</td>
+													<td></td>
+													<td>
+														<p>
+															<label>
+																<input class="select with-gap" value="{{trCuentaMon.token_cuenta}}"
+																	name="selectCuentaBanc" type="radio"
+																	(click)="selectCuentaDisp($event.target,dispositiv);" />
+															</label>
+														</p>
+													</td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+								</p-accordion-content>
+							</p-accordion-panel>
+							<p-accordion-panel value="2">
+								<p-accordion-header>Vincular a una cuenta de monedero Electr&oacute;nico</p-accordion-header>
+								<p-accordion-content>
+									<div class="col-12 row">
+										<table class="centered responsive-table" cellspacing="0" cellpadding="0">
+											<thead>
+												<tr>
+													<th>Cuenta de monedero electr&oacute;nico</th>
+													<th>Vigencia</th>
+													<th class="ultimo"></th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr *ngFor="let trMonederoDisp of arrayMonederoElectro">
+													<td>{{trMonederoDisp.monedero+" - "+trMonederoDisp.cuenta}}</td>
+													<td></td>
+													<td>
+														<p>
+															<label>
+																<input class="select with-gap" value="{{trMonederoDisp.token_cuentaMon}}"
+																	name="selectCuentaMon" type="radio"
+																	(click)="selectMonederoDisp($event.target,dispositiv);" />
+															</label>
+														</p>
+													</td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+								</p-accordion-content>
+							</p-accordion-panel>
+							<p-accordion-panel value="3">
+								<p-accordion-header>Asignar a un personal responsable</p-accordion-header>
+								<p-accordion-content>
+									<div class="col-12 row">
+										<table class="centered responsive-table" cellspacing="0" cellpadding="0">
+											<thead>
+												<tr>
+													<th></th>
+													<th>Folio</th>
+													<th>Responsable</th>
+													<th class="ultimo"></th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr *ngFor="let trPers of arrayPersonal">
+													<td>
+														<img class="circle responsive-img" style="width: 40px; height: 40px;"
+															src="{{trPers.imagen}}" alt="">
+													</td>
+													<td>{{trPers.folio}}</td>
+													<td>{{trPers.nombre_completo}}</td>
+													<td>
+														<p>
+															<label>
+																<input class="select with-gap" value="{{trPers.token_personal}}"
+																	name="selectResponsDisp" type="radio"
+																	(click)="selectResponsDisp($event.target,dispositiv);" />
+															</label>
+														</p>
+													</td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+								</p-accordion-content>
+							</p-accordion-panel>
+						</p-accordion>
+						<div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+						<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+							<button #btnGuardarDisp class="btn btnGuardar btnRow waves-light green darken-2" type="submit"
+								name="guadarDispositivo" *ngIf="dispositiv.alias_dispositivo != '' && dispositiv.serie != '' &&
+                    dispositiv.tipo_dispositivo != '' && dispositiv.token_responsable != ''">Guardar</button>
+						</div>
+						<div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+					</form>
+				</div>
+			</div>
+		</main>
+		<app-footer-inside></app-footer-inside>
+	</div>
+</div>

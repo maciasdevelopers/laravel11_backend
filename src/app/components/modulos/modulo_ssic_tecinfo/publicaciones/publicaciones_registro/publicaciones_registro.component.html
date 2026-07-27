@@ -1,0 +1,149 @@
+<form class="formDataNews" #formDataNews="ngForm" autocomplete="off" (ngSubmit)="OKRegPublic && registraNews(formDataNews);">
+  <div class="col-12 row">
+    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-4">
+      <div class=col-12>
+        <label for="tituloNews" class="activeInput">Titulo</label>
+        <input id="tituloNews" name="tituloNews" class="validate " type="text" (keyup)="publicacionTitulo($event.target);">
+      </div>
+      <div class="col-12">
+        <label for="resenaNews" class="activeInput">Reseña</label> 
+        <textarea id="resenaNews" name="resenaNews" class="validate" (keyup)="publicacionResena($event.target);"></textarea>
+      </div>
+      
+      <div class="col-12 explain">
+        <h6 class="title">Contenido</h6>
+      </div>
+      <p-divider />
+      <div class=col-12>
+        <label for="subtituloNews" class="activeInput" >Subtitulo</label>
+        <input id="subtituloNews" name="subtituloNews" class="validate " type="text" (keyup)="publicacionSubtitulo($event.target);">
+      </div>
+      <div class="col-12">
+        <label for="informacionNews" class="activeInput" >Información</label> 
+        <textarea id="informacionNews" name="informacionNews" class="validate" (keyup)="publicacionInformacion($event.target);"></textarea>
+      </div>
+      <div class="col-12" style="display: flex !important;justify-content: end!important;">
+        <a class="btn btn_extend text-bg-success rounded-3" [ngClass]="!valida_contenido_publicacion ? 'disabled' : ''" [attr.disabled]="!valida_contenido_publicacion ? true : null" 
+          [attr.aria-disabled]="!valida_contenido_publicacion ? true : null" (click)="valida_contenido_publicacion && redactaContenido();">
+          <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+        </a>
+      </div>
+      
+      <div class="col-12 explain">
+         <h6 class="title">Fuentes de Consulta</h6>
+      </div>
+      <p-divider />
+      <div class="col-12">
+        <label for="fuenteName" class="activeInput">Fuente (Título/Link)</label>
+        <input id="fuenteName" name="fuenteName" class="validate" type="text" (keyup)="publicacionFuente($event.target);">
+      </div>
+      <div class="col-12">
+        <label for="detalleFuente" class="activeInput">Detalle de la Fuente</label> 
+        <input id="detalleFuente" name="detalleFuente" class="validate" type="text" (keyup)="publicacionFuentDetalle($event.target)">
+      </div>
+      <div class="col-12" style="display: flex !important; justify-content: end !important; margin-top: 5px !important;">
+        <a class="btn btn_extend text-bg-success rounded-3" [ngClass]="!valida_fuente_publicacion ? 'disabled' : ''" [attr.disabled]="!valida_fuente_publicacion ? true : null" 
+          [attr.aria-disabled]="!valida_fuente_publicacion ? true : null" (click)="valida_fuente_publicacion && redactaFuente();">
+          <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+        </a>
+      </div>
+    </div>
+    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-9 col-xxl-8 publicacion_preview">
+      <p class="pub_titulo" [ngClass]="newsModel.titulo == '' ? 'pub_vacia' : ''">
+        @if (newsModel.titulo != '') {
+          {{newsModel.titulo}}
+        } @else {
+          T&iacute;tulo
+        }
+      </p>
+      <p class="pub_resena" [ngClass]="newsModel.resena == '' ? 'pub_vacia' : ''">
+        @if (newsModel.resena != '') {
+          {{newsModel.resena}}
+        } @else {
+          Reseña
+        }
+      </p>
+      <div class="col-12 desglose">
+        @if (newsModel.desglose.length > 0) {
+          @for (content of newsModel.desglose; track $index; let posicion = $index) {
+            <div class="pub_contenedor">
+              <div class="col-12 pub_seccion_buttons">
+                <a class="btn bg-yellow-500" (click)="activarEdicionContenido(content);">
+                  <i class="fa-regular fa-floppy-disk"></i>
+                </a>
+                <a class="btn text-bg-danger" style="margin-left: 3px;" (click)="eliminacionContenido(posicion);">
+                  <i class="fa-solid fa-eraser"></i>
+                </a>
+              </div>
+              @if (!content.activaEdicion) {
+                <p class="pub_subtitulo">{{content.subtitulo}}</p>
+                <p class="pub_content_desglose">{{content.parrafo}}</p>
+              } @else {
+                <div class=col-12>
+                  <label for="subtituloEditNews" class="activeInput" >Subtitulo</label>
+                  <input id="subtituloEditNews" name="subtituloEditNews" class="validate " type="text" [value]="content.subtitulo" (keyup)="edicionContenidoSubtitulo(content,$event.target);">
+                </div>
+                <div class="col-12">
+                  <label for="informacionEditNews" class="activeInput" >Información</label> 
+                  <textarea id="informacionEditNews" name="informacionEditNews" class="validate" (keyup)="edicionContenidoParrafo(content,$event.target);">{{content.parrafo}}</textarea>
+                </div>
+                <div class="col-12" style="display: flex !important;justify-content: end!important;">
+                  <a class="btn btn_extend text-bg-success rounded-3" [ngClass]="!valida_edicion_contenido(content) ? 'disabled' : ''" [attr.disabled]="!valida_edicion_contenido(content) ? true : null" 
+                    [attr.aria-disabled]="!valida_edicion_contenido(content) ? true : null" (click)="valida_edicion_contenido(content) && actualizaContenido(content);">
+                    <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+                  </a>
+                </div>
+              }
+            </div>
+          }
+        } @else {
+          <p class="pub_resena pub_vacia">Contenido de la publicaci&oacute;n</p>
+        }
+      </div>
+      <div class="col-12 fuentes_de_consulta">
+        @if (newsModel.fuentes_de_consulta.length > 0) {
+          <p class="fuentes_de_consulta_title"><b>Fuentes de consulta</b></p>
+          @for (fuent of newsModel.fuentes_de_consulta; track $index; let posicion = $index) {
+            <div class="pub_contenedor">
+              <div class="col-12 pub_seccion_buttons">
+                <a class="btn bg-yellow-500" (click)="activarEdicionFuente(fuent);">
+                  <i class="fa-regular fa-floppy-disk"></i>
+                </a>
+                <a class="btn text-bg-danger" style="margin-left: 3px;" (click)="eliminacionFuente(posicion);">
+                  <i class="fa-solid fa-eraser"></i>
+                </a>
+              </div>
+              @if (!fuent.activaEdicion) {
+                <p class="pub_fuente_title"><b>{{fuent.fuente}}:</b> {{fuent.detalle_fuente}}</p>
+              } @else {
+                <div class="col-12">
+                  <label for="fuenteEditName" class="activeInput">Fuente (Título/Link)</label>
+                  <input id="fuenteEditName" name="fuenteEditName" class="validate" type="text" [value]="fuent.fuente" (keyup)="edicionFuenteFuente(fuent,$event.target);">
+                </div>
+                <div class="col-12">
+                  <label for="detalleEditFuente" class="activeInput">Detalle de la Fuente</label> 
+                  <input id="detalleEditFuente" name="detalleEditFuente" class="validate" type="text" [value]="fuent.detalle_fuente" (keyup)="edicionFuenteDetalle(fuent,$event.target);">
+                </div>
+                <div class="col-12" style="display: flex !important;justify-content: end!important;">
+                  <a class="btn btn_extend text-bg-success rounded-3" [ngClass]="!valida_edicion_fuentes(fuent) ? 'disabled' : ''" [attr.disabled]="!valida_edicion_fuentes(fuent) ? true : null" 
+                    [attr.aria-disabled]="!valida_edicion_fuentes(fuent) ? true : null" (click)="valida_edicion_fuentes(fuent) && actualizaFuentes(fuent);">
+                    <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+                  </a>
+                </div>
+              }
+            </div>
+          }
+        } @else {
+          <p class="pub_resena pub_vacia">Fuentes de consulta</p>
+        }
+      </div>
+    </div>
+    <p-divider />
+    <div class="col-12" style="display: flex !important; justify-content: end !important; margin-top: 5px !important;">
+      <button class="btn btn_extend text-bg-success rounded-3" [ngClass]="!OKRegPublic ? 'disabled' : ''" [attr.disabled]="!OKRegPublic ? true : null" 
+        [attr.aria-disabled]="!OKRegPublic ? true : null">
+        <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+      </button>
+    </div>
+  </div>
+</form>

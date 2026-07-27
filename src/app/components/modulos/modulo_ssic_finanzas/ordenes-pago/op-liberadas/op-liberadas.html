@@ -1,0 +1,173 @@
+<p-table #opliberadas id="tabla_order_pago_list_liberadas" [value]="ordenes_pago_lista_liberadas"
+  [globalFilterFields]="searchPagoLiberadas" showGridlines [resizableColumns]="true" [paginator]="true" [rows]="10"
+  [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]">
+  <ng-template #caption>
+    <div class="flex" style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;" ngbDropdown>
+      <a class="btn btn_extend" [ngClass]="indicadorOrdLib == 'hoy' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_ordenes_pago_liberadas('hoy');">
+        <i class="fa-solid fa-calendar-days"></i>&nbsp;Hoy
+      </a>
+      <a class="btn btn_extend" [ngClass]="indicadorOrdLib == 'esta_semana' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_ordenes_pago_liberadas('esta_semana');">
+        <i class="fa-solid fa-calendar-days"></i>&nbsp;Esta semana
+      </a>
+      <a class="btn btn_extend" [ngClass]="indicadorOrdLib == 'este_mes' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_ordenes_pago_liberadas('este_mes');">
+        <i class="fa-solid fa-calendar-days"></i>&nbsp;Este mes
+      </a>
+      <a class="btn btn_extend" [ngClass]="indicadorOrdLib == 'mes_anterior' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_ordenes_pago_liberadas('mes_anterior');">
+        <i class="fa-solid fa-arrow-left"></i>&nbsp;mes anterior
+      </a>
+      <a id="menuDropOPLiberadas" class="btn btn_extend" [ngClass]="indicadorOrdLib == 'otras_fechas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" ngbDropdownToggle>
+        <i class="fa-solid fa-list-ul"></i>&nbsp;otras fechas
+      </a>
+      <div class="dropdown-menu-end menu-despegable" ngbDropdownMenu="menuDropOPLiberadas" style="padding: 0!important; margin: 0!important; width: max-content!important; max-height: 400px; overflow-y: auto;">
+        <div class="col-12 input-group">
+          <label for="disper_lib_otras_fechas" class="activeInput">Periodo de fechas</label>
+          <p-datepicker id="disper_lib_otras_fechas" name="disper_lib_otras_fechas" [(ngModel)]="rangoPeriodoNomLibOrd" appendTo="body"
+            dateFormat="dd/mm/yy" placeholder="dd/mm/aaaa" selectionMode="range" (onSelect)="ver_ordenes_pago_liberadas('otras_fechas');" />
+        </div>
+      </div>
+      <a class="btn btn_extend" [ngClass]="indicadorOrdLib == 'all_partidas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_ordenes_pago_liberadas('all_partidas');">
+        <i class="fa-solid fa-list-ul"></i>&nbsp;todos los registros
+      </a>
+      <a class="btn btn_extend bg-green-600 descarga_lista_excel" (click)="descarga_excel_llib();">
+        descargar&nbsp;<i class="fa-solid fa-file-excel"></i>
+      </a>
+      <p-iconfield iconPosition="left" class="ml-auto">
+        <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+        <input pInputText type="text" (input)="opliberadas.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+      </p-iconfield>
+    </div>
+  </ng-template>
+  <ng-template #header>
+    <tr>
+      <th rowspan="2" class="ultimo"></th>
+      <th rowspan="2" class="ultimo"></th>
+      <th rowspan="2" class="ultimo"></th>
+      <th rowspan="2" pResizableColumn pSortableColumn="folio_ordenPago">{{'folio' | translate}}&nbsp;<p-sortIcon field="folio_ordenPago" /></th>
+      <th rowspan="2" pResizableColumn pSortableColumn="fecha_contabilizacion_orden_pago">{{'fecha_cont_pay_order' | translate}}&nbsp;<p-sortIcon field="fecha_contabilizacion_orden_pago" /></th>
+      <th rowspan="2" pResizableColumn pSortableColumn="factura_relacionada_string">{{'doc_ant' | translate}}&nbsp;<p-sortIcon field="factura_relacionada_string" /></th>
+      <th rowspan="2" pResizableColumn pSortableColumn="fecha_contabilizacion_doc_anterior">{{'fecha_cont_doc_ant' | translate}}&nbsp;<p-sortIcon field="fecha_contabilizacion_doc_anterior" /></th>
+      <th colspan="3" pResizableColumn pSortableColumn="orden_emisor_personal_folio">{{'ter_cero' | translate}}&nbsp;<p-sortIcon field="orden_emisor_personal_folio" /></th>
+      <th rowspan="2" pResizableColumn pSortableColumn="orden_emisor_emp">{{'company_name' | translate}}&nbsp;<p-sortIcon field="orden_emisor_emp" /></th>
+      <th rowspan="2" pResizableColumn pSortableColumn="autorizacion_pay">{{'autho_riza' | translate}}&nbsp;<p-sortIcon field="autorizacion_pay" /></th>
+      <th rowspan="2" pResizableColumn pSortableColumn="fecha_autorizacion_pay">{{'date_autho_riza' | translate}}&nbsp;<p-sortIcon field="fecha_autorizacion_pay" /></th>
+      <th rowspan="2" pResizableColumn pSortableColumn="pago_anticipado">{{'prepayment' | translate}}&nbsp;<p-sortIcon field="pago_anticipado" /></th>
+      <th rowspan="2" style="padding-left: 5px;padding-right: 5px;" pResizableColumn pSortableColumn="importe_total_inicial">{{'monto_total' | translate}}&nbsp;<p-sortIcon field="importe_total_inicial" /></th>
+      <th rowspan="2" style="padding-left: 5px;padding-right: 5px;" pResizableColumn pSortableColumn="importe_autorizado_inicial_format">{{'monto_total_autorizado' | translate}}&nbsp;<p-sortIcon field="importe_autorizado_inicial_format" /></th>
+      <th rowspan="2" style="padding-left: 5px;padding-right: 5px;" pResizableColumn pSortableColumn="importe_autorizado_final">{{'monto_total_convertido' | translate}}&nbsp;<p-sortIcon field="importe_autorizado_final" /></th>
+      <th rowspan="2" style="padding-left: 5px;padding-right: 5px;" pResizableColumn pSortableColumn="pagos_realizados_format">{{'payed' | translate}}&nbsp;<p-sortIcon field="pagos_realizados_format" /></th>
+      <th rowspan="2" style="padding-left: 5px;padding-right: 5px;" pResizableColumn pSortableColumn="debe_format">{{'debe' | translate}}&nbsp;<p-sortIcon field="debe_format" /></th>
+    </tr>
+    <tr>
+      <th pResizableColumn pSortableColumn="orden_emisor_personal_folio">{{'folio' | translate}}&nbsp;<p-sortIcon field="orden_emisor_personal_folio" /></th>
+      <th pResizableColumn pSortableColumn="orden_emisor_personal_nombre">{{'name' | translate}}&nbsp;<p-sortIcon field="orden_emisor_personal_nombre" /></th>
+      <th pResizableColumn pSortableColumn="orden_emisor_personal_nombre_comercial">{{'comercial_name' | translate}}&nbsp;<p-sortIcon field="orden_emisor_personal_nombre_comercial" /></th>
+    </tr>
+  </ng-template>
+  <ng-template #body let-lPay>
+    <tr>
+      <td class="td_selector">
+        <div class="form-check radio_check">
+          @if (lPay.factura_relacionada_typo === 'nominas' || lPay.factura_relacionada_typo === 'nominas_especie') {
+            <input class="form-check-input" type="checkbox" name="op_lib_id" disabled>
+          }
+          @else {
+            <input class="form-check-input" type="checkbox" name="op_lib_id" [checked]="lPay.pago_proceso" (click)="seleccionMasivaPagar(lPay.token_ordenPago,$event.target);">
+          }
+        </div>
+      </td>
+      <td class="td_selector">
+        @if (lPay.factura_relacionada_typo === 'nominas') {
+          <a class="btn btn_extend text-bg-success rounded-3" name="btnPagoNominasEfectivo" (click)="listar_pago_nomina_simple(lPay.token_ordenPago,lPay.factura_relacionada_token);">
+            <i class="fa-solid fa-money-bill-wave"></i>&nbsp;{{'pay' | translate}}
+          </a>
+        }
+        @else if (lPay.factura_relacionada_typo === 'nominas_especie') {
+          <a class="btn btn_extend text-bg-success rounded-3" name="btnPagoNominasEspecie" (click)="listar_pago_nomi_na_especie_simple(lPay.token_ordenPago,lPay.factura_relacionada_token);">
+            <i class="fa-solid fa-money-bill-wave"></i>&nbsp;{{'pay' | translate}}
+          </a>
+        }
+        @else {
+          <a class="btn btn_extend text-bg-success rounded-3" name="btnPagoNominasEspecie" (click)="listar_pago_orden_simple(lPay.token_ordenPago);">
+            <i class="fa-solid fa-money-bill-wave"></i>&nbsp;{{'pay' | translate}}
+          </a>
+        }
+      </td>
+      <td class="ultimo">
+        <a class="btn bg-blue-600" [ngSwitch]="lPay.factura_relacionada_typo" [class.disabled]="lPay.factura_relacionada_typo === '---'" [attr.disabled]="lPay.factura_relacionada_typo === '---' ? true : null"
+          [attr.aria-disabled]="lPay.factura_relacionada_typo === '---' ? 'true' : null" (click)="desglose_facturaSeleccionada(lPay)">
+          <i class="fa-solid fa-info"></i>
+        </a>
+      </td>
+      <td>{{lPay.folio_ordenPago}}</td>
+      <td>
+        @if (lPay.fecha_contabilizacion_orden_pago != '') {
+          {{lPay.fecha_contabilizacion_orden_pago | date: 'dd/MM/yyyy'}}
+        }
+      </td>
+      <td>{{lPay.factura_relacionada_string}}</td>
+      <td>
+        @if (lPay.fecha_contabilizacion_doc_anterior != '') {
+          {{lPay.fecha_contabilizacion_doc_anterior | date: 'dd/MM/yyyy'}}
+        }
+      </td>
+      <td class="name">{{lPay.orden_emisor_personal_folio}}</td>
+      <td class="name">{{lPay.orden_emisor_personal_nombre}}</td>
+      <td class="name">{{lPay.orden_emisor_personal_nombre_comercial}}</td>
+      <td>{{lPay.orden_emisor_emp}}</td>
+      <td>{{lPay.autorizacion_pay ? ['yes_auth' | translate] : ['not_auth' | translate]}}</td>
+      <td>
+        @if (lPay.fecha_autorizacion_pay != '') {
+          {{lPay.fecha_autorizacion_pay}}
+        } @else {
+          ---
+        }
+      </td>
+      <td class="td_importes">{{lPay.pago_anticipado}}</td>
+      <td class="td_importes">{{lPay.importe_total_inicial}}</td>
+      <td class="td_importes">{{lPay.importe_autorizado_inicial_format}}</td>
+      <td class="td_importes">{{lPay.importe_autorizado_final}}</td>
+      <td class="td_importes">{{lPay.pagos_realizados_format}}</td>
+      <td class="td_importes">{{lPay.debe_format}}</td>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td colspan="19" class="text-center py-4">
+        <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+        <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+          {{'no_rows' | translate}}
+        </p>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+
+@if (factura_relacionada_token != '' && factura_relacionada_typo != '') {
+  <fnzs_op_detalle_factura_informative [factura_token]="factura_relacionada_token" [factura_typo]="factura_relacionada_typo"></fnzs_op_detalle_factura_informative>
+}
+
+<div class="col-12" style="display: flex !important;justify-content: end!important;">
+  <a class="btn btn_extend text-bg-success rounded-3" [ngClass]="!validacionMasivaPagar ? 'disabled' : ''"
+    [attr.disabled]="!validacionMasivaPagar ? true : null" [attr.aria-disabled]="!validacionMasivaPagar ? true : null"
+    type="submit" name="btnPagoOrdenesGral" (click)="validacionMasivaPagar && listar_pago_masiva();">
+    <i class="fa-solid fa-money-bill-wave"></i>&nbsp;{{'pay' | translate}}
+  </a>
+</div>
+
+<p-dialog header="Confirmaci&oacute;n de pago de ordenes" [(visible)]="orden_pago_simple_ver" [modal]="true" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  @if (orden_pago_simple_ver && orden_pago_general_token != '' && ordenes_pago_listaProceso.length > 0) {
+    <fnzs_pago_orden_general_form_component [orden_de_pago_token]="orden_pago_general_token" [orden_de_pago_partida]="ordenes_pago_listaProceso"></fnzs_pago_orden_general_form_component>
+  }
+</p-dialog>
+
+<p-dialog header="Confirmaci&oacute;n de pago de n&oacute;minas en efectivo" [(visible)]="orden_pago_nomina_efectivo_ver" [modal]="true" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  @if (orden_pago_nomina_efectivo_ver && orden_pago_nomina_op_token != '' && orden_pago_nomina_periodo_token != '') {
+    <fnzs_pago_nomina_efectivo_form_component [orden_de_pago]="orden_pago_nomina_op_token" [nominas_periodos]="orden_pago_nomina_periodo_token"></fnzs_pago_nomina_efectivo_form_component>
+  }
+</p-dialog>
+
+<p-dialog header="Confirmaci&oacute;n de pago de n&oacute;minas en especie" [(visible)]="orden_pago_nomina_especie_ver" [modal]="true" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  @if (orden_pago_nomina_especie_ver && orden_pago_nomina_op_token != '' && orden_pago_nomina_especie_token != '') {
+    <fnzs_pago_nomina_especie_form_component [orden_de_pago]="orden_pago_nomina_op_token" [nominas_especie]="orden_pago_nomina_especie_token"></fnzs_pago_nomina_especie_form_component>
+  }
+</p-dialog>

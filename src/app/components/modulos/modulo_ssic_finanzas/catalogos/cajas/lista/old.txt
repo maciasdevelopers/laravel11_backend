@@ -1,0 +1,1447 @@
+					<div class="col-12 row">
+
+						<div class="col-12 col-sm-3 col-md-3 col-lg-2"></div>
+						<div class="col-12 col-sm-6 col-md-3 col-lg-2">
+							<a  href="#infoCajaRegQRCode" class="btn btnGuardar btnRow waves-light modal-trigger" style="width:100%!important;" (click)="clickEscannerQrCaja();">&#xf029; Buscar por QR</a>
+
+							<div id="infoCajaRegQRCode" class="modal modaloDialog">
+								<div class="contenido"><app-loader></app-loader>
+									<div class="header" style="height: auto;">
+										<div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+											<div class="chip chipPermisoEdit" id="chipServ">
+												<div class="col s6">
+													<h5 id="disabledServCont">Habilitar edici&oacute;n</h5>
+												</div>
+												<div class="col s5">
+													<div class="input-field" id="divEnablePassCheckedServ">
+														<input type="password" name="passImp" id="txtEnablePassCheckedServ" class="">
+														<label  for="txtEnablePassCheckedServ" class="activeInput " id="lbltxtEnablePassCheckedServ">Password</label>
+													</div>
+												</div>
+												<div class="col s1">
+													<a class="btn " id="btnVerificaPassServ" disabled><i class="fas fa-user-shield"></i></a>
+												</div>
+											</div>
+										</div>
+										<div class="col s11 m3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"><h4>INFORMACI&Oacute;N DE CAJA REGISTRADA</h4></div>
+										<div class="col s1 m3 col-md-3 col-lg-2 col-xl-2 col-xxl-2" style="display: flex;align-items: center;">
+											<a id="cierraModalListaServPromo" class="modal-close btn text-bg-danger rounded-3"><i class="fa-solid fa-window-minimize"></i></a>
+										</div>
+									</div>
+
+									<div id="dataModalProv" class="modal-content" *ngIf="arrayDetListCaja.length == 0 || validateQRcodeCaja == false">
+										<div class="col-12">
+											<div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+											<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2"><!--id="readerrqCajaTes"-->
+												<div id="camerarqCajaTes"
+													style="
+														height: 400px;
+														width: 100%;
+														margin-top: 100px;
+														background-color: #353535;
+														border-radius: 8px;"></div>
+											</div>
+											<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+										</div>
+									</div>
+
+									<div id="dataModalProv" class="modal-content" *ngIf="arrayDetListCaja.length > 0 && validateQRcodeCaja == true">
+										<div class="modal-content" *ngFor="let divDetCaja of arrayDetListCaja">
+											<div class="col-12">
+													<div class="col-12">
+															<div #divRows class="rowDirPersVinc col-12">
+																	<div class="col-12 row">
+																			<div class="col-12">
+																					<h6>Almacen vinculado a esta caja</h6>
+																			</div>
+																			<div class="col-12 col-sm-12 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+																					<h6 id="dirAlmacen">{{divDetCaja.dir_completa}}</h6>
+																			</div>
+																			<div class="col-12 col-sm-12 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+																					<a #btnDesvincAlmacen class="btn btnGuardar btnRow waves-light green darken-2" name="btnDescvAlmacen"
+																							(click)="btnDesvinculaAlm();">Desvincular</a>
+																					<a #btnStopVincAlm class="btn btnGuardar btnRow waves-light green darken-2 noneView" name="btnDescvAlmacen"
+																							(click)="btnCancelDesvincAlm();">Cancelar desvinculaci&oacute;n</a>
+																			</div>
+																	</div>
+																	<div class="col-12">
+																			<table class="centered responsive-table">
+																					<thead>
+																							<tr>
+																									<th class="ultimo"></th>
+																									<th>Personal asignado</th>
+																									<th class="ultimo"></th>
+																							</tr>
+																					</thead>
+																					<tbody *ngIf="divDetCaja.responsable.length > 0">
+																							<tr *ngFor="let trResp of divDetCaja.responsable">
+																									<td>
+																											<img class="circle responsive-img" style="width: 40px; height: 40px;"
+																											src="{{trResp.img_perfil}}" alt="">
+																									</td>
+																									<td>{{trResp.nombre_completo}}</td>
+																									<td class="ultimo">
+																											<div class="switch">
+																													<label>
+																															<input *ngIf="trResp.statusAsigned == true" class="selectSwitchPersonalCaja" name="selectImpServ"
+																																	type="checkbox" style="width: auto;" value="{{trResp.token_responsables}}" checked (click)="switchResponsable($event.target)">
+																															<input *ngIf="trResp.statusAsigned == false" class="selectSwitchPersonalCaja" name="selectImpServ"
+																																	type="checkbox" style="width: auto;" value="{{trResp.token_responsables}}" (click)="switchResponsable($event.target)">
+																															<span class="lever"></span>
+																													</label>
+																											</div>
+																									</td>
+																							</tr>
+																					</tbody>
+																			</table>
+																	</div>
+															</div>
+													</div>
+													<div #tabListaDirAlmacen class="col-12 divTabListBanc noneView">
+															<table class="centered responsive-table">
+																	<thead>
+																			<tr>
+																					<th>Otros almacenes</th>
+																					<th class="ultimo"></th>
+																			</tr>
+																	</thead>
+																	<tbody *ngIf="divDetCaja.dirSinCaja.length > 0">
+																			<tr *ngFor="let trDirAlmNew of divDetCaja.dirSinCaja">
+																					<td>{{trDirAlmNew.direccion_completa}}</td>
+																					<td>
+																							<p>
+																									<label>
+																											<input class="select with-gap" name="txtDireccionAlm" type="radio" value="{{trDirAlmNew.token_almacen}}"
+																													(click)="selectDirAlmNew($event.target);">
+																									</label>
+																							</p>
+																					</td>
+																			</tr>
+																	</tbody>
+																	<tbody *ngIf="divDetCaja.dirSinCaja.length == 0">
+																			<tr>
+																					<td colspan="2">{{'no_rows' | translate}}</td>
+																			</tr>
+																	</tbody>
+															</table>
+													</div>
+													<div #tabListaResponsAlm class="col-12 divTabListBanc noneView">
+															<table class="centered responsive-table">
+																	<thead>
+																			<tr>
+																					<th class="ultimo"></th>
+																					<th>Personal para asignar</th>
+																					<th class="ultimo"></th>
+																			</tr>
+																	</thead>
+																	<tbody id="tbodyListRespons" *ngIf="arrayListRespons.length > 0">
+																			<tr *ngFor="let trRespons of arrayListRespons">
+																					<td>
+																							<img class="circle responsive-img" style="width: 40px; height: 40px;"
+																							src="{{trRespons.imagen}}" alt="">
+																					</td>
+																					<td>{{trRespons.nombre_completo}}</td>
+																					<td>
+																							<p>
+																									<label>
+																											<input class="txtdetResponsCaja select with-gap" name="txtdetResponsCaja" value="{{trRespons.token_personal}}" type="checkbox"
+																													(click)="selectResponsNew($event.target);"/>
+																									</label>
+																							</p>
+																					</td>
+																			</tr>
+																	</tbody>
+																	<tbody id="tbodyListRespons" *ngIf="arrayListRespons.length == 0">
+																			<tr>
+																					<td colspan="3">{{'no_rows' | translate}}</td>
+																			</tr>
+																	</tbody>
+															</table>
+													</div>
+													<div class="col-12 row sectionNameCaja">
+															<div class="col-12 col-sm-12 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+																	<table class="centered responsive-table">
+																			<thead>
+																					<tr>
+																							<th>No. de caja</th>
+																							<th>Alias</th>
+																							<th>Moneda</th>
+																							<th colspan="3">&Aacute;rea de servicio</th>
+																							<th class="ultimo"></th>
+																					</tr>
+																			</thead>
+																			<tbody>
+																					<tr>
+																							<td>{{divDetCaja.caja}}</td>
+																							<td>{{divDetCaja.alias}}</td>
+																							<td>{{divDetCaja.moneda}}</td>
+																							<td>
+																									<a *ngIf="divDetCaja.serv_egresos == true" class="btn text-bg-success rounded-3 tooltipped"
+																											data-position="top" data-tooltip="Egresos y cuentas por pagar"><i class="fa-solid fa-arrow-up-short-wide"></i></a>
+																									<a *ngIf="divDetCaja.serv_egresos == false" class="btn text-bg-danger rounded-3 tooltipped"
+																											data-position="top" data-tooltip="Egresos y cuentas por pagar"><i class="fa-solid fa-arrow-up-short-wide"></i></a>
+																							</td>
+																							<td>
+																									<a *ngIf="divDetCaja.serv_ingresos == true" class="btn text-bg-success rounded-3 tooltipped"
+																											data-position="top" data-tooltip="Ingresos y cuentas por cobrar"><i class="fa-solid fa-arrow-down-short-wide"></i></a>
+																									<a *ngIf="divDetCaja.serv_ingresos == false" class="btn text-bg-danger rounded-3 tooltipped"
+																											data-position="top" data-tooltip="Ingresos y cuentas por cobrar"><i class="fa-solid fa-arrow-down-short-wide"></i></a>
+																							</td>
+																							<td>
+																									<a *ngIf="divDetCaja.serv_interno == true" class="btn text-bg-success rounded-3 tooltipped"
+																											data-position="top" data-tooltip="Propias"><i class="fa-solid fa-user-check"></i></a>
+																									<a *ngIf="divDetCaja.serv_interno == false" class="btn text-bg-danger rounded-3 tooltipped"
+																											data-position="top" data-tooltip="Propias"><i class="fa-solid fa-user-check"></i></a>
+																							</td>
+																							<td>
+																									<a class="btn bg-blue-300" (click)="editDatCaja();">&#xf044;</a>
+																							</td>
+																					</tr>
+																			</tbody>
+																	</table>
+																	<!--<a class="btn bg-blue-300" (click)="downloadPDF();">&#xf044;</a>-->
+																	<form class="row formUpdateCaja" #formUpdateCaja="ngForm" autocomplete="off" (ngSubmit)="updateCaja(formUpdateCaja);">
+																			<div #divFormUpdateCaja class="col-12 row noneView">
+																					<div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+																							<div class="input-field inputMod">
+																									<input class="validate" name="txtDetAliasCaja" type="text" #txtDetAliasCaja="ngModel"
+																											[(ngModel)]="perfCaja.alias_caja" (keyup)="validaAlias($event.target);">
+																									<label *ngIf="perfCaja.alias_caja || !txtDetAliasCaja.touched;" class="activeInput">Alias</label>
+																									<label *ngIf="!perfCaja.alias_caja && txtDetAliasCaja.touched;" class="activeInput errorlabel">Alias</label>
+																							</div>
+																					</div>
+																					<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+																							<div class="input-field">
+																									<select name="formaPago" (change)="selectMonedaCaja($event.target);">
+																											<option value="" disabled selected>{{'opt_select' | translate}}</option>
+																											<option *ngFor="let arraMon of arrayMonedas" value="{{arraMon.c_token}}">{{arraMon.codigo+'-'+arraMon.moneda}}</option>
+																									</select>
+																									<label class="active activeSelect">Moneda</label>
+																							</div>
+																					</div>
+																					<div class="col-12 divAreaServ">
+																							<div class="col-12 col-sm-12 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+																									<h6>&Aacute;rea de servicio:</h6>
+																							</div>
+																							<div class="col s4 m4 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+																									<p class="radio">
+																											<label class="labelRadio">
+																													<input *ngIf="perfCaja.serv_egresos == true" class="validate" name="areadetServEgresos" type="checkbox"
+																															value="egresos" [(ngModel)]="perfCaja.serv_egresos" #serv_egresos="ngModel" checked>
+																													<input *ngIf="perfCaja.serv_egresos == false" class="validate" name="areadetServEgresos" type="checkbox"
+																															value="egresos" [(ngModel)]="perfCaja.serv_egresos" #serv_egresos="ngModel">
+																													<span class="tooltipped" data-position="top" data-tooltip="Egresos y cuentas por pagar"><i class="fa-solid fa-arrow-up-short-wide"></i></span>
+																											</label>
+																									</p>
+																							</div>
+																							<div class="col s4 m4 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+																									<p class="radio">
+																											<label class="labelRadio">
+																													<input *ngIf="perfCaja.serv_ingresos == true" class="validate" name="areadetServIngresos" type="checkbox"
+																															value="ingresos" [(ngModel)]="perfCaja.serv_ingresos" #serv_ingresos="ngModel" checked>
+																													<input *ngIf="perfCaja.serv_ingresos == false" class="validate" name="areadetServIngresos" type="checkbox"
+																															value="ingresos" [(ngModel)]="perfCaja.serv_ingresos" #serv_ingresos="ngModel">
+																													<span class="tooltipped" data-position="top" data-tooltip="Ingresos y cuentas por cobrar"><i class="fa-solid fa-arrow-down-short-wide"></i></span>
+																											</label>
+																									</p>
+																							</div>
+																							<div class="col s4 m4 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+																									<p class="radio">
+																											<label class="labelRadio">
+																													<input *ngIf="perfCaja.serv_propias == true" class="validate" name="areadetServPropias" type="checkbox"
+																															value="propias" [(ngModel)]="perfCaja.serv_propias" #serv_propias="ngModel" checked>
+																													<input *ngIf="perfCaja.serv_propias == false" class="validate" name="areadetServPropias" type="checkbox"
+																															value="propias" [(ngModel)]="perfCaja.serv_propias" #serv_propias="ngModel">
+																													<span class="tooltipped" data-position="top" data-tooltip="Propias"><i class="fa-solid fa-user-check"></i></span>
+																											</label>
+																									</p>
+																							</div>
+																					</div>
+																					<div class="col-12 col-sm-12 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+																					<div class="col-12 col-sm-12 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+																							<button #btnUpdateCja class="btnSaveUpdate btn btnGuardar btnRow waves-light green darken-2" type="submit"
+																									name="updateCaja" [disabled]="formUpdateCaja.invalid || perfCaja.alias_caja == '' ||
+																									(perfCaja.serv_egresos == false && perfCaja.serv_ingresos == false && perfCaja.serv_propias == false)">
+																									Guardar</button>
+																					</div>
+																					<div class="col-12 col-sm-12 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+																			</div>
+																	</form>
+															</div>
+															<div class="col-12 col-sm-12 col-md-3 col-lg-2 col-xl-2 col-xxl-2 sectionCorteCaja">
+																	<table class="centered responsive-table">
+																			<thead>
+																					<tr>
+																							<th>Horario de corte de caja</th>
+																							<th class="ultimo"></th>
+																							<th class="ultimo"></th>
+																					</tr>
+																			</thead>
+																			<tbody *ngIf="divDetCaja.corte_caja.length > 0">
+																					<tr #trAddCortCaja>
+																							<td colspan="2">
+																									<input class="txtDetHoraTurnCaja validate" name="txtDetHoraTurnCaja" type="time" (keyup)="validaTimeTurno($event.target);">
+																							</td>
+																							<td><a class="btn text-bg-success rounded-3" (click)="guardaNewCorteCaja($event.target);">&#xf00c;</a></td>
+																					</tr>
+																					<tr *ngFor="let trdeTurno of divDetCaja.corte_caja">
+																							<td class="noneView">{{trdeTurno.token_cortecaja}}</td>
+																							<td>
+																									<input class="txthoraTurno validate" name="txtDtHrTurnCja" type="time" value="{{trdeTurno.horario_corte}}"
+																											(keyup)="validaTimeTurno($event.target);">
+																							</td>
+																							<td><a class="btn text-bg-success rounded-3" (click)="editCorteCaja($event.target);">&#xf00c;</a></td>
+																							<td><a class="btn btn_extend text-bg-danger rounded-3" (click)="deleteCorteCaja($event.target);"><i class="fa-solid fa-eraser"></i></a></td>
+																					</tr>
+																			</tbody>
+																			<tbody *ngIf="divDetCaja.corte_caja.length == 0">
+																					<tr>
+																							<td colspan="2">
+																									<input class="txtDetHoraTurnCaja validate" name="txtDetHoraTurnCaja" type="time" (keyup)="validaTimeTurno($event.target);">
+																							</td>
+																							<td><a class="btn text-bg-success rounded-3" (click)="guardaNewCorteCaja($event.target);">&#xf00c;</a></td>
+																					</tr>
+																					<tr>
+																							<td class="noneView">{{'no_rows' | translate}}</td>
+																					</tr>
+																			</tbody>
+																	</table>
+															</div>
+													</div>
+											</div>
+										</div>
+									</div>
+
+								</div>
+							</div>
+
+						</div>
+						<div class="col-12 col-sm-3 col-md-3 col-lg-2"></div>
+
+						<div class="col-12 col-sm-12 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+							<h6>Cajas en uso</h6>
+							<div class="busqueda row">
+								<div class="col s1 m2 col-md-3 col-lg-2">
+									<a class="btn  tooltipped" data-position="top" data-tooltip="Registrar nueva caja"><i class="fa-solid fa-cart-shopping"></i></a>
+								</div>
+								<div class="col s1 m2 col-md-3 col-lg-2">
+									<a class="btn  tooltipped" data-position="top" data-tooltip="Buscar por no. caja"><i class="fa-solid fa-cart-shopping"></i></a>
+								</div>
+								<div class="col s1 m2 col-md-3 col-lg-2">
+									<a class="btn  tooltipped" data-position="top" data-tooltip="Buscar por alias"><i class="fa-solid fa-cart-shopping"></i></a>
+								</div>
+								<div class="col s1 m2 col-md-3 col-lg-2">
+									<a class="btn  tooltipped" data-position="top" data-tooltip="Buscar por alias(almacen)"><i class="fa-solid fa-cart-shopping"></i></a>
+								</div>
+								<div class="col s8 m4 col-md-3 col-lg-2">
+									<input class="datasearch" type="text" id="buscaprod" disabled placeholder="{{'bus_car' | translate}}">
+								</div>
+							</div>
+							<div class="col-12">
+								<table>
+									<thead>
+										<tr>
+											<th>No. caja</th>
+											<th>Alias</th>
+											<th>Almacen (Alias)</th>
+											<th class="ultimo"></th>
+											<th class="ultimo"></th>
+										</tr>
+									</thead>
+									<tbody *ngIf="arrayListaCaja.length > 0">
+										<tr *ngFor="let trCaja of arrayListaCaja | paginate:{id:'pageCajaVig',itemsPerPage:10,currentPage:pageCajaVig}">
+											<td class="noneView">{{trCaja.token_caja}}</td>
+											<td>{{trCaja.caja}}</td>
+											<td>{{trCaja.alias}}</td>
+											<td>{{trCaja.alias_almacen}}</td>
+											<td><a id="btnVerCaja" href="#modalDetCaja" class="btn text-bg-success rounded-3 modal-trigger"
+												(click)="functViewCaja($event.target,trCaja.token_caja);">&#xf044;</a>
+											</td>
+											<td>
+												<a id="btnDeleteCaja" class="btn btn_extend text-bg-danger rounded-3" (click)="functDelCaja($event.target);"><i class="fa-solid fa-eraser"></i></a>
+											</td>
+										</tr>
+									</tbody>
+									<tbody *ngIf="arrayListaCaja.length == 0">
+										<tr>
+											<td colspan="5">{{'no_rows' | translate}}</td>
+										</tr>
+									</tbody>
+								</table>
+								<paginado-controles class="paginador"
+									class="paginado-controles"
+									id="pageCajaVig"
+									(pageChange)="pageCajaVig = $event"
+									previousLabel="{{'prev' | translate}}"
+									nextLabel="{{'next' | translate}}">
+								</paginado-controles>
+							</div>
+							<div id="modalDetCaja" class="modal modaloDialog">
+								<div class="contenido"><app-loader></app-loader>
+									<div class="header" style="height: auto;">
+											<div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+												<div class="chip chipPermisoEdit" id="chipServ">
+													<div class="col s6">
+														<h5 id="disabledServCont">Habilitar edici&oacute;n</h5>
+													</div>
+													<div class="col s5">
+														<div class="input-field" id="divEnablePassCheckedServ">
+															<input type="password" name="passImp" id="txtEnablePassCheckedServ" class="">
+															<label  for="txtEnablePassCheckedServ" class="activeInput " id="lbltxtEnablePassCheckedServ">Password</label>
+														</div>
+													</div>
+													<div class="col s1">
+														<a class="btn " id="btnVerificaPassServ" disabled><i class="fas fa-user-shield"></i></a>
+													</div>
+												</div>
+											</div>
+											<div class="col s11 m3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"><h4>INFORMACI&Oacute;N DE CAJA REGISTRADA</h4></div>
+											<div class="col s1 m3 col-md-3 col-lg-2 col-xl-2 col-xxl-2" style="display: flex;align-items: center;">
+												<a id="cierraModalListaServPromo" class="modal-close btn text-bg-danger rounded-3"><i class="fa-solid fa-window-minimize"></i></a>
+											</div>
+									</div>
+									<div class="modal-content" *ngFor="let divDetCaja of arrayDetListCaja">
+										<div class="col-12">
+												<div class="col-12">
+														<div #divRows class="rowDirPersVinc col-12">
+																<div class="col-12 row">
+																		<div class="col-12">
+																				<h6>Almacen vinculado a esta caja</h6>
+																		</div>
+																		<div class="col-12 col-sm-12 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+																				<h6 id="dirAlmacen">{{divDetCaja.dir_completa}}</h6>
+																		</div>
+																		<div class="col-12 col-sm-12 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+																				<a #btnDesvincAlmacen class="btn btnGuardar btnRow waves-light green darken-2" name="btnDescvAlmacen"
+																						(click)="btnDesvinculaAlm();">Desvincular</a>
+																				<a #btnStopVincAlm class="btn btnGuardar btnRow waves-light green darken-2 noneView" name="btnDescvAlmacen"
+																						(click)="btnCancelDesvincAlm();">Cancelar desvinculaci&oacute;n</a>
+																		</div>
+																</div>
+																<div class="col-12">
+																		<table class="centered responsive-table">
+																				<thead>
+																						<tr>
+																								<th class="ultimo"></th>
+																								<th>Personal asignado</th>
+																								<th class="ultimo"></th>
+																						</tr>
+																				</thead>
+																				<tbody *ngIf="divDetCaja.responsable.length > 0">
+																						<tr *ngFor="let trResp of divDetCaja.responsable">
+																								<td>
+																										<img class="circle responsive-img" style="width: 40px; height: 40px;"
+																										src="{{trResp.img_perfil}}" alt="">
+																								</td>
+																								<td>{{trResp.nombre_completo}}</td>
+																								<td class="ultimo">
+																										<div class="switch">
+																												<label>
+																														<input *ngIf="trResp.statusAsigned == true" class="selectSwitchPersonalCaja" name="selectImpServ"
+																																type="checkbox" style="width: auto;" value="{{trResp.token_responsables}}" checked (click)="switchResponsable($event.target)">
+																														<input *ngIf="trResp.statusAsigned == false" class="selectSwitchPersonalCaja" name="selectImpServ"
+																																type="checkbox" style="width: auto;" value="{{trResp.token_responsables}}" (click)="switchResponsable($event.target)">
+																														<span class="lever"></span>
+																												</label>
+																										</div>
+																								</td>
+																						</tr>
+																				</tbody>
+																		</table>
+																</div>
+														</div>
+												</div>
+												<div #tabListaDirAlmacen class="col-12 divTabListBanc noneView">
+														<table class="centered responsive-table">
+																<thead>
+																		<tr>
+																				<th>Otros almacenes</th>
+																				<th class="ultimo"></th>
+																		</tr>
+																</thead>
+																<tbody *ngIf="divDetCaja.dirSinCaja.length > 0">
+																		<tr *ngFor="let trDirAlmNew of divDetCaja.dirSinCaja">
+																				<td>{{trDirAlmNew.direccion_completa}}</td>
+																				<td>
+																						<p>
+																								<label>
+																										<input class="select with-gap" name="txtDireccionAlm" type="radio" value="{{trDirAlmNew.token_almacen}}"
+																												(click)="selectDirAlmNew($event.target);">
+																								</label>
+																						</p>
+																				</td>
+																		</tr>
+																</tbody>
+																<tbody *ngIf="divDetCaja.dirSinCaja.length == 0">
+																		<tr>
+																				<td colspan="2">{{'no_rows' | translate}}</td>
+																		</tr>
+																</tbody>
+														</table>
+												</div>
+												<div #tabListaResponsAlm class="col-12 divTabListBanc noneView">
+														<table class="centered responsive-table">
+																<thead>
+																		<tr>
+																				<th class="ultimo"></th>
+																				<th>Personal para asignar</th>
+																				<th class="ultimo"></th>
+																		</tr>
+																</thead>
+																<tbody id="tbodyListRespons" *ngIf="arrayListRespons.length > 0">
+																		<tr *ngFor="let trRespons of arrayListRespons">
+																				<td>
+																						<img class="circle responsive-img" style="width: 40px; height: 40px;"
+																						src="{{trRespons.imagen}}" alt="">
+																				</td>
+																				<td>{{trRespons.nombre_completo}}</td>
+																				<td>
+																						<p>
+																								<label>
+																										<input class="txtdetResponsCaja select with-gap" name="txtdetResponsCaja" value="{{trRespons.token_personal}}" type="checkbox"
+																												(click)="selectResponsNew($event.target);"/>
+																								</label>
+																						</p>
+																				</td>
+																		</tr>
+																</tbody>
+																<tbody id="tbodyListRespons" *ngIf="arrayListRespons.length == 0">
+																		<tr>
+																				<td colspan="3">{{'no_rows' | translate}}</td>
+																		</tr>
+																</tbody>
+														</table>
+												</div>
+												<div class="col-12 row sectionNameCaja">
+														<div class="col-12 col-sm-12 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+																<table class="centered responsive-table">
+																		<thead>
+																				<tr>
+																						<th>No. de caja</th>
+																						<th>Alias</th>
+																						<th>Moneda</th>
+																						<th colspan="3">&Aacute;rea de servicio</th>
+																						<th class="ultimo"></th>
+																				</tr>
+																		</thead>
+																		<tbody>
+																				<tr>
+																						<td>{{divDetCaja.caja}}</td>
+																						<td>{{divDetCaja.alias}}</td>
+																						<td>{{divDetCaja.moneda}}</td>
+																						<td>
+																								<a *ngIf="divDetCaja.serv_egresos == true" class="btn text-bg-success rounded-3 tooltipped"
+																										data-position="top" data-tooltip="Egresos y cuentas por pagar"><i class="fa-solid fa-arrow-up-short-wide"></i></a>
+																								<a *ngIf="divDetCaja.serv_egresos == false" class="btn text-bg-danger rounded-3 tooltipped"
+																										data-position="top" data-tooltip="Egresos y cuentas por pagar"><i class="fa-solid fa-arrow-up-short-wide"></i></a>
+																						</td>
+																						<td>
+																								<a *ngIf="divDetCaja.serv_ingresos == true" class="btn text-bg-success rounded-3 tooltipped"
+																										data-position="top" data-tooltip="Ingresos y cuentas por cobrar"><i class="fa-solid fa-arrow-down-short-wide"></i></a>
+																								<a *ngIf="divDetCaja.serv_ingresos == false" class="btn text-bg-danger rounded-3 tooltipped"
+																										data-position="top" data-tooltip="Ingresos y cuentas por cobrar"><i class="fa-solid fa-arrow-down-short-wide"></i></a>
+																						</td>
+																						<td>
+																								<a *ngIf="divDetCaja.serv_interno == true" class="btn text-bg-success rounded-3 tooltipped"
+																										data-position="top" data-tooltip="Propias"><i class="fa-solid fa-user-check"></i></a>
+																								<a *ngIf="divDetCaja.serv_interno == false" class="btn text-bg-danger rounded-3 tooltipped"
+																										data-position="top" data-tooltip="Propias"><i class="fa-solid fa-user-check"></i></a>
+																						</td>
+																						<td>
+																								<a class="btn bg-blue-300" (click)="editDatCaja();">&#xf044;</a>
+																						</td>
+																				</tr>
+																		</tbody>
+																</table>
+																<!--<a class="btn bg-blue-300" (click)="downloadPDF();">&#xf044;</a>-->
+																<form class="row formUpdateCaja" #formUpdateCaja="ngForm" autocomplete="off" (ngSubmit)="updateCaja(formUpdateCaja);">
+																		<div #divFormUpdateCaja class="col-12 row noneView">
+																				<div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+																						<div class="input-field inputMod">
+																								<input class="validate" name="txtDetAliasCaja" type="text" #txtDetAliasCaja="ngModel"
+																										[(ngModel)]="perfCaja.alias_caja" (keyup)="validaAlias($event.target);">
+																								<label *ngIf="perfCaja.alias_caja || !txtDetAliasCaja.touched;" class="activeInput">Alias</label>
+																								<label *ngIf="!perfCaja.alias_caja && txtDetAliasCaja.touched;" class="activeInput errorlabel">Alias</label>
+																						</div>
+																				</div>
+																				<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+																						<div class="input-field">
+																								<select name="formaPago" (change)="selectMonedaCaja($event.target);">
+																										<option value="" disabled selected>{{'opt_select' | translate}}</option>
+																										<option *ngFor="let arraMon of arrayMonedas" value="{{arraMon.c_token}}">{{arraMon.codigo+'-'+arraMon.moneda}}</option>
+																								</select>
+																								<label class="active activeSelect">Moneda</label>
+																						</div>
+																				</div>
+																				<div class="col-12 divAreaServ">
+																						<div class="col-12 col-sm-12 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+																								<h6>&Aacute;rea de servicio:</h6>
+																						</div>
+																						<div class="col s4 m4 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+																								<p class="radio">
+																										<label class="labelRadio">
+																												<input *ngIf="perfCaja.serv_egresos == true" class="validate" name="areadetServEgresos" type="checkbox"
+																														value="egresos" [(ngModel)]="perfCaja.serv_egresos" #serv_egresos="ngModel" checked>
+																												<input *ngIf="perfCaja.serv_egresos == false" class="validate" name="areadetServEgresos" type="checkbox"
+																														value="egresos" [(ngModel)]="perfCaja.serv_egresos" #serv_egresos="ngModel">
+																												<span class="tooltipped" data-position="top" data-tooltip="Egresos y cuentas por pagar"><i class="fa-solid fa-arrow-up-short-wide"></i></span>
+																										</label>
+																								</p>
+																						</div>
+																						<div class="col s4 m4 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+																								<p class="radio">
+																										<label class="labelRadio">
+																												<input *ngIf="perfCaja.serv_ingresos == true" class="validate" name="areadetServIngresos" type="checkbox"
+																														value="ingresos" [(ngModel)]="perfCaja.serv_ingresos" #serv_ingresos="ngModel" checked>
+																												<input *ngIf="perfCaja.serv_ingresos == false" class="validate" name="areadetServIngresos" type="checkbox"
+																														value="ingresos" [(ngModel)]="perfCaja.serv_ingresos" #serv_ingresos="ngModel">
+																												<span class="tooltipped" data-position="top" data-tooltip="Ingresos y cuentas por cobrar"><i class="fa-solid fa-arrow-down-short-wide"></i></span>
+																										</label>
+																								</p>
+																						</div>
+																						<div class="col s4 m4 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+																								<p class="radio">
+																										<label class="labelRadio">
+																												<input *ngIf="perfCaja.serv_propias == true" class="validate" name="areadetServPropias" type="checkbox"
+																														value="propias" [(ngModel)]="perfCaja.serv_propias" #serv_propias="ngModel" checked>
+																												<input *ngIf="perfCaja.serv_propias == false" class="validate" name="areadetServPropias" type="checkbox"
+																														value="propias" [(ngModel)]="perfCaja.serv_propias" #serv_propias="ngModel">
+																												<span class="tooltipped" data-position="top" data-tooltip="Propias"><i class="fa-solid fa-user-check"></i></span>
+																										</label>
+																								</p>
+																						</div>
+																				</div>
+																				<div class="col-12 col-sm-12 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+																				<div class="col-12 col-sm-12 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+																						<button #btnUpdateCja class="btnSaveUpdate btn btnGuardar btnRow waves-light green darken-2" type="submit"
+																								name="updateCaja" [disabled]="formUpdateCaja.invalid || perfCaja.alias_caja == '' ||
+																								(perfCaja.serv_egresos == false && perfCaja.serv_ingresos == false && perfCaja.serv_propias == false)">
+																								Guardar</button>
+																				</div>
+																				<div class="col-12 col-sm-12 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+																		</div>
+																</form>
+														</div>
+														<div class="col-12 col-sm-12 col-md-3 col-lg-2 col-xl-2 col-xxl-2 sectionCorteCaja">
+																<table class="centered responsive-table">
+																		<thead>
+																				<tr>
+																						<th>Horario de corte de caja</th>
+																						<th class="ultimo"></th>
+																						<th class="ultimo"></th>
+																				</tr>
+																		</thead>
+																		<tbody *ngIf="divDetCaja.corte_caja.length > 0">
+																				<tr #trAddCortCaja>
+																						<td colspan="2">
+																								<input class="txtDetHoraTurnCaja validate" name="txtDetHoraTurnCaja" type="time" (keyup)="validaTimeTurno($event.target);">
+																						</td>
+																						<td><a class="btn text-bg-success rounded-3" (click)="guardaNewCorteCaja($event.target);">&#xf00c;</a></td>
+																				</tr>
+																				<tr *ngFor="let trdeTurno of divDetCaja.corte_caja">
+																						<td class="noneView">{{trdeTurno.token_cortecaja}}</td>
+																						<td>
+																								<input class="txthoraTurno validate" name="txtDtHrTurnCja" type="time" value="{{trdeTurno.horario_corte}}"
+																										(keyup)="validaTimeTurno($event.target);">
+																						</td>
+																						<td><a class="btn text-bg-success rounded-3" (click)="editCorteCaja($event.target);">&#xf00c;</a></td>
+																						<td><a class="btn btn_extend text-bg-danger rounded-3" (click)="deleteCorteCaja($event.target);"><i class="fa-solid fa-eraser"></i></a></td>
+																				</tr>
+																		</tbody>
+																		<tbody *ngIf="divDetCaja.corte_caja.length == 0">
+																				<tr>
+																						<td colspan="2">
+																								<input class="txtDetHoraTurnCaja validate" name="txtDetHoraTurnCaja" type="time" (keyup)="validaTimeTurno($event.target);">
+																						</td>
+																						<td><a class="btn text-bg-success rounded-3" (click)="guardaNewCorteCaja($event.target);">&#xf00c;</a></td>
+																				</tr>
+																				<tr>
+																						<td class="noneView">{{'no_rows' | translate}}</td>
+																				</tr>
+																		</tbody>
+																</table>
+														</div>
+												</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+					import { Component, ElementRef, Input, OnInit, Output, Renderer2, ViewChild } from '@angular/core';
+import { CuentbancService } from '../../../../../../servicios/ssic/cuentbanc.service';
+import { BancosServService } from '../../../../../../servicios/ssic/bancos-serv.service';
+import { InterfBancos } from '../../../../../../interfaces/interf-bancos';
+import { cuentasModelo } from '../../../../../../modelos/cuentasModelo';
+import { cajaAngularModelo } from '../../../../../../modelos/cajaAngularModelo';
+import { DireccionesService } from '../../../../../../servicios/ssic/direcciones.service';
+import { EmpleadosService } from '../../../../../../servicios/ssic/empleados.service';
+import { Usuarios } from '../../../../../../modelos/Usuarios';
+import { CajaServService } from '../../../../../../servicios/ssic/caja-serv.service';
+import { ValidatorServService } from '../../../../../../servicios/validator-serv.service';
+import { ServEncryptService } from '../../../../../../servicios/ssic/serv-encrypt.service';
+import numeral from 'numeral';
+import Swal from 'sweetalert2';
+import { perfilCajaAngularModelo } from '../../../../../../modelos/perfilCajaAngularModelo';
+import { InterfMonedas } from '../../../../../../interfaces/interf-monedas';
+import { MonedasService } from '../../../../../../servicios/monedas.service';
+import { MonederoElectService } from '../../../../../../servicios/ssic/monedero-elect.service';
+import { monderoElectAngularModelo } from '../../../../../../modelos/monderoElectAngularModelo';
+import { DispositivosServService } from '../../../../../../servicios/ssic/dispositivos-serv.service';
+import { dispositivosAngularModelo } from '../../../../../../modelos/dispositivosAngularModelo';
+import { menuModelo } from '../../../../../../modelos/menuModelo';
+import { TranslateService } from '@ngx-translate/core';
+import { Html5Qrcode, Html5QrcodeScanner } from 'html5-qrcode';
+//<qrcode [qrdata]="'Tu cadena de datos'" [width]="256" [errorCorrectionLevel]="'M'"></qrcode> imports QRCodeComponent,
+import { global } from '../../../../../../servicios/global_ssic';
+
+
+@Component({
+  selector: 'app-interno-tesoreria-catalogos',
+  templateUrl: './tes_listacajas.component.html',
+  standalone:false,
+  styleUrls: [
+    '../../../../../../styles/listas_ps.css',
+    '../../../../../../styles/datatable.css',
+    '../../../../../../styles/dropdown.css',
+    '../../../../../../styles/tabs.css',
+    '../../../../../../styles/input_group.css',
+    '../../../../../../styles/file_input.css',
+    '../../../../../../styles/buttons.css',
+    '../../../../../../styles/modals.css',
+    '../../../../../../styles/cabecera.css',
+    '../../../../../../styles/cards.css',
+    '../../../../../../styles/clientes.css',
+    '../../../../../../styles/collapsible.css',
+    '../../../../../../styles/row.css',
+    '../../../../../../styles/encabezados.css',
+    '../../../../../../styles/buscador.css',
+    '../../../../../../styles/radioButtons.css',
+    '../../../../../../styles/paginador.css',
+    '../../../../../../styles/landing.css',
+    '../../../finanzas.css',
+    './tes_listacajas.component.css']
+})
+export class ListaCajasTesoreriaComponent implements OnInit {
+  public usuario:Usuarios;
+  public perfCaja:perfilCajaAngularModelo;
+  public validateQRcodeCaja:boolean;
+  pageCajaVig:number = 1;
+  pageCajaDeleted:number = 1;
+  public view_lista_cajas:boolean = false;
+  
+  arrayListaCaja:any = [];
+  arrayListaDelCaja:any = [];
+  arrayDetListCaja:any = [];
+  arrayListRespons:any = [];
+  public tokenEstablecimiento: string;
+  arrayListPersNew:any = [];
+  arrayMonedas: InterfMonedas[] = [];
+  public txtMonedaCaja:string;
+
+  @ViewChild('btnStopVincAlm') btnStopVincAlm: ElementRef = {} as ElementRef;
+  @ViewChild('btnDesvincAlmacen') btnDesvincAlmacen: ElementRef = {} as ElementRef;
+  @ViewChild('divRows') divRows: ElementRef = {} as ElementRef;
+  @ViewChild('tabListaDirAlmacen') tabListaDirAlmacen: ElementRef = {} as ElementRef;
+  @ViewChild('tabListaResponsAlm') tabListaResponsAlm: ElementRef = {} as ElementRef;
+  @ViewChild('divFormUpdateCaja') divFormUpdateCaja: ElementRef = {} as ElementRef;
+
+
+
+  constructor(
+    public monedasServ:MonedasService,
+    private renderer:Renderer2,
+    public cuentaBan:CuentbancService,
+    public bancos:BancosServService,
+    public cajaServ:CajaServService,
+    private dirServ:DireccionesService,
+    public responsable:EmpleadosService,
+    public monedero:MonederoElectService,
+    public dispositivo:DispositivosServService,
+    public validator:ValidatorServService,
+    private translate:TranslateService,
+    public encryptor:ServEncryptService) {
+    this.usuario = new Usuarios(1,"","","","","","","",1,1,"","","","");
+    this.perfCaja = new perfilCajaAngularModelo('','',false,false,false);
+    this.tokenEstablecimiento = '';
+    this.txtMonedaCaja = 'bmVUblp5dHpIVkZXWXhKVVJCekJIZz09OjoxMjM0NTY3ODEyMzQ1Njc4';
+    this.validateQRcodeCaja = false;
+  }
+
+  ngOnInit(): void {
+    this.listadoCajas();
+    this.monedasServ.getMonedas().subscribe((data:InterfMonedas[]) => {
+      this.arrayMonedas = data;
+    });
+
+    this.cajaServ.verListaDeleteCaja().subscribe(
+      response => {
+        console.log(response.status);
+        if (response.status == 'success') {
+          this.arrayListaDelCaja = response.caja;
+          //console.log(this.arrayListaDelCaja);
+        }
+      },
+      error =>{
+        console.log(error);
+      }
+    )
+  }
+
+  listadoCajas(){
+    this.view_lista_cajas = false;
+    this.cajaServ.verListaCajas('all_partidas','','').subscribe(
+      response => {
+        console.log(response.status);
+        this.view_lista_cajas = true;
+        if (response.status == 'success') {
+          this.arrayListaCaja = response.caja;
+          //console.log(this.arrayListaCaja);
+        }
+      },
+      error =>{
+        console.log(error);
+      }
+    );
+  }
+
+  clickEscannerQrCaja(){//readerSitFiscalProv
+    var cameraId:any = '';
+    Html5Qrcode.getCameras().then(devices => {
+      if (devices && devices.length) {
+        cameraId = devices[0].id;
+        console.log(cameraId);
+      }
+    }).catch(err => {
+      // handle err
+    });
+    let config:any = {fps:10,qrbox: { width: 250, height: 250 }};
+    let codeQrstdivice:any = new Html5QrcodeScanner("camerarqCajaTes",config,false);
+    codeQrstdivice.render(this.scanYesDevice,this.onScanError);
+  }
+
+  scanYesDevice(decodedText:any, decodedResult:any) {
+    console.log(`Scan result: ${decodedText}`, decodedResult);
+    global.imagenUrlQrDispositivoTes = decodedText;
+    this.validateQRcodeCaja = true;
+    Swal.fire({
+      position:'center',
+      icon: 'success',
+      title: 'escaneo completado',
+      showConfirmButton:false,
+      timer: 3000
+    })
+  }
+  onScanError(errorMessage:any) {console.log(`Code scan error = ${errorMessage}`);}
+
+  recargaListaCaja(){
+    this.cajaServ.verListaCajas('all_partidas','','').subscribe(
+      response => {
+        console.log(response.status);
+        if (response.status == 'success') {
+          this.arrayListaCaja = response.caja;
+          //console.log(this.arrayListaCaja);
+        }
+      },
+      error =>{
+        console.log(error);
+      }
+    );
+
+    this.cajaServ.verListaDeleteCaja().subscribe(
+      response => {
+        console.log(response.status);
+        if (response.status == 'success') {
+          this.arrayListaDelCaja = response.caja;
+          //console.log(this.arrayListaDelCaja);
+        }
+      },
+      error =>{
+        console.log(error);
+      }
+    );
+  }
+
+  functViewCaja(event:any,token_caja:any){
+    this.cajaServ.detalleCaja(token_caja).subscribe(
+      response => {
+        //console.log(response.status);
+        if (response.status == 'success') {
+          console.log(response.caja);
+          this.arrayDetListCaja = response.caja;
+
+          //console.log(this.arrayDetListCaja[0]['token_caja']);
+          this.perfCaja.serv_egresos = this.arrayDetListCaja[0]['serv_egresos'];
+          this.perfCaja.serv_ingresos = this.arrayDetListCaja[0]['serv_ingresos'];
+          this.perfCaja.serv_propias = this.arrayDetListCaja[0]['serv_interno'];
+          this.responsable.listaResponsables(response.caja[0]['tknAlmacen']).subscribe(
+            response => {
+              //console.log(response.status);
+              if (response.status == 'success') {
+                this.arrayListRespons = response.personal;
+                for (let lista1 = 0; lista1 < this.arrayListRespons.length; lista1++) {
+                  for (let lista2 = 0; lista2 < this.arrayDetListCaja[0]['responsable'].length; lista2++) {
+                    //console.log(this.arrayListRespons[lista1]['token_personal']);
+                    if (this.arrayListRespons[lista1]['token_personal'] == this.arrayDetListCaja[0]['responsable'][lista2]['token_responsables']){
+                      let txtRespons = $(event).find(".txtDetResponsCaja");
+                    }
+                  }
+                }
+              }
+            },
+            error =>{
+              console.log(error);
+            }
+          )
+        }
+      },
+      error =>{
+        console.log(error);
+      }
+    )
+  }
+
+  btnDesvinculaAlm(){
+    //alert("funciona");
+    Swal.fire({
+      title: this.translate.instant("swal_attenc"),
+      text: "¿Desea desvincular la dirección de almacen?",
+      icon: 'warning',
+      confirmButtonColor: '#388E3C',
+      confirmButtonText: 'Sí, desvincular',
+      showCancelButton: true,
+      cancelButtonColor: '#D32F2F',
+        cancelButtonText: this.translate.instant("swal_cancel"),
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.renderer.removeClass(this.btnStopVincAlm.nativeElement,"noneView");
+        this.renderer.addClass(this.btnDesvincAlmacen.nativeElement,"noneView");
+        this.renderer.addClass(this.divRows.nativeElement,"rowCancerl");
+
+        this.renderer.removeClass(this.tabListaDirAlmacen.nativeElement,"noneView");
+        this.renderer.removeClass(this.tabListaResponsAlm.nativeElement,"noneView");
+      }
+    });
+  }
+
+  btnCancelDesvincAlm(){
+    Swal.fire({
+      title: this.translate.instant("swal_attenc"),
+      text: "¿Desea cancelar la desvincular de la dirección de almacen?",
+      icon: 'warning',
+      confirmButtonColor: '#388E3C',
+      confirmButtonText: 'Sí',
+      showCancelButton: true,
+      cancelButtonColor: '#D32F2F',
+        cancelButtonText: this.translate.instant("swal_cancel"),
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.renderer.addClass(this.btnStopVincAlm.nativeElement,"noneView");
+        this.renderer.removeClass(this.btnDesvincAlmacen.nativeElement,"noneView");
+        this.renderer.removeClass(this.divRows.nativeElement,"rowCancerl");
+
+        this.renderer.addClass(this.tabListaDirAlmacen.nativeElement,"noneView");
+        this.renderer.addClass(this.tabListaResponsAlm.nativeElement,"noneView");
+      }
+    });
+  }
+
+  switchResponsable(event:any){
+    let indexTr = $(event).parents("div.switch").parent("td").parent("tr");
+    let txtResponsable = $(indexTr).find("input");
+    let switchResponsable:any = $(indexTr).find("input.selectSwitchPersonalCaja");
+    let checkedRespons = $(switchResponsable).prop('checked');
+    if (checkedRespons == false) {
+      //alert("mensajeDesvincula");
+      Swal.fire({
+        title: this.translate.instant("swal_attenc"),
+        text: "¿Desea desvincular este personal?",
+        icon: 'warning',
+        confirmButtonColor: '#388E3C',
+        confirmButtonText: 'Sí, desvincular',
+        showCancelButton: true,
+        cancelButtonColor: '#D32F2F',
+        cancelButtonText: this.translate.instant("swal_cancel"),
+      }).then((result) => {
+        if (result.isConfirmed) {
+          //alert(event.value+" "+this.arrayDetListCaja[0]['token_caja']+" "+this.arrayDetListCaja[0]['tknAlmacen']);
+          $(txtResponsable).removeAttr("disabled");
+          $(switchResponsable).attr("checked","checked");
+          let tknResponsable = event.value;
+          this.cajaServ.desvinculaResponsable(this.arrayDetListCaja[0]['tknAlmacen'],tknResponsable,this.arrayDetListCaja[0]['token_caja']).subscribe(
+            response => {
+              console.log(response.status);
+              let translate_response = this.translate.instant(response.message);
+              if (response.status == 'success') {
+                Swal.fire({
+                  position:'center',
+                  icon: 'success',
+                  title: translate_response,
+                  showConfirmButton:false,
+                  timer: 3000
+                })
+              }
+              if (response.status == 'error') {
+                Swal.fire({
+                  position:'top-end',
+                  icon: 'warning',
+                  title: translate_response,
+                  showConfirmButton:false,
+                  timer: 3000
+                })
+              }
+            },
+            error =>{
+              console.log(error);
+            }
+          )
+        } else {
+          $(switchResponsable).removeAttr("checked");
+        }
+      });
+    } else {
+      //alert("mensajeVincula");
+      Swal.fire({
+        title: this.translate.instant("swal_attenc"),
+        text: "¿Desea vincular este personal?",
+        icon: 'warning',
+        confirmButtonColor: '#388E3C',
+        confirmButtonText: 'Sí, vincular',
+        showCancelButton: true,
+        cancelButtonColor: '#D32F2F',
+        cancelButtonText: this.translate.instant("swal_cancel"),
+      }).then((result) => {
+        if (result.isConfirmed) {
+          //$(txtResponsable).attr("disabled","disabled");
+          $(switchResponsable).removeAttr("checked");
+
+          let tknResponsable = event.value;
+          this.arrayDetListCaja[0]['token_caja'];
+          this.arrayDetListCaja[0]['tknAlmacen'];
+          this.cajaServ.vinculaResponsable(this.arrayDetListCaja[0]['tknAlmacen'],tknResponsable,this.arrayDetListCaja[0]['token_caja']).subscribe(
+            response => {
+              console.log(response.status);
+              let translate_response = this.translate.instant(response.message);
+              if (response.status == 'success') {
+                Swal.fire({
+                  position:'center',
+                  icon: 'success',
+                  title: translate_response,
+                  showConfirmButton:false,
+                  timer: 3000
+                })
+              }
+              if (response.status == 'error') {
+                Swal.fire({
+                  position:'top-end',
+                  icon: 'warning',
+                  title: translate_response,
+                  showConfirmButton:false,
+                  timer: 3000
+                })
+              }
+            },
+            error =>{
+              console.log(error);
+            }
+          )
+        } else {
+          $(switchResponsable).attr("checked","checked");
+        }
+      });
+    }
+  }
+
+  selectDirAlmNew(event:any){
+    //alert(event.value);
+    if (event.value != '') {
+      this.tokenEstablecimiento = event.value;
+      this.responsable.listaResponsables(this.tokenEstablecimiento).subscribe(
+        response => {
+          console.log(response.status);
+          if (response.status == 'success') {
+            this.arrayListRespons = response.personal;
+            //this.cajaServ.updatePersonalCj(this.arrayListPersNew,this.arrayDetListCaja[0]['token_caja'],this.tokenEstablecimiento).subscribe(
+            //  response => {
+            //    console.log(response.status);
+            //    if (response.status == 'success') {
+            //
+            //    }
+            //    if (response.status == 'error') {
+            //
+            //    }
+            //  },
+            //  error =>{
+            //    console.log(error);
+            //  }
+            //)
+          }
+        },
+        error =>{
+          console.log(error);
+        }
+      )
+    }
+  }
+
+  selectResponsNew(event:any){
+    //alert(event.value);
+    if (event.value != '') {
+      let tknResponsable = event.value;
+      this.arrayListPersNew.push(tknResponsable);
+      //console.log(this.arrayListPersNew);
+      //console.log(this.arrayDetListCaja[0]['tknAlmacen']);
+      this.cajaServ.updatePersonalCj(this.arrayDetListCaja[0]['token_caja'],this.arrayDetListCaja[0]['tknAlmacen'],
+        this.tokenEstablecimiento,this.arrayListPersNew).subscribe(
+        response => {
+          console.log(response.status);
+          if (response.status == 'success') {
+
+          }
+          if (response.status == 'error') {
+
+          }
+        },
+        error =>{
+          console.log(error);
+        }
+      )
+    }
+  }
+
+  editDatCaja(){
+    Swal.fire({
+      title: this.translate.instant("swal_attenc"),
+      text: "¿Desea actualizar la información de esta caja?",
+      icon: 'warning',
+      confirmButtonColor: '#388E3C',
+      confirmButtonText: 'Sí, actualizar',
+      showCancelButton: true,
+      cancelButtonColor: '#D32F2F',
+        cancelButtonText: this.translate.instant("swal_cancel"),
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.renderer.removeClass(this.divFormUpdateCaja.nativeElement,"noneView");
+      } else {
+        this.renderer.addClass(this.divFormUpdateCaja.nativeElement,"noneView");
+      }
+    });
+  }
+
+  updateCaja(form:{reset:() => void;}):void{
+    let txtDetMonedaCaja:any = document.getElementById("txtDetMonedaCaja");
+    this.perfCaja.moneda = txtDetMonedaCaja.value;
+    //alert("funciona");
+    Swal.fire({
+      title: this.translate.instant("swal_attenc"),
+      text: "¿Desea actualizar esta caja?",
+      icon: 'warning',
+      confirmButtonColor: '#388E3C',
+      confirmButtonText: 'Sí, actualizar',
+      showCancelButton: true,
+      cancelButtonColor: '#D32F2F',
+        cancelButtonText: this.translate.instant("swal_cancel"),
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.cajaServ.updateCaja(this.perfCaja,this.arrayDetListCaja[0]['token_caja']).subscribe(
+          response => {
+            let translate_response = this.translate.instant(response.message);
+            if (response.status == 'success') {
+              Swal.fire({
+                position:'center',
+                icon: 'success',
+                title: translate_response,
+                showConfirmButton:false,
+                timer: 3000
+              })
+              form.reset();
+            }
+            if (response.status == 'error') {
+              Swal.fire({
+                position:'top-end',
+                icon: 'warning',
+                title: translate_response,
+                showConfirmButton:false,
+                timer: 3000
+              })
+            }
+          },
+          error => {
+            console.log(error);
+
+          }
+        )
+      }
+    });
+  }
+
+  validaAlias(event:any){
+    if (event.value == '' || !this.validator.filtroAlfaNumerico(event.value)) {
+      this.validator.errorInput(event,"Alias invalido");
+    } else {
+      this.validator.correctoInput(event,"Alias");
+    }
+  }
+
+  selectMonedaCaja(event:any){
+    this.txtMonedaCaja = event.value;
+    console.log(this.txtMonedaCaja);
+  }
+
+  validaTimeTurno(event:any){
+    if (event.value == '' || !/^(\d{4})(\s)([0-1][0-9]|2[0-3])(:)([0-5][0-9])(:)([0-5][0-9])$/.test(event.value)) {
+      this.validator.errorInput;
+    } else {
+      this.validator.correctoInput;
+    }
+  }
+
+  guardaNewCorteCaja(event:any){
+    let horaCorte = $(event).parent("td").parent("tr").find("input.txtDetHoraTurnCaja").val();
+    alert(horaCorte );
+    if (horaCorte != '') {
+      //alert("contenido");
+      this.cajaServ.guardarNewCorteCaja(this.arrayDetListCaja[0]['token_caja'],horaCorte).subscribe(
+        response => {
+          console.log(response.status);
+          if (response.status == 'success') {
+          }
+          if (response.status == 'error') {
+
+          }
+        },
+        error =>{
+          console.log(error);
+        }
+      )
+    }
+  }
+
+  editCorteCaja(event:any){
+    //alert("funciona");
+    let token_cortecaja = $(event).parent("td").parent("tr").find("td").eq(0).html();
+    let horario_cortecaja = $(event).parent("td").parent("tr").find("input.txthoraTurno").val();
+    //alert(token_cortecaja);
+    Swal.fire({
+      title: this.translate.instant("swal_attenc"),
+      text: "¿Desea guardar este corte caja?",
+      icon: 'warning',
+      confirmButtonColor: '#388E3C',
+      confirmButtonText: this.translate.instant("swal_yes_insert"),
+      showCancelButton: true,
+      cancelButtonColor: '#D32F2F',
+        cancelButtonText: this.translate.instant("swal_cancel"),
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.cajaServ.editaCorteCaja(this.arrayDetListCaja[0]['token_caja'],token_cortecaja,horario_cortecaja).subscribe(
+          response => {
+            console.log(response.status);
+            if (response.status == 'success') {
+            }
+            if (response.status == 'error') {
+            }
+          },
+          error =>{
+            console.log(error);
+          }
+        )
+      } else {
+
+      }
+    });
+  }
+
+  deleteCorteCaja(event:any){
+    //alert("funciona");
+    let token_cortecaja = $(event).parent("td").parent("tr").find("td").eq(0).html();
+    //alert(token_cortecaja);
+    Swal.fire({
+      title: this.translate.instant("swal_attenc"),
+      text: "¿Desea eliminar este corte caja?",
+      icon: 'warning',
+      confirmButtonColor: '#388E3C',
+      confirmButtonText: this.translate.instant("swal_yes_delete"),
+      showCancelButton: true,
+      cancelButtonColor: '#D32F2F',
+        cancelButtonText: this.translate.instant("swal_cancel"),
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.cajaServ.eliminaCorteCaja(this.arrayDetListCaja[0]['token_caja'],token_cortecaja).subscribe(
+          response => {
+            console.log(response.status);
+            if (response.status == 'success') {
+            }
+            if (response.status == 'error') {
+
+            }
+          },
+          error =>{
+            console.log(error);
+          }
+        )
+      } else {
+
+      }
+    });
+  }
+
+
+
+
+  functDelCaja(event:any){
+    //alert("funciona");
+    Swal.fire({
+      title: this.translate.instant("swal_attenc"),
+      text: "¿Desea eliminar esta caja?",
+      icon: 'warning',
+      confirmButtonColor: '#388E3C',
+      confirmButtonText: 'Sí, aliminar',
+      showCancelButton: true,
+      cancelButtonColor: '#D32F2F',
+        cancelButtonText: this.translate.instant("swal_cancel"),
+    }).then((result) => {
+      if (result.isConfirmed) {
+        let tokenCaja:any = $(event).parent("td").parent("tr").find("td").eq(0).html();
+        this.cajaServ.deleteCaja(tokenCaja).subscribe(
+          response => {
+            console.log(response.status);
+            let translate_response = this.translate.instant(response.message);
+            if (response.status == 'success') {
+              this.recargaListaCaja();
+              Swal.fire({
+                position:'center',
+                icon: 'success',
+                title: translate_response,
+                showConfirmButton:false,
+                timer: 3000
+              })
+
+            }
+            if (response.status == 'error') {
+              Swal.fire({
+                position:'top-end',
+                icon: 'warning',
+                title: translate_response,
+                showConfirmButton:false,
+                timer: 3000
+              })
+            }
+          },
+          error =>{
+            console.log(error);
+          }
+        );
+      }
+    });
+  }
+
+  restauraCaja(event:any){
+    Swal.fire({
+      title: this.translate.instant("swal_attenc"),
+      text: "¿Desea restaurar esta caja?",
+      icon: 'warning',
+      confirmButtonColor: '#388E3C',
+      confirmButtonText: this.translate.instant("swal_yes_restore"),
+      showCancelButton: true,
+      cancelButtonColor: '#D32F2F',
+        cancelButtonText: this.translate.instant("swal_cancel"),
+    }).then((result) => {
+      if (result.isConfirmed) {
+        let tokenCaja:any = $(event).parent("td").parent("tr").find("td").eq(0).html();
+        this.cajaServ.restaurarCaja(tokenCaja).subscribe(
+          response => {
+            console.log(response.status);
+            let translate_response = this.translate.instant(response.message);
+            if (response.status == 'success') {
+              this.recargaListaCaja();
+              Swal.fire({
+                position:'center',
+                icon: 'success',
+                title: translate_response,
+                showConfirmButton:false,
+                timer: 3000
+              })
+
+            }
+            if (response.status == 'error') {
+              Swal.fire({
+                position:'top-end',
+                icon: 'warning',
+                title: translate_response,
+                showConfirmButton:false,
+                timer: 3000
+              })
+            }
+          },
+          error =>{
+            console.log(error);
+          }
+        );
+      }
+    });
+  }
+
+  eliminapermCaja(event:any){
+    //alert("funciona");
+     Swal.fire({
+      title: this.translate.instant("swal_attenc"),
+      text: "¿Desea eliminar permanentemente esta caja?",
+      icon: 'warning',
+      confirmButtonColor: '#388E3C',
+      confirmButtonText: 'Sí, aliminar',
+      showCancelButton: true,
+      cancelButtonColor: '#D32F2F',
+        cancelButtonText: this.translate.instant("swal_cancel"),
+    }).then((result) => {
+      if (result.isConfirmed) {
+        let tokenCaja:any = $(event).parent("td").parent("tr").find("td").eq(0).html();
+        //alert(tokenCaja);
+        this.cajaServ.deletePermCaja(tokenCaja).subscribe(
+          response => {
+            console.log(response.status);
+            let translate_response = this.translate.instant(response.message);
+            if (response.status == 'success') {
+              this.recargaListaCaja();
+              Swal.fire({
+                position:'center',
+                icon: 'success',
+                title: translate_response,
+                showConfirmButton:false,
+                timer: 3000
+              })
+
+            }
+            if (response.status == 'error') {
+              Swal.fire({
+                position:'top-end',
+                icon: 'warning',
+                title: translate_response,
+                showConfirmButton:false,
+                timer: 3000
+              })
+            }
+          },
+          error =>{
+            console.log(error);
+          }
+        );
+      }
+    });
+  }
+
+}

@@ -1,0 +1,324 @@
+.noneView{
+    display: none;
+}
+
+/*body{
+    background-image: url("../../../media/landing/logotipo/seg.png");
+    background-repeat: no-repeat;
+	background-size: cover;
+}*/
+
+div.parallax-container{
+    height: 30vh;
+    display: flex;
+    align-items: center;
+}
+
+div.section-actpass{
+    height: fit-content;
+    padding: 0;
+    margin: 0;
+    min-height: 60vh;
+    background-color: #353535!important;
+    display: flex;
+    align-items: center;
+}
+
+div.section-actpass div.contenido{
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    text-align: center;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    flex-direction: row;
+}
+
+div.section-actpass div.contenido div.container-circles{
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+div.section-actpass div.contenido div.container-circles img {
+    width: 60%;
+}
+
+div.section-actpass div.contenido div.row-login{
+    padding: 3vh!important;
+    margin: 0!important;
+}
+
+div.section-actpass div.contenido div.row-login div.card-login{
+    width: 100%;
+    padding-top: 2vh;
+    padding-bottom: 2vh;
+    margin: 0;
+    background-color: rgba(255,255,255,0.9);
+    background-color: transparent;
+    box-shadow: 0px 0px 20px #042F86;
+    box-shadow: 1px 1px 5px #d3d3d3;
+
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: center;
+    border-radius: 8px;
+}
+
+div.section-actpass div.contenido div.row-login div.card-login .encabezado{
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+    margin: 0;
+}
+
+div.section-actpass div.contenido div.row-login div.card-login .encabezado p.tlog{
+    width: 100%;
+    font-family: Arial, FontAwesome;
+    font-size: 90px;
+    margin: 0;
+    padding: 0;
+    line-height: 1;
+    color: #d3d3d3;
+}
+
+div.section-actpass div.contenido div.row-login div.card-login .encabezado h6.tlog{
+    width: 100%;
+    font-family: 'Ubuntu';
+    font-weight: 500;
+    color: #d3d3d3;
+    margin: 1vh;
+}
+
+div.section-actpass div.contenido div.row-login div.card-login form{
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+div.section-actpass div.contenido div.row-login div.card-login form .alert{
+    background-color: #6d1300!important;
+    border-radius: 8px;
+    padding: 5px;
+    color: #e7e7ea;
+    font-weight: normal;
+}
+
+div.section-actpass div.contenido div.row-login div.card-login form div.input-field{
+    width: 75%;
+    height: 30px;
+    margin-top: 20px;
+    font-family: ubuntu, FontAwesome;
+}
+
+div.section-actpass div.contenido div.row-login div.card-login form div.input-field input{
+    background: #e7e7ea;
+    border-radius: 8px;
+    text-align: center;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    height: 30px;
+    -webkit-box-shadow: 0px 0px 10px 2px #303030;
+    box-shadow: 0px 0px 10px 2px #303030;
+}
+
+div.section-actpass div.contenido div.row-login div.card-login form div.input-field label{
+    font-family: ubuntu, FontAwesome;
+    font-size: .8rem;
+    height: 30px;
+    line-height: 30px;
+    border-radius: 5px;
+    color: #303030;
+    margin-left: 5px;
+    -webkit-transform: translateY(0px);
+    transform: translateY(0px);
+}
+
+div.section-actpass div.contenido div.row-login div.card-login form div.input-field label.activeInput{
+    right: 0;
+    height: 20px!important;
+    line-height: 20px!important;
+    border-radius: 5px;
+    background-color: #2962ff;
+    color: #fff;
+    padding-left: 2%;
+    padding-right: 2%;
+    -webkit-transform: translateY(-14px) scale(0.8);
+    transform: translateY(-14px) scale(0.8);
+    -webkit-transform-origin: 0 0;
+    transform-origin: 0 0;
+}
+
+div.section-actpass div.contenido div.row-login div.card-login form div.input-field label.correcto{
+    background-color: #539E03;
+}
+
+div.section-actpass div.contenido div.row-login div.card-login form div.input-field label.errorlabel{
+    background-color: #6d1300!important;
+}
+
+div.section-actpass div.contenido div.row-login div.card-login form .strengthPrimera,
+div.section-actpass div.contenido div.row-login div.card-login form .strengthConfirmacion{
+    height: 10px;
+    border-radius: 8px;
+    width: 100%;
+    margin-top: 10px;
+    display: block;
+    background-color: #ccc;
+}
+
+div.section-actpass div.contenido div.row-login div.card-login form .strengthPrimera span,
+div.section-actpass div.contenido div.row-login div.card-login form .strengthConfirmacion span{
+   display: block;
+   height: 10px;
+   border-radius: 8px;
+   transition: all 500ms ease;
+}
+
+div.section-actpass div.contenido div.row-login div.card-login form .strength-0 span {
+    background-color: red;
+    width: 5%;
+}
+div.section-actpass div.contenido div.row-login div.card-login form .strength-1 span {
+    background-color: orangered;
+    width: 25%;
+  }
+  div.section-actpass div.contenido div.row-login div.card-login form .strength-2 span {
+    background-color: orange;
+    width: 50%;
+  }
+  div.section-actpass div.contenido div.row-login div.card-login form .strength-3 span {
+    background-color: yellowgreen;
+    width: 75%;
+  }
+  div.section-actpass div.contenido div.row-login div.card-login form .strength-4 span {
+    background-color: green;
+    width: 100%;
+  }
+
+div.section-actpass div.contenido div.row-login div.card-login form .btn{
+    background-color: #686868;
+    width: 30px;
+    height: 30px;
+    margin-top: 18px;
+    line-height: 30px;
+    border-radius: 50%;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: ubuntu, FontAwesome;
+    z-index: 0; 
+}
+
+div.section-actpass div.contenido div.row-login div.card-login form .btnError{
+    background-color: #6D1300!important;
+}
+
+div.section-actpass div.contenido div.row-login div.card-login form .btnCorrecto{
+    background-color: #00ff00!important;
+    color: #353535!important;
+}
+
+div.section-actpass div.contenido div.row-login div.card-login form .eqpass{
+    width: auto;
+    color: #fff;
+    padding-left: 3px;
+    padding-right: 3px;
+    height: 20px;
+    line-height: 20px;
+    margin-bottom: 5px;
+    border-radius: 8px;
+    font-family: ubuntu, FontAwesome;
+}
+
+div.section-actpass div.contenido div.row-login div.card-login form .progress{
+    width: 92%;
+    left: 0;
+    margin-top: 25px;
+    height: 10px;
+    border-radius: 8px;
+}
+
+div.section-actpass div.contenido div.row-login div.card-login form .progress .determinate{
+    background-color: #0d6efd;
+}
+
+div.section-actpass div.contenido div.row-login div.card-login form a{
+    font-family: Arial, FontAwesome;
+}
+
+div.open{
+    background-color: rgba(0,0,0,0.7);
+    top: 0!important;
+    width: 100%;
+    height: 100%;
+    max-height: 100%;
+    position: fixed;
+    display: flex!important;
+    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+}
+
+div.open div.contenido-actpass{
+    overflow-y: auto;
+    width: 500px;
+    border-radius: 13px;
+    outline: 0;
+    box-shadow: 0px 1px 10px;
+    position: fixed;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    background-color: #e4e6eb;
+    justify-content: center;
+}
+
+div.open div.contenido-actpass div.modal-content{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+div.open div.contenido-actpass div.modal-content h4{
+    color: #f8bb86;
+    background-color: red;
+    border: #facea8 2px solid;
+    font-size: 60px;
+    line-height: 80px;
+    text-align: center;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    font-weight: bold;
+}
+
+div.open div.contenido-actpass div.modal-content p{
+    font-family: ubuntu;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+div.open div.contenido-actpass div.modal-footer{
+    display: flex;
+    justify-content: space-around;
+}
+
+div.open div.contenido-actpass div.modal-footer a{
+    font-family: ubuntu, FontAwesome;
+    color: #fff;
+}

@@ -1,0 +1,1106 @@
+<div class="col-12" *ngIf="url_activa == '/plataformas/ssic/egresos/ordenes_de_compra'">
+  <h6 *ngIf="!permiso_consulta" class="access_denied">{{'perm_denied' | translate}}</h6>
+  <div class="col-12" *ngIf="permiso_consulta">
+    <div class="col-12">
+      <div class="btn-group lista_botones col" role="group" aria-label="Basic example">
+        <a class="btn btn_extend bg-indigo-600" (click)="listarRequisicionesDone();">
+          <i class="fa-solid fa-rotate"></i>&nbsp;{{'list_updt' | translate}}</a>
+      </div>
+    </div>
+
+    <div class="col-12">
+      <div class="modal fade bd-example-modal-lg" id="windowRequisicion" tabindex="-1" role="dialog"
+        aria-labelledby="windowRequisicionLabel" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen" style="margin: 1%;width: 98%!important;">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="windowRequisicionLabel">Informaci&oacute;n de
+                requisici&oacute;n</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                style="background-color: transparent !important;"></button>
+            </div>
+            <div class="modal-body" *ngFor="let lReq of requisicionModal">
+              <ul class="list-group">
+                <li class="list-group-item" style="color: #353535;text-align: center;padding: 0;">
+                  {{lReq.requisicion_autorizacion+(lReq.requisicion_autorizacion != 'Requisición no autorizada' ? "
+                  Autoriza:"+lReq.requisicion_persona_autoriza : '')}}</li>
+                <li class="list-group-item" style="padding: 0;" *ngIf="lReq.abierto == true">
+                  <div class="col-12 cabecera cabecera_transparent" style="padding: 0;">
+                    <div class="col-12" style="padding: 0;">
+                      <h6 class="title" style="color:#353535!important;text-align: center;">Lista de articulos</h6>
+                      <div class="col-12" *ngIf="empresa_data.conf_egresos[0]['jerarquia'] == 'P'">
+                        <div class="col-12" style="overflow: overlay;">
+                          <!--<table class="transparent_table centered" style="width: 100%!important;box-shadow: 2px 2px 5px #353535 !important;">-->
+                          <p-table #dt [value]="lReq.desglose_true" dataKey="id" [paginator]="true" [rows]="10"
+                            [rowsPerPageOptions]="[10,20,30,50,100]" [globalFilterFields]="['nombre']">
+                            <ng-template pTemplate="header">
+                              <tr>
+                                <th pSortableColumn="requi_tipo_front">tipo de requisici&oacute;n&nbsp;<p-sortIcon
+                                    field="requi_tipo_front" /></th>
+                                <th class="concepto" pSortableColumn="requi_necesidad">concepto&nbsp;<p-sortIcon
+                                    field="requi_necesidad" /></th>
+                                <th pSortableColumn="requi_caracteristicas_list"><i class="fa-solid fa-list-check"></i>
+                                  caracter&iacute;sticas&nbsp;<p-sortIcon field="requi_caracteristicas_list" /></th>
+                                <th pSortableColumn="requi_cantidad"><i class="fas fa-sort-numeric-down-alt"></i>
+                                  cantidad&nbsp;<p-sortIcon field="requi_cantidad" /></th>
+                                <th pSortableColumn="requi_cantidad_autorizada"><i
+                                    class="fas fa-sort-numeric-down-alt"></i> cantidad autorizada&nbsp;<p-sortIcon
+                                    field="requi_cantidad_autorizada" /></th>
+                                <th pSortableColumn="requi_unidad_medida_name_small"><i
+                                    class="fas fa-balance-scale-right"></i> unidad de medida&nbsp;<p-sortIcon
+                                    field="requi_unidad_medida_name_small" /></th>
+                                <th pSortableColumn="requi_marca">marca sugerida&nbsp;<p-sortIcon field="requi_marca" />
+                                </th>
+                                <th><i class="fa-solid fa-file"></i> {{'doc_an' | translate}}</th>
+                                <th class="ultimo">
+                                  <a class="btn btn_extend text-bg-success rounded-3"
+                                    style="border-radius:25px!important;"
+                                    (click)="requiAuthToCotizarAll(lReq.requisicion_token,true);"><i
+                                      class="fa-solid fa-check-double"></i> autorizar todo</a>
+                                </th>
+                                <th class="ultimo">
+                                  <a class="btn btn_extend text-bg-danger rounded-3"
+                                    style="border-radius:25px!important;"
+                                    (click)="requiAuthToCotizarAll(lReq.requisicion_token,false);"><i
+                                      class="fa-solid fa-xmark"></i> rechazar todo</a>
+                                </th>
+                                <th class="ultimo">{{'yes_auth' | translate}}</th>
+                                <th>{{'observ' | translate}}</th>
+                              </tr>
+                            </ng-template>
+                            <ng-template pTemplate="body" let-reqrow>
+                              <tr>
+                                <td>{{reqrow.requi_tipo_front}}</td>
+                                <td>{{reqrow.requi_necesidad}}</td>
+                                <td class="ultimo">
+                                  <select name="tipoReq" class="browser-default"
+                                    [disabled]="reqrow.requi_caracteristicas_list.length == 0 && reqrow.requi_caracteristicas_other == null">
+                                    <option value="">{{'opt_select' | translate}}</option>
+                                    <option *ngFor="let carval of reqrow.requi_caracteristicas_list">{{carval.clave+" "+carval.valorFront}}</option>
+                                    <option *ngIf="reqrow.requi_caracteristicas_other != null">{{"Otras características "+reqrow.requi_caracteristicas_other}}</option>
+                                  </select>
+                                </td>
+                                <td>{{reqrow.requi_cantidad}}</td>
+                                <td *ngIf="reqrow.bool_requi_autorizacion == true">{{reqrow.requi_cantidad_autorizada}}
+                                </td>
+                                <td *ngIf="reqrow.bool_requi_autorizacion == false">
+                                  <input class="req_cantidad validate" type="number"
+                                    [value]="reqrow.requi_cantidad_autorizada" (keypress)="onKeyPressNumbers($event);"
+                                    (keyup)="requiAuthCantidad($event,$event.target,lReq.requisicion_token,reqrow.token_detalle_requisicion);">
+                                </td>
+                                <td>{{reqrow.requi_unidad_medida_name_small}}</td>
+                                <td>{{reqrow.requi_marca}}</td>
+                                <td class="ultimo">
+                                  <a class="btn btn_extend bg-indigo-600"
+                                    [ngClass]="reqrow.archivosPartida.length == 0 ? 'disabled' : ''"
+                                    [attr.disabled]="reqrow.archivosPartida.length == 0 ? true : false"
+                                    [attr.aria-disabled]="reqrow.archivosPartida.length == 0 ? true : false"
+                                    (click)="reqrow.archivosPartida.length > 0 && verDocs(reqrow);">
+                                    <i class="fa-solid fa-angle-down"
+                                      style="width: 25px !important;height: 25px !important;line-height: 25px !important;font-size: 15px;text-align: center;"></i>
+                                    {{'file_list_open' | translate}}
+                                  </a>
+                                </td>
+                                <td class="ultimo">
+                                  <div class="form-check form-switch form-check-reverse switch_primario"
+                                    style="justify-content: center;flex-direction: column;">
+                                    <label class="form-check-label" for="flexSwitchCheckReverse">No</label>
+                                    <input class="form-check-input selectSwitchProvProd"
+                                      [ngClass]="reqrow.bool_requi_autorizacion == true ? 'disabled' : ''"
+                                      [attr.disabled]="reqrow.bool_requi_autorizacion == true ? true : null"
+                                      [attr.aria-disabled]="reqrow.bool_requi_autorizacion == true ? true : null"
+                                      name="selectImpProd" type="checkbox"
+                                      [checked]="reqrow.char_requi_autorizacion == 'A'"
+                                      (click)="requiAuthToCotizarTrue(lReq.requisicion_token,reqrow.token_detalle_requisicion,$event.target);"
+                                      style="width: auto!important;">
+                                    <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' |
+                                      translate}}</label>
+                                  </div>
+                                </td>
+                                <td class="ultimo">
+                                  <div class="form-check radio_check"
+                                    style="display: flex;justify-content: center;align-items: center;padding: 0;">
+                                    <input class="form-check-input"
+                                      [attr.disabled]="reqrow.bool_requi_autorizacion == true ? true : false"
+                                      type="radio"
+                                      [attr.style]="'width: 15px!important;margin: 0!important;'+(reqrow.bool_requi_autorizacion == true ? 'background-color: #a5a5a5 !important;color: #fff !important;' : '')"
+                                      [attr.aria-disabled]="reqrow.bool_requi_autorizacion == true ? true : false"
+                                      name="flexRadioDefault" [checked]="reqrow.char_requi_autorizacion == 'D'"
+                                      (click)="requiAuthToCotizarFalse(lReq.requisicion_token,reqrow.token_detalle_requisicion,$event.target);">
+                                  </div>
+                                </td>
+
+                                <td>{{reqrow.char_requi_autorizacion == 'A' ? ['yes' | translate] :
+                                  (reqrow.char_requi_autorizacion == 'D' ? 'No' : '---')}}</td>
+
+                                <td
+                                  *ngIf="reqrow.bool_requi_autorizacion == true && reqrow.char_requi_autorizacion == 'A' && reqrow.cotizacion_rows == true">
+                                  <div class="col-12"
+                                    style="display: flex!important;justify-content: flex-start;align-content: flex-start;align-items: flex-start;">
+                                    <p style="width:fit-content!important;">{{'auth_by' | translate}}</p>
+                                    <p style="width:fit-content!important;margin-left: 3px!important;">{{"
+                                      "+reqrow.requi_persona_autoriza+" ("+reqrow.date_requi_autorizacion+") "}}</p>
+                                    <p style="width:fit-content!important;margin-left: 3px!important;">En proceso de
+                                      cotización</p>
+                                    <p style="width:fit-content!important;margin-left: 3px!important;"
+                                      *ngIf="reqrow.requi_autorizacion_coments_done != ''">{{'observ' | translate}}{{"
+                                      "+reqrow.requi_autorizacion_coments_done}}</p>
+                                  </div>
+                                </td>
+                                <td
+                                  *ngIf="reqrow.bool_requi_autorizacion == true && reqrow.char_requi_autorizacion == 'A' && reqrow.cotizacion_rows == false">
+                                  <div class="col-12"
+                                    style="display: flex!important;justify-content: flex-start;align-content: flex-start;align-items: flex-start;">
+                                    <p style="width:fit-content!important;">{{'auth_by' | translate}}</p>
+                                    <p style="width:fit-content!important;margin-left: 3px!important;">{{"
+                                      "+reqrow.requi_persona_autoriza+" ("+reqrow.date_requi_autorizacion+") "}}</p>
+                                    <p style="width:fit-content!important;margin-left: 3px!important;"
+                                      *ngIf="reqrow.requi_autorizacion_coments_done != ''">{{'observ' | translate}}{{"
+                                      "+reqrow.requi_autorizacion_coments_done}}</p>
+                                  </div>
+                                </td>
+                                <td
+                                  *ngIf="reqrow.bool_requi_autorizacion == true && reqrow.char_requi_autorizacion == 'D'">
+                                  <div class="col-12"
+                                    style="display: flex!important;justify-content: flex-start;align-content: flex-start;align-items: flex-start;">
+                                    <p style="width:fit-content!important;">{{'rechas_by' | translate}}</p>
+                                    <p style="width:fit-content!important;margin-left: 3px!important;">{{"
+                                      "+reqrow.requi_persona_autoriza+" ("+reqrow.date_requi_autorizacion+") "}}</p>
+                                    <p style="width:fit-content!important;margin-left: 3px!important;"
+                                      *ngIf="reqrow.requi_autorizacion_coments_done != ''">{{'observ' | translate}}{{"
+                                      "+reqrow.requi_autorizacion_coments_done}}</p>
+                                  </div>
+                                </td>
+                                <td style="vertical-align:middle;display:flex;" *ngIf="reqrow.bool_requi_autorizacion == false && reqrow.char_requi_autorizacion != 'N' && (
+                                  lReq.coments_rechazo_bool == false && (
+                                    (reqrow.requi_coments_rechazo_bool == true && reqrow.char_requi_autorizacion == 'A' && reqrow.requi_cantidad_autorizada != reqrow.requi_cantidad) || 
+                                    (reqrow.requi_coments_rechazo_bool == false && reqrow.char_requi_autorizacion == 'D')
+                                  ) || (lReq.coments_rechazo_bool == true && (reqrow.requi_coments_rechazo_bool == true && reqrow.char_requi_autorizacion == 'A' && reqrow.requi_cantidad_autorizada != reqrow.requi_cantidad)
+                                  ))">
+                                  <textarea list="dataListProductos" name="large_descript"
+                                    style="min-width:300px!important;width: 100% !important;height: 40px!important;"
+                                    class="validate"
+                                    [disabled]="reqrow.char_requi_autorizacion == 'N' || (reqrow.char_requi_autorizacion == 'A' && reqrow.requi_cantidad_autorizada == reqrow.requi_cantidad)"
+                                    (keypress)="onKeyPressAlfa($event);"
+                                    (keyup)="keyupObservaRequi(lReq.requisicion_token,reqrow.token_detalle_requisicion,$event.target);"></textarea>
+                                </td>
+                                <td
+                                  *ngIf="reqrow.bool_requi_autorizacion == false && (reqrow.char_requi_autorizacion == 'N' || (lReq.coments_rechazo_bool == true && reqrow.requi_coments_rechazo_bool == false && reqrow.char_requi_autorizacion == 'D')
+                                   || (reqrow.requi_coments_rechazo_bool == true && reqrow.char_requi_autorizacion == 'A' && reqrow.requi_cantidad_autorizada == reqrow.requi_cantidad))">
+                                  ---</td>
+                              </tr>
+                              <tr *ngIf="reqrow === requisicionDocs">
+                                <td colspan="8">
+                                  <p-table [value]="reqrow.archivosPartida">
+                                    <ng-template pTemplate="header">
+                              <tr>
+                                <th style="text-align: right;" pSortableColumn="nombre_documento">Nombre del
+                                  Documento&nbsp;<p-sortIcon field="nombre_documento" /></th>
+                                <th class="ultimo"></th>
+                              </tr>
+                            </ng-template>
+                            <ng-template pTemplate="body" let-doc>
+                              <tr>
+                                <td style="text-align: right;">{{doc.nombre_documento}}</td>
+                                <td class="ultimo"><a class="btn btn_extend text-bg-primary rounded-4"
+                                    (click)="viewDocumento(doc.url);"><i class="fa-solid fa-globe"></i></a></td>
+                              </tr>
+                            </ng-template>
+                            <ng-template pTemplate="emptymessage">
+                              <tr>
+                                <td colspan="2" class="text-center py-4">
+                                  <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                                  <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                    {{'no_rows' | translate}}
+                                  </p>
+                                </td>
+                              </tr>
+                            </ng-template>
+                          </p-table>
+                          </td>
+                          </tr>
+                          </ng-template>
+                          <ng-template pTemplate="emptymessage">
+                            <tr>
+                              <td colspan="12" class="text-center py-4">
+                                <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                                <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                  {{'no_rows' | translate}}
+                                </p>
+                              </td>
+                            </tr>
+                          </ng-template>
+                          </p-table>
+                        </div>
+                        <div class="col-12 row" *ngIf="lReq.coments_rechazo_bool == true">
+                          <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-6 col-xxl-6"></div>
+                          <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-6 col-xxl-6">
+                            <textarea list="dataListProductos" name="large_descript"
+                              style="width: 100% !important;height: 40px!important;" class="validate"
+                              (keypress)="onKeyPressAlfa($event);"
+                              (keyup)="keyupObservaRequiAllRechazo(lReq.requisicion_token,$event.target);"></textarea>
+                          </div>
+                        </div>
+                        <div class="col-12 row">
+                          <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9"></div>
+                          <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3">
+                            <a class="btn btn_extend text-bg-success rounded-3" style="width: 100%!important;"
+                              [ngClass]="!lReq.valida_autorizar ? 'disabled' : ''"
+                              [attr.disabled]="!lReq.valida_autorizar ? true : null"
+                              [attr.aria-disabled]="!lReq.valida_autorizar ? true : null"
+                              (click)="lReq.valida_autorizar && autorizaRequisicionAll(lReq.requisicion_token,lReq.coments_rechazo_text,lReq.desglose_true);">
+                              <i class="fa-solid fa-floppy-disk" style="margin-left: 5px;"></i>&nbsp;{{'sav_cam' |
+                              translate}}
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-12" *ngIf="empresa_data.conf_egresos[0]['jerarquia'] == 'D'"
+                        style="overflow: overlay;">
+                        <!--<table class="transparent_table centered" style="width: 100%!important;box-shadow: 2px 2px 5px #353535 !important;">-->
+                        <table id="buy_table_requisicionDetalleD" class="display nowrap mdl-data-table white centered"
+                          style="width:100%!important;margin:0!important;">
+                          <thead>
+                            <tr>
+                              <th>tipo de requisici&oacute;n</th>
+                              <th class="concepto">concepto</th>
+                              <th class="ultimo"><i class="fa-solid fa-list-check"></i> caracter&iacute;sticas</th>
+                              <th><i class="fas fa-sort-numeric-down-alt"></i> cantidad</th>
+                              <th><i class="fas fa-sort-numeric-down-alt"></i> cantidad autorizada</th>
+                              <th><i class="fas fa-balance-scale-right"></i> unidad de medida</th>
+                              <th>marca sugerida</th>
+                              <th class="ultimo"><i class="fa-solid fa-file"></i> {{'doc_an' | translate}}</th>
+                              <th class="ultimo"></th>
+                              <th class="ultimo"></th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr *ngFor="let reqrow of lReq.desglose_true">
+                              <td>{{reqrow.requi_tipo_front}}</td>
+                              <td>{{reqrow.requi_necesidad}}</td>
+                              <td class="ultimo">
+                                <select name="tipoReq" class="browser-default"
+                                  [disabled]="reqrow.requi_caracteristicas_list.length == 0 && reqrow.requi_caracteristicas_other == null">
+                                  <option value="">{{'opt_select' | translate}}</option>
+                                  <option *ngFor="let carval of reqrow.requi_caracteristicas_list">{{carval.clave+"
+                                    "+carval.valorFront}}</option>
+                                  <option *ngIf="reqrow.requi_caracteristicas_other != null">{{"Otras características
+                                    "+reqrow.requi_caracteristicas_other}}</option>
+                                </select>
+                              </td>
+                              <td>{{reqrow.requi_cantidad}}</td>
+                              <td>{{reqrow.requi_cantidad_autorizada}}</td>
+                              <td>{{reqrow.requi_unidad_medida_name_small}}</td>
+                              <td>{{reqrow.requi_marca}}</td>
+                              <td class="ultimo">
+                                <select name="tipoReq" class="browser-default" (change)="viewDocumento($event.target);"
+                                  [disabled]="reqrow.archivosPartida.length == 0">
+                                  <option value="">{{'opt_select' | translate}}</option>
+                                  <option *ngFor="let doc of reqrow.archivosPartida" [value]="doc.url">
+                                    {{doc.nombre_documento}}</option>
+                                </select>
+                              </td>
+
+                              <td *ngIf="reqrow.char_requi_autorizacion == 'N'">---</td>
+                              <td *ngIf="reqrow.char_requi_autorizacion == 'D'">No</td>
+                              <td *ngIf="reqrow.char_requi_autorizacion == 'A'">{{'yes' | translate}}</td>
+
+                              <td
+                                *ngIf="reqrow.char_requi_autorizacion == 'A' && reqrow.bool_requi_autorizacion == true && reqrow.cotizacion_rows == true">
+                                <div class="col-12"
+                                  style="display: flex!important;justify-content: flex-start;align-content: flex-start;align-items: flex-start;">
+                                  <p style="width:fit-content!important;">{{'auth_by' | translate}}</p>
+                                  <p style="width:fit-content!important;margin-left: 3px!important;">{{"
+                                    "+reqrow.requi_persona_autoriza+" ("+reqrow.date_requi_autorizacion+") "}}</p>
+                                  <p style="width:fit-content!important;margin-left: 3px!important;">"En proceso de
+                                    cotización</p>
+                                  <p style="width:fit-content!important;margin-left: 3px!important;"
+                                    *ngIf="reqrow.requi_autorizacion_coments_done != ''">{{'observ' | translate}}{{"
+                                    "+reqrow.requi_autorizacion_coments_done}}</p>
+                                </div>
+                              </td>
+                              <td
+                                *ngIf="reqrow.char_requi_autorizacion == 'A' && reqrow.bool_requi_autorizacion == true && reqrow.cotizacion_rows == false">
+                                <div class="col-12"
+                                  style="display: flex!important;justify-content: flex-start;align-content: flex-start;align-items: flex-start;">
+                                  <p style="width:fit-content!important;">{{'auth_by' | translate}}</p>
+                                  <p style="width:fit-content!important;margin-left: 3px!important;">{{"
+                                    "+reqrow.requi_persona_autoriza+" ("+reqrow.date_requi_autorizacion+") "}}</p>
+                                  <p style="width:fit-content!important;margin-left: 3px!important;"
+                                    *ngIf="reqrow.requi_autorizacion_coments_done != ''">{{'observ' | translate}}{{"
+                                    "+reqrow.requi_autorizacion_coments_done}}</p>
+                                </div>
+                              </td>
+                              <td *ngIf="reqrow.char_requi_autorizacion == 'D'">
+                                <div class="col-12"
+                                  style="display: flex!important;justify-content: flex-start;align-content: flex-start;align-items: flex-start;">
+                                  <p style="width:fit-content!important;">{{'rechas_by' | translate}}</p>
+                                  <p style="width:fit-content!important;margin-left: 3px!important;">{{"
+                                    "+reqrow.requi_persona_autoriza+" ("+reqrow.date_requi_autorizacion+") "}}</p>
+                                  <p style="width:fit-content!important;margin-left: 3px!important;"
+                                    *ngIf="reqrow.requi_autorizacion_coments_done != ''">{{'observ' | translate}}{{"
+                                    "+reqrow.requi_autorizacion_coments_done}}</p>
+                                </div>
+                              </td>
+                              <td *ngIf="reqrow.char_requi_autorizacion == 'N'">---</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="modal-footer"><button type="button" class="btn btn-secondary"
+                data-bs-dismiss="modal">Close</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12" *ngIf="vistaRequisiciones == true">
+      <div class="card">
+        <p-table #dt1 [value]="customers" dataKey="id" [rows]="10" [rowsPerPageOptions]="[10, 25, 50]"
+          [loading]="loading" [paginator]="true"
+          [globalFilterFields]="['name', 'country.name', 'representative.name', 'status']">
+          <ng-template #caption>
+            <div class="flex">
+              <p-button label="Clear" [outlined]="true" icon="pi pi-filter-slash" (click)="clear(dt1)" />
+              <p-iconfield iconPosition="left" class="ml-auto">
+                <p-inputicon>
+                  <i class="pi pi-search"></i>
+                </p-inputicon>
+                <input pInputText type="text" (input)="dt1.filterGlobal($event.target, 'contains')"
+                  placeholder="Search keyword" />
+              </p-iconfield>
+            </div>
+          </ng-template>
+          <ng-template #header>
+            <tr>
+              <th style="min-width:15rem">
+                <div class="flex items-center">Name<p-columnFilter type="text" field="name" display="menu" /></div>
+              </th>
+              <th style="min-width:15rem">
+                <div class="flex items-center">Country<p-columnFilter type="text" field="country.name" display="menu" />
+                </div>
+              </th>
+              <th style="min-width:15rem">
+                <div class="flex items-center">
+                  Agent
+                  <p-columnFilter field="representative" matchMode="in" display="menu" [showMatchModes]="false"
+                    [showOperator]="false" [showAddButton]="false">
+                    <ng-template #filter let-value let-filter="filterCallback">
+                      <p-multiselect [options]="representatives" placeholder="Any" (onChange)="filter($event.value)"
+                        optionLabel="name">
+                        <ng-template let-option #item>
+                          <div class="flex items-center gap-2">
+                            <img [alt]="option.label"
+                              src="https://primefaces.org/cdn/primeng/images/demo/avatar/{{ option.image }}"
+                              style="width: 32px" />
+                            <span>{{ option.name }}</span>
+                          </div>
+                        </ng-template>
+                      </p-multiselect>
+                    </ng-template>
+                  </p-columnFilter>
+                </div>
+              </th>
+              <th style="min-width:10rem">
+                <div class="flex items-center">Date<p-columnFilter type="date" field="date"
+                    display="menu"></p-columnFilter></div>
+              </th>
+              <th style="min-width:10rem">
+                <div class="flex items-center">Balance<p-columnFilter type="numeric" field="balance" display="menu"
+                    currency="USD" /></div>
+              </th>
+              <th style="min-width:10rem">
+                <div class="flex items-center">
+                  Status
+                  <p-columnFilter field="status" matchMode="equals" display="menu">
+                    <ng-template #filter let-value let-filter="filterCallback">
+                      <p-select [options]="statuses" (onChange)="filter($event.value)" placeholder="Select One"
+                        styleClass="w-full">
+                        <ng-template let-option #item>
+                          <p-tag [value]="option.value" [attr.severity]="getSeverity(option.value)"></p-tag>
+                        </ng-template>
+                      </p-select>
+                    </ng-template>
+                  </p-columnFilter>
+                </div>
+              </th>
+              <th style="min-width:10rem">
+                <div class="flex items-center">
+                  Activity
+                  <p-columnFilter field="activity" matchMode="between" display="menu" [showMatchModes]="false"
+                    [showOperator]="false" [showAddButton]="false">
+                    <ng-template #filter let-value let-filter="filterCallback">
+                      <p-slider [attr.range]="true" styleClass="m-4" (onSlideEnd)="filter($event.values)" />
+                      <div class="flex items-center px-2">
+                        <span *ngIf="!value">0</span>
+                        <span *ngIf="value">{{ value[0] }} - {{ value[1] }}</span>
+                      </div>
+                    </ng-template>
+                  </p-columnFilter>
+                </div>
+              </th>
+              <th style="width: 3rem">
+                <div class="flex items-center">Verified<p-columnFilter type="boolean" field="verified" display="menu" />
+                </div>
+              </th>
+            </tr>
+          </ng-template>
+          <ng-template #body let-customer>
+            <tr>
+              <td>{{customer.name}}</td>
+              <td>
+                <div class="flex items-center gap-2">
+                  <img src="https://primefaces.org/cdn/primeng/images/demo/flag/flag_placeholder.png"
+                    [class]="'flag flag-' + customer.country.code" style="width: 20px" />
+                  <span>{{ customer.country.name }}</span>
+                </div>
+              </td>
+              <td>
+                <div class="flex items-center gap-2">
+                  <img [alt]="customer.representative.name"
+                    src="https://primefaces.org/cdn/primeng/images/demo/avatar/{{ customer.representative.image }}"
+                    width="32" />
+                  <span>{{ customer.representative.name }}</span>
+                </div>
+              </td>
+              <td>{{customer.date | date: 'MM/dd/yyyy'}}</td>
+              <td>{{customer.balance | currency: 'USD' : 'symbol'}}</td>
+              <td><p-tag [value]="customer.status" [attr.severity]="getSeverity(customer.status)" /></td>
+              <td>
+                <p-progressbar [value]="customer.activity" [showValue]="false" />
+              </td>
+              <td class="text-center">
+                <i class="pi"
+                  [ngClass]="{'text-green-500 pi-check-circle': customer.verified,'text-red-500 pi-times-circle': !customer.verified}"></i>
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template #emptymessage>
+            <tr>
+              <td colspan="7">No customers found.</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+
+      <table id="buy_table_requisiciones" class="display nowrap mdl-data-table white centered"
+        style="width:100%!important;margin:0!important;">
+        <thead>
+          <tr>
+            <th class="ultimo"></th>
+            <th class="ultimo"></th>
+            <th>folio</th>
+            <th>proyecto</th>
+            <th>fecha de registro</th>
+            <th>prioridad</th>
+            <th>requisita</th>
+            <th class="ultimo">Req. {{'yes_auth' | translate}}</th>
+            <th class="ultimo">Req. {{'yes_rechas' | translate}}</th>
+            <th class="ultimo">Req. {{'date_autho_riza' | translate}}</th>
+            <th class="ultimo">Cot. solicitudes</th>
+            <th class="ultimo">Cotizaciones</th>
+            <th class="ultimo">Cot. {{'yes_auth' | translate}}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let lReq of listaRequisiciones;index as posMain">
+            <td class="ultimo">
+              <a class="btn bg-red-700" target="_blank" [href]="lReq.url_pdf"><i class="fa-solid fa-file-pdf"></i></a>
+            </td>
+            <td class="ultimo">
+              <a class="btn bg-blue-600" (click)="openRequiDetail(lReq.requisicion_token);" data-bs-toggle="modal"
+                data-bs-target="#windowRequisicion"><i class="fa-solid fa-info"></i></a>
+            </td>
+            <td>{{lReq.requisicion_folio}}</td>
+            <td>{{lReq.requisicion_proyecto}}</td>
+            <td>{{lReq.requisicion_fecha_registro}}</td>
+            <td>{{lReq.requisicion_prioridad}}</td>
+            <td>{{lReq.requisicion_usuario_requisita}}</td>
+            <td>{{lReq.partidasAuthTrue+"/"+lReq.partidasTotal}}</td>
+            <td>{{lReq.partidasAuthFalse+"/"+lReq.partidasTotal}}</td>
+            <td>{{lReq.partidasAuthTrue > 0 ? lReq.requisicion_autorizacion_fecha : '---'}}</td>
+            <td>{{lReq.cotizaciones_solicitud}}</td>
+            <td>{{lReq.cotizaciones_list+"/"+lReq.cotizaciones_solicitud}}</td>
+            <td>{{lReq.cotizacionesAuth+"/"+lReq.cotizaciones_solicitud}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="col-12" *ngIf="permiso_consulta && listaRequisiciones.length == 0">
+    <h6 class="content access_denied" style="width: 100%;text-align: center;">{{'no_rows' | translate}}</h6>
+  </div>
+</div>
+
+<bienvenido-component
+  *ngIf="url_activa == '/plataformas/ssic/egresos/compras/requisiciones/catalogo'"></bienvenido-component>
+<div id="vContent" class="marco" #vContent
+  *ngIf="url_activa == '/plataformas/ssic/egresos/compras/requisiciones/catalogo'">
+  <div class="contenido"><app-loader></app-loader>
+    <nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+    <div class="contenidoPagina">
+      <div class="listas_ps revanecer">
+        <div class="lista-div lista-divNoFlex">
+          <h4>CATALOGO DE REQUISICIONES</h4>
+
+          <h6 *ngIf="!permiso_consulta" class="access_denied">{{'perm_denied' | translate}}</h6>
+          <div class="col-12" *ngIf="permiso_consulta">
+            <div class="col-12">
+              <div class="btn-group lista_botones col" role="group" aria-label="Basic example">
+                <a class="btn btn_extend bg-indigo-600" routerLink="../../../compras/requisiciones/registro">
+                  <i class="fa-solid fa-plus"></i>&nbsp;Registrar requisici&oacute;n</a>
+                <a class="btn btn_extend bg-indigo-600" (click)="listarRequisicionesDone();">
+                  <i class="fa-solid fa-rotate"></i>&nbsp;{{'list_updt' | translate}}</a>
+              </div>
+            </div>
+
+            <div class="col-12">
+              <div class="modal fade bd-example-modal-lg" id="windowRequisicion" tabindex="-1" role="dialog"
+                aria-labelledby="windowRequisicionLabel" aria-hidden="true">
+                <div class="modal-dialog modal-fullscreen" style="margin: 1%;width: 98%!important;">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="windowRequisicionLabel">Informaci&oacute;n de
+                        requisici&oacute;n</h1>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                        style="background-color: transparent !important;"></button>
+                    </div>
+                    <div class="modal-body" *ngFor="let lReq of requisicionModal">
+                      <ul class="list-group">
+                        <li class="list-group-item" style="color: #353535;text-align: center;padding: 0;">
+                          {{lReq.requisicion_autorizacion+(lReq.requisicion_autorizacion != 'Requisición no autorizada'
+                          ? " Autoriza:"+lReq.requisicion_persona_autoriza : '')}}</li>
+                        <li class="list-group-item" style="padding: 0;" *ngIf="lReq.abierto == true">
+                          <div class="col-12 cabecera cabecera_transparent" style="padding: 0;">
+                            <div class="col-12" style="padding: 0;">
+                              <h6 class="title" style="color:#353535!important;text-align: center;">Lista de articulos
+                              </h6>
+                              <div class="col-12" *ngIf="empresa_data.conf_egresos[0]['jerarquia'] == 'P'">
+                                <div class="col-12" style="overflow: overlay;">
+                                  <!--<table class="transparent_table centered" style="width: 100%!important;box-shadow: 2px 2px 5px #353535 !important;">-->
+                                  <p-table #dt [value]="lReq.desglose_true" dataKey="id" [paginator]="true" [rows]="10"
+                                    [rowsPerPageOptions]="[10,20,30,50,100]" [globalFilterFields]="['nombre']">
+                                    <ng-template pTemplate="header">
+                                      <tr>
+                                        <th pSortableColumn="requi_tipo_front">tipo de
+                                          requisici&oacute;n&nbsp;<p-sortIcon field="requi_tipo_front" /></th>
+                                        <th class="concepto" pSortableColumn="requi_necesidad">concepto&nbsp;<p-sortIcon
+                                            field="requi_necesidad" /></th>
+                                        <th pSortableColumn="requi_caracteristicas_list"><i
+                                            class="fa-solid fa-list-check"></i> caracter&iacute;sticas&nbsp;<p-sortIcon
+                                            field="requi_caracteristicas_list" /></th>
+                                        <th pSortableColumn="requi_cantidad"><i
+                                            class="fas fa-sort-numeric-down-alt"></i> cantidad&nbsp;<p-sortIcon
+                                            field="requi_cantidad" /></th>
+                                        <th pSortableColumn="requi_cantidad_autorizada"><i
+                                            class="fas fa-sort-numeric-down-alt"></i> cantidad
+                                          autorizada&nbsp;<p-sortIcon field="requi_cantidad_autorizada" /></th>
+                                        <th pSortableColumn="requi_unidad_medida_name_small"><i
+                                            class="fas fa-balance-scale-right"></i> unidad de medida&nbsp;<p-sortIcon
+                                            field="requi_unidad_medida_name_small" /></th>
+                                        <th pSortableColumn="requi_marca">marca sugerida&nbsp;<p-sortIcon
+                                            field="requi_marca" /></th>
+                                        <th><i class="fa-solid fa-file"></i> {{'doc_an' | translate}}</th>
+                                        <th class="ultimo">
+                                          <a class="btn btn_extend text-bg-success rounded-3"
+                                            style="border-radius:25px!important;"
+                                            (click)="requiAuthToCotizarAll(lReq.requisicion_token,true);"><i
+                                              class="fa-solid fa-check-double"></i> autorizar todo</a>
+                                        </th>
+                                        <th class="ultimo">
+                                          <a class="btn btn_extend text-bg-danger rounded-3"
+                                            style="border-radius:25px!important;"
+                                            (click)="requiAuthToCotizarAll(lReq.requisicion_token,false);"><i
+                                              class="fa-solid fa-xmark"></i> rechazar todo</a>
+                                        </th>
+                                        <th class="ultimo">{{'yes_auth' | translate}}</th>
+                                        <th>{{'observ' | translate}}</th>
+                                      </tr>
+                                    </ng-template>
+                                    <ng-template pTemplate="body" let-reqrow>
+                                      <tr>
+                                        <td>{{reqrow.requi_tipo_front}}</td>
+                                        <td>{{reqrow.requi_necesidad}}</td>
+                                        <td class="ultimo">
+                                          <select name="tipoReq" class="browser-default"
+                                            [disabled]="reqrow.requi_caracteristicas_list.length == 0 && reqrow.requi_caracteristicas_other == null">
+                                            <option value="">{{'opt_select' | translate}}</option>
+                                            <option *ngFor="let carval of reqrow.requi_caracteristicas_list">
+                                              {{carval.clave+" "+carval.valorFront}}</option>
+                                            <option *ngIf="reqrow.requi_caracteristicas_other != null">{{"Otras
+                                              características "+reqrow.requi_caracteristicas_other}}</option>
+                                          </select>
+                                        </td>
+                                        <td>{{reqrow.requi_cantidad}}</td>
+                                        <td *ngIf="reqrow.bool_requi_autorizacion == true">
+                                          {{reqrow.requi_cantidad_autorizada}}</td>
+                                        <td *ngIf="reqrow.bool_requi_autorizacion == false">
+                                          <input class="req_cantidad validate" type="number"
+                                            [value]="reqrow.requi_cantidad_autorizada"
+                                            (keypress)="onKeyPressNumbers($event);"
+                                            (keyup)="requiAuthCantidad($event,$event.target,lReq.requisicion_token,reqrow.token_detalle_requisicion);">
+                                        </td>
+                                        <td>{{reqrow.requi_unidad_medida_name_small}}</td>
+                                        <td>{{reqrow.requi_marca}}</td>
+                                        <td class="ultimo">
+                                          <a class="btn btn_extend bg-indigo-600"
+                                            [ngClass]="reqrow.archivosPartida.length == 0 ? 'disabled' : ''"
+                                            [attr.disabled]="reqrow.archivosPartida.length == 0 ? true : false"
+                                            [attr.aria-disabled]="reqrow.archivosPartida.length == 0 ? true : false"
+                                            (click)="reqrow.archivosPartida.length > 0 && verDocs(reqrow);">
+                                            <i class="fa-solid fa-angle-down"
+                                              style="width: 25px !important;height: 25px !important;line-height: 25px !important;font-size: 15px;text-align: center;"></i>
+                                            {{'file_list_open' | translate}}
+                                          </a>
+                                        </td>
+                                        <td class="ultimo">
+                                          <div class="form-check form-switch form-check-reverse switch_primario"
+                                            style="justify-content: center;flex-direction: column;">
+                                            <label class="form-check-label" for="flexSwitchCheckReverse">No</label>
+                                            <input class="form-check-input selectSwitchProvProd"
+                                              [ngClass]="reqrow.bool_requi_autorizacion == true ? 'disabled' : ''"
+                                              [attr.disabled]="reqrow.bool_requi_autorizacion == true ? true : null"
+                                              [attr.aria-disabled]="reqrow.bool_requi_autorizacion == true ? true : null"
+                                              name="selectImpProd" type="checkbox"
+                                              [checked]="reqrow.char_requi_autorizacion == 'A'"
+                                              (click)="requiAuthToCotizarTrue(lReq.requisicion_token,reqrow.token_detalle_requisicion,$event.target);"
+                                              style="width: auto!important;">
+                                            <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' |
+                                              translate}}</label>
+                                          </div>
+                                        </td>
+                                        <td class="ultimo">
+                                          <div class="form-check radio_check"
+                                            style="display: flex;justify-content: center;align-items: center;padding: 0;">
+                                            <input class="form-check-input"
+                                              [attr.disabled]="reqrow.bool_requi_autorizacion == true ? true : false"
+                                              type="radio"
+                                              [attr.style]="'width: 15px!important;margin: 0!important;'+(reqrow.bool_requi_autorizacion == true ? 'background-color: #a5a5a5 !important;color: #fff !important;' : '')"
+                                              [attr.aria-disabled]="reqrow.bool_requi_autorizacion == true ? true : false"
+                                              name="flexRadioDefault" [checked]="reqrow.char_requi_autorizacion == 'D'"
+                                              (click)="requiAuthToCotizarFalse(lReq.requisicion_token,reqrow.token_detalle_requisicion,$event.target);">
+                                          </div>
+                                        </td>
+
+                                        <td>{{reqrow.char_requi_autorizacion == 'A' ? ['yes' | translate] :
+                                          (reqrow.char_requi_autorizacion == 'D' ? 'No' : '---')}}</td>
+
+                                        <td
+                                          *ngIf="reqrow.bool_requi_autorizacion == true && reqrow.char_requi_autorizacion == 'A' && reqrow.cotizacion_rows == true">
+                                          <div class="col-12"
+                                            style="display: flex!important;justify-content: flex-start;align-content: flex-start;align-items: flex-start;">
+                                            <p style="width:fit-content!important;">{{'auth_by' | translate}}</p>
+                                            <p style="width:fit-content!important;margin-left: 3px!important;">{{"
+                                              "+reqrow.requi_persona_autoriza+" ("+reqrow.date_requi_autorizacion+") "}}
+                                            </p>
+                                            <p style="width:fit-content!important;margin-left: 3px!important;">En
+                                              proceso de cotización</p>
+                                            <p style="width:fit-content!important;margin-left: 3px!important;"
+                                              *ngIf="reqrow.requi_autorizacion_coments_done != ''">{{'observ' |
+                                              translate}}{{" "+reqrow.requi_autorizacion_coments_done}}</p>
+                                          </div>
+                                        </td>
+                                        <td
+                                          *ngIf="reqrow.bool_requi_autorizacion == true && reqrow.char_requi_autorizacion == 'A' && reqrow.cotizacion_rows == false">
+                                          <div class="col-12"
+                                            style="display: flex!important;justify-content: flex-start;align-content: flex-start;align-items: flex-start;">
+                                            <p style="width:fit-content!important;">{{'auth_by' | translate}}</p>
+                                            <p style="width:fit-content!important;margin-left: 3px!important;">{{"
+                                              "+reqrow.requi_persona_autoriza+" ("+reqrow.date_requi_autorizacion+") "}}
+                                            </p>
+                                            <p style="width:fit-content!important;margin-left: 3px!important;"
+                                              *ngIf="reqrow.requi_autorizacion_coments_done != ''">{{'observ' |
+                                              translate}}{{" "+reqrow.requi_autorizacion_coments_done}}</p>
+                                          </div>
+                                        </td>
+                                        <td
+                                          *ngIf="reqrow.bool_requi_autorizacion == true && reqrow.char_requi_autorizacion == 'D'">
+                                          <div class="col-12"
+                                            style="display: flex!important;justify-content: flex-start;align-content: flex-start;align-items: flex-start;">
+                                            <p style="width:fit-content!important;">{{'rechas_by' | translate}}</p>
+                                            <p style="width:fit-content!important;margin-left: 3px!important;">{{"
+                                              "+reqrow.requi_persona_autoriza+" ("+reqrow.date_requi_autorizacion+") "}}
+                                            </p>
+                                            <p style="width:fit-content!important;margin-left: 3px!important;"
+                                              *ngIf="reqrow.requi_autorizacion_coments_done != ''">{{'observ' |
+                                              translate}}{{" "+reqrow.requi_autorizacion_coments_done}}</p>
+                                          </div>
+                                        </td>
+                                        <td style="vertical-align:middle;display:flex;" *ngIf="reqrow.bool_requi_autorizacion == false && reqrow.char_requi_autorizacion != 'N' && (
+																					lReq.coments_rechazo_bool == false && (
+																						(reqrow.requi_coments_rechazo_bool == true && reqrow.char_requi_autorizacion == 'A' && reqrow.requi_cantidad_autorizada != reqrow.requi_cantidad) || 
+																						(reqrow.requi_coments_rechazo_bool == false && reqrow.char_requi_autorizacion == 'D')
+																					) || (lReq.coments_rechazo_bool == true && (reqrow.requi_coments_rechazo_bool == true && reqrow.char_requi_autorizacion == 'A' && reqrow.requi_cantidad_autorizada != reqrow.requi_cantidad)
+																					))">
+                                          <textarea list="dataListProductos" name="large_descript"
+                                            style="min-width:300px!important;width: 100% !important;height: 40px!important;"
+                                            class="validate"
+                                            [disabled]="reqrow.char_requi_autorizacion == 'N' || (reqrow.char_requi_autorizacion == 'A' && reqrow.requi_cantidad_autorizada == reqrow.requi_cantidad)"
+                                            (keypress)="onKeyPressAlfa($event);"
+                                            (keyup)="keyupObservaRequi(lReq.requisicion_token,reqrow.token_detalle_requisicion,$event.target);"></textarea>
+                                        </td>
+                                        <td
+                                          *ngIf="reqrow.bool_requi_autorizacion == false && (reqrow.char_requi_autorizacion == 'N' || (lReq.coments_rechazo_bool == true && reqrow.requi_coments_rechazo_bool == false && reqrow.char_requi_autorizacion == 'D')
+																					 || (reqrow.requi_coments_rechazo_bool == true && reqrow.char_requi_autorizacion == 'A' && reqrow.requi_cantidad_autorizada == reqrow.requi_cantidad))">
+                                          ---</td>
+                                      </tr>
+                                      <tr *ngIf="reqrow === requisicionDocs">
+                                        <td colspan="8">
+                                          <p-table [value]="reqrow.archivosPartida">
+                                            <ng-template pTemplate="header">
+                                      <tr>
+                                        <th style="text-align: right;">Nombre del Documento</th>
+                                        <th class="ultimo"></th>
+                                      </tr>
+                                    </ng-template>
+                                    <ng-template pTemplate="body" let-doc>
+                                      <tr>
+                                        <td style="text-align: right;">{{doc.nombre_documento}}</td>
+                                        <td class="ultimo"><a class="btn btn_extend text-bg-primary rounded-4"
+                                            (click)="viewDocumento(doc.url);"><i class="fa-solid fa-globe"></i></a></td>
+                                      </tr>
+                                    </ng-template>
+                                    <ng-template pTemplate="emptymessage">
+                                      <tr>
+                                        <td colspan="2" class="text-center py-4">
+                                          <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                                          <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                            {{'no_rows' | translate}}
+                                          </p>
+                                        </td>
+                                      </tr>
+                                    </ng-template>
+                                  </p-table>
+                                  </td>
+                                  </tr>
+                                  </ng-template>
+                                  <ng-template pTemplate="emptymessage">
+                                    <tr>
+                                      <td colspan="12" class="text-center py-4">
+                                        <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                                        <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                          {{'no_rows' | translate}}
+                                        </p>
+                                      </td>
+                                    </tr>
+                                  </ng-template>
+                                  </p-table>
+                                </div>
+                                <div class="col-12 row" *ngIf="lReq.coments_rechazo_bool == true">
+                                  <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-6 col-xxl-6"></div>
+                                  <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-6 col-xxl-6">
+                                    <textarea list="dataListProductos" name="large_descript"
+                                      style="width: 100% !important;height: 40px!important;" class="validate"
+                                      (keypress)="onKeyPressAlfa($event);"
+                                      (keyup)="keyupObservaRequiAllRechazo(lReq.requisicion_token,$event.target);"></textarea>
+                                  </div>
+                                </div>
+                                <div class="col-12 row">
+                                  <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9"></div>
+                                  <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3">
+                                    <a class="btn btn_extend text-bg-success rounded-3" style="width: 100%!important;"
+                                      [ngClass]="!lReq.valida_autorizar ? 'disabled' : ''"
+                                      [attr.disabled]="!lReq.valida_autorizar ? true : null"
+                                      [attr.aria-disabled]="!lReq.valida_autorizar ? true : null"
+                                      (click)="lReq.valida_autorizar && autorizaRequisicionAll(lReq.requisicion_token,lReq.coments_rechazo_text,lReq.desglose_true);">
+                                      <i class="fa-solid fa-floppy-disk" style="margin-left: 5px;"></i>&nbsp;{{'sav_cam'
+                                      | translate}}
+                                    </a>
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="col-12" *ngIf="empresa_data.conf_egresos[0]['jerarquia'] == 'D'"
+                                style="overflow: overlay;">
+                                <!--<table class="transparent_table centered" style="width: 100%!important;box-shadow: 2px 2px 5px #353535 !important;">-->
+                                <table id="buy_table_requisicionDetalleD"
+                                  class="display nowrap mdl-data-table white centered"
+                                  style="width:100%!important;margin:0!important;">
+                                  <thead>
+                                    <tr>
+                                      <th>tipo de requisici&oacute;n</th>
+                                      <th class="concepto">concepto</th>
+                                      <th class="ultimo"><i class="fa-solid fa-list-check"></i> caracter&iacute;sticas
+                                      </th>
+                                      <th><i class="fas fa-sort-numeric-down-alt"></i> cantidad</th>
+                                      <th><i class="fas fa-sort-numeric-down-alt"></i> cantidad autorizada</th>
+                                      <th><i class="fas fa-balance-scale-right"></i> unidad de medida</th>
+                                      <th>marca sugerida</th>
+                                      <th class="ultimo"><i class="fa-solid fa-file"></i> {{'doc_an' | translate}}</th>
+                                      <th class="ultimo"></th>
+                                      <th class="ultimo"></th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    <tr *ngFor="let reqrow of lReq.desglose_true">
+                                      <td>{{reqrow.requi_tipo_front}}</td>
+                                      <td>{{reqrow.requi_necesidad}}</td>
+                                      <td class="ultimo">
+                                        <select name="tipoReq" class="browser-default"
+                                          [disabled]="reqrow.requi_caracteristicas_list.length == 0 && reqrow.requi_caracteristicas_other == null">
+                                          <option value="">{{'opt_select' | translate}}</option>
+                                          <option *ngFor="let carval of reqrow.requi_caracteristicas_list">
+                                            {{carval.clave+" "+carval.valorFront}}</option>
+                                          <option *ngIf="reqrow.requi_caracteristicas_other != null">{{"Otras
+                                            características "+reqrow.requi_caracteristicas_other}}</option>
+                                        </select>
+                                      </td>
+                                      <td>{{reqrow.requi_cantidad}}</td>
+                                      <td>{{reqrow.requi_cantidad_autorizada}}</td>
+                                      <td>{{reqrow.requi_unidad_medida_name_small}}</td>
+                                      <td>{{reqrow.requi_marca}}</td>
+                                      <td class="ultimo">
+                                        <select name="tipoReq" class="browser-default"
+                                          (change)="viewDocumento($event.target);"
+                                          [disabled]="reqrow.archivosPartida.length == 0">
+                                          <option value="">{{'opt_select' | translate}}</option>
+                                          <option *ngFor="let doc of reqrow.archivosPartida" [value]="doc.url">
+                                            {{doc.nombre_documento}}</option>
+                                        </select>
+                                      </td>
+
+                                      <td *ngIf="reqrow.char_requi_autorizacion == 'N'">---</td>
+                                      <td *ngIf="reqrow.char_requi_autorizacion == 'D'">No</td>
+                                      <td *ngIf="reqrow.char_requi_autorizacion == 'A'">{{'yes' | translate}}</td>
+
+                                      <td
+                                        *ngIf="reqrow.char_requi_autorizacion == 'A' && reqrow.bool_requi_autorizacion == true && reqrow.cotizacion_rows == true">
+                                        <div class="col-12"
+                                          style="display: flex!important;justify-content: flex-start;align-content: flex-start;align-items: flex-start;">
+                                          <p style="width:fit-content!important;">{{'auth_by' | translate}}</p>
+                                          <p style="width:fit-content!important;margin-left: 3px!important;">{{"
+                                            "+reqrow.requi_persona_autoriza+" ("+reqrow.date_requi_autorizacion+") "}}
+                                          </p>
+                                          <p style="width:fit-content!important;margin-left: 3px!important;">"En proceso
+                                            de cotización</p>
+                                          <p style="width:fit-content!important;margin-left: 3px!important;"
+                                            *ngIf="reqrow.requi_autorizacion_coments_done != ''">{{'observ' |
+                                            translate}}{{" "+reqrow.requi_autorizacion_coments_done}}</p>
+                                        </div>
+                                      </td>
+                                      <td
+                                        *ngIf="reqrow.char_requi_autorizacion == 'A' && reqrow.bool_requi_autorizacion == true && reqrow.cotizacion_rows == false">
+                                        <div class="col-12"
+                                          style="display: flex!important;justify-content: flex-start;align-content: flex-start;align-items: flex-start;">
+                                          <p style="width:fit-content!important;">{{'auth_by' | translate}}</p>
+                                          <p style="width:fit-content!important;margin-left: 3px!important;">{{"
+                                            "+reqrow.requi_persona_autoriza+" ("+reqrow.date_requi_autorizacion+") "}}
+                                          </p>
+                                          <p style="width:fit-content!important;margin-left: 3px!important;"
+                                            *ngIf="reqrow.requi_autorizacion_coments_done != ''">{{'observ' |
+                                            translate}}{{" "+reqrow.requi_autorizacion_coments_done}}</p>
+                                        </div>
+                                      </td>
+                                      <td *ngIf="reqrow.char_requi_autorizacion == 'D'">
+                                        <div class="col-12"
+                                          style="display: flex!important;justify-content: flex-start;align-content: flex-start;align-items: flex-start;">
+                                          <p style="width:fit-content!important;">{{'rechas_by' | translate}}</p>
+                                          <p style="width:fit-content!important;margin-left: 3px!important;">{{"
+                                            "+reqrow.requi_persona_autoriza+" ("+reqrow.date_requi_autorizacion+") "}}
+                                          </p>
+                                          <p style="width:fit-content!important;margin-left: 3px!important;"
+                                            *ngIf="reqrow.requi_autorizacion_coments_done != ''">{{'observ' |
+                                            translate}}{{" "+reqrow.requi_autorizacion_coments_done}}</p>
+                                        </div>
+                                      </td>
+                                      <td *ngIf="reqrow.char_requi_autorizacion == 'N'">---</td>
+                                    </tr>
+                                  </tbody>
+                                </table>
+                              </div>
+                            </div>
+                          </div>
+                        </li>
+                      </ul>
+                    </div>
+                    <div class="modal-footer"><button type="button" class="btn btn-secondary"
+                        data-bs-dismiss="modal">Close</button></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-12" *ngIf="vistaRequisiciones == true">
+              <div class="card">
+                <p-table #dt1 [value]="customers" dataKey="id" [rows]="10" [rowsPerPageOptions]="[10, 25, 50]"
+                  [loading]="loading" [paginator]="true"
+                  [globalFilterFields]="['name', 'country.name', 'representative.name', 'status']">
+                  <ng-template #caption>
+                    <div class="flex">
+                      <p-button label="Clear" [outlined]="true" icon="pi pi-filter-slash" (click)="clear(dt1)" />
+                      <p-iconfield iconPosition="left" class="ml-auto">
+                        <p-inputicon>
+                          <i class="pi pi-search"></i>
+                        </p-inputicon>
+                        <input pInputText type="text" (input)="dt1.filterGlobal($event.target, 'contains')"
+                          placeholder="Search keyword" />
+                      </p-iconfield>
+                    </div>
+                  </ng-template>
+                  <ng-template #header>
+                    <tr>
+                      <th style="min-width:15rem">
+                        <div class="flex items-center">Name<p-columnFilter type="text" field="name" display="menu" />
+                        </div>
+                      </th>
+                      <th style="min-width:15rem">
+                        <div class="flex items-center">Country<p-columnFilter type="text" field="country.name"
+                            display="menu" /></div>
+                      </th>
+                      <th style="min-width:15rem">
+                        <div class="flex items-center">
+                          Agent
+                          <p-columnFilter field="representative" matchMode="in" display="menu" [showMatchModes]="false"
+                            [showOperator]="false" [showAddButton]="false">
+                            <ng-template #filter let-value let-filter="filterCallback">
+                              <p-multiselect [options]="representatives" placeholder="Any"
+                                (onChange)="filter($event.value)" optionLabel="name">
+                                <ng-template let-option #item>
+                                  <div class="flex items-center gap-2">
+                                    <img [alt]="option.label"
+                                      src="https://primefaces.org/cdn/primeng/images/demo/avatar/{{ option.image }}"
+                                      style="width: 32px" />
+                                    <span>{{ option.name }}</span>
+                                  </div>
+                                </ng-template>
+                              </p-multiselect>
+                            </ng-template>
+                          </p-columnFilter>
+                        </div>
+                      </th>
+                      <th style="min-width:10rem">
+                        <div class="flex items-center">Date<p-columnFilter type="date" field="date"
+                            display="menu"></p-columnFilter></div>
+                      </th>
+                      <th style="min-width:10rem">
+                        <div class="flex items-center">Balance<p-columnFilter type="numeric" field="balance"
+                            display="menu" currency="USD" /></div>
+                      </th>
+                      <th style="min-width:10rem">
+                        <div class="flex items-center">
+                          Status
+                          <p-columnFilter field="status" matchMode="equals" display="menu">
+                            <ng-template #filter let-value let-filter="filterCallback">
+                              <p-select [options]="statuses" (onChange)="filter($event.value)" placeholder="Select One"
+                                styleClass="w-full">
+                                <ng-template let-option #item>
+                                  <p-tag [value]="option.value" [attr.severity]="getSeverity(option.value)"></p-tag>
+                                </ng-template>
+                              </p-select>
+                            </ng-template>
+                          </p-columnFilter>
+                        </div>
+                      </th>
+                      <th style="min-width:10rem">
+                        <div class="flex items-center">
+                          Activity
+                          <p-columnFilter field="activity" matchMode="between" display="menu" [showMatchModes]="false"
+                            [showOperator]="false" [showAddButton]="false">
+                            <ng-template #filter let-value let-filter="filterCallback">
+                              <p-slider [attr.range]="true" styleClass="m-4" (onSlideEnd)="filter($event.values)" />
+                              <div class="flex items-center px-2">
+                                <span *ngIf="!value">0</span>
+                                <span *ngIf="value">{{ value[0] }} - {{ value[1] }}</span>
+                              </div>
+                            </ng-template>
+                          </p-columnFilter>
+                        </div>
+                      </th>
+                      <th style="width: 3rem">
+                        <div class="flex items-center">Verified<p-columnFilter type="boolean" field="verified"
+                            display="menu" /></div>
+                      </th>
+                    </tr>
+                  </ng-template>
+                  <ng-template #body let-customer>
+                    <tr>
+                      <td>{{ customer.name }}</td>
+                      <td>
+                        <div class="flex items-center gap-2">
+                          <img src="https://primefaces.org/cdn/primeng/images/demo/flag/flag_placeholder.png"
+                            [class]="'flag flag-' + customer.country.code" style="width: 20px" />
+                          <span>{{ customer.country.name }}</span>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="flex items-center gap-2">
+                          <img [alt]="customer.representative.name"
+                            src="https://primefaces.org/cdn/primeng/images/demo/avatar/{{ customer.representative.image }}"
+                            width="32" />
+                          <span>{{ customer.representative.name }}</span>
+                        </div>
+                      </td>
+                      <td>{{ customer.date | date: 'MM/dd/yyyy' }}</td>
+                      <td>{{ customer.balance | currency: 'USD' : 'symbol' }}</td>
+                      <td><p-tag [value]="customer.status" [attr.severity]="getSeverity(customer.status)" /></td>
+                      <td><p-progressbar [value]="customer.activity" [showValue]="false" /></td>
+                      <td class="text-center"><i class="pi"
+                          [ngClass]="{'text-green-500 pi-check-circle': customer.verified,'text-red-500 pi-times-circle': !customer.verified}"></i>
+                      </td>
+                    </tr>
+                  </ng-template>
+                  <ng-template #emptymessage>
+                    <tr>
+                      <td colspan="7">No customers found.</td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+              </div>
+
+              <table id="buy_table_requisiciones" class="display nowrap mdl-data-table white centered"
+                style="width:100%!important;margin:0!important;">
+                <thead>
+                  <tr>
+                    <th class="ultimo"></th>
+                    <th class="ultimo"></th>
+                    <th>folio</th>
+                    <th>proyecto</th>
+                    <th>fecha de registro</th>
+                    <th>prioridad</th>
+                    <th>requisita</th>
+                    <th class="ultimo">Req. {{'yes_auth' | translate}}</th>
+                    <th class="ultimo">Req. {{'yes_rechas' | translate}}</th>
+                    <th class="ultimo">Req. {{'date_autho_riza' | translate}}</th>
+                    <th class="ultimo">Cot. solicitudes</th>
+                    <th class="ultimo">Cotizaciones</th>
+                    <th class="ultimo">Cot. {{'yes_auth' | translate}}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let lReq of listaRequisiciones;index as posMain">
+                    <td class="ultimo">
+                      <a class="btn bg-red-700" target="_blank" [href]="lReq.url_pdf"><i
+                          class="fa-solid fa-file-pdf"></i></a>
+                    </td>
+                    <td class="ultimo">
+                      <a class="btn bg-blue-600" (click)="openRequiDetail(lReq.requisicion_token);"
+                        data-bs-toggle="modal" data-bs-target="#windowRequisicion"><i class="fa-solid fa-info"></i></a>
+                    </td>
+                    <td>{{lReq.requisicion_folio}}</td>
+                    <td>{{lReq.requisicion_proyecto}}</td>
+                    <td>{{lReq.requisicion_fecha_registro}}</td>
+                    <td>{{lReq.requisicion_prioridad}}</td>
+                    <td>{{lReq.requisicion_usuario_requisita}}</td>
+                    <td>{{lReq.partidasAuthTrue+"/"+lReq.partidasTotal}}</td>
+                    <td>{{lReq.partidasAuthFalse+"/"+lReq.partidasTotal}}</td>
+                    <td>{{lReq.partidasAuthTrue > 0 ? lReq.requisicion_autorizacion_fecha : '---'}}</td>
+                    <td>{{lReq.cotizaciones_solicitud}}</td>
+                    <td>{{lReq.cotizaciones_list+"/"+lReq.cotizaciones_solicitud}}</td>
+                    <td>{{lReq.cotizacionesAuth+"/"+lReq.cotizaciones_solicitud}}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="col-12" *ngIf="permiso_consulta && listaRequisiciones.length == 0">
+            <h6 class="content access_denied" style="width: 100%;text-align: center;">{{'no_rows' | translate}}</h6>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

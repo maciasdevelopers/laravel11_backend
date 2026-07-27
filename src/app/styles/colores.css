@@ -1,0 +1,74 @@
+.btn_color_brown{background-color: #4E342E!important;color: white!important;}
+.bg-indigo-600{background-color: #5a67d8!important;color: white!important;}
+.bg-blue-600{background-color:#0a58ca!important;color: white!important;}
+.bg-blue-500{background-color:#1976d2!important;color: white!important;}
+.bg-blue-300{background-color:#6ea8fe!important;color: white!important;}
+.bg-blue-ModalTitle{color:#0a58ca!important;}
+.bg-purple-600{background-color:#59359a !important;color: white!important;}
+.bg-yellow-500{background-color: #ffc107!important;}
+.bg-green-600{background-color: #146c43!important;color: white!important;}
+.bg-green-300{background-color: #4db6ac!important;color: white!important;}
+.bg-teal-700{background-color: #13795b!important;color: white!important;}
+.bg-gray-500{background-color: #adb5bd!important;}
+.bg-gray-100{background-color: #f8f9fa!important;}
+.bg-gray-700{background-color: #495057!important;color: white!important;}
+.bg-gray-all{background-color: #343a40!important;color: white!important;}
+.bg-white{background-color: white!important;color: dimgray!important;}
+.bg-yellow-300{background-color: #ffda6a!important;}
+.bg-red-600{background-color: #b02a37!important;color: white!important;}
+.bg-red-700{background-color: #842029!important;color: white!important;}
+div.menuSuperior nav ul li.item-sup ul.listNotificaciones li.li-notif-ingresos{
+  border-left: 5px solid #45ac29;
+}
+div.menuSuperior nav ul li.item-sup ul.listNotificaciones li.li-notif-egresos{
+  border-left: 5px solid #6d1300;
+}
+div.menuSuperior nav ul li.item-sup ul.listNotificaciones li.li-notif-tesoreria{
+  border-left: 5px solid #353535;
+}
+div.menuSuperior nav ul li.item-sup ul.listNotificaciones li.li-notif-vHumano{
+  border-left: 5px solid #f1d600;
+}
+div.menuSuperior nav ul li.item-sup ul.listNotificaciones li.li-notif-contabilidad{
+  border-left: 5px solid #0044FF;
+}
+div.menuSuperior nav ul li.item-sup ul.listNotificaciones li.li-notif-tecInformacion{
+  border-left: 5px solid #C700FF;
+}
+div.menuSuperior nav ul li.item-sup ul.listNotificaciones li.li-notif-proyectos{
+  border-left: 5px solid #020a5e!important;
+}
+ul.sidenav li div.container-aasdemg{
+  background-color: #C700FF;
+}
+
+ul.sidenav li div.container-airneg{
+  background-color: #45ac29;
+}
+
+ul.sidenav li div.container-aerger{
+  background-color: #6d1300;
+}
+ul.sidenav li div.container-atseer{
+  background-color: #353535;
+}
+ul.sidenav li div.container-avsleh{
+  background-color: #f1d600;
+}
+ul.sidenav li div.container-acsleo{
+  background-color: #0044FF;
+}
+ul.sidenav li div.container-aprtsieif,
+ul.sidenav li div.container-asctsieif{
+  background-color: #C700FF;
+}
+
+.bg-fondoadministrador{background-color: #0056b3;}
+
+.color_image{color:#0a58ca!important;}
+.color_pdf{color:#b02a37!important;}
+.color_word{color:#6ea8fe!important;}
+.color_excel{color:#45ac29!important;}
+.pagination_color{color: #495057!important;}
+.bg-lock{background-color: #383E42!important;color: white!important;}
+.bg-unlock{background-color: #FFBF00!important;color: #353535!important;}

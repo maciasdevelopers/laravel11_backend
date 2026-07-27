@@ -1,0 +1,83 @@
+<form class="row formDataCaja" #formDataCaja="ngForm" autocomplete="off" (ngSubmit)="registraDataCaja(formDataCaja);" *ngIf="verFormAlta">
+	<div class="col-12 row">
+		<div class="col-12 input-group" style="margin-bottom: 5px;">
+			<label class="activeInput">Descripci&oacute;n</label>
+			<input class="validate" name="txtAliasCaja" type="text" required (keyup)="validaDescripcion($event.target);">
+		</div>
+
+		<div class="col-12 col-sm-12 col-md-12 col-lg-4 col-xl-4 col-xxl-4 input-group">
+			<label class="activeInput">Establecimiento (almacen)</label>
+			<p-select [options]="arrayEstablecimientos" id="selectedEstabLista" name="selectedEstabLista" optionLabel="regimen" [filter]="true" 
+        filterBy="regimen" [showClear]="true" [placeholder]="'opt_select' | translate" class="w-full md:w-56" (onChange)="validaEstablecimiento($event.value);">
+        <ng-template #selectedItem let-sel>
+          <div class="flex items-center gap-2"><div>{{sel.estab_folio+' '+sel.estab_alias}}</div></div>
+        </ng-template>
+        <ng-template let-estab #item>
+          <div class="flex items-center gap-2"><div>{{estab.estab_alias+' '+(estab.estab_ubicacion_pais == 'Mx' ? estab.colonia_main+' CP.'+estab.c_postal_main+', '+estab.municipio_main+', Estado: '+estab.estado_main : estab.dir_completa+', CP.'+estab.cod_postalext+', '+estab.pais_nombre)}}</div></div>
+        </ng-template>
+      </p-select>
+		</div>
+		<div class="col-12 col-sm-12 col-md-12 col-lg-8 col-xl-8 col-xxl-8 input-group">
+			<label class="activeInput">Vendedor asignado</label>
+			<input class="validate" name="txtAliasCaja" type="text" (keyup)="validaVendedor($event.target);">
+		</div>
+
+		<div class="col-12 col-sm-12 col-md-12 col-lg-4 col-xl-4 col-xxl-4 input-group">
+			<label class="activeInput">Moneda</label>
+			<p-select [options]="catalogoMonedasApi" id="selectedMonedaCode" optionLabel="_filtro_busqueda" [filter]="true" filterBy="_filtro_busqueda" 
+        [showClear]="true" [placeholder]="'opt_select' | translate" class="w-full md:w-56" (onChange)="validaMonedaCaja($event.value);">
+        <ng-template #selectedItem let-selectedOption>
+          <div class="flex items-center gap-2"><div>{{selectedOption.code+" "+selectedOption.langEN}}</div></div>
+        </ng-template>
+        <ng-template let-mon #item>
+          <div class="flex items-center gap-2"><div>{{mon.code+" "+mon.langEN}}</div></div>
+        </ng-template>
+      </p-select>
+		</div>
+		
+		<div class="input-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4">
+			<label class="activeInput">Cuenta contable</label>
+			<input class="validate" name="titularMonElectronico" type="text" required (keyup)="validaCuentaContable($event.target);">
+		</div>
+
+		<div class="col-12">
+			<div class="col-12 explain"><h6 class="title">&Aacute;rea de servicio</h6></div>
+			<div class="col-12 form-check radio_check">
+				<input class="form-check-input" type="checkbox" name="flexRadioDefault" value="egresos" (click)="validaAreaServicioEgresos($event.target);">
+				<label class="form-check-label" for="flexRadioDefault1">Egresos</label>
+			</div>
+			<div class="col-12 form-check radio_check">
+				<input class="form-check-input" type="checkbox" name="flexRadioDefault" value="ingresos" (click)="validaAreaServicioIngresos($event.target);">
+				<label class="form-check-label" for="flexRadioDefault1">Ingresos</label>
+			</div>
+			<div class="col-12 form-check radio_check">
+				<input class="form-check-input" type="checkbox" name="flexRadioDefault" value="propias" (click)="validaAreaServicioPropias($event.target);">
+				<label class="form-check-label" for="flexRadioDefault1">Cuentas propias</label>
+			</div>
+		</div>
+		<div class="col-12">
+			<div class="col-12 explain"><h6 class="title">Configuraci&oacute;n para ventas</h6></div>
+			<div class="col-12 form-check radio_check">
+				<input class="form-check-input" type="checkbox" name="capt_cliente" (click)="validaVentasCaptCliente($event.target);">
+				<label class="form-check-label" for="flexRadioDefault1">Capturar cliente</label>
+			</div>
+			<div class="col-12 form-check radio_check">
+				<input class="form-check-input" type="checkbox" name="capt_precio_x_articulo" (click)="validaVentasCaptPrecioXArticulo($event.target);">
+				<label class="form-check-label" for="flexRadioDefault1">Capturar precio por articulo</label>
+			</div>
+			<div class="col-12 form-check radio_check">
+				<input class="form-check-input" type="checkbox" name="capt_primero_cantidad" (click)="validaVentasCaptPrimeroCantidad($event.target);">
+				<label class="form-check-label" for="flexRadioDefault1">Capturar primero cantidad</label>
+			</div>
+		</div>
+		
+		<div class="col-12 row">
+			<div class="col-12 col-sm-12 col-md-6 col-lg-8 col-xl-8 col-xxl-9"></div>
+			<div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3" style="display: flex !important;justify-content: end!important;">
+				<button class="btn btn_extend text-bg-success rounded-3" type="submit" name="btnAltaProducto2" [ngClass]="!validaFormCaja ? 'disabled' : ''" [attr.disabled]="!validaFormCaja ? true : null" 
+					[attr.aria-disabled]="!validaFormCaja ? true : null">
+					<i class="fa-solid fa-floppy-disk" style="height: 15px!important;line-height: 15px!important;width: 15px!important;font-size: small!important;"></i>&nbsp;{{'sav_cam' | translate}}</button>
+			</div>
+		</div>
+	</div>
+</form>

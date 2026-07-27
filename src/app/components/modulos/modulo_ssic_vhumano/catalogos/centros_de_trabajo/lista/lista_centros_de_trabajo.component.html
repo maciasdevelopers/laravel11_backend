@@ -1,0 +1,557 @@
+<p-confirmpopup #cp>
+  <ng-template #headless let-message>
+    <div class="rounded p-4">
+      <i class="fa-solid fa-circle-info"></i>&nbsp;
+      <span>{{ message.message }}</span>
+      <div class="flex items-center gap-2 mt-4">
+        <p-button id="popUpAccept" class="accept" (onClick)="cp.onAccept()" [label]="popUpAccept" size="small" />
+        <p-button id="popUpReject" class="reject" (onClick)="cp.onReject()" [label]="popUpReject" [text]="true"
+          size="small" severity="secondary" />
+      </div>
+    </div>
+  </ng-template>
+</p-confirmpopup>
+
+<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco" #vContent>
+  <div class="contenido">
+    <app-loader></app-loader>
+    <nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+    <div class="contenidoPagina">
+      <div class="listas_ps revanecer">
+        <div class="lista-div lista-divNoFlex">
+          <h4>catalogo de centros de trabajo</h4>
+
+          <div class="col-12">
+            <div class="btn-group lista_botones col" role="group" arial-label="Basic example">
+              <a class="btn btn_extend bg-indigo-600"
+                (click)="descarga_centros_de_trabajo();descarga_centros_de_trabajo_activos();descarga_centros_de_trabajo_inactivos();descarga_centros_de_trabajo_eliminados();">
+                <i class="fa-solid fa-rotate"></i>&nbsp;{{'list_updt' | translate}}
+              </a>
+              <a class="btn btn_extend bg-green-600 descarga_lista_excel"
+                [ngClass]="catalogo_centros_trabajo.length == 0 ? 'disabled' : ''"
+                [attr.disabled]="catalogo_centros_trabajo.length == 0 ? true : null"
+                [attr.aria-disabled]="catalogo_centros_trabajo.length == 0 ? true : null"
+                (click)="catalogo_centros_trabajo.length > 0 && descarga_excel_centros_de_trabajo();">
+                <i class="fa-solid fa-file-excel" style="margin-left: 5px;"></i>&nbsp;descargar
+              </a>
+            </div>
+          </div>
+
+          <p-tabs value="0" scrollable>
+            <p-tablist>
+              <p-tab value="0">Cat&aacute;logo general</p-tab>
+              <p-tab value="1">Centros de trabajo activos</p-tab>
+              <p-tab value="2">Centros de trabajo inactivos</p-tab>
+              <p-tab value="3">Centros de trabajo eliminados</p-tab>
+              <p-tab value="4">Registrar centro de trabajo</p-tab>
+            </p-tablist>
+            <p-tabpanels>
+              <p-tabpanel value="0">
+                <p-table #estabTrueList [value]="catalogo_centros_trabajo" dataKey="id" [paginator]="true" [rows]="10"
+                  [rowsPerPageOptions]="[10,20,30,50,100]"
+                  [globalFilterFields]="['folio_centro_trab','fecha_contabilizacion','descripcion','clave_registro_patronal_imss','ubicacion_token','ubicacion_alias']">
+                  <ng-template #caption>
+                    <div class="flex">
+                      <p-iconfield iconPosition="left" class="ml-auto">
+                        <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                        <input pInputText type="text"
+                          (input)="estabTrueList.filterGlobal($event.target.value, 'contains')"
+                          placeholder="{{'bus_car' | translate}}" />
+                      </p-iconfield>
+                    </div>
+                  </ng-template>
+                  <ng-template #header>
+                    <tr>
+                      <th class="ultimo"></th>
+                      <th pSortableColumn="folio_centro_trab">folio&nbsp;<p-sortIcon field="folio_centro_trab" /></th>
+                      <th pSortableColumn="fecha_contabilizacion">{{'fecha_cont' | translate}}&nbsp;<p-sortIcon
+                          field="fecha_contabilizacion" /></th>
+                      <th pSortableColumn="clave_registro_patronal_imss">Registro patronal del IMSS&nbsp;<p-sortIcon
+                          field="clave_registro_patronal_imss" /></th>
+                      <th pSortableColumn="ubicacion_alias">{{'ubica_loca' | translate}}&nbsp;<p-sortIcon
+                          field="ubicacion_alias" /></th>
+                      <th pSortableColumn="descripcion">{{'desc' | translate}}&nbsp;<p-sortIcon field="descripcion" />
+                      </th>
+                      <th class="ultimo"></th>
+                      <th class="ultimo"></th>
+                    </tr>
+                  </ng-template>
+                  <ng-template #body let-ctrb>
+                    <tr>
+                      <td class="ultimo">
+                        <a class="btn bg-blue-600" (click)="verDetalleCentroTrabajo(ctrb.centrotrab_uuid);">
+                          <i class="fa-solid fa-info"></i>
+                        </a>
+                      </td>
+                      <td>{{ctrb.folio_centro_trab}}</td>
+                      <td>{{ctrb.fecha_contabilizacion}}</td>
+                      <td>{{ctrb.clave_registro_patronal_imss}}</td>
+                      <td>{{ctrb.ubicacion_alias}}</td>
+                      <td>{{ctrb.descripcion}}</td>
+                      <td class="ultimo">
+                        @if (ctrb.baja_dado) {
+                        <a class="btn btn_extend text-bg-success rounded-3"
+                          (click)="altaTrabajoCentro(ctrb.centrotrab_uuid,ctrb.baja_motivo,ctrb.baja_fecha);">
+                          <i class="fa-solid fa-eraser"></i>&nbsp;Dar de alta
+                        </a>
+                        } @else {
+                        <a class="btn btn_extend text-bg-danger rounded-3"
+                          [ngClass]="!ctrb.puede_eliminar ? 'disabled' : ''"
+                          [attr.disabled]="!ctrb.puede_eliminar ? true : null"
+                          [attr.aria-disabled]="!ctrb.puede_eliminar ? true : null"
+                          (click)="ctrb.puede_eliminar && bajaTrabajoCentro(ctrb.centrotrab_uuid);">
+                          <i class="fa-solid fa-eraser"></i>&nbsp;Dar de baja
+                        </a>
+                        }
+                      </td>
+                      <td class="ultimo">
+                        <a class="btn btn_extend text-bg-danger rounded-3"
+                          [ngClass]="!ctrb.puede_eliminar ? 'disabled' : ''"
+                          [attr.disabled]="!ctrb.puede_eliminar ? true : null"
+                          [attr.aria-disabled]="!ctrb.puede_eliminar ? true : null"
+                          (click)="ctrb.puede_eliminar && deleteTrabajoCentro(ctrb.centrotrab_uuid);">
+                          <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                        </a>
+                      </td>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="emptymessage">
+                    <tr>
+                      <td colspan="8" class="text-center py-4">
+                        <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                        <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                          {{'no_rows' | translate}}
+                        </p>
+                      </td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+              </p-tabpanel>
+              <p-tabpanel value="1">
+                <p-table #estabAltaStateList [value]="centros_trabajo_aactivos_" dataKey="id" [paginator]="true"
+                  [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]"
+                  [globalFilterFields]="['folio_centro_trab','fecha_contabilizacion','descripcion','clave_registro_patronal_imss','ubicacion_token','ubicacion_alias']">
+                  <ng-template #caption>
+                    <div class="flex">
+                      <p-iconfield iconPosition="left" class="ml-auto">
+                        <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                        <input pInputText type="text"
+                          (input)="estabAltaStateList.filterGlobal($event.target.value, 'contains')"
+                          placeholder="{{'bus_car' | translate}}" />
+                      </p-iconfield>
+                    </div>
+                  </ng-template>
+                  <ng-template #header>
+                    <tr>
+                      <th class="ultimo"></th>
+                      <th pSortableColumn="folio_centro_trab">folio&nbsp;<p-sortIcon field="folio_centro_trab" /></th>
+                      <th pSortableColumn="fecha_contabilizacion">{{'fecha_cont' | translate}}&nbsp;<p-sortIcon
+                          field="fecha_contabilizacion" /></th>
+                      <th pSortableColumn="clave_registro_patronal_imss">Registro patronal del IMSS&nbsp;<p-sortIcon
+                          field="clave_registro_patronal_imss" /></th>
+                      <th pSortableColumn="ubicacion_alias">{{'ubica_loca' | translate}}&nbsp;<p-sortIcon
+                          field="ubicacion_alias" /></th>
+                      <th pSortableColumn="descripcion">{{'desc' | translate}}&nbsp;<p-sortIcon field="descripcion" />
+                      </th>
+                      <th class="ultimo"></th>
+                      <th class="ultimo"></th>
+                    </tr>
+                  </ng-template>
+                  <ng-template #body let-ctrb>
+                    <tr>
+                      <td class="ultimo">
+                        <a class="btn bg-blue-600" (click)="verDetalleCentroTrabajo(ctrb.centrotrab_uuid);">
+                          <i class="fa-solid fa-info"></i>
+                        </a>
+                      </td>
+                      <td>{{ctrb.folio_centro_trab}}</td>
+                      <td>{{ctrb.fecha_contabilizacion}}</td>
+                      <td>{{ctrb.clave_registro_patronal_imss}}</td>
+                      <td>{{ctrb.ubicacion_alias}}</td>
+                      <td>{{ctrb.descripcion}}</td>
+                      <td class="ultimo">
+                        <a class="btn btn_extend text-bg-danger rounded-3"
+                          [ngClass]="!ctrb.puede_eliminar ? 'disabled' : ''"
+                          [attr.disabled]="!ctrb.puede_eliminar ? true : null"
+                          [attr.aria-disabled]="!ctrb.puede_eliminar ? true : null"
+                          (click)="ctrb.puede_eliminar && bajaTrabajoCentro(ctrb.centrotrab_uuid);">
+                          <i class="fa-solid fa-eraser"></i>&nbsp;Dar de baja
+                        </a>
+                      </td>
+                      <td class="ultimo">
+                        <a class="btn btn_extend text-bg-danger rounded-3"
+                          [ngClass]="!ctrb.puede_eliminar ? 'disabled' : ''"
+                          [attr.disabled]="!ctrb.puede_eliminar ? true : null"
+                          [attr.aria-disabled]="!ctrb.puede_eliminar ? true : null"
+                          (click)="ctrb.puede_eliminar && deleteTrabajoCentro(ctrb.centrotrab_uuid);">
+                          <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                        </a>
+                      </td>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="emptymessage">
+                    <tr>
+                      <td colspan="8" class="text-center py-4">
+                        <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                        <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                          {{'no_rows' | translate}}
+                        </p>
+                      </td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+              </p-tabpanel>
+              <p-tabpanel value="2">
+                <p-table #estabInactList [value]="inactivos_centros_trabajo" dataKey="id" [paginator]="true" [rows]="10"
+                  [rowsPerPageOptions]="[10,20,30,50,100]"
+                  [globalFilterFields]="['folio_centro_trab','fecha_contabilizacion','descripcion','clave_registro_patronal_imss','ubicacion_token','ubicacion_alias']">
+                  <ng-template #caption>
+                    <div class="flex">
+                      <p-iconfield iconPosition="left" class="ml-auto">
+                        <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                        <input pInputText type="text"
+                          (input)="estabInactList.filterGlobal($event.target.value, 'contains')"
+                          placeholder="{{'bus_car' | translate}}" />
+                      </p-iconfield>
+                    </div>
+                  </ng-template>
+                  <ng-template #header>
+                    <tr>
+                      <th class="ultimo"></th>
+                      <th pSortableColumn="folio_centro_trab">folio&nbsp;<p-sortIcon field="folio_centro_trab" /></th>
+                      <th pSortableColumn="fecha_contabilizacion">{{'fecha_cont' | translate}}&nbsp;<p-sortIcon
+                          field="fecha_contabilizacion" /></th>
+                      <th pSortableColumn="clave_registro_patronal_imss">Registro patronal del IMSS&nbsp;<p-sortIcon
+                          field="clave_registro_patronal_imss" /></th>
+                      <th pSortableColumn="ubicacion_alias">{{'ubica_loca' | translate}}&nbsp;<p-sortIcon
+                          field="ubicacion_alias" /></th>
+                      <th pSortableColumn="descripcion">{{'desc' | translate}}&nbsp;<p-sortIcon field="descripcion" />
+                      </th>
+                      <th class="ultimo"></th>
+                      <th class="ultimo"></th>
+                    </tr>
+                  </ng-template>
+                  <ng-template #body let-ctrb>
+                    <tr>
+                      <td class="ultimo">
+                        <a class="btn bg-blue-600" (click)="verDetalleCentroTrabajo(ctrb.centrotrab_uuid);">
+                          <i class="fa-solid fa-info"></i>
+                        </a>
+                      </td>
+                      <td>{{ctrb.folio_centro_trab}}</td>
+                      <td>{{ctrb.fecha_contabilizacion}}</td>
+                      <td>{{ctrb.clave_registro_patronal_imss}}</td>
+                      <td>{{ctrb.ubicacion_alias}}</td>
+                      <td>{{ctrb.descripcion}}</td>
+                      <td class="ultimo">
+                        <a class="btn btn_extend text-bg-success rounded-3"
+                          (click)="altaTrabajoCentro(ctrb.centrotrab_uuid,ctrb.baja_motivo,ctrb.baja_fecha);">
+                          <i class="fa-solid fa-eraser"></i>&nbsp;Dar de alta
+                        </a>
+                      </td>
+                      <td class="ultimo">
+                        <a class="btn btn_extend text-bg-danger rounded-3"
+                          [ngClass]="!ctrb.puede_eliminar ? 'disabled' : ''"
+                          [attr.disabled]="!ctrb.puede_eliminar ? true : null"
+                          [attr.aria-disabled]="!ctrb.puede_eliminar ? true : null"
+                          (click)="ctrb.puede_eliminar && deleteTrabajoCentro(ctrb.centrotrab_uuid);">
+                          <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                        </a>
+                      </td>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="emptymessage">
+                    <tr>
+                      <td colspan="8" class="text-center py-4">
+                        <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                        <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                          {{'no_rows' | translate}}
+                        </p>
+                      </td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+              </p-tabpanel>
+              <p-tabpanel value="3">
+                <p-table #estabDeletedList [value]="deleted_centros_trabajo" dataKey="id" [paginator]="true" [rows]="10"
+                  [rowsPerPageOptions]="[10,20,30,50,100]"
+                  [globalFilterFields]="['folio_centro_trab','fecha_contabilizacion','descripcion','clave_registro_patronal_imss','ubicacion_token','ubicacion_alias','centrotrab_fecha_delete']">
+                  <ng-template #caption>
+                    <div class="flex">
+                      <p-iconfield iconPosition="left" class="ml-auto">
+                        <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                        <input pInputText type="text"
+                          (input)="estabDeletedList.filterGlobal($event.target.value, 'contains')"
+                          placeholder="{{'bus_car' | translate}}" />
+                      </p-iconfield>
+                    </div>
+                  </ng-template>
+                  <ng-template #header>
+                    <tr>
+                      <th pSortableColumn="folio_centro_trab">folio&nbsp;<p-sortIcon field="folio_centro_trab" /></th>
+                      <th pSortableColumn="fecha_contabilizacion">{{'fecha_cont' | translate}}&nbsp;<p-sortIcon
+                          field="fecha_contabilizacion" /></th>
+                      <th pSortableColumn="clave_registro_patronal_imss">Registro patronal del IMSS&nbsp;<p-sortIcon
+                          field="clave_registro_patronal_imss" /></th>
+                      <th pSortableColumn="ubicacion_alias">{{'ubica_loca' | translate}}&nbsp;<p-sortIcon
+                          field="ubicacion_alias" /></th>
+                      <th pSortableColumn="descripcion">{{'desc' | translate}}&nbsp;<p-sortIcon field="descripcion" />
+                      </th>
+                      <th pSortableColumn="">{{'f_delete' | translate}}&nbsp;<p-sortIcon
+                          field="centrotrab_fecha_delete" /></th>
+                      <th class="ultimo"></th>
+                      <th class="ultimo"></th>
+                    </tr>
+                  </ng-template>
+                  <ng-template #body let-ctrb>
+                    <tr>
+                      <td>{{ctrb.folio_centro_trab}}</td>
+                      <td>{{ctrb.fecha_contabilizacion}}</td>
+                      <td>{{ctrb.clave_registro_patronal_imss}}</td>
+                      <td>{{ctrb.ubicacion_alias}}</td>
+                      <td>{{ctrb.descripcion}}</td>
+                      <td>{{ctrb.centrotrab_fecha_delete}}</td>
+                      <td><a class="btn btn_extend text-bg-success rounded-3"
+                          (click)="restauraTrabajoCentro(ctrb.centrotrab_uuid);"><i
+                            class="fa-solid fa-trash-arrow-up"></i>&nbsp;{{'restore_row' | translate}}</a></td>
+                      <td><a class="btn btn_extend text-bg-danger rounded-3"
+                          (click)="eliminapermTrabajoCentro(ctrb.centrotrab_uuid);"><i
+                            class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}</a></td>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="emptymessage">
+                    <tr>
+                      <td colspan="8" class="text-center py-4">
+                        <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                        <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                          {{'no_rows' | translate}}
+                        </p>
+                      </td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+              </p-tabpanel>
+              <p-tabpanel value="4">
+                <vhumano_centros_de_trabajo_registro></vhumano_centros_de_trabajo_registro>
+              </p-tabpanel>
+            </p-tabpanels>
+          </p-tabs>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p-dialog header="Alta para centro de trabajo" class="mini_dialog" [modal]="true" [(visible)]="ctrab_alta_ver"
+  [style]="{ width: '25rem' }" [attr.style]="'width:25rem !important'">
+  <div class="col-12 explain">
+    <h6 class="title">Motivo de baja</h6>
+    <h6 class="content">{{cTrabBajaModel.baja_motivo}}</h6>
+  </div>
+  <div class="col-12 explain">
+    <h6 class="title">Fecha de baja</h6>
+    <h6 class="content">{{cTrabBajaModel.baja_fecha_contabilizacion}}</h6>
+  </div>
+  <div class="col-12" style="display: flex;justify-content: end;">
+    <a class="btn btn_extend text-bg-success rounded-3"
+      [ngClass]="cTrabBajaModel.baja_motivo == '' || cTrabBajaModel.baja_fecha_contabilizacion == '' ? 'disabled' : ''"
+      [attr.disabled]="cTrabBajaModel.baja_motivo == '' || cTrabBajaModel.baja_fecha_contabilizacion == '' ? true : null"
+      [attr.aria-disabled]="cTrabBajaModel.baja_motivo == '' || cTrabBajaModel.baja_fecha_contabilizacion == '' ? true : null"
+      (click)="dardealtaTrabajoCentro((cTrabBajaModel.baja_motivo != '' && cTrabBajaModel.baja_fecha_contabilizacion != '') && cTrabBajaModel.centrotrab_uuid);">
+      <i class="fa-solid fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+    </a>
+  </div>
+</p-dialog>
+
+<p-dialog header="Baja para centro de trabajo" class="mini_dialog" [modal]="true" [(visible)]="ctrab_baja_ver"
+  [style]="{ width: '25rem' }" [attr.style]="'width:25rem !important'">
+  <div class="col-12 input-group">
+    <label for="cenTrabBajaMotivo" class="activeInput">Motivo de baja</label>
+    <textarea id="cenTrabBajaMotivo" name="cenTrabBajaMotivo" class="validate"
+      (keyup)="keyupCenTrabBajaMotivo($event.target);"></textarea>
+  </div>
+  <div class="col-12 input-group">
+    <label for="cenTrabBajaFecha" class="activeInput">Fecha de baja</label>
+    <input id="cenTrabBajaFecha" class="validate" name="cenTrabBajaFecha" type="date"
+      (change)="keyupCenTrabBajaFecha($event.target);">
+  </div>
+  <div class="col-12" style="display: flex;justify-content: end;">
+    <a class="btn btn_extend text-bg-success rounded-3"
+      [ngClass]="cTrabBajaModel.baja_motivo == '' || cTrabBajaModel.baja_fecha_contabilizacion == '' ? 'disabled' : ''"
+      [attr.disabled]="cTrabBajaModel.baja_motivo == '' || cTrabBajaModel.baja_fecha_contabilizacion == '' ? true : null"
+      [attr.aria-disabled]="cTrabBajaModel.baja_motivo == '' || cTrabBajaModel.baja_fecha_contabilizacion == '' ? true : null"
+      (click)="dardebajaTrabajoCentro((cTrabBajaModel.baja_motivo != '' && cTrabBajaModel.baja_fecha_contabilizacion != '') && cTrabBajaModel.centrotrab_uuid);">
+      <i class="fa-solid fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+    </a>
+  </div>
+</p-dialog>
+
+<p-dialog header="Informaci&oacute;n de centro de trabajo {{ctrab_detfolio}}" [(visible)]="ctrab_detver" [modal]="true"
+  [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  @for (ctinfo of centro_trabajo_detalle; track ctinfo.id; let i = $index) {
+  <form method="post" class="row formTrabajador" #formTrabajador="ngForm" [formGroup]="info_form" name="frmAddProv"
+    enctype="multipart/form-data"
+    (ngSubmit)="validaUpdateCentroTrabajo(ctinfo.centrotrab_uuid) && actualizarCentroTrabajo(formTrabajador,ctinfo.centrotrab_uuid);">
+    @if (viewFormulario) {
+    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input-group">
+      <label for="cenTrabEditRPImss" class="activeInput">Registro patronal del IMSS</label>
+      <input id="cenTrabEditRPImss" class="validate" type="text" name="cenTrabEditRPImss"
+        [value]="ctinfo.clave_registro_patronal_imss"
+        (keyup)="keyupCenTrabRPatronalIMSS($event.target,ctinfo.centrotrab_uuid);">
+    </div>
+    <div class="col-12 row">
+      <div class="col-12 explain">
+        <h6 class="title">Cat&aacute;logo de actividades para la clasificaci&oacute;n de las empresas en el seguro de
+          riesgos de trabajo</h6>
+      </div>
+      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input-group">
+        <label for="cenTrabActRiesDiv" class="activeInput">Divisi&oacute;n</label>
+        <p-select [options]="actividades_riesgo_divisiones" id="cenTrabActRiesDiv" name="cenTrabActRiesDiv"
+          formControlName="riesgo_division" optionValue="division_nombre" optionLabel="division_nombre" [filter]="true"
+          filterBy="division_nombre" [showClear]="true" [placeholder]="'opt_select' | translate" class="w-full md:w-56"
+          (onChange)="changeCenTrabActRiesDivision($event.value);">
+          <ng-template #selectedItem let-selected>
+            <div class="flex items-center gap-2">
+              <div>{{selected.division_nombre}}</div>
+            </div>
+          </ng-template>
+          <ng-template let-riesgo #item>
+            <div class="flex items-center gap-2">
+              <div>{{riesgo.division_nombre}}</div>
+            </div>
+          </ng-template>
+        </p-select>
+      </div>
+      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input-group">
+        <label for="cenTrabActRiesGrupo" class="activeInput">Grupo</label>
+        <p-select [options]="actividades_riesgo_grupos" id="cenTrabActRiesGrupo" name="cenTrabActRiesGrupo"
+          formControlName="riesgo_grupo" optionValue="label" optionLabel="label" [filter]="true" filterBy="label"
+          [ngClass]="actividades_riesgo_grupos.length == 0 ? 'disabled' : ''"
+          [disabled]="actividades_riesgo_grupos.length == 0"
+          [attr.aria-disabled]="actividades_riesgo_grupos.length == 0 ? true : null" [showClear]="true"
+          [placeholder]="'opt_select' | translate" class="w-full md:w-56"
+          (onChange)="changeCenTrabActRiesGrupos($event.value);">
+          <ng-template #selectedItem let-selected>
+            <div class="flex items-center gap-2">
+              <div>{{selected.label}}</div>
+            </div>
+          </ng-template>
+          <ng-template let-riesgo #item>
+            <div class="flex items-center gap-2">
+              <div>{{riesgo.label}}</div>
+            </div>
+          </ng-template>
+        </p-select>
+      </div>
+      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input-group">
+        <label for="cenTrabActRiesFraccion" class="activeInput">Fracciones</label>
+        <p-select [options]="actividades_riesgo_fracciones" id="cenTrabActRiesFraccion" name="cenTrabActRiesFraccion"
+          formControlName="riesgo_fraccion" optionValue="actividad" optionLabel="actividad" [filter]="true"
+          filterBy="actividad" [ngClass]="actividades_riesgo_fracciones.length == 0 ? 'disabled' : ''"
+          [disabled]="actividades_riesgo_fracciones.length == 0"
+          [attr.aria-disabled]="actividades_riesgo_fracciones.length == 0 ? true : null" [showClear]="true"
+          [placeholder]="'opt_select' | translate" class="w-full md:w-56"
+          (onChange)="changeCenTrabActRiesFracciones($event.value);">
+          <ng-template #selectedItem let-selected>
+            <div class="flex items-center gap-2">
+              <div>{{selected.fraccion+" "+selected.actividad+" "+selected.clave}}</div>
+            </div>
+          </ng-template>
+          <ng-template let-riesgo #item>
+            <div class="flex items-center gap-2">
+              <div>{{riesgo.fraccion+" "+riesgo.actividad+" "+riesgo.clave}}</div>
+            </div>
+          </ng-template>
+        </p-select>
+      </div>
+      <div class="col-12 explain" style="padding-left: 10px;">
+        <h6 class="content">{{"División "+centTrabModel.riesgo_division+", Grupo "+centTrabModel.riesgo_grupo+",
+          Fraccion "+centTrabModel.riesgo_fraccion+", Clave "+centTrabModel.riesgo_clave}}</h6>
+      </div>
+    </div>
+    <div class="col-12 input-group">
+      <label for="cenTrabEditDesc" class="activeInput">Descripci&oacute;n de actividades</label>
+      <textarea id="cenTrabEditDesc" name="cenTrabEditDesc" class="validate" [value]="ctinfo.descripcion"
+        (keyup)="keyupCenTrabDescripcion($event.target,ctinfo.centrotrab_uuid);"></textarea>
+    </div>
+    <p-table #estabTrueList [value]="catalogo_establecimientos" dataKey="id" [paginator]="true" [rows]="10"
+      [rowsPerPageOptions]="[10,20,30,50,100]"
+      [globalFilterFields]="['token_establecimiento','estab_folio','estab_alias','estab_tipo','estab_desc','estab_encargado','aplica_ingresos','aplica_egresos','aplica_interno','aplica_almacen']">
+      <ng-template #caption>
+        <div class="flex"
+          style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;">
+          <a class="btn btn_extend bg-blue-600" style="margin-right:5px!important;"
+            (click)="descarga_establecimientos();">
+            <i class="fa-solid fa-rotate"></i>&nbsp;{{'list_updt' | translate}}
+          </a>
+          <p-iconfield iconPosition="left" class="ml-auto" style="margin:0!important;">
+            <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+            <input pInputText type="text" (input)="estabTrueList.filterGlobal($event.target.value, 'contains')"
+              placeholder="{{'bus_car' | translate}}" />
+          </p-iconfield>
+        </div>
+      </ng-template>
+      <ng-template #header>
+        <tr>
+          <th class="ultimo"></th>
+          <th pSortableColumn="estab_folio">folio&nbsp;<p-sortIcon field="folio" /></th>
+          <th pSortableColumn="estab_alias">alias&nbsp;<p-sortIcon field="alias" /></th>
+          <th pSortableColumn="estab_tipo">tipo&nbsp;<p-sortIcon field="tipo" /></th>
+          <th pSortableColumn="estab_desc">descripci&oacute;n&nbsp;<p-sortIcon field="descripcion" /></th>
+          <th pSortableColumn="estab_encargado">encargado&nbsp;<p-sortIcon field="encargado" /></th>
+          <th pSortableColumn="aplica_ingresos">ingresos&nbsp;<p-sortIcon field="ingresos" /></th>
+          <th pSortableColumn="aplica_egresos">egresos&nbsp;<p-sortIcon field="egresos" /></th>
+          <th pSortableColumn="aplica_interno">interno&nbsp;<p-sortIcon field="interno" /></th>
+          <th pSortableColumn="aplica_almacen">aplica para almacen&nbsp;<p-sortIcon field="Almacen" /></th>
+        </tr>
+      </ng-template>
+      <ng-template #body let-est>
+        <tr>
+          <td>
+            <div class="form-check radio_check">
+              <input class="form-check-input" type="checkbox" name="caja_select"
+                [ngClass]="ctinfo.ubicacion_token == est.token_establecimiento ? 'disabled' : ''"
+                [attr.disabled]="ctinfo.ubicacion_token == est.token_establecimiento ? true : null"
+                [attr.aria-disabled]="ctinfo.ubicacion_token == est.token_establecimiento ? true : null"
+                [checked]="est.select_for_centrotrab || ctinfo.ubicacion_token == est.token_establecimiento"
+                (click)="selectEstablecimiento($event.target,est.token_establecimiento,ctinfo.centrotrab_uuid);">
+            </div>
+          </td>
+          <td>{{est.estab_folio}}</td>
+          <td>{{est.estab_alias}}</td>
+          <td>{{est.estab_tipo}}</td>
+          <td>{{est.estab_desc}}</td>
+          <td>{{est.estab_encargado}}</td>
+          <td>{{est.aplica_ingresos ? ['enabled' | translate] : ['disabled' | translate]}}</td>
+          <td>{{est.aplica_egresos ? ['enable' | translate] : ['disabled' | translate]}}</td>
+          <td>{{est.aplica_interno ? ['enable' | translate] : ['disabled' | translate]}}</td>
+          <td>{{est.aplica_almacen ? ['enable' | translate] : ['disabled' | translate]}}</td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="10" class="text-center py-4">
+            <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+            <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+              {{'no_rows' | translate}}
+            </p>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+    <p-divider />
+    <div class="col-12 row" style="display: flex;justify-content: end;">
+      <button class="btn btn_extend text-bg-success rounded-3"
+        [ngClass]="!validaUpdateCentroTrabajo(ctinfo.centrotrab_uuid) ? 'disabled' : ''"
+        [attr.disabled]="!validaUpdateCentroTrabajo(ctinfo.centrotrab_uuid) ? true : null"
+        [attr.aria-disabled]="!validaUpdateCentroTrabajo(ctinfo.centrotrab_uuid) ? true : null">
+        <i class="fa-solid fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+      </button>
+    </div>
+    }
+  </form>
+  } @empty {
+  <div>No hay elementos</div>
+  }
+</p-dialog>

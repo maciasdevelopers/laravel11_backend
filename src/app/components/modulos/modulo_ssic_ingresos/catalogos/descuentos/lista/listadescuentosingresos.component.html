@@ -1,0 +1,115 @@
+<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco" #vContent>
+	<div class="contenido"><app-loader></app-loader>
+		<nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+		<div class="contenidoPagina">
+			<div class="listas_ps revanecer">
+				<div id="listaServicios" class="lista-div lista-divNoFlex row">
+					<h4>CATALOGO DE DESCUENTOS</h4>
+					<div class="col-12">
+						<div class="btn-group lista_botones col" role="group" aria-label="Basic example">
+							<a class="btn btn_extend bg-indigo-600" routerLink="../altadedescuentos"><i class="fa-solid fa-plus"></i>&nbsp;Registrar nuevo descuento</a>
+							<a class="btn btn_extend bg-indigo-600" (click)="listasDescuentosVigentes();listasDescuentosDeshabilitados();"><i class="fa-solid fa-rotate"></i>&nbsp;{{'list_updt' | translate}}</a>
+							<a class="btn btn_extend bg-indigo-600" data-bs-toggle="modal" data-bs-target="#windowDescuentosEliminados" (click)="listasDescuentosEliminados();"><i class="fa-solid fa-trash"></i>&nbsp;Descuentos eliminados</a>
+						</div>
+					</div>
+
+					<p-tabs value="0">
+						<p-tablist>
+							<p-tab value="0" (click)="listasDescuentosVigentes();">Descuentos vigentes</p-tab>
+							<p-tab value="1" (click)="listasDescuentosDeshabilitados();">Descuentos deshabilitados</p-tab>
+						</p-tablist>
+						<p-tabpanels>
+							<p-tabpanel value="0">
+								<div class="col-12 row" *ngIf="view_lista_descuentos == true" style="padding:0!important;">
+									<table id="table_ing_descuentos_true" class="display nowrap mdl-data-table white centered" style="width:100%!important;margin:0!important;">
+										<thead>
+											<tr>
+												<th class="ultimo"></th>
+												<th>Folio</th>
+												<th>Alias</th>
+												<th>{{'concept' | translate}}</th>
+												<th class="ultimo"></th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr *ngFor="let listaDesc of listaDescuentos">
+												<td class="ultimo"><a class="btn bg-blue-600" (click)="functViewDescuento(listaDesc.c_token);" data-bs-toggle="modal" data-bs-target="#windowDescuentoData"><i class="fa-solid fa-info"></i></a></td>
+												<td>{{listaDesc.folio}}</td>
+												<td>{{listaDesc.alias}}</td>
+												<td>{{listaDesc.concepto}}</td>
+												<td class="ultimo"><a class="btn btn_extend text-bg-danger rounded-3" (click)="eliminaDescuento(listaDesc.c_token);"><i class="fa-solid fa-trash"></i>&nbsp;{{'delete_row' | translate}}</a></td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</p-tabpanel>
+							<p-tabpanel value="1">
+								<div class="col-12 row" *ngIf="view_lista_descuentos_deshabilitados == true" style="padding:0!important;">
+									<table id="table_ing_descuentos_disabled" class="display nowrap mdl-data-table white centered" style="width:100%!important;margin:0!important;">
+										<thead>
+											<tr>
+												<th class="ultimo"></th>
+												<th>Folio</th>
+												<th>Alias</th>
+												<th>{{'concept' | translate}}</th>
+												<th class="ultimo"></th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr *ngFor="let listaDesc of listaDescuentosDeshabilitados">
+												<td class="ultimo"><a class="btn bg-blue-600" (click)="functViewDescuento(listaDesc.c_token);" data-bs-toggle="modal" data-bs-target="#windowDescuentoData"><i class="fa-solid fa-info"></i></a></td>
+												<td>{{listaDesc.folio}}</td>
+												<td>{{listaDesc.alias}}</td>
+												<td>{{listaDesc.concepto}}</td>
+												<td class="ultimo"><a class="btn btn_extend text-bg-danger rounded-3" (click)="eliminaDescuento(listaDesc.c_token);"><i class="fa-solid fa-trash"></i>&nbsp;{{'delete_row' | translate}}</a></td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</p-tabpanel>
+						</p-tabpanels>
+					</p-tabs>
+
+					<div class="modal fade bd-example-modal-lg" id="windowDescuentosEliminados" tabindex="-1" role="dialog" aria-labelledby="windowDescuentosEliminadosLabel" aria-hidden="true">
+						<div class="modal-dialog modal-fullscreen" style="margin: 1%;width: 98%!important;">
+							<div class="modal-content">
+								<div class="modal-header">
+									<h1 class="modal-title fs-5 bg-blue-ModalTitle" id="windowDescuentosEliminadosLabel">Descuentos eliminados</h1>
+									<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: transparent !important;"></button>
+								</div>
+								<div class="modal-body">
+									<div class="col-12 row" *ngIf="view_lista_descuentos_eliminados == true" style="padding:0!important;">
+										<table id="table_ing_descuentos_false" class="display nowrap mdl-data-table white centered" style="width:100%!important;margin:0!important;">
+											<thead>
+												<tr>
+													<th>Folio</th>
+													<th>{{'f_delete' | translate}}</th>
+													<th>Alias</th>
+													<th>{{'concept' | translate}}</th>
+													<th class="ultimo"></th>
+													<th class="ultimo"></th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr *ngFor="let listaDescdel of listaDescuentosEliminados">
+													<td>{{listaDescdel.folio}}</td>
+													<td>{{listaDescdel.fecha_delete}}</td>
+													<td>{{listaDescdel.alias}}</td>
+													<td>{{listaDescdel.concepto}}</td>
+													<td class="ultimo"><a class="btn bg-teal-700 btn_extend" (click)="restauraDescuento(listaDescdel.c_token);"><i class="fa-solid fa-trash-arrow-up"></i>&nbsp;{{'restore_row' | translate}}</a></td>
+													<td class="ultimo"><a class="btn btn_extend text-bg-danger rounded-3" (click)="eliminaDescuento(listaDescdel.c_token);"><i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}</a></td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+								</div>
+								<div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

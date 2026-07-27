@@ -1,0 +1,11 @@
+ul.collapsible li.licollapsible div.collapsible-header div.chip {
+    color: #353535 !important;
+}
+
+ul.collapsible li.licollapsible:hover div.collapsible-header div.chip,
+ul.collapsible li.licollapsible.active div.collapsible-header div.chip {
+    color: #e7e7ea !important;
+}
+
+div.mapa_view{display: flex;flex-wrap: wrap;justify-content: center;margin-bottom: 5px;}
+div.mapa_view h6{color: #e7e7ea!important;}

@@ -1,0 +1,357 @@
+<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco" #vContent>
+  <div class="contenido"><app-loader></app-loader>
+    <nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+    <div class="contenidoPagina">
+      <div class="listas_ps revanecer">
+        <div class="lista-div lista-divNoFlex row">
+          <h4 class="col-12">CATALOGO DE PEDIMENTOS ADUANALES</h4>
+          <div class="col-12">
+            <div class="btn-group lista_botones col" role="group" aria-label="Basic example">
+              <a class="btn btn_extend bg-indigo-600" (click)="pedimentosTrueList();pedimentosDeletedList();">
+                <i class="fa-solid fa-rotate"></i>&nbsp;{{'list_updt' | translate}}</a>
+              <a class="btn btn_extend bg-indigo-600" data-bs-toggle="modal" data-bs-target="#modalEliminadosPedimentos"
+                (click)="pedimentosDeletedList();">
+                <i class="fa-solid fa-trash" style="margin-left: 5px;"></i>&nbsp;Pedimentos eliminados
+              </a>
+            </div>
+
+            <p-tabs value="0">
+              <p-tablist>
+                <p-tab value="0" (click)="pedimentosTrueList();">Cat&aacute;logo de pedimentos</p-tab>
+                <p-tab value="1">Registrar pedimento</p-tab>
+              </p-tablist>
+              <p-tabpanels>
+                <p-tabpanel value="0">
+                  <div class="col-12">
+                    <p-table #pedimListTrue [value]="listaPedimentosTrue"
+                      [globalFilterFields]="['token_pedimento','folio_pedimento','fecha_registro','fecha_importacion','numero_pedimento','aduana']"
+                      dataKey="id" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]">
+                      <ng-template #caption>
+                        <div class="flex">
+                          <p-iconfield iconPosition="left" class="ml-auto">
+                            <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                            <input pInputText type="text"
+                              (input)="pedimListTrue.filterGlobal($event.target.value, 'contains')"
+                              placeholder="{{'bus_car' | translate}}" />
+                          </p-iconfield>
+                        </div>
+                      </ng-template>
+                      <ng-template #header>
+                        <tr>
+                          <th class="ultimo"></th>
+                          <th pSortableColumn="folio_pedimento">folio&nbsp;<p-sortIcon field="folio_pedimento" /></th>
+                          <th pSortableColumn="fecha_registro">{{'fecha_reg' | translate}}&nbsp;<p-sortIcon
+                              field="fecha_registro" /></th>
+                          <th pSortableColumn="fecha_importacion">fecha de importaci&oacute;n&nbsp;<p-sortIcon
+                              field="fecha_importacion" /></th>
+                          <th pSortableColumn="numero_pedimento">n&uacute;mero de pedimento&nbsp;<p-sortIcon
+                              field="numero_pedimento" /></th>
+                          <th pSortableColumn="aduana">Aduana&nbsp;<p-sortIcon field="aduana" /></th>
+                          <th class="ultimo"></th>
+                        </tr>
+                      </ng-template>
+                      <ng-template #body let-paRow>
+                        <tr>
+                          <td>
+                            <a class="btn bg-blue-600" (click)="verPedimento(paRow,paRow.token_pedimento);">
+                              <i class="fa-solid fa-info"></i>
+                            </a>
+                          </td>
+                          <td>{{paRow.folio_pedimento}}</td>
+                          <td>{{paRow.fecha_registro}}</td>
+                          <td>{{paRow.fecha_importacion}}</td>
+                          <td>{{paRow.numero_pedimento}}</td>
+                          <td>{{paRow.aduana}}</td>
+                          <td>
+                            <a class="btn btn_extend text-bg-danger rounded-3"
+                              (click)="btnDeletePedimento(paRow.token_pedimento);">
+                              <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                            </a>
+                          </td>
+                        </tr>
+                        <tr *ngIf="paRow === pedimentoSelected">
+                          <td colspan="7">
+                            <div class="col-12" *ngFor="let det of paRow.detalle">
+                              <div class="col-12 explain">
+                                <h6 class="title">Folio de pedimento</h6>
+                                <h6 class="content">{{det.folio_pedimento}}</h6>
+                              </div>
+
+                              <div class="col-12 explain">
+                                <h6 class="title">fecha de importaci&oacute;n</h6>
+                                <h6 class="content">{{det.fecha_importacion}}</h6>
+                              </div>
+
+                              <div class="col-12 explain">
+                                <h6 class="title">n&uacute;mero de pedimento</h6>
+                                <h6 class="content">{{det.numero_pedimento}}</h6>
+                              </div>
+
+                              <div class="col-12 explain">
+                                <h6 class="title">Aduana</h6>
+                                <h6 class="content">{{det.aduana}}</h6>
+                              </div>
+
+                              <div class="col-12 explain">
+                                <h6 class="title">{{'observ' | translate}}</h6>
+                                <h6 class="content">{{det.comentarios}}</h6>
+                              </div>
+
+                              <div class="col-12" *ngFor="let evd of det.evidencia_file">
+                                <div class="col-12 explain">
+                                  <h6 class="title">Documento</h6>
+                                  <h6 class="content">{{evd.name_documento}}</h6>
+                                </div>
+                                <div class="col-12">
+                                  <iframe name="iFramevalSatComprobante" class="iframeComprobante" width="100%"
+                                    height="600" title="Sitio del SAT" [src]="htmlPdfevidenciapedim"
+                                    style="border-radius: 8px;"></iframe>
+                                </div>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      </ng-template>
+                      <ng-template pTemplate="emptymessage">
+                        <tr>
+                          <td colspan="7" class="text-center py-4">
+                            <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                            <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                              {{'no_rows' | translate}}
+                            </p>
+                          </td>
+                        </tr>
+                      </ng-template>
+                    </p-table>
+                  </div>
+                </p-tabpanel>
+                <p-tabpanel value="1">
+                  <form class="row" #formRegistroPedAduanal="ngForm" autocomplete="off" enctype="multipart/form-data"
+                    (ngSubmit)="registraPedimento(formRegistroPedAduanal);">
+                    <div class="col-12 row">
+                      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input-group">
+                        <label class="activeInput">Fecha de importaci&oacute;n</label>
+                        <input id="dataPedimAdFecha" class="datepicker" (change)="checkFechaPedim($event.target)"
+                          name="fechaLoteAdd" type="date">
+                      </div>
+                      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input-group">
+                        <label for="numeroPedimento" class="activeInput">N&uacute;mero de pedimento</label>
+                        <input id="dataPedimAdNumeroPed" class="validate" name="numeroPedimento"
+                          (keyup)="checkNumeroImportacion($event.target)" type="text" required>
+                      </div>
+                      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input-group">
+                        <label for="aduanaData" class="activeInput">Aduana</label>
+                        <input id="dataPedimAdAduana" class="validate" name="aduanaData"
+                          (keyup)="checkPedimAduana($event.target)" type="text" required>
+                      </div>
+
+                      <div class="col-12 input-group">
+                        <label for="comentsLoteAdd" class="activeInput">Comentarios</label>
+                        <textarea id="dataPedimAdComentarios" class="validate materialize-textarea"
+                          name="comentsLoteAdd" type="text" required
+                          (keyup)="checkComentariosPedim($event.target)"></textarea>
+                      </div>
+
+                      <p-panel header="Evidencia"
+                        [attr.style]="'margin-top: 10px!important;margin-bottom: 10px!important;'">
+                        <p class="m-0">
+                          <p-table #dt [value]="[1]" dataKey="id" [globalFilterFields]="['nombre']">
+                            <ng-template #header>
+                              <tr>
+                                <th class="ultimo"></th>
+                                <th>{{'file_name' | translate}}</th>
+                                <th class="ultimo"></th>
+                                <th class="ultimo"></th>
+                                <th class="ultimo"></th>
+                              </tr>
+                            </ng-template>
+                            <ng-template #body let-product>
+                              <tr>
+                                <td><i class="fa-solid fa-upload"></i></td>
+                                <td>
+                                  <div class="mb-3" style="margin: 0!important;">
+                                    <input id="dataPedimAdDocs" class="form-control" type="file"
+                                      (change)="changeEscannerEvidPed($event);"
+                                      placeholder="EVIDENCIA DE PEDIMENTO ADUANAL" ngModel
+                                      style="padding: 0;line-height: 30px;width: 100%!important;">
+                                  </div>
+                                </td>
+                                <td class="ultimo">
+                                  <a class="btn btn_extend bg-indigo-600" data-bs-toggle="modal"
+                                    data-bs-target="#scannerEvidenciaPedim" (click)="clickEscannerEvidenciaPedim();"><i
+                                      class="fa-solid fa-qrcode"></i>&nbsp;{{' ESCANEAR QR'}}</a>
+                                </td>
+                                <td class="ultimo">
+                                  <a class="btn btn_extend bg-indigo-600" data-bs-toggle="modal"
+                                    data-bs-target="#modalIframeEvidencia"
+                                    [ngClass]="!imagenAltaPdfevidenciapedim ? 'disabled' : ''"
+                                    [attr.disabled]="!imagenAltaPdfevidenciapedim ? true : null"
+                                    [attr.aria-disabled]="!imagenAltaPdfevidenciapedim ? true : null">
+                                    <i class="fa-solid fa-eye"></i>&nbsp;{{'file_list_open' | translate}}
+                                  </a>
+                                </td>
+                                <td class="ultimo">
+                                  <a class="btn btn_extend text-bg-danger rounded-3"
+                                    [ngClass]="!imagenAltaPdfevidenciapedim ? 'disabled' : ''"
+                                    [attr.disabled]="!imagenAltaPdfevidenciapedim ? true : null"
+                                    [attr.aria-disabled]="!imagenAltaPdfevidenciapedim ? true : null">
+                                    <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}</a>
+                                  <!--(click)="imagenNameEvidenciaXMl != '' && deleteDocSitfiscal();"-->
+                                </td>
+                              </tr>
+                            </ng-template>
+                            <ng-template pTemplate="emptymessage">
+                              <tr>
+                                <td colspan="5" class="text-center py-4">
+                                  <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                                  <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                    {{'no_rows' | translate}}
+                                  </p>
+                                </td>
+                              </tr>
+                            </ng-template>
+                          </p-table>
+                        </p>
+                      </p-panel>
+
+                      <div class="col-12 row">
+                        <div class="col-12 col-sm-12 col-md-6 col-lg-8 col-xl-8 col-xxl-9"></div>
+                        <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3"
+                          style="display: flex !important;justify-content: end!important;">
+                          <button class="btn btn_extend text-bg-success rounded-3"
+                            [ngClass]="!verificaData ? 'disabled' : ''" [attr.disabled]="!verificaData ? true : null"
+                            [attr.aria-disabled]="!verificaData ? true : null" type="submit">
+                            <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </form>
+                </p-tabpanel>
+              </p-tabpanels>
+            </p-tabs>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade bd-example-modal-lg" id="modalProdEliminados" tabindex="-1" role="dialog"
+  aria-labelledby="modalProdEliminadosLabel" aria-hidden="true">
+  <div class="modal-dialog modal-fullscreen" style="margin: 1%;width: 98%!important;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="modalProdEliminadosLabel">INFORMACI&Oacute;N DE PRODUCTOS
+          ELIMINADOS</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+          style="background-color: transparent !important;"></button>
+      </div>
+      <div class="modal-body">
+        <div class="col-12">
+          <p-table #pedimDelList [value]="listaPedimentosDeleted"
+            [globalFilterFields]="['token_pedimento','folio_pedimento','fecha_registro','fecha_importacion','numero_pedimento','aduana','fecha_eliminacion']"
+            dataKey="id" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]">
+            <ng-template #caption>
+              <div class="flex">
+                <p-iconfield iconPosition="left" class="ml-auto">
+                  <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                  <input pInputText type="text" (input)="pedimDelList.filterGlobal($event.target.value, 'contains')"
+                    placeholder="{{'bus_car' | translate}}" />
+                </p-iconfield>
+              </div>
+            </ng-template>
+            <ng-template #header>
+              <tr>
+                <th pSortableColumn="folio_pedimento">folio&nbsp;<p-sortIcon field="folio_pedimento" /></th>
+                <th pSortableColumn="fecha_registro">{{'fecha_reg' | translate}}&nbsp;<p-sortIcon
+                    field="fecha_registro" /></th>
+                <th pSortableColumn="fecha_importacion">fecha de importaci&oacute;n&nbsp;<p-sortIcon
+                    field="fecha_importacion" /></th>
+                <th pSortableColumn="numero_pedimento">n&uacute;mero de pedimento&nbsp;<p-sortIcon
+                    field="numero_pedimento" /></th>
+                <th pSortableColumn="aduana">Aduana&nbsp;<p-sortIcon field="aduana" /></th>
+                <th pSortableColumn="fecha_eliminacion">{{'fecha_delete' | translate}}&nbsp;<p-sortIcon
+                    field="fecha_eliminacion" /></th>
+                <th class="ultimo"></th>
+                <th class="ultimo"></th>
+              </tr>
+            </ng-template>
+            <ng-template #body let-pdRow>
+              <tr>
+                <td>{{pdRow.folio_pedimento}}</td>
+                <td>{{pdRow.fecha_registro}}</td>
+                <td>{{pdRow.fecha_importacion}}</td>
+                <td>{{pdRow.numero_pedimento}}</td>
+                <td>{{pdRow.aduana}}</td>
+                <td>{{pdRow.fecha_eliminacion}}</td>
+                <td>
+                  <a class="btn btn_extend text-bg-success rounded-3"
+                    (click)="btnRestPedimListaPap(pdRow.token_pedimento);">
+                    <i class="fa-solid fa-trash-arrow-up"></i>&nbsp;{{'restore_row' | translate}}
+                  </a>
+                </td>
+                <td>
+                  <a class="btn btn_extend text-bg-danger rounded-3"
+                    (click)="btnDelPedimListaPape(pdRow.token_pedimento);">
+                    <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                  </a>
+                </td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="8" class="text-center py-4">
+                  <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                  <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                    {{'no_rows' | translate}}
+                  </p>
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+      </div>
+      <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade bd-example-modal-lg" id="scannerEvidenciaPedim" tabindex="-1" role="dialog"
+  aria-labelledby="scannerEvidenciaPedimLabel" aria-hidden="true">
+  <div class="modal-dialog modal-fullscreen" style="margin: 1%;width: 98%!important;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="scannerEvidenciaPedimLabel">ESCANNER DE EVIDENCIA DE
+          PEDIMENTO ADUANAL</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+          style="background-color: transparent !important;"></button>
+      </div>
+      <div class="modal-body">
+        <div id="readerEvidenciaPedim" style="height: 400px;width: 100%;background-color: #353535;border-radius: 8px;">
+        </div>
+      </div>
+      <div class="modal-footer"></div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade bd-example-modal-lg" id="modalIframeEvidencia" tabindex="-1" role="dialog"
+  aria-labelledby="modalIframeEvidenciaLabel" aria-hidden="true">
+  <div class="modal-dialog modal-fullscreen" style="margin: 1%;width: 98%!important;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="modalIframeEvidenciaLabel">{{'doc_an' | translate}}</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+          style="background-color: transparent !important;"></button>
+      </div>
+      <div class="modal-body">
+        <div id="divImgClassEvidPedim" class="col-12 white-text" style="height: calc(100% - 60px);">
+        </div>
+        <div class="modal-footer"></div>
+      </div>
+    </div>
+  </div>

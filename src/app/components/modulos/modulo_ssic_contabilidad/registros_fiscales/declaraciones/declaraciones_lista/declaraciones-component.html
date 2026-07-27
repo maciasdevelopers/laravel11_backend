@@ -1,0 +1,986 @@
+<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco" #vContent>
+  <div class="contenido">
+    <app-loader></app-loader>
+    <nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+    <main class="contenidoPagina">
+      <div class="listas_ps revanecer">
+        <div class="lista-div lista-divNoFlex row">
+          <h4 class="col-12">Declaraciones</h4>
+          <div class="col-12">
+            <div class="btn-group lista_botones col" role="group" arial-label="Basic example">
+              <a class="btn btn_extend bg-indigo-600"
+                (click)="listadoDeclaraciones(); listadoDeletedDeclaraciones()">
+                <i class="fa-solid fa-rotate"></i>&nbsp;{{ 'list_updt' | translate }}
+              </a>
+              <a class="btn btn_extend bg-indigo-600" (click)="declaracionVerFormReg()">
+                <i class="fa-solid fa-plus"></i>&nbsp;Registrar nueva declaraci&oacute;n
+              </a>
+              <a class="btn btn_extend bg-indigo-600" (click)="listadoDeletedDeclaraciones(); verVentanaDeclaracionesEliminadas()">
+                <i class="fa-solid fa-trash" style="margin-left: 5px"></i>&nbsp;Declaraciones eliminadas</a>
+              <a class="btn btn_extend bg-green-600 descarga_lista_excel"
+                [ngClass]="listaDeclaracionesRegistradas.length == 0 ? 'disabled' : ''"
+                [attr.disabled]="listaDeclaracionesRegistradas.length == 0 ? true : null"
+                [attr.aria-disabled]="listaDeclaracionesRegistradas.length == 0 ? true : null"
+                (click)="listaDeclaracionesRegistradas.length > 0 && descarga_excel_declaraciones()">
+                <i class="fa-solid fa-file-excel" style="margin-left: 5px"></i>&nbsp;descargar
+              </a>
+            </div>
+          </div>
+          <div class="col-12">
+            <p-table #listImpDecTable [value]="listaDeclaracionesRegistradas" [globalFilterFields]="searchDeclaGeneral" dataKey="id" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10, 20, 30, 50, 100]">
+              <ng-template #caption>
+                <div class="flex" style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;" ngbDropdown>
+                  <a class="btn btn_extend" [ngClass]="indicadorDeclaraciones == 'hoy' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="verDeclaraciones('hoy');">
+                    <i class="fa-solid fa-calendar-days"></i>&nbsp;Hoy
+                  </a>
+                  <a class="btn btn_extend" [ngClass]="indicadorDeclaraciones == 'esta_semana' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="verDeclaraciones('esta_semana');">
+                    <i class="fa-solid fa-calendar-days"></i>&nbsp;Esta semana
+                  </a>
+                  <a class="btn btn_extend" [ngClass]="indicadorDeclaraciones == 'este_mes' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="verDeclaraciones('este_mes');">
+                    <i class="fa-solid fa-calendar-days"></i>&nbsp;Este mes
+                  </a>
+                  <a class="btn btn_extend" [ngClass]="indicadorDeclaraciones == 'mes_anterior' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="verDeclaraciones('mes_anterior');">
+                    <i class="fa-solid fa-arrow-left"></i>&nbsp;mes anterior
+                  </a>
+                  <a id="menuDropacreGral" class="btn btn_extend" [ngClass]="indicadorDeclaraciones == 'otras_fechas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" ngbDropdownToggle>
+                    <i class="fa-solid fa-list-ul"></i>&nbsp;otras fechas
+                  </a>
+                  <div class="dropdown-menu-end menu-despegable" ngbDropdownMenu="menuDropacreGral" style="padding: 0!important; margin: 0!important; width: max-content!important; max-height: 400px; overflow-y: auto;">
+                    <div class="col-12 input-group">
+                      <label for="acree_gral_otras_fechas" class="activeInput">Periodo de fechas</label>
+                      <p-datepicker id="acree_gral_otras_fechas" name="acree_gral_otras_fechas" [(ngModel)]="rangoPeriodoDeclaraciones" appendTo="body" dateFormat="dd/mm/yy" 
+                        placeholder="dd/mm/aaaa" selectionMode="range" (onSelect)="verDeclaraciones('otras_fechas');"/>
+                    </div>
+                  </div>
+                  <a class="btn btn_extend" [ngClass]="indicadorDeclaraciones == 'all_partidas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="verDeclaraciones('all_partidas');">
+                    <i class="fa-solid fa-list-ul"></i>&nbsp;todos los registros
+                  </a>
+                  <a class="btn btn_extend bg-green-600 descarga_lista_excel" style="height: 25px !important;"><!-- (click)="descarga_excel_pagos();"-->
+                    descargar&nbsp;<i class="fa-solid fa-file-excel"></i>
+                  </a>
+                  <p-iconfield iconPosition="left" class="ml-auto">
+                    <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                    <input pInputText type="text" (input)="listImpDecTable.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+                  </p-iconfield>
+                </div>
+              </ng-template>
+              <ng-template #header>
+                <tr>
+                  <th rowspan="2" class="ultimo"></th>
+                  <th rowspan="2" pSortableColumn="declaracion_folio">Folio&nbsp;<p-sortIcon field="declaracion_folio"/></th>
+                  <th rowspan="2" pSortableColumn="declaracion_fecha_contabilizacion">{{ 'fecha_cont' | translate }}&nbsp;<p-sortIcon field="declaracion_fecha_contabilizacion"/></th>
+                  <th rowspan="2" pSortableColumn="declaracion_tipo">Tipo de declaraci&oacute;n&nbsp;<p-sortIcon field="declaracion_tipo"/></th>
+                  <th rowspan="2" pSortableColumn="declaracion_periodicidad">Periodicidad&nbsp;<p-sortIcon field="declaracion_periodicidad"/></th>
+                  <th rowspan="2" pSortableColumn="declaracion_ejercicio">Ejercicio&nbsp;<p-sortIcon field="declaracion_ejercicio"/></th>
+                  <th rowspan="2" pSortableColumn="declaracion_periodo_inicio">Periodo&nbsp;<p-sortIcon field="declaracion_periodo_inicio"/></th>
+                  <th rowspan="2" pSortableColumn="declaracion_fecha_presentacion">Fecha de presentaci&oacute;n&nbsp;<p-sortIcon field="declaracion_fecha_presentacion"/></th>
+                  <th rowspan="2" pSortableColumn="declaracion_medio_presentacion">Medio de presentaci&oacute;n&nbsp;<p-sortIcon field="declaracion_medio_presentacion"/></th>
+                  <th rowspan="2" pSortableColumn="declaracion_fecha_vencimiento">Vencimiento obligaci&oacute;n&nbsp;<p-sortIcon field="declaracion_fecha_vencimiento"/></th>
+                  <th rowspan="2" pSortableColumn="declaracion_version">Versi&oacute;n&nbsp;<p-sortIcon field="declaracion_version"/></th>
+                  <th rowspan="2" pSortableColumn="declaracion_numero_operacion">Numero de operaci&oacute;n&nbsp;<p-sortIcon field="declaracion_numero_operacion"/></th>
+                  <th rowspan="2" pSortableColumn="declaracion_linea_de_captura">L&iacute;nea de captura&nbsp;<p-sortIcon field="declaracion_linea_de_captura"/></th>
+                  <th rowspan="2" pSortableColumn="declaracion_moneda">{{ 'mon_name' | translate }}&nbsp;<p-sortIcon field="declaracion_moneda"/></th>
+                  <th rowspan="2" pSortableColumn="declaracion_observaciones">{{ 'observ' | translate }}&nbsp;<p-sortIcon field="declaracion_observaciones"/></th>
+                  <th colspan="5"><i class="fa-solid fa-money-check"></i>&nbsp;Orden de pago</th>
+                  <th rowspan="2" class="ultimo"></th>
+                </tr>
+                <tr>
+                  <th pSortableColumn="cantidad_a_pagar">Cantidad a pagar&nbsp;<p-sortIcon field="cantidad_a_pagar"/></th>
+                  <th pResizableColumn pSortableColumn="dec_pago">pagado&nbsp;<p-sortIcon field="dec_pago"/></th>
+                  <th pResizableColumn pSortableColumn="dec_saldo">Saldo&nbsp;<p-sortIcon field="dec_saldo"/></th>
+                  <th pResizableColumn pSortableColumn="dec_ord_pago_folio">Orden de pago&nbsp;<p-sortIcon field="dec_ord_pago_folio"/></th>
+                  <th class="ultimo"></th>
+                </tr>
+              </ng-template>
+              <ng-template #body let-dec>
+                <tr>
+                  <td class="ultimo">
+                    <a class="btn bg-blue-600" (click)="desgloseDeclaracion(dec.declaracion_token)">
+                      <i class="fa-solid fa-info"></i>
+                    </a>
+                  </td>
+                  <td>{{dec.declaracion_folio}}</td>
+                  <td class="name">{{ dec.declaracion_fecha_contabilizacion }}</td>
+                  <td class="name">{{ dec.declaracion_tipo }}</td>
+                  <td class="name">{{ dec.declaracion_periodicidad }}</td>
+                  <td class="name">{{ dec.declaracion_ejercicio }}</td>
+                  <td class="name">{{dec.declaracion_periodo_inicio == dec.declaracion_periodo_fin ? dec.declaracion_periodo_fin : dec.declaracion_periodo_inicio + ' - ' + dec.declaracion_periodo_fin}}</td>
+                  <td class="name">{{ dec.declaracion_fecha_presentacion }}</td>
+                  <td class="name">{{ dec.declaracion_medio_presentacion }}</td>
+                  <td class="name">{{ dec.declaracion_fecha_vencimiento }}</td>
+                  <td class="name">{{ dec.declaracion_version }}</td>
+                  <td class="name">{{ dec.declaracion_numero_operacion }}</td>
+                  <td class="name">{{ dec.declaracion_linea_de_captura }}</td>
+                  <td class="name">{{ dec.declaracion_moneda }}</td>
+                  <td class="name">{{ dec.declaracion_observaciones }}</td>
+                  <td class="td_importes">{{ dec.cantidad_a_pagar }}</td>
+                  <td class="td_importes">{{ dec.dec_pago }}</td>
+                  <td class="td_importes">{{ dec.dec_saldo }}</td>
+                  <td>{{ dec.dec_ord_pago_folio }}</td>
+                  <td class="ultimo">
+                    <a class="btn btn_extend text-bg-success rounded-3"
+                      [ngClass]="dec.dec_ord_pago_token == '' ? 'disabled' : ''"
+                      [attr.disabled]="dec.dec_ord_pago_token == '' ? true : null"
+                      [attr.aria-disabled]="dec.dec_ord_pago_token == '' ? true : null"
+                      (click)="dec.dec_ord_pago_token != '' && verISNSeguimientoOrdenPago(dec.declaracion_token, dec.dec_ord_pago_token);">
+                      <i class="fa-solid fa-money-check-dollar"></i>&nbsp;Seguimiento
+                    </a>
+                  </td>
+                  <td class="ultimo">
+                    <a class="btn btn_extend text-bg-danger rounded-3"
+                      [ngClass]="!dec.puede_eliminar ? 'disabled' : ''"
+                      [attr.disabled]="!dec.puede_eliminar ? true : null"
+                      [attr.aria-disabled]="!dec.puede_eliminar ? true : null"
+                      (click)="dec.puede_eliminar && deleteDeclaracion(dec.declaracion_token);">
+                      <i class="fa-solid fa-eraser"></i>&nbsp;{{ 'delete_row' | translate }}
+                    </a>
+                  </td>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td colspan="21" class="text-center py-4">
+                    <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280"></i>
+                    <p class="mt-2" style="font-size: 1.2rem; color: #374151">
+                      {{ 'no_rows' | translate }}
+                    </p>
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+        </div>
+      </div>
+    </main>
+    <app-footer-inside></app-footer-inside>
+  </div>
+</div>
+
+<p-dialog header="Registro de declaraci&oacute;n" [(visible)]="declaracion_ver_form_reg" [modal]="true" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  @if (declaracion_ver_form_reg) {
+    <contabilidad_declaraciones_registro></contabilidad_declaraciones_registro>
+  }
+</p-dialog>
+
+<p-dialog header="Informaci&oacute;n de la declaraci&oacute;n de impuestos federales {{decfed_detalle_folio}}" [(visible)]="ver_ventana_declaracion_detalle" [modal]="true" [style]="{ width: '50rem' }"
+  [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  @if (ver_info_declaracion_detalle) {
+    @for (dec_row of detalleDeclaracionImpFed; track $index) {
+      @if (dec_row.vinculacion_a_pagos) {
+        <div class="col-12 row">
+          <div class="col-12 explain">
+            <h6 class="title">{{ 'fecha_cont' | translate }}</h6>
+            <h6 class="content">{{ dec_row.declaracion_fecha_contabilizacion }}</h6>
+          </div>
+          <div class="col-12 explain">
+            <h6 class="title">Tipo de declaraci&oacute;n</h6>
+            <h6 class="content">{{ dec_row.declaracion_tipo }}</h6>
+          </div>
+          <div class="col-12 explain">
+            <h6 class="title">Periodicidad</h6>
+            <h6 class="content">{{ dec_row.declaracion_periodicidad }}</h6>
+          </div>
+          <div class="col-12 explain">
+            <h6 class="title">Ejercicio</h6>
+            <h6 class="content">{{ dec_row.declaracion_ejercicio }}</h6>
+          </div>
+          <div class="col-12 explain">
+            <h6 class="title">Periodo</h6>
+            <h6 class="content">{{ dec_row.declaracion_periodo }}</h6>
+          </div>
+          <div class="col-12 explain">
+            <h6 class="title">Fecha de presentaci&oacute;n</h6>
+            <h6 class="content">{{ dec_row.declaracion_fecha_presentacion }}</h6>
+          </div>
+          <div class="col-12 explain">
+            <h6 class="title">Medio de presentaci&oacute;n</h6>
+            <h6 class="content">{{ dec_row.declaracion_medio_presentacion }}</h6>
+          </div>
+          <div class="col-12 explain">
+            <h6 class="title">Vencimiento obligaci&oacute;n</h6>
+            <h6 class="content">{{ dec_row.declaracion_fecha_vencimiento }}</h6>
+          </div>
+          <div class="col-12 explain">
+            <h6 class="title">Versi&oacute;n</h6>
+            <h6 class="content">{{ dec_row.declaracion_version }}</h6>
+          </div>
+          <div class="col-12 explain">
+            <h6 class="title">Numero de operaci&oacute;n</h6>
+            <h6 class="content">{{ dec_row.declaracion_numero_operacion }}</h6>
+          </div>
+          <div class="col-12 explain">
+            <h6 class="title">L&iacute;nea de captura</h6>
+            <h6 class="content">{{ dec_row.declaracion_linea_de_captura }}</h6>
+          </div>
+
+          <p-divider />
+          <div class="col-12 explain">
+            <h6 class="title">Impuestos que declara:</h6>
+          </div>
+          <p-table #decDesReg [value]="modelDeclaraciones.declaraciones_lista_registrada" showGridlines [resizableColumns]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10, 20, 30, 50, 100]" 
+            [paginator]="true" [globalFilterFields]="['concepto_pago_name','a_cargo_format','actualizaciones_format','recargos_format','otros_cargos_format','otros_abonos_format','cantidad_a_pagar_format',]">
+            <ng-template #caption>
+              <div class="flex" style="display: flex !important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row !important;align-content: center;" ngbDropdown>
+                <p-iconfield iconPosition="left" class="ml-auto">
+                  <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                  <input pInputText type="text" (input)="decDesReg.filterGlobal($event.target.value, 'contains')" placeholder="{{ 'bus_car' | translate }}"/>
+                </p-iconfield>
+              </div>
+            </ng-template>
+            <ng-template #header>
+              <tr>
+                <th class="ultimo"></th>
+                <th pResizableColumn pSortableColumn="concepto_pago_name">concepto de pago&nbsp;<p-sortIcon field="concepto_pago_name" /></th>
+                <th pResizableColumn pSortableColumn="importe_a_favor_format">Importe a favor&nbsp;<p-sortIcon field="importe_a_favor_format" /></th>
+                <th pResizableColumn pSortableColumn="a_cargo_format">A cargo&nbsp;<p-sortIcon field="a_cargo_format" /></th>
+                <th pResizableColumn pSortableColumn="actualizaciones_format">Actualizaciones&nbsp;<p-sortIcon field="actualizaciones_format" /></th>
+                <th pResizableColumn pSortableColumn="recargos_format">Recargos&nbsp;<p-sortIcon field="recargos_format" /></th>
+                <th pResizableColumn pSortableColumn="otros_cargos_format">Otros cargos&nbsp;<p-sortIcon field="otros_cargos_format" /></th>
+                <th pResizableColumn pSortableColumn="otros_abonos_format">Otros abonos&nbsp;<p-sortIcon field="otros_abonos_format" /></th>
+                <th pResizableColumn pSortableColumn="cantidad_a_pagar_format">Cantidad a pagar&nbsp;<p-sortIcon field="cantidad_a_pagar_format" /></th>
+              </tr>
+            </ng-template>
+            <ng-template #body let-ldec let-posicion="rowIndex">
+              <tr>
+                <td>{{ posicion + 1 }}</td>
+                <td class="name">{{ ldec.concepto_pago_name }}</td>
+                <td class="td_importes">{{ ldec.importe_a_favor_format }}</td>
+                <td class="td_importes">{{ ldec.a_cargo_format }}</td>
+                <td class="td_importes">{{ ldec.actualizaciones_format }}</td>
+                <td class="td_importes">{{ ldec.recargos_format }}</td>
+                <td class="td_importes">{{ ldec.otros_cargos_format }}</td>
+                <td class="td_importes">{{ ldec.otros_abonos_format }}</td>
+                <td class="td_importes">{{ ldec.cantidad_a_pagar_format }}</td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="footer">
+              <tr>
+                <td colspan="2" class="td_importes"><strong>TOTAL A PAGAR</strong></td>
+                  <td class="td_importes"><strong>{{calculo_registrado_importe_a_favor}}</strong></td>
+                  <td class="td_importes"><strong>{{calculo_registrado_total_a_cargo}}</strong></td>
+                  <td class="td_importes"><strong>{{calculo_registrado_total_actualizaciones}}</strong></td>
+                  <td class="td_importes"><strong>{{calculo_registrado_total_recargos}}</strong></td>
+                  <td class="td_importes"><strong>{{calculo_registrado_total_otros_cargos}}</strong></td>
+                  <td class="td_importes"><strong>{{calculo_registrado_total_otros_abonos}}</strong></td>
+                  <td class="td_importes"><strong>{{calculo_registrado_total_cantidad_a_pagar}}</strong></td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="9" class="text-center py-4">
+                  <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280"></i>
+                  <p class="mt-2" style="font-size: 1.2rem; color: #374151">
+                    {{ 'no_rows' | translate }}
+                  </p>
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+
+          <div class="col-12 explain" style="margin-bottom: 10px !important">
+            <h6 class="title">{{ 'observ' | translate }}</h6>
+            <h6 class="content">{{ dec_row.declaracion_observaciones }}</h6>
+          </div>
+
+          <p-divider />
+          <div class="col-12 explain">
+            <h6 class="title">Anexos:</h6>
+          </div>
+          <p-table #decDesReg [value]="modelDeclaraciones.anexos_registrados" showGridlines [resizableColumns]="true" [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }"
+            [rowsPerPageOptions]="[10, 20, 30, 50, 100]" [globalFilterFields]="['name_documento']">
+            <ng-template #caption>
+              <div class="flex" style="display: flex !important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row !important;align-content: center;" ngbDropdown>
+                <p-iconfield iconPosition="left" class="ml-auto">
+                  <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                  <input pInputText type="text" (input)="decDesReg.filterGlobal($event.target.value, 'contains')" placeholder="{{ 'bus_car' | translate }}"/>
+                </p-iconfield>
+              </div>
+            </ng-template>
+            <ng-template #header>
+              <tr>
+                <th pResizableColumn pSortableColumn="name_documento">
+                  {{ 'file' | translate }}&nbsp;<p-sortIcon field="name_documento" />
+                </th>
+              </tr>
+            </ng-template>
+            <ng-template #body let-anex>
+              <tr>
+                <td class="name">{{ anex.name_documento }}</td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td class="text-center py-4">
+                  <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280"></i>
+                  <p class="mt-2" style="font-size: 1.2rem; color: #374151">
+                    {{ 'no_rows' | translate }}
+                  </p>
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+      } @else {
+        <form class="formDeclaracionImp" #formDeclaracionImp="ngForm" [formGroup]="infoDecForm" autocomplete="off" name="formDeclaracionImp" 
+          enctype="multipart/form-data" (ngSubmit)="validate_declaracion_reg(dec_row.declaracion_token) && declaracionUpdate(formDeclaracionImp, dec_row.declaracion_token)">
+          <div class="col-12 row" style="padding: 0 !important">
+            <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-4 input-group">
+              <label for="declaFechaCont" class="activeInput">{{ 'fecha_cont' | translate }}</label>
+              <input id="declaFechaCont" type="date" name="declaFechaCont" [value]="dec_row.declaracion_fecha_contabilizacion" (change)="select_fecha_contabilizacion($event.target, dec_row.declaracion_token)"/>
+            </div>
+            <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-4 input-group">
+              <label for="declaTipo" class="activeInput">Tipo de declaraci&oacute;n</label>
+              <p-select [options]="tipos_declaracion" formControlName="tipo_declaracion" optionValue="tipo" id="declaTipo" name="declaTipo" optionLabel="entidad" [filter]="true" appendTo="body"
+                filterBy="entidad" [showClear]="true" [placeholder]="'opt_select' | translate" class="w-full md:w-56" (onChange)="changeTipoDeclaracion($event.value, dec_row.declaracion_token)">
+                <ng-template #selectedItem let-sel>
+                  <div class="flex items-center gap-2">
+                    <div>{{ sel.tipo }}</div>
+                  </div>
+                </ng-template>
+                <ng-template let-reg #item>
+                  <div class="flex items-center gap-2">
+                    <div>{{ reg.tipo }}</div>
+                  </div>
+                </ng-template>
+              </p-select>
+            </div>
+            <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-4 input-group">
+              <label for="declaPeriodicidad" class="activeInput">Periodicidad</label>
+              <p-select [options]="tipos_periodicidad" formControlName="periodicidad" optionValue="periodicidad" id="declaPeriodicidad" name="declaPeriodicidad" optionLabel="entidad" [filter]="true" appendTo="body"
+                filterBy="entidad" [showClear]="true" [placeholder]="'opt_select' | translate" class="w-full md:w-56" (onChange)="changePeriodicidad($event.value, dec_row.declaracion_token)">
+                <ng-template #selectedItem let-selectedOption>
+                  <div class="flex items-center gap-2">
+                    <div>{{ selectedOption.periodicidad }}</div>
+                  </div>
+                </ng-template>
+                <ng-template let-prov #item>
+                  <div class="flex items-center gap-2">
+                    <div>{{ prov.periodicidad }}</div>
+                  </div>
+                </ng-template>
+              </p-select>
+            </div>
+            <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-4 input-group">
+              <label for="declaEjercicio" class="activeInput">Ejercicio</label>
+              <p-datepicker id="declaEjercicio" name="declaEjercicio" formControlName="ejercicio" view="year" dateFormat="yy"
+                [placeholder]="'opt_select' | translate" [readonlyInput]="true" (onSelect)="selectEjercicio(dec_row.declaracion_token)"/>
+            </div>
+            <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-4 input-group">
+              <label for="declaPeriodo" class="activeInput">Periodo</label>
+              <p-datepicker id="declaPeriodo" [ngClass]="modelDeclaraciones.ejercicio == '' ? 'disabled' : ''" [disabled]="modelDeclaraciones.ejercicio == ''" 
+                [attr.aria-disabled]="modelDeclaraciones.ejercicio == '' ? true : null" name="declaPeriodo" formControlName="periodo" view="month" [minDate]="min_ejercicio" 
+                [maxDate]="max_ejercicio" selectionMode="range" dateFormat="MM/yy" [placeholder]="'opt_select' | translate" [readonlyInput]="true"
+                (onSelect)="selectEjercicioPeriodo(dec_row.declaracion_token)"
+              />
+            </div>
+            <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-4 input-group">
+              <label for="declaFechaPresent" class="activeInput">Fecha de presentaci&oacute;n</label>
+              <input id="declaFechaPresent" type="date" name="declaFechaPresent" [value]="dec_row.declaracion_fecha_presentacion" (change)="select_fecha_presentacion($event.target, dec_row.declaracion_token)"/>
+            </div>
+            <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+              <label for="declaMedioPresent" class="activeInput">Medio de presentaci&oacute;n</label>
+              <p-select [options]="medios_presentacion" formControlName="medio_presentacion" optionValue="medio" id="declaMedioPresent" name="declaMedioPresent"
+                optionLabel="entidad" [filter]="true" appendTo="body" filterBy="entidad" [showClear]="true" [placeholder]="'opt_select' | translate" class="w-full md:w-56"
+                (onChange)="changeMedioPresentacion($event.value, dec_row.declaracion_token)">
+                <ng-template #selectedItem let-sel>
+                  <div class="flex items-center gap-2">
+                    <div>{{ sel.medio }}</div>
+                  </div>
+                </ng-template>
+                <ng-template let-med #item>
+                  <div class="flex items-center gap-2">
+                    <div>{{ med.medio }}</div>
+                  </div>
+                </ng-template>
+              </p-select>
+            </div>
+            <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+              <label for="declaVencimOblig" class="activeInput">Vencimiento obligaci&oacute;n</label>
+              <input id="declaVencimOblig" type="date" name="declaVencimOblig" [value]="dec_row.declaracion_fecha_vencimiento" (change)="select_vencimiento_obligacion($event.target, dec_row.declaracion_token)"/>
+            </div>
+            <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+              <label for="declaVersion" class="activeInput">Versi&oacute;n</label>
+              <input id="declaVersion" type="text" name="declaVersion" [value]="dec_row.declaracion_version" (input)="keyup_version($event.target, dec_row.declaracion_token)"/>
+            </div>
+            <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+              <label for="declaNumOperacion" class="activeInput">Numero de operaci&oacute;n</label>
+              <input id="declaNumOperacion" type="text" name="declaNumOperacion" [value]="dec_row.declaracion_numero_operacion" (input)="keyup_numero_operacion($event.target, dec_row.declaracion_token)"/>
+            </div>
+            <div class="col-12 input-group">
+              <label for="declaNumOperacion" class="activeInput">L&iacute;nea de captura</label>
+              <input id="declaNumOperacion" type="text" name="declaNumOperacion" [value]="dec_row.declaracion_linea_de_captura" (input)="keyup_linea_de_captura($event.target, dec_row.declaracion_token)"/>
+            </div>
+
+            <p-divider />
+            <div class="col-12 explain">
+              <h6 class="title">Impuestos que declara:</h6>
+            </div>
+            <div class="col-12 explain">
+              <h6 class="title">Registrados:</h6>
+            </div>
+            <p-table #decDesReg [value]="modelDeclaraciones.declaraciones_lista_registrada" showGridlines [resizableColumns]="true" [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }" 
+              [rowsPerPageOptions]="[10, 20, 30, 50, 100]" [globalFilterFields]="['concepto_pago_name','a_cargo_format','actualizaciones_format','recargos_format','otros_cargos_format','otros_abonos_format','cantidad_a_pagar_format',]">
+              <ng-template #caption>
+                <div class="flex" style="display: flex !important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row !important;align-content: center;" ngbDropdown>
+                  <p-iconfield iconPosition="left" class="ml-auto">
+                    <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                    <input pInputText type="text" (input)="decDesReg.filterGlobal($event.target.value, 'contains')" placeholder="{{ 'bus_car' | translate }}"/>
+                  </p-iconfield>
+                </div>
+              </ng-template>
+              <ng-template #header>
+                <tr>
+                  <th class="ultimo"></th>
+                  <th pResizableColumn pSortableColumn="concepto_pago_name">concepto de pago&nbsp;<p-sortIcon field="concepto_pago_name" /></th>
+                  <th pResizableColumn pSortableColumn="importe_a_favor_format">Importe a favor&nbsp;<p-sortIcon field="importe_a_favor_format" /></th>
+                  <th pResizableColumn pSortableColumn="a_cargo_format">A cargo&nbsp;<p-sortIcon field="a_cargo_format" /></th>
+                  <th pResizableColumn pSortableColumn="actualizaciones_format">Actualizaciones&nbsp;<p-sortIcon field="actualizaciones_format" /></th>
+                  <th pResizableColumn pSortableColumn="recargos_format">Recargos&nbsp;<p-sortIcon field="recargos_format" /></th>
+                  <th pResizableColumn pSortableColumn="otros_cargos_format">Otros cargos&nbsp;<p-sortIcon field="otros_cargos_format" /></th>
+                  <th pResizableColumn pSortableColumn="otros_abonos_format">Otros abonos&nbsp;<p-sortIcon field="otros_abonos_format" /></th>
+                  <th pResizableColumn pSortableColumn="cantidad_a_pagar_format">Cantidad a pagar&nbsp;<p-sortIcon field="cantidad_a_pagar_format" /></th>
+                  <th class="ultimo"><i class="fa-solid fa-eraser"></i></th>
+                </tr>
+              </ng-template>
+              <ng-template #body let-ldec let-posicion="rowIndex">
+                <tr>
+                  <td>{{ posicion + 1 }}</td>
+                  <td class="name">{{ ldec.concepto_pago_name }}</td>
+                  <td class="td_importes">{{ ldec.importe_a_favor_format }}</td>
+                  <td class="td_importes">{{ ldec.a_cargo_format }}</td>
+                  <td class="td_importes">{{ ldec.actualizaciones_format }}</td>
+                  <td class="td_importes">{{ ldec.recargos_format }}</td>
+                  <td class="td_importes">{{ ldec.otros_cargos_format }}</td>
+                  <td class="td_importes">{{ ldec.otros_abonos_format }}</td>
+                  <td class="td_importes">{{ ldec.cantidad_a_pagar_format }}</td>
+                  <td>
+                    <div class="form-check form-switch form-check-reverse switch_primario switch_delete" style="justify-content: center; flex-direction: column">
+                      <input class="form-check-input selectSwitchProvProd" name="selectImpProd" type="checkbox" [checked]="ldec.proceso_eliminacion"
+                        (click)="delete_desglose_dec_registrado(ldec.dec_desglose_token)" style="width: 80% !important"/>
+                    </div>
+                  </td>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td colspan="10" class="text-center py-4">
+                    <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280"></i>
+                    <p class="mt-2" style="font-size: 1.2rem; color: #374151">
+                      {{ 'no_rows' | translate }}
+                    </p>
+                  </td>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="footer">
+                <tr>
+                  <td colspan="2" class="td_importes"><strong>TOTAL A PAGAR</strong></td>
+                  <td class="td_importes"><strong>{{calculo_registrado_importe_a_favor}}</strong></td>
+                  <td class="td_importes"><strong>{{calculo_registrado_total_a_cargo}}</strong></td>
+                  <td class="td_importes"><strong>{{calculo_registrado_total_actualizaciones}}</strong></td>
+                  <td class="td_importes"><strong>{{calculo_registrado_total_recargos}}</strong></td>
+                  <td class="td_importes"><strong>{{calculo_registrado_total_otros_cargos}}</strong></td>
+                  <td class="td_importes"><strong>{{calculo_registrado_total_otros_abonos}}</strong></td>
+                  <td class="td_importes"><strong>{{calculo_registrado_total_cantidad_a_pagar}}</strong></td>
+                  <td></td>
+                </tr>
+              </ng-template>
+            </p-table>
+
+            <div class="col-12 explain">
+              <h6 class="title">Para registrar:</h6>
+            </div>
+            <div class="col-12 input-group">
+              <label for="desgPayConcepto" class="activeInput">Concepto de pago</label>
+              <p-select [options]="impuestos_list_declaracion" id="desgPayConcepto" name="desgPayConcepto" [(ngModel)]="impuesto_selected" [ngModelOptions]="{ standalone: true }" optionLabel="folio_impuesto" [filter]="true" appendTo="body"
+                filterBy="folio_impuesto,concepto_impuesto,abreviacion_impuesto" [showClear]="true" [placeholder]="'opt_select' | translate" optionValue="token_catalogo_impuesto" 
+                class="w-full md:w-56" (onChange)="changeDesgPayConcepto($event.value)">
+                <ng-template #selectedItem let-sel>
+                  <div class="flex items-center gap-2">
+                    <div>{{sel.folio_impuesto+' '+sel.concepto_impuesto+' ('+sel.abreviacion_impuesto+')'}}</div>
+                  </div>
+                </ng-template>
+                <ng-template let-imp #item>
+                  <div class="flex items-center gap-2">
+                    <div>{{imp.folio_impuesto+' '+imp.concepto_impuesto+' ('+imp.abreviacion_impuesto+')'}}</div>
+                  </div>
+                </ng-template>
+              </p-select>
+            </div>
+            <div class="col-12 col-sm-12 col-md-6 col-lg-3 col-xl-2 col-xxl-2 input-group">
+              <label for="desgPayImporteAFavor" class="activeInput">Importe a favor</label>
+              <input id="desgPayImporteAFavor" type="number" name="desgPayImporteAFavor" placeholder="0.00" (input)="keyupDesgPayImporteAFavor($event.target);">
+            </div>
+            <div class="col-12 col-sm-12 col-md-6 col-lg-3 col-xl-2 col-xxl-2 input-group">
+              <label for="desgPayACargo" class="activeInput">A cargo</label>
+              <input id="desgPayACargo" type="number" name="desgPayACargo" placeholder="0.00" (input)="keyupDesgPayACargo($event.target)"/>
+            </div>
+            <div class="col-12 col-sm-12 col-md-6 col-lg-3 col-xl-2 col-xxl-2 input-group">
+              <label for="desgPayActualizaciones" class="activeInput">Actualizaciones</label>
+              <input id="desgPayActualizaciones" type="number" name="desgPayActualizaciones" placeholder="0.00" (input)="keyupDesgPayActualizaciones($event.target)"/>
+            </div>
+            <div class="col-12 col-sm-12 col-md-6 col-lg-3 col-xl-2 col-xxl-2 input-group">
+              <label for="desgPayRecargos" class="activeInput">Recargos</label>
+              <input id="desgPayRecargos" type="number" name="desgPayRecargos" placeholder="0.00" (input)="keyupDesgPayRecargos($event.target)"/>
+            </div>
+            <div class="col-12 col-sm-12 col-md-6 col-lg-3 col-xl-2 col-xxl-2 input-group">
+              <label for="desgPayOtrosCargos" class="activeInput">Otros cargos</label>
+              <input id="desgPayOtrosCargos" type="number" name="desgPayOtrosCargos" placeholder="0.00" (input)="keyupDesgPayOtrosCargos($event.target)"/>
+            </div>
+            <div class="col-12 col-sm-12 col-md-6 col-lg-3 col-xl-2 col-xxl-2 input-group">
+              <label for="desgPayOtrosAbonos" class="activeInput">Otros abonos</label>
+              <input id="desgPayOtrosAbonos" type="number" name="desgPayOtrosAbonos" placeholder="0.00" (input)="keyupDesgPayOtrosAbonos($event.target)"/>
+            </div>
+            <div class="col-12" style="display: flex !important; justify-content: end !important">
+              <div class="explain">
+                <h6 class="title">Cantidad a pagar</h6>
+                <h6 class="content">{{ formatNumber(desgPayCantidadACargo) }}</h6>
+              </div>
+            </div>
+            <div class="col-12" style="display: flex !important;justify-content: end !important;margin-top: 5px !important;">
+              <a class="btn btn_extend text-bg-success rounded-3" [ngClass]="!validaDesglose ? 'disabled' : ''" [attr.disabled]="!validaDesglose ? true : null"
+                [attr.aria-disabled]="!validaDesglose ? true : null" (click)="validaDesglose && addImpuestosDeclarar()">
+                <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{ 'sav_cam' | translate }}
+              </a>
+            </div>
+            <p-table #decDesNew [value]="modelDeclaraciones.declaraciones_lista_pagar" showGridlines [resizableColumns]="true" [paginator]="true" [rows]="10"
+              [globalFilterFields]="['concepto_pago_name','a_cargo','actualizaciones','recargos','otros_cargos','otros_abonos','cantidad_a_pagar',]"
+              [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10, 20, 30, 50, 100]">
+              <ng-template #caption>
+                <div class="flex" style="display: flex !important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row !important;align-content: center;" ngbDropdown>
+                  <p-iconfield iconPosition="left" class="ml-auto">
+                    <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                    <input pInputText type="text" (input)="decDesNew.filterGlobal($event.target.value, 'contains')" placeholder="{{ 'bus_car' | translate }}"/>
+                  </p-iconfield>
+                </div>
+              </ng-template>
+              <ng-template #header>
+                <tr>
+                  <th class="ultimo"></th>
+                  <th pResizableColumn pSortableColumn="concepto_pago_name">concepto de pago&nbsp;<p-sortIcon field="concepto_pago_name" /></th>
+                  <th pResizableColumn pSortableColumn="importe_a_favor">Importe a favor&nbsp;<p-sortIcon field="importe_a_favor"/></th>
+                  <th pResizableColumn pSortableColumn="a_cargo">A cargo&nbsp;<p-sortIcon field="a_cargo" /></th>
+                  <th pResizableColumn pSortableColumn="actualizaciones">Actualizaciones&nbsp;<p-sortIcon field="actualizaciones" /></th>
+                  <th pResizableColumn pSortableColumn="recargos">Recargos&nbsp;<p-sortIcon field="recargos" /></th>
+                  <th pResizableColumn pSortableColumn="otros_cargos">Otros cargos&nbsp;<p-sortIcon field="otros_cargos" /></th>
+                  <th pResizableColumn pSortableColumn="otros_abonos">Otros abonos&nbsp;<p-sortIcon field="otros_abonos" /></th>
+                  <th pResizableColumn pSortableColumn="cantidad_a_pagar">Cantidad a pagar&nbsp;<p-sortIcon field="cantidad_a_pagar" /></th>
+                  <th class="ultimo"></th>
+                </tr>
+              </ng-template>
+              <ng-template #body let-ldec let-posicion="rowIndex">
+                <tr>
+                  <td>{{ posicion + 1 }}</td>
+                  <td class="name">{{ ldec.concepto_pago_name }}</td>
+                  <td class="td_importes">{{formatNumber(ldec.importe_a_favor)}}</td>
+                  <td class="td_importes">{{formatNumber(ldec.a_cargo)}}</td>
+                  <td class="td_importes">{{formatNumber(ldec.actualizaciones)}}</td>
+                  <td class="td_importes">{{formatNumber(ldec.recargos)}}</td>
+                  <td class="td_importes">{{formatNumber(ldec.otros_cargos)}}</td>
+                  <td class="td_importes">{{formatNumber(ldec.otros_abonos)}}</td>
+                  <td class="td_importes">{{formatNumber(ldec.cantidad_a_pagar)}}</td>
+                  <td class="ultimo">
+                    <a class="btn btn_extend text-bg-danger rounded-3" (click)="deleteDeclaracion_desglose(posicion)">
+                      <i class="fa-solid fa-eraser"></i>&nbsp;{{ 'delete_row' | translate }}
+                    </a>
+                  </td>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="footer">
+                <tr>
+                  <td colspan="2" class="td_importes"><strong>TOTAL A PAGAR</strong></td>
+                  <td class="td_importes"><strong>{{nuevo_calculo_importe_a_favor}}</strong></td>
+                  <td class="td_importes"><strong>{{nuevo_calculo_total_a_cargo}}</strong></td>
+                  <td class="td_importes"><strong>{{nuevo_calculo_total_actualizaciones}}</strong></td>
+                  <td class="td_importes"><strong>{{nuevo_calculo_total_recargos}}</strong></td>
+                  <td class="td_importes"><strong>{{nuevo_calculo_total_otros_cargos}}</strong></td>
+                  <td class="td_importes"><strong>{{nuevo_calculo_total_otros_abonos}}</strong></td>
+                  <td class="td_importes"><strong>{{nuevo_calculo_total_cantidad_a_pagar}}</strong></td>
+                  <td></td>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td colspan="10" class="text-center py-4">
+                    <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280"></i>
+                    <p class="mt-2" style="font-size: 1.2rem; color: #374151">
+                      {{ 'no_rows' | translate }}
+                    </p>
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+
+            <div class="col-12 input-group" style="margin-bottom: 10px !important">
+              <label class="activeInput">{{ 'observ' | translate }}</label>
+              <textarea id="pago_large_observ" class="validate" [value]="dec_row.declaracion_observaciones" (input)="keyupObservacionDeclaracion($event.target, dec_row.declaracion_token)"></textarea>
+            </div>
+
+            <p-divider />
+            <div class="col-12 explain">
+              <h6 class="title">Anexos:</h6>
+            </div>
+            <div class="col-12 explain">
+              <h6 class="title">Registrados:</h6>
+            </div>
+            <p-table #decDesReg [value]="modelDeclaraciones.anexos_registrados" showGridlines [resizableColumns]="true" [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }" 
+              [rowsPerPageOptions]="[10, 20, 30, 50, 100]" [globalFilterFields]="['name_documento']">
+              <ng-template #caption>
+                <div class="flex" style="display: flex !important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row !important;align-content: center;" ngbDropdown>
+                  <p-iconfield iconPosition="left" class="ml-auto">
+                    <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                    <input pInputText type="text" (input)="decDesReg.filterGlobal($event.target.value, 'contains')" placeholder="{{ 'bus_car' | translate }}"/>
+                  </p-iconfield>
+                </div>
+              </ng-template>
+              <ng-template #header>
+                <tr>
+                  <th pResizableColumn pSortableColumn="name_documento">
+                    {{ 'file' | translate }}&nbsp;<p-sortIcon field="name_documento" />
+                  </th>
+                  <th class="ultimo"><i class="fa-solid fa-eraser"></i></th>
+                </tr>
+              </ng-template>
+              <ng-template #body let-anex>
+                <tr>
+                  <td class="name">{{ anex.name_documento }}</td>
+                  <td>
+                    <div class="form-check form-switch form-check-reverse switch_primario switch_delete" style="justify-content: center; flex-direction: column">
+                      <input class="form-check-input selectSwitchProvProd" name="selectImpProd" type="checkbox" [checked]="anex.proceso_eliminacion"
+                        (click)="delete_dec_anex_registrado(anex.token_documento)" style="width: 80% !important"/>
+                    </div>
+                  </td>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td colspan="2" class="text-center py-4">
+                    <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280"></i>
+                    <p class="mt-2" style="font-size: 1.2rem; color: #374151">
+                      {{ 'no_rows' | translate }}
+                    </p>
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+            <div class="col-12 field_file_drop">
+              <ngx-file-drop dropZoneLabel="Drop files here" (onFileDrop)="droppedDeclaracion($event)" (onFileOver)="fileOverDeclaracion($event)" (onFileLeave)="fileLeaveDeclaracion($event)">
+                <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
+                  <a class="btn btn_load_file" type="button" style="color: #0782d0 !important;" (click)="openFileSelector()">
+                    {{'load_files' | translate}} / {{'browse_files' | translate}}
+                  </a>
+                </ng-template>
+              </ngx-file-drop>
+              <table class="white centered" style="margin-top: 5px !important; width: 100% !important">
+                <thead>
+                  <tr>
+                    <th>{{ 'file' | translate }}</th>
+                    <th class="ultimo"></th>
+                  </tr>
+                </thead>
+                <tbody class="upload-name-style" *ngIf="filesDeclaracion.length != 0">
+                  <tr *ngFor="let item of filesDeclaracion; index as i">
+                    <td><strong>{{ item.relativePath }}</strong></td>
+                    <td class="ultimo">
+                      <a class="btn btn_extend text-bg-danger rounded-3" (click)="deleteAnexosDeclaracion(i)">
+                        <i class="fa-solid fa-xmark"></i>
+                      </a>
+                    </td>
+                  </tr>
+                </tbody>
+                <tbody *ngIf="filesDeclaracion.length == 0">
+                  <tr>
+                    <td colspan="2">{{ 'no_rows' | translate }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="col-12" style="display: flex !important;justify-content: end !important;margin-top: 5px !important;">
+              <button class="btn btn_extend text-bg-success rounded-3" [ngClass]="!validate_declaracion_reg(dec_row.declaracion_token) ? 'disabled' : ''"
+                [attr.disabled]="!validate_declaracion_reg(dec_row.declaracion_token) ? true : null"
+                [attr.aria-disabled]="!validate_declaracion_reg(dec_row.declaracion_token) ? true : null">
+                <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{ 'sav_cam' | translate }}
+              </button>
+            </div>
+          </div>
+        </form>
+      }
+    }
+  }
+</p-dialog>
+
+<p-dialog header="Informaci&oacute;n de la declaraci&oacute;n de impuestos federales {{decfed_detalle_folio}}" [(visible)]="ver_decfed_seguimiento_pagos" [modal]="true" [style]="{ width: '50rem' }" 
+  [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  <p-table #opgen [value]="decfed_seguimiento_pagos" [globalFilterFields]="searchPagoGeneral" showGridlines [resizableColumns]="true" [paginator]="true"
+    [rows]="10" [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10, 20, 30, 50, 100]">
+    <ng-template #caption>
+      <div class="flex">
+        <p-iconfield iconPosition="left" class="ml-auto">
+          <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+          <input pInputText type="text" (input)="opgen.filterGlobal($event.target.value, 'contains')" placeholder="{{ 'bus_car' | translate }}"/>
+        </p-iconfield>
+      </div>
+    </ng-template>
+    <ng-template #header>
+      <tr>
+        <th rowspan="2" class="ultimo"></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="folio_ordenPago">folio&nbsp;<p-sortIcon field="folio_ordenPago" /></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="fecha_contabilizacion_orden_pago">{{ 'fecha_cont_pay_order' | translate }}&nbsp;<p-sortIcon field="fecha_contabilizacion_orden_pago"/></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="factura_relacionada_string">{{ 'doc_ant' | translate }}&nbsp;<p-sortIcon field="factura_relacionada_string" /></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="fecha_contabilizacion_doc_anterior">{{ 'fecha_cont_doc_ant' | translate }}&nbsp;<p-sortIcon field="fecha_contabilizacion_doc_anterior"/></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="orden_emisor_emp">{{ 'company_name' | translate }}&nbsp;<p-sortIcon field="orden_emisor_emp" /></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="autorizacion_pay">{{ 'autho_riza' | translate }}&nbsp;<p-sortIcon field="autorizacion_pay" /></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="fecha_autorizacion_pay">{{ 'date_autho_riza' | translate }}&nbsp;<p-sortIcon field="fecha_autorizacion_pay" /></th>
+        <th colspan="9" pResizableColumn>{{ 'payed' | translate }}</th>
+        <th rowspan="2" style="padding-left: 5px; padding-right: 5px" pResizableColumn pSortableColumn="importe_total_inicial">{{'total_refund' | translate}}&nbsp;<p-sortIcon field="importe_total_inicial" /></th>
+        <th rowspan="2" style="padding-left: 5px; padding-right: 5px" pResizableColumn pSortableColumn="importe_autorizado_inicial_format">{{'total_refund_auth' | translate}}&nbsp;<p-sortIcon  field="importe_autorizado_inicial_format"/></th>
+        <th rowspan="2" style="padding-left: 5px; padding-right: 5px" pResizableColumn pSortableColumn="importe_autorizado_final">{{'total_refund_auth_converse' | translate}}&nbsp;<p-sortIcon field="importe_autorizado_final"/></th>
+        <th rowspan="2" style="padding-left: 5px; padding-right: 5px" pResizableColumn pSortableColumn="debe_format">DEBE&nbsp;<p-sortIcon field="debe_format" /></th>
+      </tr>
+      <tr>
+        <th pResizableColumn pSortableColumn="pago_anticipado">{{'prepayment' | translate}}&nbsp;<p-sortIcon field="pago_anticipado" /></th>
+        <th class="ultimo"></th>
+        <th class="noneView"></th>
+        <th pResizableColumn pSortableColumn="pago_realizado_folio">folio&nbsp;<p-sortIcon field="pago_realizado_folio" /></th>
+        <th pResizableColumn pSortableColumn="pago_realizado_fecha_contabilizacion">{{'fecha_cont' | translate}}&nbsp;<p-sortIcon field="pago_realizado_fecha_contabilizacion"/></th>
+        <!--<th pResizableColumn pSortableColumn="pago_realizado_proveedor_name">{{'prov' | translate}}&nbsp;<p-sortIcon field="pago_realizado_proveedor_name"/></th>-->
+        <!--<th pResizableColumn pSortableColumn="pago_realizado_acreedor_name">{{'acree_name' | translate}}&nbsp;<p-sortIcon field="pago_realizado_acreedor_name"/></th>-->
+        <th pResizableColumn pSortableColumn="pago_realizado_forma_pago_vinculada">{{'f_pago' | translate}}&nbsp;<p-sortIcon field="pago_realizado_forma_pago_vinculada" /></th>
+        <th pResizableColumn pSortableColumn="pago_realizado_forma_metodo_pago_cfdi">{{'f_m_pago_cfdi' | translate}}&nbsp;<p-sortIcon field="pago_realizado_forma_metodo_pago_cfdi"/></th>
+        <th pResizableColumn pSortableColumn="pago_realizado_monto">{{'total_import' | translate}}&nbsp;<p-sortIcon field="pago_realizado_monto" /></th>
+        <th pResizableColumn pSortableColumn="pago_realizado_tipo_cambio">{{'mon_tipo_cambio' | translate}}&nbsp;<p-sortIcon field="pago_realizado_tipo_cambio" /></th>
+        <th pResizableColumn pSortableColumn="pago_realizado_observaciones">{{'observ' | translate}}&nbsp;<p-sortIcon field="pago_realizado_observaciones" /></th>
+      </tr>
+    </ng-template>
+    <ng-template #body let-lPay>
+      <tr>
+        <td class="ultimo">
+          <a
+            class="btn bg-red-700"
+            [ngClass]="lPay.factura_relacionada_typo == '---' ? 'disabled' : ''"
+            [attr.disabled]="lPay.factura_relacionada_typo == '---' ? true : null"
+            [attr.aria-disabled]="lPay.factura_relacionada_typo == '---' ? true : null"
+            [attr.target]="lPay.factura_relacionada_typo != '---' ? '_blank' : null"
+            [attr.href]=" lPay.factura_relacionada_typo != '---' ? lPay.factura_relacionada_typo == 'compras' ? 'https://downloads.sos-mexico.com.mx/compras_pdf/' + lPay.factura_relacionada_token : 
+              lPay.factura_relacionada_typo == 'ventas' ? 'https://downloads.sos-mexico.com.mx/ventas_pdf/' + lPay.factura_relacionada_token : 
+              'https://downloads.sos-mexico.com.mx/reembolso_pdf/' + lPay.factura_relacionada_token : 
+              null">
+            <i class="fa-solid fa-file-pdf"></i>
+          </a>
+        </td>
+        <td>{{ lPay.folio_ordenPago }}</td>
+        <td>{{ lPay.fecha_contabilizacion_orden_pago }}</td>
+        <td class="name">{{ lPay.factura_relacionada_string }}</td>
+        <td>{{ lPay.fecha_contabilizacion_doc_anterior }}</td>
+        <td>{{ lPay.orden_emisor_emp }}</td>
+        <td>{{ lPay.autorizacion_pay_text }}</td>
+        <td>{{ lPay.fecha_autorizacion_pay }}</td>
+        <td class="td_importes">{{ lPay.pago_anticipado }}</td>
+        <td class="noneView">{{ lPay.status_pago_date }}</td>
+
+        <td class="ultimo">
+          <p class="btn text-bg-success rounded-3" [ngClass]="lPay.status_pago == true ? 'disabled' : ''" [attr.disabled]="lPay.status_pago == true ? true : null" 
+            [attr.aria-disabled]="lPay.status_pago == true ? true : null" style="width: 100% !important; border-radius: 25px !important; padding: 3px">
+            <i class="fa-solid fa-check-double"></i>{{ lPay.status_pago_date }}
+          </p>
+        </td>
+        <td>{{ lPay.pago_realizado_folio }}</td>
+        <td>{{ lPay.pago_realizado_fecha_contabilizacion }}</td>
+        <!--<td class="name">{{lPay.pago_realizado_proveedor_name}}</td>-->
+        <!--<td class="name">{{lPay.pago_realizado_acreedor_name}}</td>-->
+        <td class="name">{{ lPay.pago_realizado_forma_pago_vinculada }}</td>
+        <td class="name">{{ lPay.pago_realizado_forma_metodo_pago_cfdi }}</td>
+        <td class="td_importes">{{ lPay.pago_realizado_monto }}</td>
+        <td class="td_importes">{{ lPay.pago_realizado_tipo_cambio }}</td>
+        <td class="name">{{ lPay.pago_realizado_observaciones }}</td>
+
+        <td class="td_importes">{{ lPay.importe_total_inicial }}</td>
+        <td class="td_importes">{{ lPay.importe_autorizado_inicial_format }}</td>
+        <td class="td_importes">{{ lPay.importe_autorizado_final }}</td>
+        <td class="td_importes">{{ lPay.debe_format }}</td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="22" class="text-center py-4">
+          <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280"></i>
+          <p class="mt-2" style="font-size: 1.2rem; color: #374151">
+            {{ 'no_rows' | translate }}
+          </p>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <p-table #lpagos_realizados [value]="decfed_pagos_historial" [globalFilterFields]="search_pagos_done" showGridlines [resizableColumns]="true" [paginator]="true"
+    [rows]="10" [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10, 20, 30, 50, 100]">
+    <ng-template #caption>
+      <div class="flex">
+        <p-iconfield iconPosition="left" class="ml-auto">
+          <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+          <input pInputText type="text" (input)="lpagos_realizados.filterGlobal($event.target.value, 'contains')" placeholder="{{ 'bus_car' | translate }}"/>
+        </p-iconfield>
+      </div>
+    </ng-template>
+    <ng-template #header>
+      <tr>
+        <th rowspan="2" class="ultimo"></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="folio_pagos">folio&nbsp;<p-sortIcon field="folio_pagos" /></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="fecha_contabilizacion">{{'fecha_cont' | translate}}&nbsp;<p-sortIcon field="fecha_contabilizacion" /></th>
+        <th colspan="2">{{ 'doc_ant' | translate }}</th>
+        <th colspan="3">status</th>
+        <!--<th colspan="3">{{'ter_cero' | translate}}</th>-->
+        <!--<th colspan="3">financeado a</th>-->
+
+        <th rowspan="2" pResizableColumn pSortableColumn="medio_pago_vinculado">{{'f_pago' | translate}}&nbsp;<p-sortIcon field="medio_pago_vinculado" /></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="forma_metodo_pago_cfdi">{{'f_m_pago_cfdi' | translate}}&nbsp;<p-sortIcon field="forma_metodo_pago_cfdi" /></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="forma_metodo_pago_anticipos">medio de pago por anticipos&nbsp;<p-sortIcon field="forma_metodo_pago_anticipos" /></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="observacionesPago">{{'observ' | translate}}&nbsp;<p-sortIcon field="observacionesPago" /></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="p_moneda">{{'currency' | translate}}&nbsp;<p-sortIcon field="p_moneda" /></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="monto_pago_format">{{'total_import' | translate}}&nbsp;<p-sortIcon field="monto_pago_format" /></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="tipo_cambio_format">{{'mon_tipo_cambio' | translate}}&nbsp;<p-sortIcon field="tipo_cambio_format" /></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="monto_pago_resultant">{{'total_import_resultant' | translate}}&nbsp;<p-sortIcon field="monto_pago_resultant"/></th>
+      </tr>
+      <tr>
+        <th pResizableColumn pSortableColumn="doc_anterior_folio">folio&nbsp;<p-sortIcon field="doc_anterior_folio" /></th>
+        <th pResizableColumn pSortableColumn="doc_anterior_fecha_contabilizacion">{{'fecha_cont' | translate}}&nbsp;<p-sortIcon field="doc_anterior_fecha_contabilizacion"/></th>
+        <th pResizableColumn pSortableColumn="pago_cancelado">status&nbsp;<p-sortIcon field="pago_cancelado" /></th>
+        <th pResizableColumn pSortableColumn="pago_folio_cancelacion">folio&nbsp;<p-sortIcon field="pago_folio_cancelacion" /></th>
+        <th pResizableColumn pSortableColumn="pago_fecha_contabilizacion_cancelacion">{{'fecha_cont' | translate}}&nbsp;<p-sortIcon field="pago_fecha_contabilizacion_cancelacion"/></th>
+
+        <!--<th pResizableColumn pSortableColumn="tercero_folio">folio&nbsp;<p-sortIcon field="tercero_folio"/></th>-->
+        <!--<th pResizableColumn pSortableColumn="tercero_name">{{'name' | translate}}&nbsp;<p-sortIcon field="tercero_name"/></th>-->
+        <!--<th pResizableColumn pSortableColumn="tercero_comercial_name">{{'comercial_name' | translate}}&nbsp;<p-sortIcon field="tercero_comercial_name"/></th>-->
+
+        <!--<th pResizableColumn pSortableColumn="financeadoa_folio">folio&nbsp;<p-sortIcon field="financeadoa_folio"/></th>-->
+        <!--<th pResizableColumn pSortableColumn="financeadoa_name">{{'name' | translate}}&nbsp;<p-sortIcon field="financeadoa_name"/></th>-->
+        <!--<th pResizableColumn pSortableColumn="financeadoa_comercial_name">{{'comercial_name' | translate}}&nbsp;<p-sortIcon field="financeadoa_comercial_name"/></th>-->
+      </tr>
+    </ng-template>
+    <ng-template #body let-payDone let-i="rowIndex">
+      <tr>
+        <td class="ultimo">
+          <!-- (click)="payDone.status_pago && pagos_realizados_desglose(payDone.token_pagos);"-->
+          <a class="btn text-bg-success rounded-3" [ngClass]="!payDone.status_pago ? 'disabled' : ''" [attr.data-bs-toggle]="payDone.status_pago ? 'modal' : ''" [attr.data-bs-target]="payDone.status_pago ? '#modalDesglosePagos' : ''">
+            <i class="fa-solid fa-file-invoice-dollar"></i>
+          </a>
+        </td>
+        <td>{{ payDone.folio_pagos }}</td>
+        <td>{{ payDone.fecha_contabilizacion }}</td>
+
+        <td class="name">{{ payDone.doc_anterior_folio }}</td>
+        <td>{{ payDone.doc_anterior_fecha_contabilizacion }}</td>
+
+        <td class="name">{{(payDone.pago_cancelado ? 'canceled_reg' : 'approved_reg') | translate}}</td>
+        <td class="name">{{ payDone.pago_folio_cancelacion }}</td>
+        <td>{{ payDone.pago_fecha_contabilizacion_cancelacion }}</td>
+
+        <!--<td class="name">{{payDone.tercero_folio}}</td>-->
+        <!--<td class="name">{{payDone.tercero_name}}</td>-->
+        <!--<td class="name">{{payDone.tercero_comercial_name}}</td>-->
+
+        <!--<td [ngClass]="payDone.orden_factura_relacionada_typo == 'anticipos' ? 'name' : ''">{{payDone.orden_factura_relacionada_typo == 'anticipos' ? payDone.financeadoa_folio : ''}}</td>-->
+        <!--<td [ngClass]="payDone.orden_factura_relacionada_typo == 'anticipos' ? 'name' : ''">{{payDone.orden_factura_relacionada_typo == 'anticipos' ? payDone.financeadoa_name : ''}}</td>-->
+        <!--<td [ngClass]="payDone.orden_factura_relacionada_typo == 'anticipos' ? 'name' : ''">{{payDone.orden_factura_relacionada_typo == 'anticipos' ? payDone.financeadoa_comercial_name : ''}}</td>-->
+
+        <td>{{ payDone.medio_pago_vinculado }}</td>
+        <td class="name">{{ payDone.forma_metodo_pago_cfdi }}</td>
+        <td [ngClass]="payDone.orden_factura_relacionada_typo == 'anticipos' ? 'name' : ''">{{payDone.orden_factura_relacionada_typo == 'anticipos' ? payDone.forma_pago_pago : ''}}</td>
+        <td class="name">{{ payDone.observacionesPago }}</td>
+        <td>{{ payDone.p_moneda }}</td>
+        <td class="td_importes">{{ payDone.monto_pago_format }}</td>
+        <td class="td_importes">{{ payDone.tipo_cambio_format }}</td>
+        <td class="td_importes">{{ payDone.monto_pago_resultant }}</td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="16" class="text-center py-4">
+          <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280"></i>
+          <p class="mt-2" style="font-size: 1.2rem; color: #374151">
+            {{ 'no_rows' | translate }}
+          </p>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</p-dialog>
+
+<p-dialog header="Informaci&oacute;n de declaraciones eliminadas" [(visible)]="ver_ventana_declaraciones_deleted" [modal]="true" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  <p-table #listImpDecDeleted [value]="listaDeclaracionesEliminadas" [globalFilterFields]="searchDeclaGeneral" dataKey="id" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10, 20, 30, 50, 100]">
+    <ng-template #caption>
+      <div class="flex">
+        <p-iconfield iconPosition="left" class="ml-auto">
+          <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+          <input pInputText type="text" (input)="listImpDecDeleted.filterGlobal($event.target.value, 'contains')" placeholder="{{ 'bus_car' | translate }}"/>
+        </p-iconfield>
+      </div>
+    </ng-template>
+    <ng-template #header>
+      <tr>
+        <th pSortableColumn="declaracion_folio">Folio&nbsp;<p-sortIcon field="declaracion_folio" /></th>
+        <th pSortableColumn="declaracion_fecha_contabilizacion">{{ 'fecha_cont' | translate }}&nbsp;<p-sortIcon field="declaracion_fecha_contabilizacion"/></th>
+        <th pSortableColumn="declaracion_tipo">Tipo de declaraci&oacute;n&nbsp;<p-sortIcon field="declaracion_tipo" /></th>
+        <th pSortableColumn="declaracion_periodicidad">Periodicidad&nbsp;<p-sortIcon field="declaracion_periodicidad" /></th>
+        <th pSortableColumn="declaracion_ejercicio">Ejercicio&nbsp;<p-sortIcon field="declaracion_ejercicio" /></th>
+        <th pSortableColumn="declaracion_periodo_inicio">Periodo&nbsp;<p-sortIcon field="declaracion_periodo_inicio" /></th>
+        <th pSortableColumn="declaracion_fecha_presentacion">Fecha de presentaci&oacute;n&nbsp;<p-sortIcon field="declaracion_fecha_presentacion" /></th>
+        <th pSortableColumn="declaracion_medio_presentacion">Medio de presentaci&oacute;n&nbsp;<p-sortIcon field="declaracion_medio_presentacion" /></th>
+        <th pSortableColumn="declaracion_fecha_vencimiento">Vencimiento obligaci&oacute;n&nbsp;<p-sortIcon field="declaracion_fecha_vencimiento" /></th>
+        <th pSortableColumn="declaracion_version">Versi&oacute;n&nbsp;<p-sortIcon field="declaracion_version" /></th>
+        <th pSortableColumn="declaracion_numero_operacion">Numero de operaci&oacute;n&nbsp;<p-sortIcon field="declaracion_numero_operacion" /></th>
+        <th pSortableColumn="declaracion_linea_de_captura">L&iacute;nea de captura&nbsp;<p-sortIcon field="declaracion_linea_de_captura" /></th>
+        <th pSortableColumn="declaracion_moneda">{{ 'mon_name' | translate }}&nbsp;<p-sortIcon field="declaracion_moneda" /></th>
+        <th pSortableColumn="impuesto_a_cargo">Impuesto a cargo&nbsp;<p-sortIcon field="impuesto_a_cargo" /></th>
+        <th pSortableColumn="recargos">Recargos&nbsp;<p-sortIcon field="recargos" /></th>
+        <th pSortableColumn="cantidad_a_cargo">Cantidad a cargo&nbsp;<p-sortIcon field="cantidad_a_cargo" /></th>
+        <th pSortableColumn="cantidad_a_pagar">Cantidad a pagar&nbsp;<p-sortIcon field="cantidad_a_pagar" /></th>
+        <th pSortableColumn="declaracion_observaciones">{{ 'observ' | translate }}&nbsp;<p-sortIcon field="declaracion_observaciones" /></th>
+        <th class="ultimo"></th>
+        <th class="ultimo"></th>
+      </tr>
+    </ng-template>
+    <ng-template #body let-decDel>
+      <tr>
+        <td>{{ decDel.declaracion_folio }}</td>
+        <td class="name">{{ decDel.declaracion_fecha_contabilizacion }}</td>
+        <td class="name">{{ decDel.declaracion_tipo }}</td>
+        <td class="name">{{ decDel.declaracion_periodicidad }}</td>
+        <td class="name">{{ decDel.declaracion_ejercicio }}</td>
+        <td class="name">{{decDel.declaracion_periodo_inicio == decDel.declaracion_periodo_fin ? decDel.declaracion_periodo_fin : decDel.declaracion_periodo_inicio + ' - ' + decDel.declaracion_periodo_fin}}</td>
+        <td class="name">{{ decDel.declaracion_fecha_presentacion }}</td>
+        <td class="name">{{ decDel.declaracion_medio_presentacion }}</td>
+        <td class="name">{{ decDel.declaracion_fecha_vencimiento }}</td>
+        <td class="name">{{ decDel.declaracion_version }}</td>
+        <td class="name">{{ decDel.declaracion_numero_operacion }}</td>
+        <td class="name">{{ decDel.declaracion_linea_de_captura }}</td>
+        <td class="name">{{ decDel.declaracion_moneda }}</td>
+        <td class="td_importes">{{ decDel.impuesto_a_cargo }}</td>
+        <td class="td_importes">{{ decDel.recargos }}</td>
+        <td class="td_importes">{{ decDel.cantidad_a_cargo }}</td>
+        <td class="td_importes">{{ decDel.cantidad_a_pagar }}</td>
+        <td class="name">{{ decDel.declaracion_observaciones }}</td>
+        <td>
+          <a class="btn btn_extend text-bg-success rounded-3" (click)="restauraDeclaracion(decDel.declaracion_token)">
+            <i class="fa-solid fa-trash-arrow-up"></i>&nbsp;{{ 'restore_row' | translate }}
+          </a>
+        </td>
+        <td>
+          <a class="btn btn_extend text-bg-danger rounded-3" (click)="eliminapermDeclaracion(decDel.declaracion_token)">
+            <i class="fa-solid fa-eraser"></i>&nbsp;{{ 'delete_row' | translate }}
+          </a>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="20" class="text-center py-4">
+          <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280"></i>
+          <p class="mt-2" style="font-size: 1.2rem; color: #374151">
+            {{ 'no_rows' | translate }}
+          </p>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</p-dialog>

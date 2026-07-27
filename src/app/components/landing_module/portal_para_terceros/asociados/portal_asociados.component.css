@@ -1,0 +1,33 @@
+div.contenido_principal{
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	height: calc(100vh - 65px);
+	align-items: center;
+}
+
+div.card_main span{color: #1f2937 !important;}
+
+.fase_uno_nac{padding: 0!important;padding-right: 2px!important;}
+.fase_uno_ext{padding: 0!important;padding-left: 2px!important;}
+.card_fase_uno{
+  box-shadow: none!important;
+  background-color: dodgerblue;
+  background-color: darkgoldenrod;
+  height: 100%;
+  min-height: 230px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+}
+.card_fase_uno .seccion_logo_tipo{height: 100%;display: flex;justify-content: center;align-items: center;align-content: center;}
+.card_fase_uno .seccion_logo_tipo img{width: 100%!important;}
+.card_fase_uno .seccion_logo_tipo i{width: 100%!important;text-align: center;font-size: 10vh;}
+.card_fase_uno .seccion_form{background-color: #f5f5f5;height: 100%;min-height: 230px;margin: 0;border-radius: 0 8px 8px 0;}
+.card_fase_uno .seccion_form .header_text{font-family: 'modernsans';font-weight: bold;text-transform: capitalize;text-align: left;}
+
+.card_fase_uno .seccion_form .chip:hover,.card_fase_uno .seccion_form .list_opciones li{height: 25px!important;padding: 0;padding-left: 5px;font-family: lato;font-size: medium;}
+.card_fase_uno .seccion_form .chip:hover,.card_fase_uno .seccion_form .active_chip{background-color: darkgoldenrod!important;color: white!important;}
+.card_fase_uno .seccion_form .formulario_verificacion{padding: 0!important;margin-top: 30px!important;}
+.fase_uno_nac .seccion_form .formulario_verificacion{padding: 0!important;margin-top: 65px!important;}

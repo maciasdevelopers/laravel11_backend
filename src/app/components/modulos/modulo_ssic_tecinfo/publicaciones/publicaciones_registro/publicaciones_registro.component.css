@@ -1,0 +1,88 @@
+.publicacion_preview{
+	height: 100%;
+	background-color: #FAFAFF;
+	border-radius: 20px;
+}
+
+.publicacion_preview .pub_titulo{
+	min-height: 30px;
+	display: flex;
+	justify-content: start;
+	align-items: center;
+	font-family: Roboto;
+	font-weight: 800;
+  font-size: 1.5rem;
+  color: #c0a16b;
+  margin-bottom: 25px;
+  text-transform: initial;
+}
+
+.publicacion_preview .pub_vacia{
+  height: 100px;
+  color: #d3d3d3;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.publicacion_preview .pub_resena{
+	font-family: Roboto;
+  font-size: 0.9rem;
+  margin-bottom: 10px;
+  text-align: justify;
+}
+
+.publicacion_preview .pub_seccion_buttons{
+	display: flex;
+	justify-content: end;
+}
+
+.publicacion_preview .pub_seccion_buttons a{
+	width: 25px!important;
+}
+
+.publicacion_preview .pub_contenedor{
+	border: dotted lightgrey 2px;
+	border-radius: 25px;
+	padding: 5px;
+}
+
+.publicacion_preview .pub_subtitulo{
+	height: 30px;
+	display: flex;
+	justify-content: start;
+	align-items: center;
+	font-family: Roboto;
+	font-weight: 800;
+  font-size: 1.3rem;
+  color: #c0a16b;
+  margin-bottom: 5px;
+  text-transform: initial;
+}
+
+.publicacion_preview .pub_content_desglose{
+	font-family: Roboto;
+  font-size: 0.9rem;
+  margin: 0;
+  text-align: justify;
+  margin-bottom: 20px;
+}
+
+.publicacion_preview .fuentes_de_consulta_title{
+	height: 30px;
+	display: flex;
+	justify-content: start;
+	align-items: center;
+	font-family: Roboto;
+	font-weight: 800;
+  font-size: 1.2rem;
+  color: #c0a16b;
+  margin: 0!important;
+  text-transform: initial;
+}
+
+.publicacion_preview .pub_fuente_title{
+	font-family: Roboto;
+	margin: 0!important;
+  text-transform: initial;
+}

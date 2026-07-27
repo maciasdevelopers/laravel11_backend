@@ -1,0 +1,795 @@
+<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco" #vContent>
+  <div class="contenido"><app-loader></app-loader>
+    <nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+    <div class="contenidoPagina">
+      <div class="listas_ps">
+        <div class="lista-div lista-divNoFlex">
+          <h4 class="col-12">{{'deudor_catalogo' | translate}}</h4>
+
+          <div class="col-12">
+            <div class="btn-group lista_botones col" role="group" aria-label="Basic example">
+              <a class="btn btn_extend bg-indigo-600" data-bs-toggle="modal" data-bs-target="#windowDeudorRegistro">
+                <i class="fa-solid fa-plus"></i>&nbsp;{{'deudor_reg' | translate}}</a>
+              <a class="btn btn_extend bg-indigo-600"
+                (click)="lista_deudores();lista_deudores_mx();lista_deudores_ext();lista_deudores_eliminados();">
+                <i class="fa-solid fa-rotate"></i>&nbsp;{{'list_updt' | translate}}</a>
+              <a class="btn btn_extend bg-indigo-600" data-bs-toggle="modal" data-bs-target="#infoDeuEliminados"
+                (click)="lista_deudores_eliminados();">
+                <i class="fa-solid fa-trash"></i>&nbsp;deudores eliminados
+              </a>
+              <a class="btn btn_extend bg-green-600 descarga_lista_excel"
+                [ngClass]="list_deudores_general.length == 0 ? 'disabled' : ''"
+                [attr.disabled]="list_deudores_general.length == 0 ? true : null"
+                [attr.aria-disabled]="list_deudores_general.length == 0 ? true : null"
+                (click)="list_deudores_general.length > 0 && descarga_excel_deudores();">
+                <i class="fa-solid fa-file-excel" style="margin-left: 5px;"></i>&nbsp;descargar
+              </a>
+            </div>
+          </div>
+
+          <p-tabs value="0">
+            <p-tablist>
+              <p-tab value="0" (click)="lista_deudores();">Catálogo general de deudores</p-tab>
+              <p-tab value="1" (click)="lista_deudores_mx();">Catálogo de deudores nacionales</p-tab>
+              <p-tab value="2" (click)="lista_deudores_ext();">Catálogo de deudores extranjeros</p-tab>
+            </p-tablist>
+            <p-tabpanels>
+              <p-tabpanel value="0">
+                <p-table #deuGralList id="listDeuGral" [value]="list_deudores_general"
+                  [globalFilterFields]="search_deu_filtro" showGridlines [resizableColumns]="true" [paginator]="true"
+                  [rows]="10" [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]">
+                  <ng-template #caption>
+                    <div class="flex" style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;" ngbDropdown>
+                      <a class="btn btn_extend" [ngClass]="indicadorDeudores == 'hoy' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_lista_deudores('hoy');">
+                        <i class="fa-solid fa-calendar-days"></i>&nbsp;Hoy
+                      </a>
+                      <a class="btn btn_extend" [ngClass]="indicadorDeudores == 'esta_semana' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_lista_deudores('esta_semana');">
+                        <i class="fa-solid fa-calendar-days"></i>&nbsp;Esta semana
+                      </a>
+                      <a class="btn btn_extend" [ngClass]="indicadorDeudores == 'este_mes' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_lista_deudores('este_mes');">
+                        <i class="fa-solid fa-calendar-days"></i>&nbsp;Este mes
+                      </a>
+                      <a class="btn btn_extend" [ngClass]="indicadorDeudores == 'mes_anterior' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_lista_deudores('mes_anterior');">
+                        <i class="fa-solid fa-arrow-left"></i>&nbsp;mes anterior
+                      </a>
+                      <a id="menuDropDeuGral" class="btn btn_extend" [ngClass]="indicadorDeudores == 'otras_fechas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" ngbDropdownToggle>
+                        <i class="fa-solid fa-list-ul"></i>&nbsp;otras fechas
+                      </a>
+                      <div class="dropdown-menu-end menu-despegable" ngbDropdownMenu="menuDropDeuGral" style="padding: 0!important; margin: 0!important; width: max-content!important; max-height: 400px; overflow-y: auto;">
+                        <div class="col-12 input-group">
+                          <label for="deu_gral_otras_fechas" class="activeInput">Periodo de fechas</label>
+                          <p-datepicker id="deu_gral_otras_fechas" name="deu_gral_otras_fechas" [(ngModel)]="rangoPeriodoDeudores" appendTo="body" dateFormat="dd/mm/yy" 
+                            placeholder="dd/mm/aaaa" selectionMode="range" (onSelect)="ver_lista_deudores('otras_fechas');" />
+                        </div>
+                      </div>
+                      <a class="btn btn_extend" [ngClass]="indicadorDeudores == 'all_partidas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_lista_deudores('all_partidas');">
+                        <i class="fa-solid fa-list-ul"></i>&nbsp;todos los registros
+                      </a>
+                      <a class="btn btn_extend bg-green-600 descarga_lista_excel" style="height: 25px !important;"><!-- (click)="descarga_excel_pagos();"-->
+                        descargar&nbsp;<i class="fa-solid fa-file-excel"></i>
+                      </a>
+                      <p-iconfield iconPosition="left" class="ml-auto">
+                        <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                        <input pInputText type="text" (input)="deuGralList.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+                      </p-iconfield>
+                    </div>
+                  </ng-template>
+                  <ng-template #header>
+                    <tr>
+                      <th class="ultimo"></th>
+                      <th pResizableColumn pSortableColumn="folio">folio&nbsp;<p-sortIcon field="folio" /></th>
+                      <th pResizableColumn pSortableColumn="rfc_deu">rfc&nbsp;<p-sortIcon field="rfc_deu" /></th>
+                      <th pResizableColumn pSortableColumn="tax_id_deu">idTax&nbsp;<p-sortIcon field="tax_id_deu" /></th>
+                      <th pResizableColumn pSortableColumn="deu_titular">deudor&nbsp;<p-sortIcon field="deu_titular" /></th>
+                      <th pResizableColumn pSortableColumn="nombre_comercial">{{'comercial_name' | translate}}&nbsp;<p-sortIcon field="nombre_comercial" /></th>
+                      <th pResizableColumn pSortableColumn="cuenta_contable">Cuenta contable &nbsp;<p-sortIcon field="cuenta_contable" /></th>
+                      <th pResizableColumn pSortableColumn="trab_nombre">empleado vinculado&nbsp;<p-sortIcon field="trab_nombre" /></th>
+                      <th pResizableColumn pSortableColumn="prov_nombre">proveedor vinculado&nbsp;<p-sortIcon field="prov_nombre" /></th>
+                      <th pResizableColumn pSortableColumn="acr_nombre">acreedor vinculado&nbsp;<p-sortIcon field="acr_nombre" /></th>
+                      <th pResizableColumn pSortableColumn="deuda_al_deudor">Deuda al deudor&nbsp;<p-sortIcon field="deuda_al_deudor" /></th>
+                      <th class="ultimo"></th>
+                    </tr>
+                  </ng-template>
+                  <ng-template #body let-row_deu>
+                    <tr>
+                      <td class="ultimo">
+                        <a class="btn bg-blue-600" data-bs-toggle="modal" data-bs-target="#windowDeudorInfo"
+                          (click)="infodeuDetalle(row_deu.token_cat_deudores);">
+                          <i class="fa-solid fa-info"></i>
+                        </a>
+                      </td>
+                      <td>{{row_deu.folio}}</td>
+                      <td>{{row_deu.deu_rfc}}</td>
+                      <td>{{row_deu.deu_taxId}}</td>
+                      <td [ngClass]="row_deu.deu_titular != 'N/A' ? 'name' : ''">{{row_deu.deu_titular}}</td>
+                      <td [ngClass]="row_deu.nombre_comercial != 'N/A' ? 'name' : ''">{{row_deu.nombre_comercial}}</td>
+                      <td>{{row_deu.cuenta_contable}}</td>
+                      <td [ngClass]="row_deu.trab_nombre != 'N/A' ? 'name' : ''">{{row_deu.trab_folio != 'N/A' ? row_deu.trab_folio+" "+row_deu.trab_nombre : row_deu.trab_nombre}}</td>
+                      <td [ngClass]="row_deu.prov_nombre != 'N/A' ? 'name' : ''">{{row_deu.prov_folio != 'N/A' ? row_deu.prov_folio+" "+row_deu.prov_nombre : row_deu.prov_nombre}}</td>
+                      <td [ngClass]="row_deu.acr_nombre != 'N/A' ? 'name' : ''">{{row_deu.acr_folio != 'N/A' ? row_deu.acr_folio+" "+row_deu.acr_nombre : row_deu.acr_nombre}}</td>
+                      <td class="td_importes">{{row_deu.deuda_al_deudor}}</td>
+                      <td class="ultimo">
+                        <a class="btn btn_extend text-bg-danger rounded-3" [class.disabled]="row_deu.utilizado"
+                          [attr.disabled]="row_deu.utilizado ? true : null"
+                          [attr.aria-disabled]="row_deu.utilizado ? 'true' : null"
+                          (click)="!row_deu.utilizado && matarDeudor(row_deu.token_cat_deudores);"><i
+                            class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                        </a>
+                      </td>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="emptymessage">
+                    <tr>
+                      <td colspan="12" class="text-center py-4">
+                        <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                        <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                          {{'no_rows' | translate}}
+                        </p>
+                      </td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+              </p-tabpanel>
+              <p-tabpanel value="1">
+                <p-table #deuMxList [value]="list_deudores_mx" [globalFilterFields]="search_deu_filtro" showGridlines
+                  [resizableColumns]="true" [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }"
+                  [rowsPerPageOptions]="[10,20,30,50,100]">
+                  <ng-template #caption>
+                    <div class="flex" style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;" ngbDropdown>
+                      <a class="btn btn_extend" [ngClass]="indicadorMXDeudores == 'hoy' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_deudores_mx('hoy');">
+                        <i class="fa-solid fa-calendar-days"></i>&nbsp;Hoy
+                      </a>
+                      <a class="btn btn_extend" [ngClass]="indicadorMXDeudores == 'esta_semana' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_deudores_mx('esta_semana');">
+                        <i class="fa-solid fa-calendar-days"></i>&nbsp;Esta semana
+                      </a>
+                      <a class="btn btn_extend" [ngClass]="indicadorMXDeudores == 'este_mes' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_deudores_mx('este_mes');">
+                        <i class="fa-solid fa-calendar-days"></i>&nbsp;Este mes
+                      </a>
+                      <a class="btn btn_extend" [ngClass]="indicadorMXDeudores == 'mes_anterior' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_deudores_mx('mes_anterior');">
+                        <i class="fa-solid fa-arrow-left"></i>&nbsp;mes anterior
+                      </a>
+                      <a id="menuDropDeuMX" class="btn btn_extend" [ngClass]="indicadorMXDeudores == 'otras_fechas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" ngbDropdownToggle>
+                        <i class="fa-solid fa-list-ul"></i>&nbsp;otras fechas
+                      </a>
+                      <div class="dropdown-menu-end menu-despegable" ngbDropdownMenu="menuDropDeuMX" style="padding: 0!important; margin: 0!important; width: max-content!important; max-height: 400px; overflow-y: auto;">
+                        <div class="col-12 input-group">
+                          <label for="deu_mx_otras_fechas" class="activeInput">Periodo de fechas</label>
+                          <p-datepicker id="deu_mx_otras_fechas" name="deu_mx_otras_fechas" [(ngModel)]="rangoPeriodoMXDeudores" appendTo="body" dateFormat="dd/mm/yy"
+                            placeholder="dd/mm/aaaa" selectionMode="range" (onSelect)="ver_deudores_mx('otras_fechas')" />
+                        </div>
+                      </div>
+                      <a class="btn btn_extend" [ngClass]="indicadorMXDeudores == 'all_partidas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_deudores_mx('all_partidas');">
+                        <i class="fa-solid fa-list-ul"></i>&nbsp;todos los registros
+                      </a>
+                      <a class="btn btn_extend bg-green-600 descarga_lista_excel" style="height: 25px !important;"><!-- (click)="descarga_excel_lgeneral();"-->
+                        descargar&nbsp;<i class="fa-solid fa-file-excel"></i>
+                      </a>
+                      <p-iconfield iconPosition="left" class="ml-auto">
+                        <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                        <input pInputText type="text" (input)="deuMxList.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+                      </p-iconfield>
+                    </div>
+                  </ng-template>
+                  <ng-template #header>
+                    <tr>
+                      <th class="ultimo"></th>
+                      <th pResizableColumn pSortableColumn="folio">folio&nbsp;<p-sortIcon field="folio" /></th>
+                      <th pResizableColumn pSortableColumn="rfc_deu">rfc&nbsp;<p-sortIcon field="rfc_deu" /></th>
+                      <th pResizableColumn pSortableColumn="deu_titular">acreedor&nbsp;<p-sortIcon field="deu_titular" /></th>
+                      <th pResizableColumn pSortableColumn="nombre_comercial">{{'comercial_name' | translate}}&nbsp;<p-sortIcon field="nombre_comercial" /></th>
+                      <th pResizableColumn pSortableColumn="cuenta_contable">Cuenta contable &nbsp;<p-sortIcon field="cuenta_contable" /></th>
+                      <th pResizableColumn pSortableColumn="trab_nombre">empleado vinculado&nbsp;<p-sortIcon field="trab_nombre" /></th>
+                      <th pResizableColumn pSortableColumn="prov_nombre">proveedor vinculado&nbsp;<p-sortIcon field="prov_nombre" /></th>
+                      <th pResizableColumn pSortableColumn="acr_nombre">acreedor vinculado&nbsp;<p-sortIcon field="acr_nombre" /></th>
+                      <th pResizableColumn pSortableColumn="deuda_al_deudor">Deuda al deudor&nbsp;<p-sortIcon field="deuda_al_deudor" /></th>
+                      <th class="ultimo"></th>
+                    </tr>
+                  </ng-template>
+                  <ng-template #body let-deumx>
+                    <tr>
+                      <td class="ultimo">
+                        <a class="btn bg-blue-600" data-bs-toggle="modal" data-bs-target="#windowDeudorInfo"
+                          (click)="infodeuDetalle(deumx.token_cat_deudores)">
+                          <i class="fa-solid fa-info"></i>
+                        </a>
+                      </td>
+                      <td>{{deumx.folio}}</td>
+                      <td>{{deumx.deu_rfc}}</td>
+                      <td [ngClass]="deumx.deu_titular != 'N/A' ? 'name' : ''">{{deumx.deu_titular}}</td>
+                      <td [ngClass]="deumx.nombre_comercial != 'N/A' ? 'name' : ''">{{deumx.nombre_comercial}}</td>
+                      <td>{{deumx.cuenta_contable}}</td>
+                      <td [ngClass]="deumx.trab_nombre != 'N/A' ? 'name' : ''">{{deumx.trab_folio != 'N/A' ? deumx.trab_folio+" "+deumx.trab_nombre : deumx.trab_nombre}}</td>
+                      <td [ngClass]="deumx.prov_nombre != 'N/A' ? 'name' : ''">{{deumx.prov_folio != 'N/A' ? deumx.prov_folio+" "+deumx.prov_nombre : deumx.prov_nombre}}</td>
+                      <td [ngClass]="deumx.acr_nombre != 'N/A' ? 'name' : ''">{{deumx.acr_folio != 'N/A' ? deumx.acr_folio+" "+deumx.acr_nombre : deumx.acr_nombre}}</td>
+                      <td class="td_importes">{{deumx.deuda_al_deudor}}</td>
+                      <td class="ultimo">
+                        <a class="btn btn_extend text-bg-danger rounded-3" [class.disabled]="deumx.utilizado"
+                          [attr.disabled]="deumx.utilizado ? true : null"
+                          [attr.aria-disabled]="deumx.utilizado ? 'true' : null"
+                          (click)="!deumx.utilizado && matarDeudor(deumx.token_cat_deudores);"><i
+                            class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                        </a>
+                      </td>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="emptymessage">
+                    <tr>
+                      <td colspan="11" class="text-center py-4">
+                        <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                        <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                          {{'no_rows' | translate}}
+                        </p>
+                      </td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+              </p-tabpanel>
+              <p-tabpanel value="2">
+                <p-table #deuExtList [value]="list_deudores_ext" [globalFilterFields]="search_deu_filtro"
+                  showGridlines [resizableColumns]="true" [paginator]="true" [rows]="10"
+                  [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]">
+                  <ng-template #caption>
+                    <div class="flex" style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;" ngbDropdown>
+                      <a class="btn btn_extend" [ngClass]="indicadorEXTDeudores == 'hoy' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_deudores_ext('hoy');">
+                        <i class="fa-solid fa-calendar-days"></i>&nbsp;Hoy
+                      </a>
+                      <a class="btn btn_extend" [ngClass]="indicadorEXTDeudores == 'esta_semana' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_deudores_ext('esta_semana');">
+                        <i class="fa-solid fa-calendar-days"></i>&nbsp;Esta semana
+                      </a>
+                      <a class="btn btn_extend" [ngClass]="indicadorEXTDeudores == 'este_mes' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_deudores_ext('este_mes');">
+                        <i class="fa-solid fa-calendar-days"></i>&nbsp;Este mes
+                      </a>
+                      <a class="btn btn_extend" [ngClass]="indicadorEXTDeudores == 'mes_anterior' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_deudores_ext('mes_anterior');">
+                        <i class="fa-solid fa-arrow-left"></i>&nbsp;mes anterior
+                      </a>
+                      <a id="menuDropDeuEXT" class="btn btn_extend" [ngClass]="indicadorEXTDeudores == 'otras_fechas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" ngbDropdownToggle>
+                        <i class="fa-solid fa-list-ul"></i>&nbsp;otras fechas
+                      </a>
+                      <div class="dropdown-menu-end menu-despegable" ngbDropdownMenu="menuDropDeuEXT" style="padding: 0!important; margin: 0!important; width: max-content!important; max-height: 400px; overflow-y: auto;">
+                        <div class="col-12 input-group">
+                          <label for="deu_ext_otras_fechas" class="activeInput">Periodo de fechas</label>
+                          <p-datepicker id="deu_ext_otras_fechas" name="deu_ext_otras_fechas" [(ngModel)]="rangoPeriodoEXTDeudores" appendTo="body" dateFormat="dd/mm/yy"
+                            placeholder="dd/mm/aaaa" selectionMode="range" (onSelect)="ver_deudores_ext('otras_fechas')" />
+                        </div>
+                      </div>
+                      <a class="btn btn_extend" [ngClass]="indicadorEXTDeudores == 'all_partidas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_deudores_ext('all_partidas');">
+                        <i class="fa-solid fa-list-ul"></i>&nbsp;todos los registros
+                      </a>
+                      <a class="btn btn_extend bg-green-600 descarga_lista_excel" style="height: 25px !important;"><!-- (click)="descarga_excel_lgeneral();"-->
+                        descargar&nbsp;<i class="fa-solid fa-file-excel"></i>
+                      </a>
+                      <p-iconfield iconPosition="left" class="ml-auto">
+                        <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                        <input pInputText type="text" (input)="deuExtList.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+                      </p-iconfield>
+                    </div>
+                  </ng-template>
+                  <ng-template #header>
+                    <tr>
+                      <th class="ultimo"></th>
+                      <th pResizableColumn pSortableColumn="folio">folio&nbsp;<p-sortIcon field="folio" /></th>
+                      <th pResizableColumn pSortableColumn="rfc_deu">rfc&nbsp;<p-sortIcon field="rfc_deu" /></th>
+                      <th pResizableColumn pSortableColumn="tax_id_deu">idTax&nbsp;<p-sortIcon field="tax_id_deu" /></th>
+                      <th pResizableColumn pSortableColumn="deu_titular">acreedor&nbsp;<p-sortIcon field="deu_titular" /></th>
+                      <th pResizableColumn pSortableColumn="nombre_comercial">{{'comercial_name' | translate}}&nbsp;<p-sortIcon field="nombre_comercial" /></th>
+                      <th pResizableColumn pSortableColumn="cuenta_contable">Cuenta contable &nbsp;<p-sortIcon field="cuenta_contable" /></th>
+                      <th pResizableColumn pSortableColumn="trab_nombre">empleado vinculado&nbsp;<p-sortIcon field="trab_nombre" /></th>
+                      <th pResizableColumn pSortableColumn="prov_nombre">proveedor vinculado&nbsp;<p-sortIcon field="prov_nombre" /></th>
+                      <th pResizableColumn pSortableColumn="acr_nombre">acreedor vinculado&nbsp;<p-sortIcon field="acr_nombre" /></th>
+                      <th pResizableColumn pSortableColumn="deuda_al_deudor">Deuda al deudor&nbsp;<p-sortIcon field="deuda_al_deudor" /></th>
+                      <th class="ultimo"></th>
+                    </tr>
+                  </ng-template>
+                  <ng-template #body let-deu_ext>
+                    <tr>
+                      <td class="ultimo">
+                        <a class="btn bg-blue-600" data-bs-toggle="modal" data-bs-target="#windowDeudorInfo"
+                          (click)="infodeuDetalle(deu_ext.token_cat_deudores)">
+                          <i class="fa-solid fa-info"></i>
+                        </a>
+                      </td>
+                      <td>{{deu_ext.folio}}</td>
+                      <td>{{deu_ext.deu_rfc}}</td>
+                      <td>{{deu_ext.deu_taxId}}</td>
+                      <td [ngClass]="deu_ext.deu_titular != 'N/A' ? 'name' : ''">{{deu_ext.deu_titular}}</td>
+                      <td [ngClass]="deu_ext.nombre_comercial != 'N/A' ? 'name' : ''">{{deu_ext.nombre_comercial}}</td>
+                      <td>{{deu_ext.cuenta_contable}}</td>
+                      <td [ngClass]="deu_ext.trab_nombre != 'N/A' ? 'name' : ''">{{deu_ext.trab_folio != 'N/A' ? deu_ext.trab_folio+" "+deu_ext.trab_nombre : deu_ext.trab_nombre}}</td>
+                      <td [ngClass]="deu_ext.prov_nombre != 'N/A' ? 'name' : ''">{{deu_ext.prov_folio != 'N/A' ? deu_ext.prov_folio+" "+deu_ext.prov_nombre : deu_ext.prov_nombre}}</td>
+                      <td [ngClass]="deu_ext.acr_nombre != 'N/A' ? 'name' : ''">{{deu_ext.acr_folio != 'N/A' ? deu_ext.acr_folio+" "+deu_ext.acr_nombre : deu_ext.acr_nombre}}</td>
+                      <td class="td_importes">{{deu_ext.deuda_al_deudor}}</td>
+                      <td class="ultimo">
+                        <a class="btn btn_extend text-bg-danger rounded-3" [class.disabled]="deu_ext.utilizado"
+                          [attr.disabled]="deu_ext.utilizado ? true : null"
+                          [attr.aria-disabled]="deu_ext.utilizado ? 'true' : null"
+                          (click)="!deu_ext.utilizado && matarDeudor(deu_ext.token_cat_deudores);"><i
+                            class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                        </a>
+                      </td>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="emptymessage">
+                    <tr>
+                      <td colspan="12" class="text-center py-4">
+                        <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                        <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                          {{'no_rows' | translate}}
+                        </p>
+                      </td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+              </p-tabpanel>
+            </p-tabpanels>
+          </p-tabs>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade bd-example-modal-lg" id="windowDeudorInfo" tabindex="-1" role="dialog" aria-labelledby="windowDeudorInfoLabel" aria-hidden="true">
+  <div class="modal-dialog modal-fullscreen" style="margin: 1%;width: 98%!important;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="windowDeudorInfoLabel">Informaci&oacute;n del deudor</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+          style="background-color: transparent !important;"></button>
+      </div>
+      <div class="modal-body">
+        <div class="form data-reg row" *ngFor="let deuInfo of deudorDetalleData"><!-- noneView-->
+          <div class="col-12 explain">
+            <h6 class="title">{{'email' | translate}}</h6>
+            <h6 class="content">{{deuInfo.email}}</h6>
+          </div>
+          <div class="container col-12 row" style="padding: 0!important;margin: 0!important;">
+            <form class="row formRegDeudores" #formRegDeudores="ngForm" autocomplete="off" name="formRegDeudores" enctype="multipart/form-data" [formGroup]="formDeudor" (ngSubmit)="actualizarDeudor(deuInfo.token_cat_deudores);">
+              <!-- Tipo de deudor -->
+              <div class="col-12">
+                <label class="activeInput">Tipo de deudor</label>
+                <div class="col-12 form-check radio_check">
+                  <input class="form-check-input" type="radio" [checked]="deuInfo.tipo == 'nacional'"
+                    (change)="tipoSeleccionado('nacional', '')" name="tipoDeudor">
+                  <label class="form-check-label">Nacional</label>
+                </div>
+                <div class="col-12 form-check radio_check">
+                  <input class="form-check-input" type="radio" [checked]="deuInfo.tipo == 'extranjero'"
+                    (change)="tipoSeleccionado('extranjero', '')" name="tipoDeudor">
+                  <label class="form-check-label">Extranjero</label>
+                </div>
+              </div>
+
+              <!-- Subtipo (persona física o moral) *ngIf="formDeudor.get('tipoDeudor')?.value" -->
+              <div class="col-12">
+                <label class="activeInput">Tipo de persona</label>
+                <div class="col-12 form-check radio_check">
+                  <input class="form-check-input" type="radio" [checked]="deuInfo.subtipo == 'deudorFisica'"
+                    [ngClass]="!deudorModelo.tipoDeudor ? 'disabled' : ''"
+                    [attr.disabled]="!deudorModelo.tipoDeudor ? true : null"
+                    [attr.aria-disabled]="!deudorModelo.tipoDeudor ? true : null"
+                    (change)="deudorModelo.tipoDeudor = 'deudorFisica';" name="subtipoDeudor">
+                  <label class="form-check-label">Persona física</label>
+                </div>
+                <div class="col-12 form-check radio_check">
+                  <input class="form-check-input" type="radio" [checked]="deuInfo.subtipo == 'deudorMoral'"
+                    [ngClass]="!deudorModelo.tipoDeudor ? 'disabled' : ''"
+                    [attr.disabled]="!deudorModelo.tipoDeudor ? true : null"
+                    [attr.aria-disabled]="!deudorModelo.tipoDeudor ? true : null"
+                    (change)="deudorModelo.tipoDeudor = 'deudorMoral';" name="subtipoDeudor">
+                  <label class="form-check-label">Persona moral</label>
+                </div>
+              </div>
+
+              <div class="col-12 row">
+                <!-- RFC (solo nacional) -->
+                <div class="input-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6">
+                  <label class="activeInput form-label">RFC con Homoclave</label>
+                  <input id="verif_rfcDeudor" class="verif_rfc validate inputWthPass rfcMayus" type="text"
+                    [value]="deuInfo.rfc_acr" placeholder="Ej. ABCD000000XXX" minlength="12" maxlength="13"
+                    (input)="limitarLongitudRfc($event,13);validaDeudorRfc($event.target,deuInfo.token_cat_deudores);">
+                  <!--<div *ngIf="formDeudor.get('rfc')?.invalid && formDeudor.get('rfc')?.touched" class="text-danger">RFC inválido o faltante</div>-->
+                </div>
+
+                @if (esExtranjero) {
+                  <!-- Tax ID (solo extranjero) *ngIf="esNacional || esExtranjero" -->
+                  <div class="input-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6">
+                    <label class="activeInput form-label">Tax ID</label>
+                    <input id="verif_taxIDDeudor" type="text" class="verif_rfc validate inputWthPass rfcMayus"
+                      [value]="deuInfo.tax_id_acr" formControlName="taxID" placeholder="Ej. 123456789">
+                    <div *ngIf="formDeudor.get('taxID')?.invalid && formDeudor.get('taxID')?.touched" class="text-danger">
+                      Tax ID requerido (mínimo 9 caracteres)</div>
+                  </div>
+                }
+
+                <!-- Nombre o razón social -->
+                <div class="input-group col-12">
+                  <label class="activeInput form-label">Nombre / Raz&oacute;n social</label>
+                  <input id="verifNameDeudor" type="text" class="validate" [value]="deuInfo.nombre"
+                    (keyup)="keyupNombreDeudor($event.target,deuInfo.token_cat_deudores);">
+                </div>
+
+                <!-- Nombre o razón social -->
+                <div class="input-group col-12">
+                  <label class="activeInput form-label">Nombre Comercial</label>
+                  <input id="verifNameComercialDeudor" type="text" class="validate" [value]="deuInfo.nombre_comercial"
+                    (keyup)="keyupNombreComercialDeudor($event.target,deuInfo.token_cat_deudores);">
+                </div>
+
+                <!-- Nombre o razón social -->
+                <div class="input-group col-12">
+                  <label class="activeInput form-label">{{'email' | translate}}</label>
+                  <input id="verifNameEmailDeudor" type="email" class="validate" [value]="deuInfo.email"
+                    (keyup)="keyupMailDeudor($event.target,deuInfo.token_cat_deudores);">
+                </div>
+
+                <div class="input-group col-12">
+                  <label for="fechaAltaProd" class="activeInput">Cuenta contable</label>
+                  <input id="verifccontableDeudor" class="validate" type="text" [value]="deuInfo.cuenta_contable"
+                    (keyup)="keyupCuentaContableDeudor($event.target,deuInfo.token_cat_deudores);">
+                </div>
+              </div>
+
+              <div class="col-12">
+                <label class="activeInput">Accesos</label>
+                <div class="col-12 form-check radio_check">
+                  <input class="form-check-input" type="checkbox" [checked]="deuInfo.habilita_reembolsos"
+                    (click)="selectHabilitaReembolsos($event.target,deuInfo.token_cat_deudores);">
+                  <label class="form-check-label">Reembolsos</label>
+                </div>
+              </div>
+
+              <div class="input-group col-12">
+                <label class="activeInput"><span class="obligatorio">Regimen fiscal</span></label>
+                <p-select
+                  [ngClass]="deudorModelo.tipoDeudor === '' || deudorModelo.subtipoDeudor === '' || !deudorModelo.habilita_reembolsos ? 'disabled' : ''"
+                  [disabled]="deudorModelo.tipoDeudor === '' || deudorModelo.subtipoDeudor === '' || !deudorModelo.habilita_reembolsos"
+                  [attr.aria-disabled]="deudorModelo.tipoDeudor === '' || deudorModelo.subtipoDeudor === '' || !deudorModelo.habilita_reembolsos ? true : null"
+                  [options]="deudorModelo.subtipoDeudor == 'deudorFisica' ? PfAllRegFisArray : PmAllRegFisArray"
+                  id="selectedFiscalRegimen" formControlName="regimen_fiscal" optionValue="regimen"
+                  optionLabel="regimen" [filter]="true" filterBy="regimen" [showClear]="true"
+                  [placeholder]="'opt_select' | translate" class="w-full md:w-56"
+                  (onChange)="changeRegimenFiscal($event.value,deuInfo.token_cat_deudores);">
+                  <ng-template #selectedItem let-sel>
+                    <div class="flex items-center gap-2">
+                      <div>{{sel.regimen}}</div>
+                    </div>
+                  </ng-template>
+                  <ng-template let-reg #item>
+                    <div class="flex items-center gap-2">
+                      <div>{{reg.regimen}}</div>
+                    </div>
+                  </ng-template>
+                </p-select>
+              </div>
+              <p-divider />
+              <div class="col-12 row" style="padding:0!important;">
+                <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain" style="margin: 0!important;">
+                  <h6 class="title">Vincular trabajador</h6>
+                </div>
+                <div
+                  class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                  <label class="form-check-label" for="flexSwitchCheckReverse">No</label>
+                  <input class="form-check-input" type="checkbox" [checked]="deudorModelo.trabajador_vinculado != ''"
+                    (click)="decideVinculaTrab($event.target);">
+                  <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                </div>
+                <div id="decideinfoDetWorker" class="col-12"
+                  [ngClass]="deudorModelo.trabajador_vinculado != '' ? '' : 'noneView'" style="padding: 0;">
+                  <p-table #acrRelTrab [value]="listaRelationsTrab" [paginator]="true" [rows]="10"
+                    [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]"
+                    [globalFilterFields]="['people_relacionado_token','people_relacionado_folio','people_relacionado_nombre_completo','people_relacionado_comercial_nombre']">
+                    <ng-template #caption>
+                      <div class="flex">
+                        <p-iconfield iconPosition="left" class="ml-auto">
+                          <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                          <input pInputText type="text"
+                            (input)="acrRelTrab.filterGlobal($event.target.value, 'contains')"
+                            placeholder="{{'bus_car' | translate}}" />
+                        </p-iconfield>
+                      </div>
+                    </ng-template>
+                    <ng-template #header>
+                      <tr>
+                        <th class="ultimo"></th>
+                        <th pSortableColumn="people_relacionado_folio">folio&nbsp;<p-sortIcon
+                            field="people_relacionado_folio" /></th>
+                        <th pSortableColumn="people_relacionado_nombre_completo">nombre&nbsp;<p-sortIcon
+                            field="people_relacionado_nombre_completo" /></th>
+                        <th pSortableColumn="people_relacionado_comercial_nombre">combre comercial&nbsp;<p-sortIcon
+                            field="people_relacionado_comercial_nombre" /></th>
+                      </tr>
+                    </ng-template>
+                    <ng-template #body let-trab>
+                      <tr>
+                        <td>
+                          <div class="form-check radio_check">
+                            <input class="form-check-input" type="radio" name="acrTrabSelect"
+                              [checked]="trab.people_relacionado_token == deuInfo.trabajador_vinculado"
+                              (click)="vincula_select_trabajador(trab.people_relacionado_token,deuInfo.token_cat_deudores);">
+                          </div>
+                        </td>
+                        <td>{{trab.people_relacionado_folio}}</td>
+                        <td>{{trab.people_relacionado_nombre_completo}}</td>
+                        <td>{{trab.people_relacionado_comercial_nombre}}</td>
+                      </tr>
+                    </ng-template>
+                    <ng-template pTemplate="emptymessage">
+                      <tr>
+                        <td colspan="4" class="text-center py-4">
+                          <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                          <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                            {{'no_rows' | translate}}
+                          </p>
+                        </td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
+                </div>
+              </div>
+              <p-divider />
+              <div class="col-12 row" style="padding:0!important;">
+                <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain" style="margin: 0!important;">
+                  <h6 class="title">Vincular proveedor</h6>
+                </div>
+                <div
+                  class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                  <label class="form-check-label" for="flexSwitchCheckReverse">No</label>
+                  <input class="form-check-input" type="checkbox" [checked]="deudorModelo.proveedor_vinculado != ''"
+                    (click)="decideVinculaProv($event.target);">
+                  <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                </div>
+                <div id="decideinfoDetProv" class="col-12"
+                  [ngClass]="deudorModelo.proveedor_vinculado != '' ? '' : 'noneView'" style="padding: 0;">
+                  <p-table #acrRelProv [value]="listaRelationsProv" [paginator]="true" [rows]="10"
+                    [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]"
+                    [globalFilterFields]="['people_relacionado_token','people_relacionado_folio','people_relacionado_nombre_completo','people_relacionado_comercial_nombre']">
+                    <ng-template #caption>
+                      <div class="flex">
+                        <p-iconfield iconPosition="left" class="ml-auto">
+                          <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                          <input pInputText type="text"
+                            (input)="acrRelProv.filterGlobal($event.target.value, 'contains')"
+                            placeholder="{{'bus_car' | translate}}" />
+                        </p-iconfield>
+                      </div>
+                    </ng-template>
+                    <ng-template #header>
+                      <tr>
+                        <th class="ultimo"></th>
+                        <th pSortableColumn="people_relacionado_folio">folio&nbsp;<p-sortIcon
+                            field="people_relacionado_folio" /></th>
+                        <th pSortableColumn="people_relacionado_nombre_completo">nombre&nbsp;<p-sortIcon
+                            field="people_relacionado_nombre_completo" /></th>
+                        <th pSortableColumn="people_relacionado_comercial_nombre">combre comercial&nbsp;<p-sortIcon
+                            field="people_relacionado_comercial_nombre" /></th>
+                      </tr>
+                    </ng-template>
+                    <ng-template #body let-prov>
+                      <tr>
+                        <td>
+                          <div class="form-check radio_check">
+                            <input class="form-check-input" type="radio" name="acrProvSelect"
+                              [checked]="prov.people_relacionado_token == deuInfo.proveedor_vinculado"
+                              (click)="vincula_select_proveedor(prov.people_relacionado_token,deuInfo.token_cat_deudores);">
+                          </div>
+                        </td>
+                        <td>{{prov.people_relacionado_folio}}</td>
+                        <td>{{prov.people_relacionado_nombre_completo}}</td>
+                        <td>{{prov.people_relacionado_comercial_nombre}}</td>
+                      </tr>
+                    </ng-template>
+                    <ng-template pTemplate="emptymessage">
+                      <tr>
+                        <td colspan="4" class="text-center py-4">
+                          <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                          <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                            {{'no_rows' | translate}}
+                          </p>
+                        </td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
+                </div>
+              </div>
+              <p-divider />
+              <div class="col-12 row" style="padding:0!important;">
+                <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain" style="margin: 0!important;">
+                  <h6 class="title">Vincular deudor</h6>
+                </div>
+                <div
+                  class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                  <label class="form-check-label" for="flexSwitchCheckReverse">No</label>
+                  <input class="form-check-input" type="checkbox" [checked]="deudorModelo.acreedor_vinculado != ''"
+                    (click)="decideocupaAcreedor($event.target);">
+                  <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                </div>
+                <div id="decideinfoDetDeu" class="col-12"
+                  [ngClass]="deudorModelo.acreedor_vinculado != '' ? '' : 'noneView'" style="padding: 0;">
+                  <p-table #deuRelAcr [value]="listaRelationsAcr" [paginator]="true" [rows]="10"
+                    [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]"
+                    [globalFilterFields]="['people_relacionado_token','people_relacionado_folio','people_relacionado_nombre_completo','people_relacionado_comercial_nombre']">
+                    <ng-template #caption>
+                      <div class="flex">
+                        <p-iconfield iconPosition="left" class="ml-auto">
+                          <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                          <input pInputText type="text"
+                            (input)="deuRelAcr.filterGlobal($event.target.value, 'contains')"
+                            placeholder="{{'bus_car' | translate}}" />
+                        </p-iconfield>
+                      </div>
+                    </ng-template>
+                    <ng-template #header>
+                      <tr>
+                        <th class="ultimo"></th>
+                        <th pSortableColumn="people_relacionado_folio">folio&nbsp;<p-sortIcon
+                            field="people_relacionado_folio" /></th>
+                        <th pSortableColumn="people_relacionado_nombre_completo">nombre&nbsp;<p-sortIcon
+                            field="people_relacionado_nombre_completo" /></th>
+                        <th pSortableColumn="people_relacionado_comercial_nombre">combre comercial&nbsp;<p-sortIcon
+                            field="people_relacionado_comercial_nombre" /></th>
+                        <th pSortableColumn="trab_nombre">empleado vinculado&nbsp;<p-sortIcon field="trab_nombre" />
+                        </th>
+                        <th pSortableColumn="prov_nombre">proveedor vinculado&nbsp;<p-sortIcon field="prov_nombre" />
+                        </th>
+                        <th pSortableColumn="acr_nombre">acreedor vinculado&nbsp;<p-sortIcon field="acr_nombre" /></th>
+                      </tr>
+                    </ng-template>
+                    <ng-template #body let-deu>
+                      <tr>
+                        <td>
+                          <div class="form-check radio_check">
+                            <input class="form-check-input" type="radio" name="acrDeuSelect"
+                              [checked]="deu.people_relacionado_token == deuInfo.acreedor_vinculado"
+                              (click)="vincula_select_acreedor(deu.people_relacionado_token,deuInfo.token_cat_deudores);">
+                          </div>
+                        </td>
+                        <td>{{deu.people_relacionado_folio}}</td>
+                        <td>{{deu.people_relacionado_nombre_completo}}</td>
+                        <td>{{deu.people_relacionado_comercial_nombre}}</td>
+                        <td [ngClass]="deu.trab_nombre != 'N/A' ? 'name' : ''">{{deu.trab_folio != 'N/A' ?
+                          deu.trab_folio+" "+deu.trab_nombre : deu.trab_nombre}}</td>
+                        <td [ngClass]="deu.prov_nombre != 'N/A' ? 'name' : ''">{{deu.prov_folio != 'N/A' ?
+                          deu.prov_folio+" "+deu.prov_nombre : deu.prov_nombre}}</td>
+                        <td [ngClass]="deu.acr_nombre != 'N/A' ? 'name' : ''">{{deu.acr_folio != 'N/A' ? deu.acr_folio+"
+                          "+deu.acr_nombre : deu.acr_nombre}}</td>
+                      </tr>
+                    </ng-template>
+                    <ng-template pTemplate="emptymessage">
+                      <tr>
+                        <td colspan="7" class="text-center py-4">
+                          <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                          <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                            {{'no_rows' | translate}}
+                          </p>
+                        </td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
+                </div>
+              </div>
+
+              <!-- Botón enviar -->
+              <div class="col-12 row" style="padding:0!important;">
+                <div class="col-12 col-sm-12 col-md-6 col-lg-8 col-xl-8 col-xxl-8"></div>
+                <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-4"
+                  style="padding: 0!important;display: flex;justify-content: end;">
+                  <button id="btnBuscaProvDB" class="btn btn_extend text-bg-success rounded-3"
+                    [ngClass]="!validaDeudorRegistro(deuInfo.token_cat_deudores) ? 'disabled' : ''"
+                    [attr.disabled]="!validaDeudorRegistro(deuInfo.token_cat_deudores) ? true : null"
+                    [attr.aria-disabled]="!validaDeudorRegistro(deuInfo.token_cat_deudores) ? true : null">
+                    <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade bd-example-modal-lg" id="infoDeuEliminados" tabindex="-1" role="dialog"
+  aria-labelledby="infoDeuEliminadosLabel" aria-hidden="true">
+  <div class="modal-dialog modal-fullscreen" style="margin: 1%;width: 98%!important;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="infoDeuEliminadosLabel">DEUDORES ELIMINADOS</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+          style="background-color: transparent !important;"></button>
+      </div>
+      <div class="modal-body" style="display: block!important;padding: 10px!important;">
+        <p-table #deuDeletedList [value]="arrayCatdeuDeleted" [globalFilterFields]="search_deu_filtro"
+          [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }"
+          [rowsPerPageOptions]="[10,20,30,50,100]">
+          <ng-template #caption>
+            <div class="flex">
+              <p-iconfield iconPosition="left" class="ml-auto">
+                <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                <input pInputText type="text" (input)="deuDeletedList.filterGlobal($event.target.value, 'contains')"
+                  placeholder="{{'bus_car' | translate}}" />
+              </p-iconfield>
+            </div>
+          </ng-template>
+          <ng-template #header>
+            <tr>
+              <th pSortableColumn="folio">folio&nbsp;<p-sortIcon field="folio" /></th>
+              <th pSortableColumn="pais">pais&nbsp;<p-sortIcon field="pais" /></th>
+              <th pSortableColumn="rfc_acree">rfc&nbsp;<p-sortIcon field="rfc_acree" /></th>
+              <th pSortableColumn="tax_id_acree">idTax&nbsp;<p-sortIcon field="tax_id_acree" /></th>
+              <th pSortableColumn="deu_titular">deudor&nbsp;<p-sortIcon field="deu_titular" /></th>
+              <th pSortableColumn="nombre_comercial">{{'comercial_name' | translate}} &nbsp;<p-sortIcon
+                  field="nombre_comercial" /></th>
+              <th pSortableColumn="cuenta_contable">Cuenta contable &nbsp;<p-sortIcon field="cuenta_contable" /></th>
+              <th pSortableColumn="trab_nombre">empleado vinculado&nbsp;<p-sortIcon field="trab_nombre" /></th>
+              <th pSortableColumn="prov_nombre">proveedor vinculado&nbsp;<p-sortIcon field="prov_nombre" /></th>
+              <th pSortableColumn="acr_nombre">acreedor vinculado&nbsp;<p-sortIcon field="acr_nombre" /></th>
+              <th class="ultimo"></th>
+              <th class="ultimo"></th>
+            </tr>
+          </ng-template>
+          <ng-template #body let-row_deu>
+            <tr>
+              <td>{{row_deu.folio}}</td>
+              <td>{{row_deu.pais ? row_deu.pais : 'N/A'}}</td>
+              <td>{{row_deu.rfc_acree ? row_deu.rfc_acree : 'N/A'}}</td>
+              <td>{{row_deu.tax_id_acree ? row_deu.tax_id_acree : 'N/A'}}</td>
+              <td [ngClass]="row_deu.deu_titular != 'N/A' ? 'name' : ''">{{row_deu.deu_titular}}</td>
+              <td>{{row_deu.nombre_comercial ? row_deu.nombre_comercial : 'N/A'}}</td>
+              <td>{{row_deu.cuenta_contable ? row_deu.cuenta_contable : 'N/A'}}</td>
+              <td [ngClass]="row_deu.trab_nombre != 'N/A' ? 'name' : ''">{{row_deu.trab_folio != 'N/A' ?
+                row_deu.trab_folio+" "+row_deu.trab_nombre : row_deu.trab_nombre}}</td>
+              <td [ngClass]="row_deu.prov_nombre != 'N/A' ? 'name' : ''">{{row_deu.prov_folio != 'N/A' ?
+                row_deu.prov_folio+" "+row_deu.prov_nombre : row_deu.prov_nombre}}</td>
+              <td [ngClass]="row_deu.acr_nombre != 'N/A' ? 'name' : ''">{{row_deu.acr_folio != 'N/A' ?
+                row_deu.acr_folio+" "+row_deu.acr_nombre : row_deu.acr_nombre}}</td>
+              <td class="ultimo">
+                <a class="btn btn_extend text-bg-success rounded-3" (click)="reviveDeudor(row_deu.token_cat_deudores);">
+                  <i class="fa-solid fa-trash-arrow-up"></i>&nbsp;{{'restore_row' | translate}}
+                </a>
+              </td>
+              <td class="ultimo">
+                <a class="btn btn_extend text-bg-danger rounded-3" (click)="rematarDeudor(row_deu.token_cat_deudores);">
+                  <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                </a>
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="12" class="text-center py-4">
+                <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                  {{'no_rows' | translate}}
+                </p>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+      <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade bd-example-modal-lg" id="windowDeudorRegistro" tabindex="-1" role="dialog"
+  aria-labelledby="windowDeudorRegistroLabel" aria-hidden="true">
+  <div class="modal-dialog modal-fullscreen" style="margin: 1%;width: 98%!important;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="windowDeudorRegistroLabel">{{'deudor_reg' | translate}}</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+          style="background-color: transparent !important;"></button>
+      </div>
+      <div class="modal-body">
+        <app-interno-finanzas-catalogos-deudoresregistro></app-interno-finanzas-catalogos-deudoresregistro></div>
+      <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

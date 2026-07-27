@@ -1,0 +1,174 @@
+<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco" #vContent>
+  <div class="contenido"><app-loader></app-loader>
+    <nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+    <main class="contenidoPagina">
+      <div class="listas_ps revanecer">
+        <div id="listaProveedores" class="lista-div lista-divNoFlex">
+          <h4 class="col-12">{{'logistics' | translate}} de compras</h4>
+
+          <p-tabs value="0">
+            <p-tablist>
+              <p-tab value="0">{{'general_exit_registry' | translate}}</p-tab>
+              <p-tab value="1" (click)="showCompraWindowIniciaTransito();">{{'release_for_transit' | translate}}</p-tab>
+            </p-tablist>
+            <p-tabpanels>
+              <p-tabpanel value="0">
+                <p-table #gralBuyList [value]="arrayTrasitosIniciados" [globalFilterFields]="searchTrasitosIniciados" showGridlines [resizableColumns]="true" [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]">
+                  <ng-template #caption>
+                    <div class="flex" style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;" ngbDropdown>
+                      <a class="btn btn_extend" [ngClass]="indicadorTrasitosIniciados == 'hoy' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="lista_trasitos_iniciados('hoy');">
+                        <i class="fa-solid fa-calendar-days"></i>&nbsp;{{'today' | translate}}
+                      </a>
+                      <a class="btn btn_extend" [ngClass]="indicadorTrasitosIniciados == 'esta_semana' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="lista_trasitos_iniciados('esta_semana');">
+                        <i class="fa-solid fa-calendar-days"></i>&nbsp;{{'this_week' | translate}}
+                      </a>
+                      <a class="btn btn_extend" [ngClass]="indicadorTrasitosIniciados == 'este_mes' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="lista_trasitos_iniciados('este_mes');">
+                        <i class="fa-solid fa-calendar-days"></i>&nbsp;{{'this_month' | translate}}
+                      </a>
+                      <a class="btn btn_extend" [ngClass]="indicadorTrasitosIniciados == 'mes_anterior' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="lista_trasitos_iniciados('mes_anterior');">
+                        <i class="fa-solid fa-arrow-left"></i>&nbsp;{{'previous_month' | translate}}
+                      </a>
+                      <a id="menuDropBuyRangos" class="btn btn_extend" [ngClass]="indicadorTrasitosIniciados == 'otras_fechas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" ngbDropdownToggle>
+                        <i class="fa-solid fa-list-ul"></i>&nbsp;{{'other_dates' | translate}}
+                      </a>
+                      <div class="dropdown-menu-end menu-despegable" ngbDropdownMenu="menuDropBuyRangos" style="padding: 0!important; margin: 0!important; width: max-content!important; max-height: 400px; overflow-y: auto;">
+                        <div class="col-12 input-group">
+                          <label for="transitos_otras_fechas" class="activeInput">{{'date_period' | translate}}</label>
+                          <p-datepicker id="transitos_otras_fechas" name="transitos_otras_fechas" [(ngModel)]="rangoTrasitosIniciados" appendTo="body" dateFormat="dd/mm/yy" 
+                            placeholder="dd/mm/aaaa" selectionMode="range" (onSelect)="lista_trasitos_iniciados('otras_fechas');" />
+                        </div>
+                      </div>
+                      <a class="btn btn_extend" [ngClass]="indicadorTrasitosIniciados == 'all_partidas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="lista_trasitos_iniciados('all_partidas');">
+                        <i class="fa-solid fa-list-ul"></i>&nbsp;{{'all_records' | translate}}
+                      </a>
+                      <p-iconfield iconPosition="left" class="ml-auto">
+                        <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                        <input pInputText type="text" (input)="gralBuyList.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+                      </p-iconfield>
+                    </div>
+                  </ng-template>
+                  <ng-template #header>
+                    <tr>
+                      <th class="ultimo"></th>
+                      <th class="ultimo"></th>
+                      <th class="ultimo"></th>
+                      <th pResizableColumn pSortableColumn="folio_seguimiento_transito">{{'purchase_folio' | translate}}&nbsp;<p-sortIcon field="folio_seguimiento_transito" /></th>
+                      <th pResizableColumn pSortableColumn="fecha_contabilizacion">{{'fecha_cont' | translate}}&nbsp;<p-sortIcon field="fecha_contabilizacion" /></th>
+                      <th pResizableColumn pSortableColumn="articulos_en_espera">{{'waiting_articles' | translate}}&nbsp;<p-sortIcon field="articulos_en_espera" /></th>
+                      <th pResizableColumn pSortableColumn="articulos_en_transito">{{'in_transit_articles' | translate}}&nbsp;<p-sortIcon field="articulos_en_transito" /></th>
+                      <th pResizableColumn pSortableColumn="articulos_entregados">{{'delivered_articles' | translate}}&nbsp;<p-sortIcon field="articulos_entregados" /></th>
+                      <th pResizableColumn pSortableColumn="transitos_sin_fecha_llegada" class="ultimo"><p-sortIcon field="transitos_sin_fecha_llegada" /></th>
+                      <th pResizableColumn pSortableColumn="transitos_llegada_sin_auth" class="ultimo"><p-sortIcon field="transitos_llegada_sin_auth" /></th>
+                    </tr>
+                  </ng-template>
+                  <ng-template #body let-cLog>
+                    <tr>
+                      <td class="ultimo">
+                        <div class="flex flex-column gap-1" style="min-width: 100px;">
+                          <p-progressbar [value]="cLog.avance_entrega" [showValue]="true" unit="%" [style]="{ height: '18px', 'font-size': '11px', 'border-radius': '4px' }" />
+                        </div>
+                      </td>
+                      <td class="ultimo">
+                        <a class="btn btn_extend bg-blue-600" (click)="showWindowMonitor(cLog);">
+                          <i class="fa-solid fa-map-location-dot"></i>&nbsp;Camino en Recorrido Secuencial
+                        </a>
+                      </td>
+                      <td class="ultimo">
+                        @if (!cLog.habiltar_continua_rutas) {
+                          <a class="btn btn_extend bg-blue-600 disabled" disabled>
+                            <i class="fa-solid fa-route"></i>&nbsp;{{'continue_route' | translate}}
+                          </a>
+                        } @else {
+                          <a class="btn btn_extend bg-blue-600" (click)="showWindowContinuarRutaBifurcada(cLog);">
+                            <i class="fa-solid fa-route"></i>&nbsp;{{'continue_route' | translate}}
+                          </a>
+                        }
+                      </td>
+                      <td>{{cLog.folio_seguimiento_transito}}</td>
+                      <td>{{cLog.fecha_contabilizacion}}</td>
+                      <td [ngClass]="cLog.clase_espera" class="text-center transition-colors">{{cLog.articulos_en_espera}}</td>
+                      <td [ngClass]="cLog.clase_transito" class="text-center transition-colors">{{cLog.articulos_en_transito}}</td>
+                      <td [ngClass]="cLog.clase_entregados" class="text-center transition-colors">{{cLog.articulos_entregados}}</td>
+                      <td>
+                        @if (cLog.transitos_sin_fecha_llegada == 0) {
+                          <a class="btn btn_extend bg-blue-600 disabled position-relative" disabled style="display: inline-flex;align-items: center;justify-content: center;">
+                            <i class="fa-solid fa-calendar-check"></i>&nbsp;{{'register_arrival' | translate}}
+                            <span class="badge_list">{{cLog.transitos_sin_fecha_llegada}}</span>
+                          </a>
+                        } @else {
+                          <a class="btn btn_extend bg-blue-600 position-relative" style="display: inline-flex;align-items: center;justify-content: center;" (click)="showLogisticaWindowRegistraFechaLlegada(cLog);">
+                            <i class="fa-solid fa-calendar-check"></i>&nbsp;{{'register_arrival' | translate}}
+                            <span class="badge_list">{{cLog.transitos_sin_fecha_llegada}}</span>
+                          </a>
+                        }
+                      </td>
+                      <td>
+                        @if (cLog.transitos_llegada_sin_auth == 0) {
+                          <a class="btn btn_extend bg-blue-600 disabled position-relative" disabled style="display: inline-flex;align-items: center;justify-content: center;">
+                            <i class="fa-solid fa-check-double"></i>&nbsp;{{'authorize_arrival' | translate}}
+                            <span class="badge_list">{{cLog.transitos_llegada_sin_auth}}</span>
+                          </a>
+                        } @else {
+                          <a class="btn btn_extend bg-blue-600 position-relative" style="display: inline-flex;align-items: center;justify-content: center;" (click)="showLogisticaWindowIniciaLlegadaAutorizar(cLog);">
+                            <i class="fa-solid fa-check-double"></i>&nbsp;{{'authorize_arrival' | translate}}
+                            <span class="badge_list">{{cLog.transitos_llegada_sin_auth}}</span>
+                          </a>
+                        }
+                      </td>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="emptymessage">
+                    <tr>
+                      <td colspan="20" class="text-center py-4">
+                        <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                        <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                          {{'no_rows' | translate}}
+                        </p>
+                      </td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+              </p-tabpanel>
+              <p-tabpanel value="1">
+                <logistica_compras_iniciar_ruta [transito_orden]="orden_iniciar_transito"></logistica_compras_iniciar_ruta>
+              </p-tabpanel>
+            </p-tabpanels>
+          </p-tabs>
+        </div>
+      </div>
+    </main>
+    <app-footer-inside></app-footer-inside>
+  </div>
+</div>
+
+<p-dialog [header]="'Camino en Recorrido Secuencial (Monitor) '+logistica_seguimiento_folio" [(visible)]="ver_logistica_monitor"
+  [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [modal]="true" [style]="{ width: '55rem' }" [maximizable]="true">
+  @if (ver_logistica_monitor) {
+    <logistica_monitor_rutas [seguimiento_token]="logistica_seguimiento_token"></logistica_monitor_rutas>
+  }
+</p-dialog>
+
+<p-dialog 
+  [header]="('logistics' | translate)+' de compras ('+('continue_route' | translate)+' / Transbordo) '+logistica_seguimiento_folio" [(visible)]="ver_logistica_continuar_ruta_bifurcada"
+  [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [modal]="true" [style]="{ width: '55rem' }" [maximizable]="true">
+  @if (ver_logistica_continuar_ruta_bifurcada) {
+    <logistica_continuar_ruta [seguimiento_token]="logistica_seguimiento_token"></logistica_continuar_ruta>
+  }
+</p-dialog>
+
+<p-dialog 
+  [header]="('logistics' | translate)+' de compras ('+('register_arrival' | translate)+') '+logistica_seguimiento_folio" [(visible)]="ver_logistica_registra_llegada_fecha"
+  [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [modal]="true" [style]="{ width: '50rem' }" [maximizable]="true">
+  @if (ver_logistica_registra_llegada_fecha) {
+    <logistica_registra_llegada_fecha [seguimiento_token]="logistica_seguimiento_token"></logistica_registra_llegada_fecha>
+  }
+</p-dialog>
+
+<p-dialog 
+  [header]="('logistics' | translate)+' de compras ('+('authorize_arrival' | translate)+') '+logistica_seguimiento_folio" [(visible)]="ver_logistica_autoriza_llegada"
+  [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [modal]="true" [style]="{ width: '50rem' }" [maximizable]="true">
+  @if (ver_logistica_autoriza_llegada) {
+    <logistica_autoriza_llegada [seguimiento_token]="logistica_seguimiento_token"></logistica_autoriza_llegada>
+  }
+</p-dialog>

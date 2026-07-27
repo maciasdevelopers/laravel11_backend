@@ -1,0 +1,159 @@
+input{
+  background-color: var(--bs-body-bg) !important;
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+  display: block;
+  width: 100%;
+  padding: .375rem .75rem;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  height: 30px!important;
+  color: #212529!important;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-color: var(--bs-body-bg);
+  background-clip: padding-box;
+  border: var(--bs-border-width) solid var(--bs-border-color) !important;
+  border-radius: var(--bs-border-radius) !important;
+  transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+}
+
+textarea{
+  background-color: var(--bs-body-bg) !important;
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+  display: block;
+  width: 100%;
+  padding: .375rem .75rem;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--bs-body-color);
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-color: var(--bs-body-bg);
+  background-clip: padding-box;
+  border: var(--bs-border-width) solid var(--bs-border-color) !important;
+  border-radius: var(--bs-border-radius) !important;
+  transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+}
+
+select,
+input.select-dropdown,
+select.browser-default{
+  background-color: var(--bs-body-bg) !important;
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+  display: block;
+  width: 100%;
+  padding:0;
+  padding-left: .2rem;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  height: 30px!important;
+  color: var(--bs-body-color);
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-color: var(--bs-body-bg);
+  background-clip: padding-box;
+  border: var(--bs-border-width) solid var(--bs-border-color);
+  border-radius: var(--bs-border-radius) !important;
+  transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+}
+
+label.activeInput{
+  line-height: 20px;
+  color: #1f2937 !important;
+  justify-content: center;
+  align-items: center;
+  font-family: 'roboto_cr', fontAwesome;
+  font-size: smaller;
+  margin-bottom: 0 !important;
+  height: 20px;
+}
+
+.input_group_pass{display: flex;flex-wrap: wrap;justify-content: start;}
+.input_group_pass input{border-radius: 8px 0 0 8px!important;width: calc(100% - 30px) !important;}
+.input_group_pass a,.input_group_pass p{border-radius: 0 8px 8px 0!important;height: 30px!important;width: 30px!important;}
+.input_group_pass p{
+  background-color: #2962ff;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white !important;
+  font-size: smaller;
+  font-family: 'roboto_cr', FontAwesome;
+}
+.form_group_black label{
+  color: white !important;
+}
+
+.input-group-text {
+  display: flex;
+  align-items: center;
+  padding: .375rem .75rem;
+  margin-bottom: 0;
+  font-size: 1rem;
+  font-weight: 400;
+  color: #495057;
+  text-align: center;
+  white-space: nowrap;
+  border: 1px solid #ced4da;
+  border-radius: .25rem;
+  height: 30px;
+  background-color: transparent;
+  width: 30px;
+  padding: 0;
+  justify-content: center;
+}
+
+.correcto{border-bottom: 3px solid #146c43 !important;}
+.error{border-bottom: 3px solid #b02a37!important;}
+
+ngx-mat-intl-tel-input input.correcto {
+  border-bottom: 3px solid #146c43 !important;
+  box-shadow: none !important; /* evita sombra roja de Angular Material */
+}
+
+ngx-mat-intl-tel-input input.error {
+  border-bottom: 3px solid #b02a37 !important;
+  box-shadow: none !important;
+}
+
+.correctoTextarea{border-bottom: 3px solid #146c43 !important;}
+.errorTextarea{border-bottom: 3px solid #b02a37!important;}
+
+input:disabled, select:disabled{
+  background-color: #a5a5a5!important;
+  color: #fff!important;
+}
+
+div.radio_check input.form-check-input {
+  /*background-color: transparent!important;
+  border-radius: 50%!important;
+  width: 15px;
+  height: 15px!important;
+  padding: 0;*/
+  background-color: #e7e7ea!important;
+  border-radius: 50% !important;
+  width: 15px;
+  height: 15px !important;
+  padding: 0;
+  border: 1px solid  #353535!important;
+}
+
+div.radio_check input.form-check-input:checked {
+  background-color: #0d6efd!important;
+  border-color: #0d6efd!important;
+}
+span.obligatorio{
+  color: #b02a37!important;
+  margin-left: 3px;
+  font-size: smaller;
+}

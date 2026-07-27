@@ -1,0 +1,368 @@
+<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco" #vContent>
+  <div class="contenido"><app-loader></app-loader>
+    <nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+    <div class="contenidoPagina">
+      <div class="listas_ps revanecer">
+        <div class="lista-div lista-divNoFlex">
+          <h4>KARDEX DE ACTIVOS Y MERCANCIAS</h4>
+
+          <p-tabs value="0">
+            <p-tablist>
+              <p-tab value="0">Activos</p-tab>
+              <p-tab value="1">Mercancias</p-tab>
+            </p-tablist>
+            <p-tabpanels>
+              <p-tabpanel value="0">
+                <p-table #fijListTrue [value]="listActivosKardex" [globalFilterFields]="['token_act_fijos','folio_activo','categoria','tipo_depreciacion_desc','deprec_contable','deprec_fiscal','periodo_deprec']"
+                  showGridlines [resizableColumns]="true" [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]">
+                  <ng-template #caption>
+                    <div class="flex" style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;" ngbDropdown>
+                      <a class="btn btn_extend" [ngClass]="indicadorActivosList == 'hoy' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="listActFijosKardex('hoy');">
+                        <i class="fa-solid fa-calendar-days"></i>&nbsp;Hoy
+                      </a>
+                      <a class="btn btn_extend" [ngClass]="indicadorActivosList == 'esta_semana' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="listActFijosKardex('esta_semana');">
+                        <i class="fa-solid fa-calendar-days"></i>&nbsp;Esta semana
+                      </a>
+                      <a class="btn btn_extend" [ngClass]="indicadorActivosList == 'este_mes' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="listActFijosKardex('este_mes');">
+                        <i class="fa-solid fa-calendar"></i>&nbsp;Este mes
+                      </a>
+                      <a class="btn btn_extend" [ngClass]="indicadorActivosList == 'mes_anterior' ? ' bg-indigo-600' : ' bg-blue-600'" style="margin-right:5px!important;" (click)="listActFijosKardex('mes_anterior');">
+                        <i class="fa-solid fa-arrow-left"></i>&nbsp;mes anterior
+                      </a>
+                      <a id="menuDropActRangos" class="btn btn_extend" [ngClass]="indicadorActivosList == 'otras_fechas' ? ' bg-indigo-600' : 'bg-blue-600'" style="margin-right:5px!important;" ngbDropdownToggle>
+                        <i class="fa-solid fa-list-ul"></i>&nbsp;otras fechas
+                      </a>
+                      <div class="dropdown-menu-end menu-despegable" ngbDropdownMenu="menuDropActRangos" style="padding: 0!important; margin: 0!important; width: max-content!important; max-height: 400px; overflow-y: auto;">
+                        <div class="col-12 input-group">
+                          <label for="act_kardex_otras_fechas" class="activeInput">Periodo de fechas</label>
+                          <p-datepicker id="act_kardex_otras_fechas" name="act_kardex_otras_fechas" [(ngModel)]="rangoPeriodoActivos" appendTo="body" dateFormat="dd/mm/yy" placeholder="dd/mm/aaaa" selectionMode="range" 
+														(onSelect)="listActFijosKardex('otras_fechas');" />
+                        </div>
+                      </div>
+                      <a class="btn btn_extend" [ngClass]="indicadorActivosList == 'all_partidas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="listActFijosKardex('all_partidas');">
+                        <i class="fa-solid fa-list-ul"></i>&nbsp;todos los registros
+                      </a>
+                      <p-iconfield iconPosition="left" class="ml-auto">
+                        <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                        <input pInputText type="text" (input)="fijListTrue.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+                      </p-iconfield>
+                    </div>
+                  </ng-template>
+                  <ng-template #header>
+                    <tr>
+                      <th rowspan="2" class="ultimo"></th>
+                      <th colspan="3" pSortableColumn="folio_activo">familia&nbsp;<p-sortIcon field="folio_activo"/></th>
+                      <th rowspan="2" pSortableColumn="articulo">Articulo&nbsp;<p-sortIcon field="articulo"/></th>
+                      <th rowspan="2" pSortableColumn="folio_activof_unidad">folio de unidad&nbsp;<p-sortIcon field="folio_activof_unidad" /></th>
+                      <th colspan="5">recepci&oacute;n</th>
+                      <th colspan="5">Depreciaci&oacute;n contable&nbsp;</th>
+                      <th colspan="5">Depreciaci&oacute;n fiscal&nbsp;</th>
+                      <th rowspan="2">{{'observ' | translate}}</th>
+                      <th rowspan="2">Fecha de depreciaci&oacute;n</th>
+                    </tr>
+                    <tr>
+                      <th pSortableColumn="folio_activo">folio&nbsp;<p-sortIcon field="folio_activo"/></th>
+                      <th pSortableColumn="categoria">Categoria&nbsp;<p-sortIcon field="categoria"/></th>
+                      <th pSortableColumn="categoria_cuenta_contable">Cuenta contable&nbsp;<p-sortIcon field="categoria_cuenta_contable"/></th>
+
+                      <th pSortableColumn="cantidad">cantidad&nbsp;<p-sortIcon field="cantidad"/></th>
+                      <th pSortableColumn="unidad_medida">unidad de medida&nbsp;<p-sortIcon field="unidad_medida"/></th>
+                      <th pSortableColumn="fecha_recep">Fecha de recepci&oacute;n&nbsp;<p-sortIcon field="fecha_recep"/></th>
+                      <th pSortableColumn="folio_recep">Folio&nbsp;<p-sortIcon field="folio_recep"/></th>
+                      <th>{{'observ' | translate}}</th>
+
+                      <th pSortableColumn="deprec_contable_tipo">Tipo&nbsp;<p-sortIcon field="deprec_contable_tipo"/></th>
+                      <th pSortableColumn="deprec_contable_periodo">Periodo&nbsp;<p-sortIcon field="deprec_contable_periodo"/></th>
+                      <th pSortableColumn="deprec_contable_importe">Importe&nbsp;<p-sortIcon field="deprec_contable_importe"/></th>
+                      <th pSortableColumn="deprec_contable_cuenta">Cuenta contable&nbsp;<p-sortIcon field="deprec_contable_cuenta"/></th>
+                      <th pSortableColumn="deprec_contable_cuenta_dos">Cuenta contable dos<p-sortIcon field="deprec_contable_cuenta_dos"/></th>
+
+                      <th pSortableColumn="deprec_fiscal_tipo">Tipo&nbsp;<p-sortIcon field="deprec_fiscal_tipo"/></th>
+                      <th pSortableColumn="deprec_fiscal_periodo">Periodo&nbsp;<p-sortIcon field="deprec_fiscal_periodo"/></th>
+                      <th pSortableColumn="deprec_fiscal_importe">Importe&nbsp;<p-sortIcon field="deprec_fiscal_importe"/></th>
+                      <th pSortableColumn="deprec_fiscal_cuenta">Cuenta contable&nbsp;<p-sortIcon field="deprec_fiscal_cuenta"/></th>
+                      <th pSortableColumn="deprec_fiscal_cuenta_dos">Cuenta contable dos&nbsp;<p-sortIcon field="deprec_fiscal_cuenta_dos"/></th>
+                    </tr>
+                  </ng-template>
+                  <ng-template #body let-actf>
+                    <tr>
+                      <td class="ultimo">
+                        <a class="btn bg-blue-600 position-relative" (click)="verActivoFijoToDeprec(actf.token_activof_unidad);">
+                          <i class="fa-solid fa-chart-bar"></i>
+                        </a>
+                      </td>
+                      <td class="name">{{actf.folio_activo}}</td>
+                      <td class="name">{{actf.categoria}}</td>
+                      <td class="name">{{actf.categoria_cuenta_contable}}</td>
+                      <td class="name">{{actf.articulo}}</td>
+                      <td class="name">{{actf.folio_activof_unidad}}</td>
+                      <td class="td_importes">{{actf.cantidad}}</td>
+                      <td class="name">{{actf.unidad_medida}}</td>
+                      <td class="name">{{actf.fecha_recep}}</td>
+                      <td class="name">{{actf.folio_recep}}</td>
+                      <td class="name">{{actf.unidad_observaciones}}</td>
+                      <td class="name">{{actf.deprec_contable_tipo}}</td>
+                      <td class="name">{{actf.deprec_contable_periodo}}</td>
+                      <td class="td_importes">{{actf.deprec_contable_importe}}</td>
+                      <td class="name">{{actf.deprec_contable_cuenta}}</td>
+                      <td class="name">{{actf.deprec_contable_cuenta_dos}}</td>
+                      <td class="name">{{actf.deprec_fiscal_tipo}}</td>
+                      <td class="name">{{actf.deprec_fiscal_periodo}}</td>
+                      <td class="td_importes">{{actf.deprec_fiscal_importe}}</td>
+                      <td class="name">{{actf.deprec_fiscal_cuenta}}</td>
+                      <td class="name">{{actf.deprec_fiscal_cuenta_dos}}</td>
+                      <td class="name">{{actf.activo_observaciones}}</td>
+                      <td class="name">{{actf.fecha_inicio_depreciacion}}</td>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="emptymessage">
+                    <tr>
+                      <td colspan="23" class="text-center py-4">
+                        <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                        <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                          {{'no_rows' | translate}}
+                        </p>
+                      </td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+              </p-tabpanel>
+              <p-tabpanel value="1">
+                <p-table #prodKardexList id="tabla_productos_list_general" [value]="listaProductosKardex"
+                  [globalFilterFields]="buscarProductosKardex" dataKey="id" [paginator]="true" [rows]="10"
+                  [rowsPerPageOptions]="[10,20,30,50,100]">
+                  <ng-template #caption>
+                    <div class="flex" style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;" ngbDropdown>
+                      <a class="btn btn_extend" [ngClass]="indicadorProductosList == 'hoy' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="listProductosKardex('hoy');">
+                        <i class="fa-solid fa-calendar-days"></i>&nbsp;Hoy
+                      </a>
+                      <a class="btn btn_extend" [ngClass]="indicadorProductosList == 'esta_semana' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="listProductosKardex('esta_semana');">
+                        <i class="fa-solid fa-calendar-days"></i>&nbsp;Esta semana
+                      </a>
+                      <a class="btn btn_extend" [ngClass]="indicadorProductosList == 'este_mes' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="listProductosKardex('este_mes');">
+                        <i class="fa-solid fa-calendar"></i>&nbsp;Este mes
+                      </a>
+                      <a class="btn btn_extend" [ngClass]="indicadorProductosList == 'mes_anterior' ? ' bg-indigo-600' : ' bg-blue-600'" style="margin-right:5px!important;" (click)="listProductosKardex('mes_anterior');">
+                        <i class="fa-solid fa-arrow-left"></i>&nbsp;mes anterior
+                      </a>
+                      <a id="menuDropProdRangos" class="btn btn_extend" [ngClass]="indicadorProductosList == 'otras_fechas' ? ' bg-indigo-600' : 'bg-blue-600'" style="margin-right:5px!important;" ngbDropdownToggle>
+                        <i class="fa-solid fa-list-ul"></i>&nbsp;otras fechas
+                      </a>
+                      <div class="dropdown-menu-end menu-despegable" ngbDropdownMenu="menuDropProdRangos" style="padding: 0!important; margin: 0!important; width: max-content!important; max-height: 400px; overflow-y: auto;">
+                        <div class="col-12 input-group">
+                          <label for="act_prod_otras_fechas" class="activeInput">Periodo de fechas</label>
+                          <p-datepicker id="act_prod_otras_fechas" name="act_prod_otras_fechas" [(ngModel)]="rangoPeriodoProductos" appendTo="body" dateFormat="dd/mm/yy" placeholder="dd/mm/aaaa" selectionMode="range" 
+														(onSelect)="listProductosKardex('otras_fechas');" />
+                        </div>
+                      </div>
+                      <a class="btn btn_extend" [ngClass]="indicadorProductosList == 'all_partidas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="listProductosKardex('all_partidas');">
+                        <i class="fa-solid fa-list-ul"></i>&nbsp;todos los registros
+                      </a>
+                      <p-iconfield iconPosition="left" class="ml-auto">
+                        <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                        <input pInputText type="text" (input)="prodKardexList.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+                      </p-iconfield>
+                    </div>
+                  </ng-template>
+                  <ng-template #header>
+                    <tr>
+                      <th class="ultimo"></th>
+                      <!--<th class="ultimo"></th>-->
+                      <th pSortableColumn="folio_prod">Folio &nbsp;<p-sortIcon field="Folio"/></th>
+                      <th pSortableColumn="producto">Producto &nbsp;<p-sortIcon field="Producto"/></th>
+                      <th pSortableColumn="familia">Familia &nbsp;<p-sortIcon field="familia"/></th>
+                      <th pSortableColumn="clasificacion">Clasificaci&oacute;n &nbsp;<p-sortIcon field="clasificacion"/></th>
+                      <th pSortableColumn="marca">Marca &nbsp;<p-sortIcon field="marca"/></th>
+                      <th pSortableColumn="stock_actual">Stock actual &nbsp;<p-sortIcon field="genero"/></th>
+                    </tr>
+                  </ng-template>
+                  <ng-template #body let-rowProd>
+										<tr>
+											<td class="ultimo">
+												<a class="btn bg-blue-600 position-relative" (click)="verKardexProd(rowProd.token_cat_productos);">
+													<i class="fa-solid fa-chart-bar"></i>
+												</a>
+											</td>
+                      <!--<td class="img_dat">
+                        <div class="col-12"><img class="circle optimizedImage" fill ngSrc="./assets/images/catalogos/default_producto.jpg" alt=""></div>
+                      </td>-->
+                      <td class="name">{{rowProd.folio_prod}}</td>
+                      <td class="name">{{rowProd.producto}}</td>
+                      <td class="name">{{rowProd.familia}}</td>
+                      <td class="name">{{rowProd.clasificacion}}</td>
+                      <td class="name">{{rowProd.marca}}</td>
+                      <td class="td_importes">{{rowProd.stock_actual}}</td>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="emptymessage">
+                    <tr>
+                      <td colspan="7" class="text-center py-4">
+                        <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                        <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                          {{'no_rows' | translate}}
+                        </p>
+                      </td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+              </p-tabpanel>
+            </p-tabpanels>
+          </p-tabs>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p-dialog header="Kardex de activos" [(visible)]="modal_activo_kardex_detalle" [modal]="true" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+	<p-table #fijListTrue [value]="deprec_registradas_activo" showGridlines [resizableColumns]="true" [tableStyle]="{ 'min-width': '50rem' }"
+    [globalFilterFields]="['fecha_legible','deprec_concepto','mejoras_contables','contable_monto','valor_en_libros_contable','mejoras_de_inversion','fiscal_monto','valor_actualizado_de_inversion']">
+		<ng-template #caption>
+			<div class="flex">
+				<p-iconfield iconPosition="left" class="ml-auto">
+					<p-inputicon><i class="pi pi-search"></i></p-inputicon>
+					<input pInputText type="text" (input)="fijListTrue.filterGlobal($event.target.value, 'contains')"
+						placeholder="{{'bus_car' | translate}}" />
+				</p-iconfield>
+			</div>
+		</ng-template>
+		<ng-template #header>
+      <tr>
+        <th rowspan="2" pSortableColumn="fecha_legible">Periodo&nbsp;<p-sortIcon field="fecha_legible"/></th>
+        <th rowspan="2" pSortableColumn="deprec_concepto">Concepto&nbsp;<p-sortIcon field="deprec_concepto"/></th>
+        <th colspan="3">Gasto Contable&nbsp;</th>
+        <th colspan="3">Deducci&oacute;n de inversi&oacute;n&nbsp;</th>
+      </tr>
+      <tr>
+        <th pSortableColumn="mejoras_contables">Mejoras&nbsp;<p-sortIcon field="mejoras_contables"/></th>
+        <th pSortableColumn="contable_monto">Gasto Contable&nbsp;<p-sortIcon field="contable_monto"/></th>
+        <th pSortableColumn="valor_en_libros_contable">Valor en libros contable&nbsp;<p-sortIcon field="valor_en_libros_contable"/></th>
+
+        <th pSortableColumn="mejoras_de_inversion">Mejoras de inversión&nbsp;<p-sortIcon field="mejoras_de_inversion"/></th>
+        <th pSortableColumn="fiscal_monto">Deducci&oacute;n de inversi&oacute;n&nbsp;<p-sortIcon field="fiscal_monto"/></th>
+        <th pSortableColumn="valor_actualizado_de_inversion">Valor actualizado de la inversi&oacute;n&nbsp;<p-sortIcon field="valor_actualizado_de_inversion"/></th>
+      </tr>
+		</ng-template>
+    <ng-template #body let-ldeprec>
+      <tr>
+        <td>{{ldeprec.fecha_legible}}</td>
+        <td>{{ldeprec.deprec_concepto}}</td>
+        <td class="td_importes">{{ldeprec.mejoras_contables}}</td>
+        <td class="td_importes">{{ldeprec.contable_monto}}</td>
+        <td class="td_importes">{{ldeprec.valor_en_libros_contable}}</td>
+        <td class="td_importes">{{ldeprec.mejoras_de_inversion}}</td>
+        <td class="td_importes">{{ldeprec.fiscal_monto}}</td>
+        <td class="td_importes">{{ldeprec.valor_actualizado_de_inversion}}</td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="8" class="text-center py-4">
+          <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+          <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+            {{'no_rows' | translate}}
+          </p>
+        </td>
+      </tr>
+    </ng-template>
+	</p-table>
+</p-dialog>
+
+<p-dialog header="Kardex de productos" [(visible)]="modal_producto_kardex_detalle" [modal]="true" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  <p-table #productosTrueList id="tabla_productos_list_general" [value]="infoProductoKardex"
+    [globalFilterFields]="buscarProductosKardex" dataKey="id" [paginator]="true" [rows]="10"
+    [rowsPerPageOptions]="[10,20,30,50,100]">
+    <ng-template #caption>
+      <div class="flex">
+        <p-iconfield iconPosition="left" class="ml-auto">
+          <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+          <input pInputText type="text" (input)="productosTrueList.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+        </p-iconfield>
+      </div>
+    </ng-template>
+    <ng-template #header>
+      <tr>
+        <th rowspan="2" pSortableColumn="folio_prod">Fecha&nbsp;<p-sortIcon field="Folio"/></th>
+        <th rowspan="2" pSortableColumn="producto" class="name">Descripci&oacute;n&nbsp;<p-sortIcon field="Producto"/></th>
+        <th rowspan="2" pSortableColumn="familia">Compra&nbsp;<p-sortIcon field="familia"/></th>
+        <th rowspan="2" pSortableColumn="clasificacion" class="name">Venta&nbsp;<p-sortIcon field="clasificacion"/></th>
+        <th rowspan="2" pSortableColumn="marca">Valor unitario&nbsp;<p-sortIcon field="marca"/></th>
+        <th colspan="2">Por recibir</th>
+        <th colspan="2">En transito (entradas)</th>
+        <th colspan="2">Entradas</th>
+        <th colspan="2">Por entregar</th>
+        <th colspan="2">En transito (salidas)</th>
+        <th colspan="2">Salidas</th>
+        <th colspan="2">Saldos</th>
+        <!--<th rowspan="2" class="ultimo"></th>-->
+      </tr>
+      <tr>
+        <!--POR RECIBIR-->
+        <th pSortableColumn="recibir_cantidad">Cantidad&nbsp;<p-sortIcon field="recibir_cantidad"/></th>
+        <th pSortableColumn="recibir_valor">Valor&nbsp;<p-sortIcon field="recibir_valor"/></th>
+        <!--EN TRANSITO ENTRADA-->
+        <th pSortableColumn="transito_entrada_cantidad">Cantidad&nbsp;<p-sortIcon field="transito_entrada_cantidad"/></th>
+        <th pSortableColumn="transito_entrada_valor">Valor&nbsp;<p-sortIcon field="transito_entrada_valor"/></th>
+        <!--ENTRADAS-->
+        <th pSortableColumn="entrada_cantidad">Cantidad&nbsp;<p-sortIcon field="entrada_cantidad"/></th>
+        <th pSortableColumn="entrada_valor">Valor&nbsp;<p-sortIcon field="entrada_valor"/></th>
+       <!--POR ENTREGAR-->
+        <th pSortableColumn="entregar_cantidad">Cantidad&nbsp;<p-sortIcon field="entregar_cantidad"/></th>
+        <th pSortableColumn="entregar_valor">Valor&nbsp;<p-sortIcon field="entregar_valor"/></th>
+        <!--EN TRANSITO SALIDA-->
+        <th pSortableColumn="transito_salida_cantidad">Cantidad&nbsp;<p-sortIcon field="transito_salida_cantidad"/></th>
+        <th pSortableColumn="transito_salida_valor">Valor&nbsp;<p-sortIcon field="transito_salida_valor"/></th>
+        <!--SALIDAS-->
+        <th pSortableColumn="salida_cantidad">Cantidad&nbsp;<p-sortIcon field="salida_cantidad"/></th>
+        <th pSortableColumn="salida_valor">Valor&nbsp;<p-sortIcon field="salida_valor"/></th>
+        <!--SALDOS-->
+        <th pSortableColumn="saldo_cantidad">Cantidad&nbsp;<p-sortIcon field="saldo_cantidad"/></th>
+        <th pSortableColumn="saldo_valor">Valor&nbsp;<p-sortIcon field="saldo_valor"/></th>
+      </tr>
+
+    </ng-template>
+    <ng-template #body let-forkdx>
+      <tr>
+        <!--<td class="noneView">{{forkdx.token_kardex}}</td>-->
+        <td class="name">{{forkdx.fecha}}</td>
+        <td class="name">{{forkdx.concepto}}</td>
+        <td class="name">{{forkdx.factura_compra}}</td>
+        <td class="name">{{forkdx.factura_venta}}</td>
+        <td class="td_importes">{{forkdx.valor_unitario}}</td>
+        <!--POR RECIBIR-->
+        <td>{{forkdx.recibir_cantidad}}</td>
+        <td class="td_importes">{{forkdx.recibir_valor}}</td>
+        <!--EN TRANSITO ENTRADA-->
+        <td>{{forkdx.transito_entrada_cantidad}}</td>
+        <td class="td_importes">{{forkdx.transito_entrada_valor}}</td>
+        <!--ENTRADAS-->
+        <td>{{forkdx.entrada_cantidad}}</td>
+        <td class="td_importes">{{forkdx.entrada_valor}}</td>
+        <!--POR ENTREGAR-->
+        <td>{{forkdx.entregar_cantidad}}</td>
+        <td class="td_importes">{{forkdx.entregar_valor}}</td>
+        <!--EN TRANSITO SALIDA-->
+        <td>{{forkdx.transito_salida_cantidad}}</td>
+        <td class="td_importes">{{forkdx.transito_salida_valor}}</td>
+        <!--SALIDAS-->
+        <td>{{forkdx.salida_cantidad}}</td>
+        <td class="td_importes">{{forkdx.salida_valor}}</td>
+        <!--SALDOS-->
+        <td>{{forkdx.saldo_cantidad}}</td>
+        <td class="td_importes">{{forkdx.saldo_valor}}</td>
+        <!--<td><button type="submit" class="btn text-bg-success rounded-3"><i class="fa-solid fa-pen-to-square"></i></button></td>-->
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="16" class="text-center py-4">
+          <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+          <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+            {{'no_rows' | translate}}
+          </p>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</p-dialog>

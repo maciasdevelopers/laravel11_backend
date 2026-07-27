@@ -1,0 +1,73 @@
+<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco" #vContent>
+	<div class="contenido"><app-loader></app-loader>
+		<nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+		<div class="contenidoPagina">
+			<div class="listas_ps revanecer">
+				<div class="lista-div lista-divNoFlex row">
+					<h4>ALTA DE DESCUENTOS</h4>
+					<div class="col-12">
+						<div class="btn-group lista_botones col" role="group" aria-label="Basic example">
+							<a class="btn btn_extend bg-indigo-600" routerLink="../catalogodedescuentos"><i class="fa-solid fa-rectangle-list"></i>&nbsp;Ver cat&aacute;logo de descuentos</a>
+						</div>
+					</div>
+					<div class="col-12 row">
+						<div class="col-12 col-sm-2 col-md-2 col-lg-3 col-xl-3 col-xxl-3"></div>
+						<div class="col-12 col-sm-8 col-md-8 col-lg-6 col-xl-6 col-xxl-6 row">
+							<div class="input-group col-12" style="margin-top: 5px;">
+								<label for="producto_regCat" id="lblProducto" class="activeInput">* Alias</label>
+								<input (keyup)="aliasServDesc($event.target);" class="validate" name="aliasDescuento" type="text">
+							</div>
+							<div class="input-group col-12" style="margin-top: 5px;">
+								<label for="producto_regCat" id="lblProducto" class="activeInput">* Concepto</label>
+								<input class="validate" name="conceptoDescuento" type="text" [disabled]="descuentosModelo.alias == ''" (keyup)="conceptoServDesc($event.target);">
+							</div>
+							<div class="input-group col-12" style="margin-top: 5px;">
+								<label for="producto_regCat" id="lblProducto" class="activeInput">* Aplicación</label>
+								<select (change)="cuotaPorcServDesc($event.target);" name="selectCotaPorcDescuento" [disabled]="descuentosModelo.concepto == ''">
+									<option value="" disabled selected>{{'opt_select' | translate}}</option>
+									<option value="cuota">Cuota</option>
+									<option value="porcentaje">Porcentaje</option>
+								</select>
+							</div>
+							<div class="input-group col-12" style="margin-top: 5px;">
+								<label for="producto_regCat" id="lblProducto" class="activeInput">* Monto de aplicación</label>
+								<input [disabled]="descuentosModelo.aplicacion == ''" (keyup)="cantidadBaseKeyUp($event.target);" type="number" name="cantidadBaseDescuento">
+							</div>
+							<div class="input-group col-12" style="margin-top: 5px;">
+								<label for="producto_regCat" id="lblProducto" class="activeInput">* Aplicación</label>
+								<select (change)="tipoDescuentoServDesc($event.target);" name="selectCotaPorcDescuento" [disabled]="descuentosModelo.monto == ''">
+									<option selected>{{'opt_select' | translate}}</option>
+									<option value="eventual">Eventual</option>
+									<option value="pIndeterminado">Periodo Indeterminado</option>
+									<option value="pDeterminado">Periodo Determinado</option>
+								</select>
+							</div>
+							<div class="input-group col-12" style="margin-top: 5px;">
+								<label for="producto_regCat" id="lblProducto" class="activeInput">* Inicia descuento</label>
+								<input [disabled]="descuentosModelo.tipo == '' || descuentosModelo.tipo == 'eventual'" (change)="fechaInicioServDesc($event.target);" class="datepicker" name="fechaInicioDesc" type="date">
+							</div>
+							<div class="input-group col-12" style="margin-top: 5px;">
+								<label for="producto_regCat" id="lblProducto" class="activeInput">* Termina descuento</label>
+								<input [disabled]="descuentosModelo.tipo == '' || descuentosModelo.tipo == 'pIndeterminado'" (keyup)="fechaFinServDesc($event.target)" class="datepicker" name="fechaFinDesc" type="date">
+							</div> 
+						</div>
+						<div class="col-12 col-sm-2 col-md-2 col-lg-3 col-xl-3 col-xxl-3"></div>
+
+						<div class="col-12 row">
+							<div class="col-12 col-sm-3 col-md-3 col-lg-4 col-xl-4 col-xxl-4"></div>
+							<div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-4">
+								<a class="btn btnRow text-bg-success rounded-3" [ngClass]="!boolRegistro ? 'disabled' : ''" [attr.disabled]="!boolRegistro ? true : null" [attr.aria-disabled]="!boolRegistro ? true : null"
+									(click)="boolRegistro && guardaDescuentoEnArray();">
+									<i class="fas fa-sign-in-alt"></i>
+								</a>
+							</div>
+							<div class="col-12 col-sm-3 col-md-3 col-lg-4 col-xl-4 col-xxl-4"></div>
+						</div>
+
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

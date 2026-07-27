@@ -1,0 +1,77 @@
+/*botones tipo de usuario*/
+.listas_ps .fmAlta .ventas div.divDecisionVenta{
+    display: flex;
+    justify-content: center;
+}
+
+.listas_ps .fmAlta .ventas div.divDecisionVenta a.btnModal{
+    width: 30vh;
+    height: 30vh;
+    border-radius: 50%;
+    border: outset;
+    background-color: #6AE33E!important;
+    box-shadow: 1px 1px 10px #353535;
+}
+
+.listas_ps .fmAlta .ventas div.divDecisionVenta a.btnModal:hover{
+    border: inset;
+    background-color: #2D7D17!important;
+}
+
+.listas_ps .fmAlta .ventas div.divDecisionVenta a.btnModal i{
+    font-size: 5vh;
+}
+
+
+/*div general de ventas*/
+/*lista de clientes*/
+    .listas_ps .fmAlta .ventas .form .busqueda{
+        padding-top: 5px;
+        margin-top: 25px;
+    } 
+
+    .listas_ps .fmAlta .ventas .form .busqueda .inputBusqueda{
+        width: 23%;
+    }
+
+    .listas_ps .fmAlta .ventas .form .divClienteVenta table tbody tr td p label{
+        height: 15px;
+    }
+
+/*row de cabacera*/
+    .listas_ps .fmAlta .registraVenta .datacliente{
+        background-color: #d3d3d3;
+        border-radius: 8px;
+    } 
+
+    .listas_ps .fmAlta .registraVenta .datacliente h4{
+        color: #353535;
+        font-weight: bold;
+        padding-bottom: 5px;
+    }
+
+    .listas_ps .fmAlta .registraVenta .datacliente a{
+        position: absolute;
+        right: 3%;
+        margin-top: 10px;
+    }
+
+    .listas_ps .fmAlta .registraVenta .datacliente h6.titulo{
+        background-color: #353535;
+        border-radius: 8px;
+        height: 13px;
+        line-height: 13px;
+        color: #d3d3d3;
+        font-weight: bold;
+        font-size: 12px!important;
+    }
+
+    .listas_ps .fmAlta .registraVenta .datacliente .input-field{
+        width: 100%; 
+        margin: 3px;
+    }  
+    .listas_ps .fmAlta .registraVenta .datacliente .input-field input,
+.listas_ps .fmAlta .registraVenta .datacliente input{
+    font-size: 13px;
+    height: 15px!important;
+}

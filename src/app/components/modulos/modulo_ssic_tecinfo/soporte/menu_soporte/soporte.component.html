@@ -1,0 +1,266 @@
+<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco" #vContent>
+  <div class="contenido">
+    <app-loader></app-loader>
+    <header class="sticky-top">
+      <nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+    </header>
+    <main class="contenidoPagina">
+      <div class="listas_ps revanecer">
+        <div class="lista-div lista-divNoFlex row">
+          <h4>SOPORTE SOS</h4>
+          <div class="col-12 row-main tabs-content">
+            <div class="col-12">
+              <div class="btn-group lista_botones col" role="group" aria-label="Basic example">
+                <a class="btn btn_extend bg-indigo-600">
+                  <i class="fa-solid fa-rotate"></i>&nbsp;{{'list_updt' | translate}}
+                </a>
+                <a class="btn btn_extend bg-indigo-600" data-bs-toggle="modal" data-bs-target="#modalUsuariosRegistrar">
+                  <i class="fa-solid fa-plus"></i>&nbsp;Registro de usuarios
+                </a>
+              </div>
+            </div>
+
+            <p-tabs value="0">
+              <p-tablist>
+                <p-tab value="0">Registros para autorizar (Cat&aacute;logos)</p-tab>
+                <p-tab value="1">Solicitudes de registro</p-tab>
+                <p-tab value="2">Cat&aacute;logo general de empresas</p-tab>
+                <p-tab value="3">Cat&aacute;logo de usuarios</p-tab>
+              </p-tablist>
+              <p-tabpanels>
+                <p-tabpanel value="0">
+                  <app_soporte_registros_para_autorizar></app_soporte_registros_para_autorizar>
+                </p-tabpanel>
+                <p-tabpanel value="1"></p-tabpanel>
+                <p-tabpanel value="2"></p-tabpanel>
+                <p-tabpanel value="3">
+                  <p-table #usersList [value]="usuariosList" [globalFilterFields]="['paterno','materno','nombres']"
+                    dataKey="empleado_token" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]"
+                    [scrollable]="true" [tableStyle]="{ 'width': '100%', 'table-layout': 'fixed' }"
+                    [expandedRowKeys]="expandedRowsUsuarios" [rowExpandMode]="'single'">
+                    <ng-template #caption>
+                      <div class="flex">
+                        <p-iconfield iconPosition="left" class="ml-auto">
+                          <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                          <input pInputText type="text"
+                            (input)="usersList.filterGlobal($event.target.value, 'contains')"
+                            placeholder="{{'bus_car' | translate}}" />
+                        </p-iconfield>
+                      </div>
+                    </ng-template>
+                    <ng-template #header>
+                      <tr>
+                        <th class="ultimo" placement="top" tooltip="Solicitud de permisos"><i
+                            class="fas fa-user-lock"></i></th>
+                        <th>Apellido Paterno</th>
+                        <th>Apellido Materno</th>
+                        <th>Nombre(s)</th>
+                        <th>{{'email' | translate}}</th>
+                      </tr>
+                    </ng-template>
+                    <ng-template #body let-user let-editing="editing">
+                      <tr>
+                        <td class="ultimo">
+                          <a class="btn bg-blue-600" (click)="toggleUsuarios(user)">
+                            <i class="fa-solid" [ngClass]="rExpandUsuarios(user) ? 'fa-angle-up' : 'fa-angle-down'"></i>
+                          </a>
+                        </td>
+                        <td class="ultimo">
+                          <a class="btn bg-blue-600" (click)="toggleUsuarios(user)">
+                            <i class="fa-solid" [ngClass]="rExpandUsuarios(user) ? 'fa-angle-up' : 'fa-angle-down'"></i>
+                          </a>
+                        </td>
+                        <td [pEditableColumn]="user.paterno" pEditableColumnField="paterno">
+                          <p-cellEditor>
+                            <ng-template #input>
+                              <input pInputText type="text" [(ngModel)]="user.paterno" fluid />
+                            </ng-template>
+                            <ng-template #output>
+                              {{user.paterno}}
+                            </ng-template>
+                          </p-cellEditor>
+                        </td>
+                        <td [pEditableColumn]="user.materno" pEditableColumnField="materno">
+                          <p-cellEditor>
+                            <ng-template #input>
+                              <input pInputText type="text" [(ngModel)]="user.materno" required fluid />
+                            </ng-template>
+                            <ng-template #output>
+                              {{user.materno}}
+                            </ng-template>
+                          </p-cellEditor>
+                        </td>
+                        <td [pEditableColumn]="user.nombres" pEditableColumnField="nombres">
+                          <p-cellEditor>
+                            <ng-template #input>
+                              <input pInputText [(ngModel)]="user.nombres" fluid />
+                            </ng-template>
+                            <ng-template #output>
+                              {{user.nombres}}
+                            </ng-template>
+                          </p-cellEditor>
+                        </td>
+                        <td [pEditableColumn]="user.usuario_alias" pEditableColumnField="usuario_alias">
+                          <p-cellEditor>
+                            <ng-template #input>
+                              <input pInputText type="text" [(ngModel)]="user.usuario_alias" fluid />
+                            </ng-template>
+                            <ng-template #output>
+                              {{user.usuario_alias}}
+                            </ng-template>
+                          </p-cellEditor>
+                        </td>
+                      </tr>
+                    </ng-template>
+                    <ng-template pTemplate="rowexpansion" let-user let-i="rowIndex">
+                      <tr>
+                        <td colspan="5">
+                          <div class="col-12" style="overflow-x: auto;">
+                            <p-table #userPermiSoli [value]="user.permisos_solicitud"
+                              [globalFilterFields]="['folio_permiso','date_registro','extend_modulo','extend_permiso','observaciones']"
+                              [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]">
+                              <ng-template #caption>
+                                <div class="flex">
+                                  <p-iconfield iconPosition="left" class="ml-auto">
+                                    <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                                    <input pInputText type="text"
+                                      (input)="userPermiSoli.filterGlobal($event.target.value, 'contains')"
+                                      placeholder="{{'bus_car' | translate}}" />
+                                  </p-iconfield>
+                                </div>
+                              </ng-template>
+                              <ng-template #header>
+                      <tr>
+                        <th>folio</th>
+                        <th>{{'fecha_reg' | translate}}</th>
+                        <th>m&oacute;dulo</th>
+                        <th>{{'perm' | translate}}</th>
+                        <th>{{'observ' | translate}}</th>
+                        <th class="ultimo"></th>
+                      </tr>
+                    </ng-template>
+                    <ng-template #body let-soli_perm>
+                      <tr>
+                        <td>{{soli_perm.folio_permiso}}</td>
+                        <td>{{soli_perm.date_registro}}</td>
+                        <td>{{soli_perm.extend_modulo}}</td>
+                        <td>{{soli_perm.extend_permiso | translate}}</td>
+                        <td>{{soli_perm.observaciones}}</td>
+                        <td>
+                          <a class="btn bg-blue-600">
+                            <i class="fa-solid fa-eye"></i>
+                          </a>
+                        </td>
+                      </tr>
+                    </ng-template>
+                    <ng-template pTemplate="emptymessage">
+                      <tr>
+                        <td colspan="6" class="text-center py-4">
+                          <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                          <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                            {{'no_rows' | translate}}
+                          </p>
+                        </td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
+          </div>
+          </td>
+          </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="5" class="text-center py-4">
+                <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                  {{'no_rows' | translate}}
+                </p>
+              </td>
+            </tr>
+          </ng-template>
+          </p-table>
+          </p-tabpanel>
+          </p-tabpanels>
+          </p-tabs>
+        </div>
+      </div>
+  </div>
+  </main>
+  <app-footer-inside></app-footer-inside>
+</div>
+</div>
+
+<div class="modal fade bd-example-modal-lg" id="modalUsuariosRegistrar" tabindex="-1" role="dialog"
+  aria-labelledby="modalUsuariosRegistrarLabel" aria-hidden="true">
+  <div class="modal-dialog modal-fullscreen" style="margin: 1%;width: 98%!important;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="modalUsuariosRegistrarLabel">Registro de usuarios</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+          style="background-color: transparent !important;"></button>
+      </div>
+      <div class="modal-body">
+        <div class="col-12 row">
+          <div class="input-group col-12 col-sm-12 col-md-12 col-lg-4 col-xl-4 col-xxl-4">
+            <label for="tipo_origen" class="activeInput">Apellido Paterno</label>
+            <input id="user_paterno" class="validate" type="text" name="user_paterno"
+              (keyup)="creaPaternoUsuario($event.target);">
+          </div>
+          <div class="input-group col-12 col-sm-12 col-md-12 col-lg-4 col-xl-4 col-xxl-4">
+            <label for="tipo_origen" class="activeInput">Apellido Materno</label>
+            <input id="user_materno" class="validate" type="text" name="user_materno"
+              (keyup)="creaMaternoUsuario($event.target);">
+          </div>
+          <div class="input-group col-12 col-sm-12 col-md-12 col-lg-4 col-xl-4 col-xxl-4">
+            <label for="tipo_origen" class="activeInput">Nombre(s)</label>
+            <input id="user_nombres" class="validate" type="text" name="user_nombres"
+              (keyup)="creaNombresUsuario($event.target);">
+          </div>
+          <div class="input-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6">
+            <label for="tipo_origen" class="activeInput">{{'email' | translate}}</label>
+            <input id="user_email" class="validate" type="email" style="text-transform: lowercase!important;"
+              (keyup)="creaEmailUsuario($event.target);">
+          </div>
+          <div class="input-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6">
+            <label for="tipo_origen" class="activeInput">{{'company_name' | translate}}</label>
+            <input id="user_email" class="validate" type="email" style="text-transform: lowercase!important;"
+              (keyup)="creaEmailUsuario($event.target);">
+          </div>
+          <div class="input-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6">
+            <label for="tipo_origen" class="activeInput">Area</label>
+            <select id="user_area" class="browser-default" name="formaPago"
+              (change)="selectAreasUsuario($event.target);">
+              <option value="" disabled selected>{{'opt_select' | translate}}</option>
+              <option *ngFor="let area of list_areas_user" value="{{area.token_area}}">{{area.areaemp}}</option>
+            </select>
+          </div>
+          <div class="input-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6">
+            <label for="tipo_origen" class="activeInput">Cargo</label>
+            <select id="user_cargo" class="browser-default" name="formaPago"
+              (change)="selectCargoUsuario(new_user_area,$event.target);">
+              <option value="" disabled selected>{{'opt_select' | translate}}</option>
+              <option *ngFor="let carg of list_cargos_user" value="{{carg.cargo_tkn}}">{{carg.cargo_nombre}}</option>
+            </select>
+          </div>
+          <p-divider />
+          <div class="col-12 row">
+            <div class="col-12 col-sm-12 col-md-6 col-lg-8 col-xl-8 col-xxl-9"></div>
+            <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3"
+              style="display: flex !important;justify-content: end!important;">
+              <a class="btn btn_extend text-bg-success rounded-3" name="btnAltausero2"
+                [ngClass]="!valida_registro_usuario ? 'disabled' : ''"
+                [attr.disabled]="!valida_registro_usuario ? true : null"
+                [attr.aria-disabled]="!valida_registro_usuario ? true : null"
+                (click)="valida_registro_usuario && registraUsuario();">
+                <i class="fa-solid fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

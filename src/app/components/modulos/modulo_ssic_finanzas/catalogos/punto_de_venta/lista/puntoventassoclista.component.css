@@ -1,0 +1,245 @@
+/*cardCuentaBancos*/
+.cardCuentaBanco{
+    width: 100%;
+    height: 150px;
+    color: #fff!important;
+}
+
+.cardCuentaBanco .front{
+    width: 100%;
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.cardCuentaBanco .front a{
+    width: 100px;
+    height: 100px;
+    font-size: 38px;
+    background-color: #FF6C00!important;
+    margin-bottom: 15px;
+    border-radius: 50%;
+    border: #FFB551 outset;
+} 
+
+.cardCuentaBanco .front a.btnLogoBanc{
+    width: 100px;
+    height: 100px;
+    font-size: 38px;
+    background-color: #FF0000!important;
+    margin-bottom: 15px;
+    border-radius: 50%;
+    border: #FF5151 outset;
+}
+
+.cardCuentaBanco .front a.btnLogoMon{
+    width: 100px;
+    height: 100px;
+    font-size: 38px;
+    background-color: #009EFF!important;
+    margin-bottom: 15px;
+    border-radius: 50%;
+    border: #51BDFF outset!important;
+}
+
+.cardCuentaBanco .front h6{
+    color: #353535!important;
+    font-weight: bolder;
+    font-size:  20px;
+}
+
+.cardCuentaBanco .back{
+    display: none;
+}
+
+.cardCuentaBanco:hover{
+    transition-property: all;
+    transition-duration: 0.5s;
+    transition-timing-function: ease-in;
+    cursor: pointer;
+}
+
+.cardCuentaBanco:hover .front{
+    display: none;
+}
+
+.cardCuentaBanco:hover .back{
+    /*background-image: url('/assets/images/interno/tesoreria/bancos/darkBlue.jpg');*/
+    background-color: #ffbb;
+    border-radius: 8px;
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-content: space-between;
+}
+
+.cardCuentaBanco:hover .back h1,
+.cardCuentaBanco:hover .back h5,
+.cardCuentaBanco:hover .back h6{
+    width: 100%;
+    height: 30px;
+    font-size: 12px;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #353535;
+    font-weight: 300;
+    font-family: halter;
+}
+
+.cardCuentaBanco:hover .back h5{
+    font-size: larger!important;
+    color: #A58525!important;
+}
+
+.cardCuentaBanco:hover .back h6{
+    font-size: 13px;
+}
+.cardCuentaBanco:hover div.divAreaUtilidad{
+    display: flex;
+    justify-content: center;
+}
+
+.cardCuentaBanco:hover a.bottonCuenta{
+    width: 50%;
+    background-color: #ffbf00!important;
+}
+
+.cardCuentaBanco:hover a#editar{
+    border-radius: 0 0 0 8px;
+    border-right: #353535 1px solid; 
+}
+
+.cardCuentaBanco:hover a#delete{
+    border-radius: 0 0 8px 0;
+}
+
+.cardCuentaBanco:hover a:hover{
+    background-color: #BB8D04!important;
+}
+
+.divSelectBanco{
+    right: 4%;
+}
+
+.buscaBanco{
+    left: 4%;
+}
+
+.divTabListBanc{
+    max-height: 235px;
+    overflow: overlay;
+}
+
+.clabeInter{
+    display: flex;
+}
+
+.clabeInter .radio{
+    width: 10%!important;
+    padding-block: 20px;
+}
+
+.divMnajo{
+    padding-top: 14px;
+}
+
+.tabCatCaja{
+    max-height: 200px;
+    overflow: overlay;
+}
+
+.divAreaServ{
+    margin-top: 15px;
+}
+
+.inputMod{
+    width: 100%!important;
+}
+
+.rowDirPersVinc{
+    background-color: #2271B3;
+    border-radius: 8px;
+    margin-top: 15px;
+}
+
+.rowDirPersVinc h6{
+    color: #fff!important;
+}
+
+.rowCancerl{
+    background-color: #919090;
+}
+
+.btnSaveUpdate{
+    margin-top: 15px;
+}
+
+.tituloFolio{
+    width: 50%!important;
+}
+
+/*cuenta bancaria*/
+.divListaCuenta{
+    max-height: 350px;
+    overflow: overlay;
+}
+    
+.pContent{
+    width: 100%!important;
+    border-radius: 8px!important;
+}
+
+.pContentCuenta{
+    width: 90%!important;
+    border-radius: 8px!important;
+}
+
+.divWthibtnView{
+    display: flex;
+}
+
+.inputWthPass{
+    width: 90%!important;
+}
+
+.btnView{
+    margin-left: 10px;
+}
+
+.divUpdateCuentaBanc{
+    padding-block: 30px;
+}
+
+.divbtnArea{
+    display: flex;
+    justify-content: space-around;
+}
+
+.cardEliminada{
+    background-color: #d3d3d3;
+}
+
+.divOpciones{
+    overflow: overlay;
+    max-height: 195px;
+}
+
+.divAdd{
+    margin-block: 15px;
+}
+
+.colorCollHeader{
+    background-color: #7B7B7B!important;
+}
+
+.liTes{
+    box-shadow: 5px 5px 10px #353535!important;
+}
+
+.chipColor{
+    color: #fff!important;
+}

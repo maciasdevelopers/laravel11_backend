@@ -1,0 +1,409 @@
+<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco" #vContent>
+  <div class="contenido">
+    <app-loader></app-loader>
+    <nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+    <div class="contenidoPagina">
+      <div class="listas_ps">
+        <div class="lista-div lista-divNoFlex">
+          <h4>Movimientos entre cuentas propias</h4>
+
+          <div class="col-12">
+            <div class="btn-group lista_botones col" role="group" arial-label="Basic example">
+              <a class="btn btn_extend bg-indigo-600"
+                (click)="listando_movimientos_registrados();listando_movimientos_cancelados();">
+                <i class="fa-solid fa-rotate"></i>&nbsp;{{'list_updt' | translate}}
+              </a>
+              <a class="btn btn_extend bg-green-600 descarga_lista_excel"
+                [ngClass]="list_movimientos_registrados.length == 0 ? 'disabled' : ''"
+                [attr.disabled]="list_movimientos_registrados.length == 0 ? true : null"
+                [attr.aria-disabled]="list_movimientos_registrados.length == 0 ? true : null"
+                (click)="list_movimientos_registrados.length > 0 && descarga_excel_movimientos_registrados();">
+                <i class="fa-solid fa-file-excel" style="margin-left: 5px;"></i>&nbsp;Movimientos registrados
+              </a>
+              <a class="btn btn_extend bg-green-600 descarga_lista_excel"
+                [ngClass]="list_movimientos_cancelados.length == 0 ? 'disabled' : ''"
+                [attr.disabled]="list_movimientos_cancelados.length == 0 ? true : null"
+                [attr.aria-disabled]="list_movimientos_cancelados.length == 0 ? true : null"
+                (click)="list_movimientos_cancelados.length > 0 && descarga_excel_movimientos_cancelados();">
+                <i class="fa-solid fa-file-excel" style="margin-left: 5px;"></i>&nbsp;Movimientos cancelados
+              </a>
+            </div>
+          </div>
+
+          <p-tabs value="0" scrollable>
+            <p-tablist>
+              <p-tab value="0">Movimientos registrados</p-tab>
+              <p-tab value="1">Movimientos cancelados</p-tab>
+              <p-tab value="2" (click)="agrupandoFuncion();">Registrar movimiento</p-tab>
+            </p-tablist>
+            <p-tabpanels>
+              <p-tabpanel value="0">
+                <p-table #movRegList id="table_movimientos_registrados" [value]="list_movimientos_registrados"
+                  [globalFilterFields]="search_movimientos_registrados" [paginator]="true" [rows]="10"
+                  [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]">
+                  <ng-template #caption>
+                    <div class="flex" style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;" ngbDropdown>
+                      <a class="btn btn_extend" [ngClass]="indicador_mov_cp == 'hoy' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_movimientos_registrados('hoy');">
+                        <i class="fa-solid fa-calendar-days"></i>&nbsp;Hoy
+                      </a>
+                      <a class="btn btn_extend" [ngClass]="indicador_mov_cp == 'esta_semana' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_movimientos_registrados('esta_semana');">
+                        <i class="fa-solid fa-calendar-days"></i>&nbsp;Esta semana
+                      </a>
+                      <a class="btn btn_extend" [ngClass]="indicador_mov_cp == 'este_mes' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_movimientos_registrados('este_mes');">
+                        <i class="fa-solid fa-calendar-days"></i>&nbsp;Este mes
+                      </a>
+                      <a class="btn btn_extend" [ngClass]="indicador_mov_cp == 'mes_anterior' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_movimientos_registrados('mes_anterior');">
+                        <i class="fa-solid fa-arrow-left"></i>&nbsp;mes anterior
+                      </a>
+                      <a id="menuDropMovCP" class="btn btn_extend" [ngClass]="indicador_mov_cp == 'otras_fechas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" ngbDropdownToggle>
+                        <i class="fa-solid fa-list-ul"></i>&nbsp;otras fechas
+                      </a>
+                      <div class="dropdown-menu-end menu-despegable" ngbDropdownMenu="menuDropMovCP" style="padding: 0!important; margin: 0!important; width: max-content!important; max-height: 400px; overflow-y: auto;">
+                        <div class="col-12 input-group">
+                          <label for="mov_cp_otras_fechas" class="activeInput">Periodo de fechas</label>
+                          <p-datepicker id="mov_cp_otras_fechas" name="mov_cp_otras_fechas" [(ngModel)]="rangoPeriodoMovCP" appendTo="body" dateFormat="dd/mm/yy" 
+                            placeholder="dd/mm/aaaa" selectionMode="range" (onSelect)="ver_movimientos_registrados('otras_fechas');" />
+                        </div>
+                      </div>
+                      <a class="btn btn_extend" [ngClass]="indicador_mov_cp == 'all_partidas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_movimientos_registrados('all_partidas');">
+                        <i class="fa-solid fa-list-ul"></i>&nbsp;todos los registros
+                      </a>
+                      <p-iconfield iconPosition="left" class="ml-auto">
+                        <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                        <input pInputText type="text" (input)="movRegList.filterGlobal($event.target.value, 'contains')"
+                          placeholder="{{'bus_car' | translate}}" />
+                      </p-iconfield>
+                    </div>
+                  </ng-template>
+                  <ng-template #header>
+                    <tr>
+                      <th class="ultimo"></th>
+                      <th pSortableColumn="movimiento_cp_folio">folio&nbsp;<p-sortIcon field="movimiento_cp_folio" />
+                      </th>
+                      <th pSortableColumn="movimiento_cp_fecha_contabilizacion">{{'fecha_cont' |
+                        translate}}&nbsp;<p-sortIcon field="movimiento_cp_fecha_contabilizacion" /></th>
+                      <th pSortableColumn="origen_catalogo_tipo">Origen&nbsp;<p-sortIcon field="origen_catalogo_tipo" />
+                      </th>
+                      <th pSortableColumn="destino_catalogo_tipo">Destino&nbsp;<p-sortIcon
+                          field="destino_catalogo_tipo" /></th>
+                      <th pSortableColumn="movimiento_monto">{{'total_import' | translate}}&nbsp;<p-sortIcon
+                          field="movimiento_monto" /></th>
+                      <th pSortableColumn="movimiento_moneda">{{'mon_name' | translate}}&nbsp;<p-sortIcon
+                          field="movimiento_moneda" /></th>
+                      <th pSortableColumn="movimiento_tipo_cambio">{{'mon_tipo_cambio' | translate}}&nbsp;<p-sortIcon
+                          field="movimiento_tipo_cambio" /></th>
+                      <th pSortableColumn="movimiento_cp_observaciones">{{'observ' | translate}}&nbsp;<p-sortIcon
+                          field="movimiento_cp_observaciones" /></th>
+                      <th class="ultimo"></th>
+                    </tr>
+                  </ng-template>
+                  <ng-template #body let-mcp>
+                    <tr>
+                      <td class="ultimo">
+                        <a class="btn bg-blue-600" data-bs-toggle="modal"
+                          data-bs-target="#windowMovimCPInfo"><!-- (click)="infoAcreeDetalle(mcp.token_cat_acreedores);"-->
+                          <i class="fa-solid fa-info"></i>
+                        </a>
+                      </td>
+                      <td>{{mcp.movimiento_cp_folio}}</td>
+                      <td>{{mcp.movimiento_cp_fecha_contabilizacion}}</td>
+                      <td>{{mcp.origen_catalogo_folio+" "+mcp.origen_catalogo_name}}</td>
+                      <td>{{mcp.destino_catalogo_folio+" "+mcp.destino_catalogo_name}}</td>
+                      <td class="td_importes">{{mcp.movimiento_monto}}</td>
+                      <td>{{mcp.movimiento_moneda}}</td>
+                      <td class="td_importes">{{mcp.movimiento_tipo_cambio}}</td>
+                      <td class="name">{{mcp.movimiento_cp_observaciones}}</td>
+                      <td class="ultimo">
+                        <a class="btn btn_extend text-bg-danger rounded-3"
+                          [class.disabled]="mcp.utilizado || mcp.movimiento_cp_cancelado"
+                          [attr.disabled]="mcp.utilizado || mcp.movimiento_cp_cancelado ? true : null"
+                          [attr.aria-disabled]="mcp.utilizado || mcp.movimiento_cp_cancelado ? 'true' : null"
+                          (click)="(!mcp.utilizado && !mcp.movimiento_cp_cancelado) && movimientoCuentasPropiasCancelStart(mcp);">
+                          <i class="fa-solid fa-ban"></i>&nbsp;{{(mcp.movimiento_cp_cancelado ? 'canceled_reg' :
+                          'swal_cancel') | translate}}
+                        </a>
+                      </td>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="emptymessage">
+                    <tr>
+                      <td colspan="10" class="text-center py-4">
+                        <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                        <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                          {{'no_rows' | translate}}
+                        </p>
+                      </td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+              </p-tabpanel>
+              <p-tabpanel value="1">
+                <p-table #cancelMovList id="table_movimientos_cancelados" [value]="list_movimientos_cancelados"
+                  [globalFilterFields]="search_movimientos_cancelados" [paginator]="true" [rows]="10"
+                  [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]">
+                  <ng-template #caption>
+                    <div class="flex">
+                      <p-iconfield iconPosition="left" class="ml-auto">
+                        <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                        <input pInputText type="text"
+                          (input)="cancelMovList.filterGlobal($event.target.value, 'contains')"
+                          placeholder="{{'bus_car' | translate}}" />
+                      </p-iconfield>
+                    </div>
+                  </ng-template>
+                  <ng-template #header>
+                    <tr>
+                      <th class="ultimo"></th>
+                      <th pSortableColumn="movimiento_cp_folio">folio&nbsp;<p-sortIcon field="movimiento_cp_folio" />
+                      </th>
+                      <th pSortableColumn="movimiento_cp_fecha_contabilizacion">{{'fecha_cont' |
+                        translate}}&nbsp;<p-sortIcon field="movimiento_cp_fecha_contabilizacion" /></th>
+                      <th pSortableColumn="origen_catalogo_tipo">Origen&nbsp;<p-sortIcon field="origen_catalogo_tipo" />
+                      </th>
+                      <th pSortableColumn="destino_catalogo_tipo">Destino&nbsp;<p-sortIcon
+                          field="destino_catalogo_tipo" /></th>
+                      <th pSortableColumn="movimiento_monto">{{'total_import' | translate}}&nbsp;<p-sortIcon
+                          field="movimiento_monto" /></th>
+                      <th pSortableColumn="movimiento_moneda">{{'mon_name' | translate}}&nbsp;<p-sortIcon
+                          field="movimiento_moneda" /></th>
+                      <th pSortableColumn="movimiento_tipo_cambio">{{'mon_tipo_cambio' | translate}}&nbsp;<p-sortIcon
+                          field="movimiento_tipo_cambio" /></th>
+                      <th pSortableColumn="movimiento_cp_observaciones">{{'observ' | translate}}&nbsp;<p-sortIcon
+                          field="movimiento_cp_observaciones" /></th>
+                    </tr>
+                  </ng-template>
+                  <ng-template #body let-mcp>
+                    <tr>
+                      <td class="ultimo">
+                        <a class="btn bg-blue-600" data-bs-toggle="modal"
+                          data-bs-target="#windowMovimCPInfo"><!-- (click)="infoAcreeDetalle(mcp.token_cat_acreedores);"-->
+                          <i class="fa-solid fa-info"></i>
+                        </a>
+                      </td>
+                      <td>{{mcp.movimiento_cp_folio}}</td>
+                      <td>{{mcp.movimiento_cp_fecha_contabilizacion}}</td>
+                      <td>{{mcp.origen_catalogo_folio+" "+mcp.origen_catalogo_name}}</td>
+                      <td>{{mcp.destino_catalogo_folio+" "+mcp.destino_catalogo_name}}</td>
+                      <td class="td_importes">{{mcp.movimiento_monto}}</td>
+                      <td>{{mcp.movimiento_moneda}}</td>
+                      <td class="td_importes">{{mcp.movimiento_tipo_cambio}}</td>
+                      <td class="name">{{mcp.movimiento_cp_observaciones}}</td>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="emptymessage">
+                    <tr>
+                      <td colspan="9" class="text-center py-4">
+                        <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                        <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                          {{'no_rows' | translate}}
+                        </p>
+                      </td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+              </p-tabpanel>
+              <p-tabpanel value="2">
+                <div class="col-12" *ngIf="movimiento_vista">
+                  <div class="col-12 row">
+                    <div class="col-12 explain" style="padding-left: 10px!important;">
+                      <h6 class="title">Datos de origen</h6>
+                    </div>
+                    <div class="input-group col-12 col-sm-12 col-md-12 col-lg-12 col-xl-4 col-xxl-4">
+                      <label for="tipo_origen">Origen:</label>
+                      <p-select id="p_drop_origen" [options]="opcionesAgrupadas" optionLabel="label" [filter]="true"
+                        filterBy="label" [showClear]="true" [placeholder]="'opt_select' | translate"
+                        class="w-full md:w-56" (onChange)="movim_nuevo_registro_origen($event);">
+                        <ng-template #selectedItem let-slted>
+                          <div class="flex items-center gap-2">
+                            <div>{{slted.label}}</div>
+                          </div>
+                        </ng-template>
+                        <ng-template let-cat #item>
+                          <div class="flex items-center gap-2">
+                            <div>{{cat.label}}</div>
+                          </div>
+                        </ng-template>
+                      </p-select>
+                    </div>
+                    <div class="input-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4">
+                      <label for="tipo_origen">{{'fecha_cont' | translate}}</label>
+                      <input class="validate datepicker" name="fechaContabilizacionCompra" type="date"
+                        (change)="movim_nuevo_registro_fecha_contabilizacion($event.target);">
+                    </div>
+                    <div class="input-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4">
+                      <label for="tipo_origen">{{'concept' | translate}}</label>
+                      <input class="validate" type="text" (keyup)="movim_nuevo_registro_concepto($event.target);">
+                    </div>
+                  </div>
+                  <p-divider />
+                  <div class="col-12 row">
+                    <div class="col-12 explain" style="padding-left: 10px!important;">
+                      <h6 class="title">Datos de destino</h6>
+                    </div>
+
+                    <div class="input-group col-12 col-sm-12 col-md-12 col-lg-12 col-xl-3 col-xxl-3">
+                      <label for="tipo_origen">Destino:</label>
+                      <p-select id="p_drop_destino" [options]="opcionesAgrupadas" optionLabel="label" [filter]="true"
+                        filterBy="label" [showClear]="true" [placeholder]="'opt_select' | translate"
+                        class="w-full md:w-56" (onChange)="movim_nuevo_registro_destino($event);">
+                        <ng-template #selectedItem let-slted>
+                          <div class="flex items-center gap-2">
+                            <div>{{slted.label}}</div>
+                          </div>
+                        </ng-template>
+                        <ng-template let-cat #item>
+                          <div class="flex items-center gap-2">
+                            <div>{{cat.label}}</div>
+                          </div>
+                        </ng-template>
+                      </p-select>
+                    </div>
+
+                    <div class="input-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3">
+                      <label for="tipo_origen">{{'total_import' | translate}}</label>
+                      <input class="validate" type="text" (keyup)="movim_nuevo_registro_monto($event.target);"
+                        (keypress)="onpresNumer($event);"><!-- (keyup)="referenciaManejoMon($event.target);"-->
+                    </div>
+
+                    <div class="input-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-2 col-xxl-2">
+                      <label for="tipo_origen">{{'mon_name' | translate}}</label>
+                      <p-select id="selectedMonedaCode" [options]="catalogo_monedas_api" optionLabel="_filtro_busqueda"
+                        [filter]="true" filterBy="_filtro_busqueda" [showClear]="true"
+                        [placeholder]="'opt_select' | translate" class="w-full md:w-56"
+                        (onChange)="movim_nuevo_registro_moneda($event.value);">
+                        <ng-template #selectedItem let-selectedOption>
+                          <div class="flex items-center gap-2">
+                            <div>{{selectedOption.code+" "+selectedOption.langEN}}</div>
+                          </div>
+                        </ng-template>
+                        <ng-template let-mon #item>
+                          <div class="flex items-center gap-2">
+                            <div>{{mon.code+" "+mon.langEN}}</div>
+                          </div>
+                        </ng-template>
+                      </p-select>
+                    </div>
+
+                    <div class="input-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-2 col-xxl-2">
+                      <label class="activeInput">{{'mon_tipo_cambio' | translate}}</label>
+                      <input class="validate" [ngClass]="activaTipoCambio() ? 'disabled' : ''"
+                        [attr.disabled]="activaTipoCambio() ? true : null"
+                        [attr.aria-disabled]="activaTipoCambio() ? true : null" type="number" min="1"
+                        max="100000000000000" [value]="activaTipoCambio() ? movimiento_tipo_cambio : null"
+                        (keyup)="!activaTipoCambio() && movim_nuevo_registro_tipo_cambio($event.target);"
+                        (keypress)="!activaTipoCambio() && onpresNumer($event);">
+                    </div>
+                    <div class="input-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-2 col-xxl-2">
+                      <label class="activeInput">{{'total_import_resultant' | translate}}</label>
+                      <input class="validate disabled" [attr.disabled]="true" [attr.aria-disabled]="true" type="text"
+                        min="1" max="100000000000000" [value]="calcula_resultante_monto()">
+                    </div>
+                  </div>
+                  <p-divider />
+                  <div class="col-12 row">
+                    <div class="col-12 input-group" style="margin-bottom: 10px!important;">
+                      <label class="activeInput">{{'observ' | translate}}</label>
+                      <textarea id="compraPRODS_large_observ" class="validate"
+                        (keyup)="keyupObservacionesMovim($event.target);"></textarea>
+                    </div>
+                  </div>
+                  <p-divider />
+                  <div class="col-12 field_file_drop">
+                    <ngx-file-drop dropZoneLabel="Drop files here" (onFileDrop)="droppedMovimfiles($event)" (onFileOver)="fileOverMovim($event)" (onFileLeave)="fileLeaveMovim($event)">
+                      <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
+                        <a class="btn btn_load_file" type="button" style="color: #0782d0 !important;" (click)="openFileSelector()">
+                          {{'load_files' | translate}} / {{'browse_files' | translate}}
+                        </a>
+                      </ng-template>
+                    </ngx-file-drop>
+                    <table class="white centered" style="margin-top:5px!important;width: 100% !important;">
+                      <thead>
+                        <tr>
+                          <th>{{'file' | translate}}</th>
+                          <th class="ultimo"></th>
+                        </tr>
+                      </thead>
+                      <tbody class="upload-name-style" *ngIf="anexosMovimFiles.length != 0">
+                        <tr *ngFor="let item of anexosMovimFiles; index as i">
+                          <td><strong>{{ item.relativePath }}</strong></td>
+                          <td class="ultimo">
+                            <a class="btn btn_extend text-bg-danger rounded-3" (click)="deleteAnexosMovim(i);">
+                              <i class="fa-solid fa-xmark"></i>
+                            </a>
+                          </td>
+                        </tr>
+                      </tbody>
+                      <tbody *ngIf="anexosMovimFiles.length == 0">
+                        <tr>
+                          <td colspan="2">{{'no_rows' | translate}}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <p-divider />
+                  <div class="col-12 row" style="margin-top: 5px!important;">
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6"></div>
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6"
+                      style="display: flex !important;justify-content: end!important;padding: 0!important;">
+                      <a class="btn btn_extend text-bg-success rounded-3"
+                        [ngClass]="!habilitaBtnRegistro ? 'disabled' : ''"
+                        [attr.disabled]="!habilitaBtnRegistro ? true : null"
+                        [attr.aria-disabled]="!habilitaBtnRegistro ? true : null" name="btnAltaCompra3"
+                        style="margin-right: 3px!important;"
+                        (click)="habilitaBtnRegistro && registraMovimientoPropio();">
+                        <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}</a>
+                    </div>
+                  </div>
+                </div>
+              </p-tabpanel>
+            </p-tabpanels>
+          </p-tabs>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p-dialog header="Cancelaci&oacute;n de movimiento entre cuentas propias {{cancelacion_movimiento_folio}}" class="window_cancelacion" [(visible)]="cancelacion_movimiento_window" [modal]="true" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  @if (cancelacion_movimiento_form) {
+    <form class="formCancelPago" #formCancelPago="ngForm" name="formCancelPago" enctype="multipart/form-data" (ngSubmit)="validaRegSoliCancelMCP && catalogoMovimientoCuentasPropiasCancelar(formCancelPago);">
+      <div class="col-12 input-group">
+        <label class="activeInput" for="cancelPayFechaCont">{{'fecha_cont' | translate}}</label>
+        <input id="cancelPayFechaCont" name="cancelPayFechaCont" type="date" (change)="cancel_fecha_contabilizacion_mcp($event.target);">
+      </div>
+      <div class="col-12 input-group" style="margin-bottom: 10px!important;">
+        <label class="activeInput" for="cancelPayObservaciones">{{'observ' | translate}}</label>
+        <textarea id="cancelPayObservaciones" name="cancelPayObservaciones" class="validate" (keyup)="keyupObservacionCancelacion_mcp($event.target);"></textarea>
+      </div>
+      <div class="col-12" style="display: flex !important;justify-content: end!important;margin-top: 5px!important;">
+        <button class="btn btn_extend text-bg-success rounded-3" [ngClass]="!validaRegSoliCancelMCP ? 'disabled' : ''" 
+          [attr.disabled]="!validaRegSoliCancelMCP ? true : null" [attr.aria-disabled]="!validaRegSoliCancelMCP ? true : null">
+          <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+        </button>
+      </div>
+    </form>
+  }
+</p-dialog>
+
+
+<div class="modal fade bd-example-modal-lg" id="windowMovimCPInfo" tabindex="-1" role="dialog"
+  aria-labelledby="windowMovimCPInfoLabel" aria-hidden="true">
+  <div class="modal-dialog modal-fullscreen" style="margin: 1%;width: 98%!important;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="windowMovimCPInfoLabel">Informaci&oacute;n del movimiento
+        </h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+          style="background-color: transparent !important;"></button>
+      </div>
+      <div class="modal-body">
+        <div class="form data-reg row" *ngFor="let acrInfo of movimientos_registradosDetalleData">
+        </div>
+      </div>
+      <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

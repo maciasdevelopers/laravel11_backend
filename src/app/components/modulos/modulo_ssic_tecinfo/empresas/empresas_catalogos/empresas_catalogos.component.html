@@ -1,0 +1,228 @@
+<p-confirmpopup #cp>
+  <ng-template #headless let-message>
+    <div class="rounded p-4">
+      <i class="fa-solid fa-circle-info"></i>&nbsp;
+      <span>{{ message.message }}</span>
+      <div class="flex items-center gap-2 mt-4">
+        <p-button id="popUpAccept" class="accept" (onClick)="cp.onAccept()" [label]="popUpAccept" size="small" />
+        <p-button id="popUpReject" class="reject" (onClick)="cp.onReject()" [label]="popUpReject" [text]="true"
+          size="small" severity="secondary" />
+      </div>
+    </div>
+  </ng-template>
+</p-confirmpopup>
+<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco" #vContent>
+  <div class="contenido">
+    <app-loader></app-loader>
+    <nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+    <main class="contenidoPagina">
+      <div class="listas_ps revanecer">
+        <div class="lista-div lista-divNoFlex">
+          <h4>CAT&Aacute;LOGO DE EMPRESAS</h4>
+
+          <div class="col-12">
+            <div class="btn-group lista_botones col" role="group" arial-label="Basic example">
+              <a class="btn btn_extend bg-indigo-600" (click)="lista_general_empresas();">
+                <i class="fa-solid fa-rotate"></i>&nbsp;{{'list_updt' | translate}}
+              </a>
+              <a class="btn btn_extend bg-indigo-600" (click)="verRegistroEmpresa();">
+                <i class="fa-solid fa-plus"></i>&nbsp;Registrar empresa
+              </a>
+              <a class="btn btn_extend bg-indigo-600" (click)="lista_deleted_empresas();">
+                <i class="fa-solid fa-trash" style="margin-left: 5px;"></i>&nbsp;Empresas eliminadas
+              </a>
+              <a class="btn btn_extend bg-green-600 descarga_lista_excel"
+                [ngClass]="catalogo_general_empresas.length == 0 ? 'disabled' : ''"
+                [attr.disabled]="catalogo_general_empresas.length == 0 ? true : null"
+                [attr.aria-disabled]="catalogo_general_empresas.length == 0 ? true : null"
+                (click)="catalogo_general_empresas.length > 0 && descarga_excel_empresas();">
+                <i class="fa-solid fa-file-excel" style="margin-left: 5px;"></i>&nbsp;descargar
+              </a>
+            </div>
+          </div>
+
+          <p-table #companyCat [value]="catalogo_general_empresas" showGridlines [resizableColumns]="true"
+            [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }"
+            [rowsPerPageOptions]="[10,20,30,50,100]"
+            [globalFilterFields]="['company_name','zona_horaria','zona_horaria_utc','codigo_pais','rfc_generico','rfc_company','tax_id_company']">
+            <ng-template #caption>
+              <div class="flex">
+                <p-iconfield iconPosition="left" class="ml-auto">
+                  <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                  <input pInputText type="text" (input)="companyCat.filterGlobal($event.target.value, 'contains')"
+                    placeholder="{{'bus_car' | translate}}" />
+                </p-iconfield>
+              </div>
+            </ng-template>
+            <ng-template #header>
+              <tr>
+                <th class="ultimo"></th>
+                <th pResizableColumn pSortableColumn="company_name">{{'company_name' | translate}}&nbsp;<p-sortIcon
+                    field="company_name" /></th>
+                <th pResizableColumn pSortableColumn="zona_horaria">{{'zona_horaria' | translate}}&nbsp;<p-sortIcon
+                    field="zona_horaria" /></th>
+                <th pResizableColumn pSortableColumn="zona_horaria_utc">{{'zona_horaria_utc' |
+                  translate}}&nbsp;<p-sortIcon field="zona_horaria_utc" /></th>
+                <th pResizableColumn pSortableColumn="codigo_pais">{{'codigo_pais' | translate}}&nbsp;<p-sortIcon
+                    field="codigo_pais" /></th>
+                <th pResizableColumn pSortableColumn="rfc_generico">{{'rfc_generico' | translate}}&nbsp;<p-sortIcon
+                    field="rfc_generico" /></th>
+                <th pResizableColumn pSortableColumn="rfc_company">{{'rfc_company' | translate}}&nbsp;<p-sortIcon
+                    field="rfc_company" /></th>
+                <th pResizableColumn pSortableColumn="tax_id_company">{{'tax_id_company' | translate}}&nbsp;<p-sortIcon
+                    field="tax_id_company" /></th>
+                <!--<th class="ultimo"></th>-->
+                <th class="ultimo"></th>
+              </tr>
+            </ng-template>
+            <ng-template #body let-empList>
+              <tr>
+                <td class="ultimo">
+                  <a class="btn bg-blue-600" (click)="ver_empresa_data(empList.empresa_token);">
+                    <i class="fa-solid fa-info"></i>
+                  </a>
+                </td>
+                <td class="name">{{empList.company_name}}</td>
+                <td>{{empList.zona_horaria}}</td>
+                <td>{{empList.zona_horaria_utc}}</td>
+                <td>{{empList.codigo_pais}}</td>
+                <td>{{empList.rfc_generico}}</td>
+                <td>{{empList.rfc_company}}</td>
+                <td>{{empList.tax_id_company}}</td>
+                <!--<td class="img"><img src="{{empList.logotypo}}" alt="Contact Person"></td>-->
+                <td class="ultimo">
+                  <!-- (click)="deleteEmpleado(cTrab.token_empleado_vhum);"-->
+                  <a class="btn btn_extend text-bg-danger rounded-3">
+                    <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                  </a>
+                </td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="9" class="text-center py-4">
+                  <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                  <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                    {{'no_rows' | translate}}
+                  </p>
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+
+        </div>
+      </div>
+    </main>
+    <app-footer-inside></app-footer-inside>
+  </div>
+</div>
+
+<p-dialog header="REGISTRO DE EMPRESAS" [(visible)]="emp_tics_ver_registro" [modal]="true" [style]="{ width: '50rem' }"
+  [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  <app_teci_registro_empresas></app_teci_registro_empresas>
+</p-dialog>
+
+<p-dialog header="Informaci&oacute;n de la empresa {{empresa_detail_folio}}" [(visible)]="ver_empresa_info"
+  [modal]="true" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }"
+  [maximizable]="true">
+  @for (empinfo of empresa_detail_info; track empinfo.id; let i = $index) {
+  <p-tabs value="0" scrollable>
+    <p-tablist>
+      <p-tab value="0">1 - Informaci&oacute;n general</p-tab>
+      <p-tab value="1">2 - Usuarios vinculados</p-tab>
+    </p-tablist>
+    <p-tabpanels>
+      <p-tabpanel value="0"></p-tabpanel>
+      <p-tabpanel value="1">
+
+        <div class="col-12">
+          <div class="col-12 explain">
+            <h6 class="title">Usuarios vinculados</h6>
+          </div>
+          <p-table [value]="empinfo.usuarios_vinculados" showGridlines [resizableColumns]="true"
+            columnResizeMode="expand" [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }"
+            [rowsPerPageOptions]="[10,20,30,50,100]">
+            <ng-template #header>
+              <tr>
+                <th>folio</th>
+                <th>Alias</th>
+                <th class="ultimo"></th>
+              </tr>
+            </ng-template>
+            <ng-template #body let-user let-editing="editing">
+              <tr>
+                <td>{{user.usuario_folio}}</td>
+                <td>{{user.usuario_alias}}</td>
+                <td class="ultimo">
+                  <!--<a class="btn btn_extend" [ngClass]="!user.usuario_has_pass ? 'text-bg-success rounded-3' : 'text-bg-danger rounded-3'"
+											(click)="!user.usuario_has_pass ? generaCodigosAccessAndPass(user.usuario_token) : revocarCodigosAccessAndPass(user.usuario_token);">
+											<i class="fa-solid" [ngClass]="!user.usuario_has_pass ? 'fa-pen-to-square' : 'fa-eraser'"></i>&nbsp;
+											{{!user.usuario_has_pass ? 'Generar credenciales' : 'Revocar credenciales'}}
+										</a>-->
+                </td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="3" class="text-center py-4">
+                  <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                  <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                    {{'no_rows' | translate}}
+                  </p>
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+        <div class="col-12">
+          <div class="col-12 explain">
+            <h6 class="title">Usuarios no vinculados</h6>
+          </div>
+          <p-table [value]="empinfo.usuarios_no_vinculados" showGridlines [resizableColumns]="true"
+            columnResizeMode="expand" [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }"
+            [rowsPerPageOptions]="[10,20,30,50,100]">
+            <ng-template #header>
+              <tr>
+                <th>folio</th>
+                <th>Alias</th>
+                <th class="ultimo"></th>
+              </tr>
+            </ng-template>
+            <ng-template #body let-user let-editing="editing">
+              <tr>
+                <td>{{user.usuario_folio}}</td>
+                <td>{{user.usuario_alias}}</td>
+                <td class="ultimo">
+                  <a class="btn btn_extend text-bg-success rounded-3"
+                    (click)="vincularEmpresaUsuario(empinfo.empresa_token,user.usuario_token);">
+                    <i class="fa-solid fa-building-user"></i>&nbsp;Vincular usuario
+                  </a>
+                  <!--<a class="btn btn_extend" [ngClass]="!user.usuario_has_pass ? 'text-bg-success rounded-3' : 'text-bg-danger rounded-3'"
+											(click)="!user.usuario_has_pass ? generaCodigosAccessAndPass(user.usuario_token) : revocarCodigosAccessAndPass(user.usuario_token);">
+											<i class="fa-solid" [ngClass]="!user.usuario_has_pass ? 'fa-pen-to-square' : 'fa-eraser'"></i>&nbsp;
+											{{!user.usuario_has_pass ? 'Generar credenciales' : 'Revocar credenciales'}}
+										</a>-->
+                </td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="3" class="text-center py-4">
+                  <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                  <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                    {{'no_rows' | translate}}
+                  </p>
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+
+      </p-tabpanel>
+    </p-tabpanels>
+  </p-tabs>
+  } @empty {
+  <div>No hay elementos</div>
+  }
+</p-dialog>

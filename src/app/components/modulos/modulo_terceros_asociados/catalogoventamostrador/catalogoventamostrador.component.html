@@ -1,0 +1,157 @@
+<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco" #vContent>
+	<div class="contenido">
+		<app-loader></app-loader>
+		<header class="sticky-top">
+			<nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+		</header>
+		<main class="contenidoPagina">
+			<div class="listas_ps revanecer">
+				<div class="lista-div lista-divNoFlex row">
+					<h4 class="col-12">CATALOGO DE VENTAS REALIZADAS</h4>
+					<div class="col-12">
+
+						<p-tabs value="0">
+							<p-tablist>
+								<p-tab value="0" (click)="listarVentasMostrador();">Catalogo general de ventas</p-tab>
+								<p-tab value="1" (click)="listarVentasMostradorCanceladas();">Ventas canceladas</p-tab>
+							</p-tablist>
+							<p-tabpanels>
+								<p-tabpanel value="0">
+									<div class="col-12 row" *ngIf="view_true_ventas == true">
+										<table id="list_table_cat_ventas" class="display nowrap mdl-data-table white centered" style="width:100%!important;margin:0!important;">
+											<thead>
+												<tr>
+													<th class="ultimo"></th>
+													<th>folio</th>
+													<th>serie</th>
+													<th>{{'fecha_reg' | translate}}</th>
+													<th>punto de venta</th>
+													<th>cliente</th>
+													<th>{{'mon_tipo_cambio' | translate}}</th>
+													<th>{{'total_import' | translate}}</th>
+													<th></th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr *ngFor="let item of catalogoVentasTrue">
+													<td class="ultimo">
+														<a class="btn bg-blue-600" data-bs-toggle="modal" data-bs-target="#modalVentaSeleccionada" (click)="verDetalleVenta(item.token_ventas);">
+															<i class="fa-solid fa-info"></i>
+														</a>
+													</td>
+													<td>{{item.folio_vent_general}}</td>
+													<td>{{item.folio_vent_serie}}</td>
+													<td>{{item.fecha}}</td>
+													<td class="name">{{item.punto_venta_alias}}</td>
+													<td class="name">{{item.clientes_nombre}}</td>
+													<td class="td_importes">{{item.tipo_cambio_venta}}</td>
+													<td class="td_importes">{{item.importe_total+" "+item.moneda_code+" / "+item.importe_total_convert+" "+item.moneda_conv_code}}</td>
+													<td style="min-width: 500px!important;">
+		
+														<div class="col-12" style="display: flex!important;flex-direction: row!important;justify-content: flex-start!important;padding: 0!important;">
+															<input *ngIf="item.venta_cancelada == false" class="validate" type="text" style="border-radius: 8px 0 0 8px!important;" (keyup)="writeMotivosCancelacion($event.target,item.counter);">
+															<a *ngIf="item.venta_cancelada == false && item.razon_cancelar == ''" class="btn btn_extend text-bg-danger rounded-3 disabled" disabled aria-disabled="true" style="border-radius: 0 8px 8px 0!important;height: 30px!important;">
+																<i class="fa-solid fa-ban"></i>&nbsp;Cancelar venta
+															</a>
+															<a *ngIf="item.venta_cancelada == false && item.razon_cancelar != ''" class="btn btn_extend text-bg-danger rounded-3" (click)="cancelarVenta(item.token_ventas,item.razon_cancelar);" style="border-radius: 0 8px 8px 0!important;height: 30px!important;">
+																<i class="fa-solid fa-ban"></i>&nbsp;Cancelar venta
+															</a>
+															<p *ngIf="item.venta_cancelada == true" class="btn_extend bg-red-700" style="height: 30px!important;line-height: 30px;padding: 0!important;">Venta cancelada</p>
+														</div>
+			
+													</td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+								</p-tabpanel>
+								<p-tabpanel value="1">
+									<div class="col-12 row" *ngIf="view_cancel_ventas == true">
+										<table id="list_table_cancel_ventas" class="display nowrap mdl-data-table white centered" style="width:100%!important;margin:0!important;">
+											<thead>
+												<tr>
+													<th class="ultimo"></th>
+													<th>folio</th>
+													<th>serie</th>
+													<th>{{'fecha_reg' | translate}}</th>
+													<th>punto de venta</th>
+													<th>cliente</th>
+													<th>{{'mon_tipo_cambio' | translate}}</th>
+													<th>{{'total_import' | translate}}</th>
+													<th class="ultimo"></th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr *ngFor="let item of catalogoVentasFalse">
+													<td class="ultimo">
+														<a class="btn bg-blue-600" data-bs-toggle="modal" data-bs-target="#modalVentaSeleccionada" (click)="verDetalleVenta(item.token_ventas);">
+															<i class="fa-solid fa-info"></i>
+														</a>
+													</td>
+													<td>{{item.folio_vent_general}}</td>
+													<td>{{item.folio_vent_serie}}</td>
+													<td>{{item.fecha}}</td>
+													<td class="name">{{item.punto_venta_alias}}</td>
+													<td class="name">{{item.clientes_nombre}}</td>
+													<td class="td_importes">{{item.tipo_cambio_venta}}</td>
+													<td class="td_importes">{{item.importe_total+" "+item.moneda_code+" / "+item.importe_total_convert+" "+item.moneda_conv_code}}</td>
+													<td class="ultimo">
+														<a class="btn btn_extend text-bg-danger rounded-3">
+															<i class="fa-solid fa-ban"></i>&nbsp;Cancelar
+														</a>
+													</td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+								</p-tabpanel>
+							</p-tabpanels>
+						</p-tabs>
+						
+					</div>
+				</div>
+			</div>
+		</main>
+		<app-footer-inside></app-footer-inside>
+	</div>
+</div>
+
+<div class="modal fade bd-example-modal-lg" id="modalVentaSeleccionada" tabindex="-1" role="dialog" aria-labelledby="modalVentaSeleccionadaLabel" aria-hidden="true">
+	<div class="modal-dialog modal-fullscreen" style="margin: 1%;width: 98%!important;">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h1 class="modal-title fs-5 bg-blue-ModalTitle" id="modalVentaSeleccionadaLabel">INFORMACI&Oacute;N DE VENTAS REGISTRADAS</h1>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: transparent !important;"></button>
+			</div>
+			<div class="modal-body" *ngFor="let vnt of catalogoVentasDetail">
+				<table id="list_table_ventas_detail" class="display nowrap mdl-data-table white centered" style="width:100%!important;margin:0!important;">
+					<thead>
+						<tr>
+							<th class="ultimo"></th>
+							<th>Producto / servicio</th>
+							<th>Precio sin impuestos</th>
+							<th>Cantidad</th>
+							<th><i class="fas fa-gifts"></i>&nbsp;Descuentos</th>
+							<th>Subtotal</th>
+							<th>Importe</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr id="trDataVentas" *ngFor="let listaPVentas of vnt.detalle_venta" class="{{listaPVentas.relClientServ}}">
+							<!--<td id="tdTknVenta" class="noneView">{{listaPVentas.token_articulo}}</td>-->
+							<td class="img_dat"><div class="col-12"><img class="circle optimizedImage" fill ngSrc="{{listaPVentas.imagen}}" alt=""></div>	</td>
+							<td>{{listaPVentas.concepto}}</td>
+							<td>{{listaPVentas.precio_bruto+" "+vnt.moneda_code+" / "+listaPVentas.precio_bruto_convert+" "+vnt.moneda_conv_code}}</td>
+							<td>{{listaPVentas.cantidad}}</td>
+							<td>{{listaPVentas.descuento_total+" "+vnt.moneda_code+" / "+listaPVentas.descuento_total_convert+" "+vnt.moneda_conv_code}}</td><!--descuentos-->
+							<td>{{listaPVentas.subtotalAfterDescuentos+" "+vnt.moneda_code+" / "+listaPVentas.subtotalAfterDescuentos_convert+" "+vnt.moneda_conv_code}}</td><!--descuentos-->
+							<td class="tdImportePartida">{{listaPVentas.importe_total+" "+vnt.moneda_code+" / "+listaPVentas.importe_total_convert+" "+vnt.moneda_conv_code}}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div>
+		</div>
+	</div>
+</div>

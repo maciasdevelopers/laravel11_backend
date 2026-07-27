@@ -1,0 +1,67 @@
+<p-table #prvGralList [value]="list_proveedores_vincular" showGridlines [resizableColumns]="true"
+  columnResizeMode="expand" [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }"
+  [rowsPerPageOptions]="[10,20,30,50,100]"
+  [globalFilterFields]="['token_cat_proveedores','folio','nombre','nombre_comercial','pais','rfc_generico','rfc_prov','tax_id_prov','cuenta_contable','autorizado','auth_fecha']">
+  <ng-template #caption>
+    <div class="flex">
+      <p-iconfield iconPosition="left" class="ml-auto">
+        <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+        <input pInputText type="text" (input)="prvGralList.filterGlobal($event.target.value, 'contains')"
+          placeholder="{{'bus_car' | translate}}" />
+      </p-iconfield>
+    </div>
+  </ng-template>
+  <ng-template #header>
+    <tr>
+      <th rowspan="2" pResizableColumn pSortableColumn="soli_vinculo_folio">folio&nbsp;<p-sortIcon
+          field="soli_vinculo_folio" /></th>
+      <th rowspan="2" pResizableColumn pSortableColumn="soli_vinculo_fecha">{{'fecha_cont' | translate}}
+        &nbsp;<p-sortIcon field="soli_vinculo_fecha" /></th>
+      <th colspan="3">{{'prov' | translate}}&nbsp;</th>
+      <th rowspan="2" pResizableColumn pSortableColumn="soli_vinculo_email">{{'email' | translate}}&nbsp;<p-sortIcon
+          field="soli_vinculo_email" /></th>
+      <th rowspan="2" pResizableColumn pSortableColumn="soli_usersVinculadosTotal">Usuarios vinculados&nbsp;<p-sortIcon
+          field="soli_usersVinculadosTotal" /></th>
+      <th rowspan="2" class="ultimo"></th>
+    </tr>
+    <tr>
+      <th pResizableColumn pSortableColumn="proveedor_folio">folio&nbsp;<p-sortIcon field="proveedor_folio" /></th>
+      <th pResizableColumn pSortableColumn="proveedor_nombre">{{'prov' | translate}} &nbsp;<p-sortIcon
+          field="proveedor_nombre" /></th>
+      <th pResizableColumn pSortableColumn="proveedor_nombre_comercial">{{'comercial_name' | translate}}
+        &nbsp;<p-sortIcon field="proveedor_nombre_comercial" /></th>
+    </tr>
+  </ng-template>
+  <ng-template #body let-uPrv>
+    <tr>
+      <td>{{uPrv.soli_vinculo_folio}}</td>
+      <td>{{uPrv.soli_vinculo_fecha}}</td>
+      <td>{{uPrv.proveedor_folio}}</td>
+      <td class="name">{{uPrv.proveedor_nombre}}</td>
+      <td class="name">{{uPrv.proveedor_nombre_comercial}}</td>
+      <td>{{uPrv.soli_vinculo_email}}</td>
+      <td>
+        <a class="btn btn_extend bg-blue-600" (click)="ver_usuarios_vinculados(uPrv.token_soli_vinculo);">
+          <i class="fa-solid fa-user-check"></i>&nbsp;{{uPrv.soli_usersVinculadosTotal+" usuarios vinculados"}}
+        </a>
+      </td>
+      <td class="ultimo">
+        <a class="btn btn_extend text-bg-success rounded-3"
+          (click)="vincular_usuario(uPrv.soli_vinculo_token,uPrv.proveedor_token);">
+          <i class="fa-solid"
+            [ngClass]="uPrv.soli_usersVinculadosTotal > 0 ? 'fa-user-check' : 'fa-user-plus'"></i>&nbsp;Vincular
+        </a>
+      </td>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td colspan="8" class="text-center py-4">
+        <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+        <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+          {{'no_rows' | translate}}
+        </p>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>

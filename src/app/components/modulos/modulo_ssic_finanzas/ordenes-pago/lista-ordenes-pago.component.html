@@ -1,0 +1,73 @@
+<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco" #vContent>
+  <div class="contenido">
+    <app-loader></app-loader>
+    <nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+    <main class="contenidoPagina">
+      <div class="listas_ps revanecer">
+        <div class="lista-div lista-divNoFlex row">
+          <h4>{{'ordens_pag' | translate}}</h4>
+          <!--<div class="col-12" style="padding: 0;">
+            <div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+              <a class="btn btnGuardar btnRow btnBlueHead bg-blue-600">
+                <i class="fa-solid fa-rotate" style="margin-left: 5px;"></i>&nbsp;{{'list_updt' | translate}}
+              </a>
+            </div>
+            <div class="col-12 col-sm-9 col-md-9 col-lg-10 col-xl-10 col-xxl-10"></div>
+          </div>-->
+
+          <p-tabs value="0" (valueChange)="cambioDeSeccion($event)" scrollable>
+            <p-tablist>
+              <p-tab value="0">{{'list_general' | translate}}</p-tab>
+              <p-tab value="1">{{'list_pend' | translate}}</p-tab>
+              <p-tab value="2">{{'list_lib' | translate}}</p-tab>
+              <p-tab value="3">{{'list_conc' | translate}}</p-tab>
+              <p-tab value="4">{{'pag_list' | translate}}</p-tab>
+              <p-tab value="5">{{'acree_catalogo' | translate}}</p-tab>
+              <p-tab value="6">{{'deudor_catalogo' | translate}}</p-tab>
+              <p-tab value="7">{{'advance_prepay' | translate}}</p-tab>
+              <!--<p-tab value="8" (onTabChange)="graficaGeneralOrdPayChange($event);">{{'grap' | translate}}</p-tab>-->
+            </p-tablist>
+            <p-tabpanels>
+              <p-tabpanel value="0">
+                <fnzs_op_catalogo_general></fnzs_op_catalogo_general>
+              </p-tabpanel>
+              <p-tabpanel value="1">
+                <fnzs_op_catalogo_pendientes></fnzs_op_catalogo_pendientes>
+              </p-tabpanel>
+              <p-tabpanel value="2">
+                <sos_finanzas_ordenes_de_pago_liberadas></sos_finanzas_ordenes_de_pago_liberadas>
+              </p-tabpanel>
+              <p-tabpanel value="3">
+                <fnzs_op_catalogo_concluidas></fnzs_op_catalogo_concluidas>
+              </p-tabpanel>
+              <p-tabpanel value="4">
+                <fnzs_op_pagos_catalogo_general></fnzs_op_pagos_catalogo_general>
+              </p-tabpanel>
+              <p-tabpanel value="5">
+                <app_ordenes_pago_op_acreedores></app_ordenes_pago_op_acreedores>
+              </p-tabpanel>
+              <p-tabpanel value="6">
+                <app_ordenes_pago_op_deudores></app_ordenes_pago_op_deudores>
+              </p-tabpanel>
+              <p-tabpanel value="7">
+                <finanzas_op_anticipos></finanzas_op_anticipos>
+              </p-tabpanel>
+              <!--<p-tabpanel value="8">
+                <canvas #chart_draw id="chart_draw" width="400" height="400"></canvas>
+                <p-chart type="pie" [data]="grafica_datos" [options]="grafica_opciones" class="w-full md:w-[30rem]" />
+                <div class="col-12 canva_contenedor">
+									<canvas #chartCanvas id="chart_draw">{{ chart }}</canvas>
+								</div>
+              </p-tabpanel>-->
+            </p-tabpanels>
+          </p-tabs>
+        </div>
+      </div>
+    </main>
+    <app-footer-inside></app-footer-inside>
+  </div>
+</div>
+
+
+

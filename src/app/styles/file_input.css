@@ -1,0 +1,18 @@
+div.field_file_drop{
+  padding: 10px!important;
+  background-color: #fff!important;
+  border-radius: 35px!important;
+}
+
+div.field_file_drop .ngx-file-drop__drop-zone{
+  border: 2px dotted #020a5e!important;
+}
+
+div.field_file_drop .ngx-file-drop__drop-zone .ngx-file-drop__content{
+  color: #020a5e!important;
+}
+
+div.field_file_drop .ngx-file-drop__drop-zone .ngx-file-drop__content button{
+  background-color: #020a5e!important;
+  color: #fff!important;
+}

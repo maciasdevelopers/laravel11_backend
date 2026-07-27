@@ -1,0 +1,29 @@
+<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco" #vContent>
+	<div class="contenido">
+		<app-loader></app-loader>
+		<nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+		<main class="contenidoPagina">
+			<div class="listas_ps revanecer">
+				<div class="lista-div lista-divNoFlex row">
+					<h4>{{'politicas' | translate}}</h4>
+					<div class="col-12">
+						<p-tabs value="0">
+							<p-tablist>
+								<p-tab value="0" (click)="recarga_tablas_comi_data();">{{'politic_comi' | translate}}</p-tab>
+								<p-tab value="1" (click)="recarga_tablas_reem_data();">{{'politic_reem' | translate}}</p-tab>
+								<p-tab value="2" (click)="recarga_tablas_prov_data();">{{'politic_prov' | translate}}</p-tab>
+							</p-tablist>
+							<p-tabpanels>
+								<p-tabpanel value="0"><contab_seccion_polit_comi style="width: 100%!important;"></contab_seccion_polit_comi></p-tabpanel>
+								<p-tabpanel value="1"><contab_seccion_polit_reem style="width: 100%!important;"></contab_seccion_polit_reem></p-tabpanel>
+								<p-tabpanel value="2"><contab_seccion_polit_prov style="width: 100%!important;"></contab_seccion_polit_prov></p-tabpanel>
+							</p-tabpanels>
+						</p-tabs>
+					</div>
+				</div>
+			</div>
+		</main>
+		<app-footer-inside></app-footer-inside>
+	</div>
+</div>

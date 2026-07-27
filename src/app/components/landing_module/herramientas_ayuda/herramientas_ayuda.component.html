@@ -1,0 +1,67 @@
+<div class="col-12 row">
+  <div class="col-12">
+    <h2 class="section-title-left"><i class="fa-solid fa-screwdriver-wrench"></i>&nbsp;{{'her_easy' | translate}}</h2>
+    <div class="title-underline" style="margin: 0;"></div>
+  </div>
+  <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-3 col-xxl-3">
+    <p class="intro_herramientas">A través este apartado, podrás explorar y consultar nuestras calculadoras siendo de utilidad como herramientas fáciles que te ayudaran a tomar decisiones oportunas.</p>
+    <div class="title-underline" style="margin: 0;"></div>
+  </div>
+  <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-9 col-xxl-9 row" style="display: flex;justify-content: center;">
+    <p-card class="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-3 p-2 _card_calculadora" [style]="{overflow: 'hidden'}" (click)="verDialogCalcRet()"><!-- _card_retenciones_calc-->
+      <ng-template #header>
+        <img alt="Card" class="w-full optimizedPImage optimizedcardImage" fill ngSrc="./assets/images/herramientas/calculadora_retencion_isr_e_iva.png" style="border-radius: 8px;">
+      </ng-template>
+      <ng-template #title>Calculadora de retenci&oacute;n del ISR e IVA</ng-template>
+    </p-card>
+    <p-card class="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-3 p-2 _card_calculadora" [style]="{overflow: 'hidden'}" (click)="verDialogVisorCFDI()">
+      <ng-template #header>
+        <img alt="Card" class="w-full optimizedPImage optimizedcardImage" fill ngSrc="./assets/images/herramientas/visor_de_cfdi.png" style="border-radius: 8px;">
+      </ng-template>
+      <ng-template #title>Visor de CFDI.</ng-template>
+    </p-card>
+    <p-card class="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-3 p-2 _card_calculadora" [style]="{overflow: 'hidden'}" (click)="verDialogCalcLab()">
+      <ng-template #header>
+        <img alt="Card" class="w-full optimizedPImage optimizedcardImage" fill ngSrc="./assets/images/herramientas/proximamente.png" style="border-radius: 8px;">
+      </ng-template>
+      <ng-template #title>Calculadoras relacionadas con temas laborales.</ng-template>
+    </p-card>
+    <p-card class="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-3 p-2 _card_calculadora" [style]="{overflow: 'hidden'}" (click)="verDialogCalcRecargos()">
+      <ng-template #header>
+        <img alt="Card" class="w-full optimizedPImage optimizedcardImage" fill ngSrc="./assets/images/herramientas/proximamente.png" style="border-radius: 8px;">
+      </ng-template>
+      <ng-template #title>Calculadoras relacionadas con temas de actualizaciones y recargos.</ng-template>
+    </p-card>
+    <p-card class="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-3 p-2 _card_calculadora" [style]="{overflow: 'hidden'}" (click)="verDialogCalcEstImpuestos()">
+      <ng-template #header>
+        <img alt="Card" class="w-full optimizedPImage optimizedcardImage" fill ngSrc="./assets/images/herramientas/proximamente.png" style="border-radius: 8px;">
+      </ng-template>
+      <ng-template #title>Calculadoras relacionadas con temas de para calculo estimado de impuestos.</ng-template>
+    </p-card>
+  </div>
+
+  <p-dialog header="Calculadora de retenci&oacute;n del ISR e IVA" [(visible)]="visible_calc_ret" [modal]="true"
+    [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [style]="{ width: '50vw' }" [draggable]="false" [resizable]="false">
+    <tools_calculadora_retencion_isr_iva></tools_calculadora_retencion_isr_iva>
+  </p-dialog>
+
+  <p-dialog header="Visor de CFDI" [(visible)]="visible_visor_cfdi" [modal]="true" 
+    [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [style]="{ width: '50vw' }" [draggable]="false" [resizable]="false">
+    <tools_visor_de_cfdi></tools_visor_de_cfdi>
+  </p-dialog>
+
+  <p-dialog header="Calculadoras relacionadas con temas laborales." [(visible)]="visible_calc_laborales" [modal]="true" 
+    [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [style]="{ width: '50vw' }" [draggable]="false" [resizable]="false">
+    <app-coming-soon></app-coming-soon>
+  </p-dialog>
+
+  <p-dialog header="Calculadoras relacionadas con temas de actualizaciones y recargos." [(visible)]="visible_calc_act_recargos" [modal]="true" 
+    [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [style]="{ width: '50vw' }" [draggable]="false" [resizable]="false">
+    <app-coming-soon></app-coming-soon>
+  </p-dialog>
+
+  <p-dialog header="Calculadoras relacionadas con temas de para calculo estimado de impuestos." [(visible)]="visible_calc_estimado_impuestos" [modal]="true" 
+    [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [style]="{ width: '50vw' }" [draggable]="false" [resizable]="false">
+    <app-coming-soon></app-coming-soon>
+  </p-dialog>
+</div>

@@ -1,0 +1,787 @@
+<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco" #vContent>
+  <div class="contenido">
+    <app-loader></app-loader>
+    <header class="sticky-top">
+      <nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+    </header>
+    <main class="contenidoPagina">
+      <div class="listas_ps revanecer">
+        <div class="lista-div lista-divNoFlex row">
+          <h4 class="col-12">CATALOGO DE IMPUESTOS</h4>
+          <div class="col-12">
+            <div class="col-12 row" style="padding: 0;">
+              <p-tabs value="0">
+                <p-tablist>
+                  <p-tab value="0">Esquemas de impuestos</p-tab>
+                  <p-tab value="1" (click)="catalogo_general_impuestos(indicadorImpuestosCat);">Catalogo de impuestos</p-tab>
+                </p-tablist>
+                <p-tabpanels>
+                  <p-tabpanel value="0">
+                    <div class="col-12">
+                      <div class="btn-group lista_botones col" role="group" aria-label="Basic example">
+                        <a (click)="esquemaImpuestosCatalogoTrue();" class="btn btn_extend bg-indigo-600">
+                          <i class="fa-solid fa-rotate" style="margin-left: 5px;"></i>&nbsp;{{'list_updt' | translate}}
+                        </a>
+                        @if (impEsquemasListaFalse.length > 0) {
+                          <a class="btn btn_extend bg-indigo-600" data-bs-toggle="modal" data-bs-target="#modalEsquemasEliminados">
+                            <i class="fa-solid fa-rotate" style="margin-left: 5px;"></i>&nbsp;Esquemas de impuestos eliminados
+                          </a>
+                        }
+                      </div>
+                    </div>
+
+                    <div class="col-12 row">
+                      <div class="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-3 col-xxl-3">
+                        <div class="card card_main col-12" style="padding: 0!important;">
+                          <div class="card-body" style="padding: 10px!important;">
+                            <h5 class="card-title">Catalogo de esquema de impuestos</h5>
+                            <p-table #impEsqListTrue [value]="impEsquemasListaTrue" [globalFilterFields]="['esquema_token','esquema_folio','esquema_concepto']" [paginator]="true" 
+                              [rows]="10" [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]">
+                              <ng-template #caption>
+                                <div class="flex">
+                                  <p-iconfield iconPosition="left" class="ml-auto">
+                                    <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                                    <input pInputText type="text" (input)="impEsqListTrue.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+                                  </p-iconfield>
+                                </div>
+                              </ng-template>
+                              <ng-template #header>
+                                <tr>
+                                  <th class="ultimo"></th>
+                                  <th pSortableColumn="esquema_folio">folio&nbsp;<p-sortIcon field="esquema_folio" /></th>
+                                  <th pSortableColumn="esquema_concepto">{{'desc' | translate}}&nbsp;<p-sortIcon field="esquema_concepto" /></th>
+                                  <th class="ultimo"></th>
+                                </tr>
+                              </ng-template>
+                              <ng-template #body let-esqList>
+                                <tr>
+                                  <td>
+                                    <a class="btn bg-blue-600" data-bs-toggle="modal" data-bs-target="#modalEsquemaSeleccionado" (click)="verDetalleEsquemaImpuesto(esqList.esquema_token);">
+                                      <i class="fa-solid fa-pen-to-square"></i>
+                                    </a>
+                                  </td>
+                                  <td>{{esqList.esquema_folio}}</td>
+                                  <td>{{esqList.esquema_concepto}}</td>
+                                  <td>
+                                    <a class="btn btn_extend text-bg-danger rounded-3" (click)="eliminaEsquemaImpuesto(esqList.esquema_token);">
+                                      <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                                    </a>
+                                  </td>
+                                </tr>
+                              </ng-template>
+                              <ng-template pTemplate="emptymessage">
+                                <tr>
+                                  <td colspan="4" class="text-center py-4">
+                                    <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                                    <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                      {{'no_rows' | translate}}
+                                    </p>
+                                  </td>
+                                </tr>
+                              </ng-template>
+                            </p-table>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-12 col-sm-6 col-md-8 col-lg-8 col-xl-9 col-xxl-9">
+                        <div class="card card_main col-12" style="padding: 0!important;">
+                          <div class="card-body" style="padding: 10px!important;">
+                            <h5 class="card-title">Alta de esquema de impuestos</h5>
+                            <div class="col-12 row">
+                              <div class="input-group col-12">
+                                <label for="req_especificacion" class="activeInput textAreaLabel">Descripci&oacute;n</label>
+                                <textarea class="materialize-textarea validate" name="descripcion" (keyup)="keyupImpuestoEsquemaDescripcion($event.target);"></textarea>
+                              </div>
+                              <p-table #impEnabledList [value]="impuestosListaEnabled" [paginator]="true" [rows]="10"
+                                [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]"
+                                [globalFilterFields]="['vinculacion','token_catalogo_impuesto','folio_impuesto','abreviacion_impuesto','concepto_impuesto','txtimporte','base_aplicable']">
+                                <ng-template #caption>
+                                  <div class="flex">
+                                    <p-iconfield iconPosition="left" class="ml-auto">
+                                      <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                                      <input pInputText type="text" (input)="impEnabledList.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+                                    </p-iconfield>
+                                  </div>
+                                </ng-template>
+                                <ng-template #header>
+                                  <tr>
+                                    <th class="ultimo"></th>
+                                    <th pSortableColumn="folio_impuesto">Folio&nbsp;<p-sortIcon field="folio_impuesto" /></th>
+                                    <th pSortableColumn="abreviacion_impuesto">Abreviaci&oacute;n&nbsp;<p-sortIcon field="abreviacion_impuesto" /></th>
+                                    <th pSortableColumn="concepto_impuesto">Concepto&nbsp;<p-sortIcon field="concepto_impuesto" /></th>
+                                    <th pSortableColumn="txtimporte">Importe del impuesto&nbsp;<p-sortIcon field="txtimporte" /></th>
+                                    <th pSortableColumn="base_aplicable">Aplica sobre&nbsp;<p-sortIcon field="base_aplicable" /></th>
+                                  </tr>
+                                </ng-template>
+                                <ng-template #body let-impVig>
+                                  <tr>
+                                    <td>
+                                      <div class="form-check radio_check">
+                                        <input class="form-check-input" type="checkbox" name="compraRow" [checked]="impVig.vinculacion == true" (click)="seleccionarImpuestoForEsquemas(impVig.token_catalogo_impuesto,$event.target);">
+                                      </div>
+                                    </td>
+                                    <td>{{impVig.folio_impuesto}}</td>
+                                    <td class="td_names_rfc">{{impVig.abreviacion_impuesto}}</td>
+                                    <td class="td_names_rfc">{{impVig.concepto_impuesto}}</td>
+                                    <td class="td_importes">{{impVig.txtimporte}}</td>
+                                    <td>{{impVig.base_aplicable}}</td>
+                                  </tr>
+                                </ng-template>
+                                <ng-template pTemplate="emptymessage">
+                                  <tr>
+                                    <td colspan="6" class="text-center py-4">
+                                      <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                                      <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                        {{'no_rows' | translate}}
+                                      </p>
+                                    </td>
+                                  </tr>
+                                </ng-template>
+                              </p-table>
+                              <p-divider />
+                              <div class="col-12 row">
+                                <div class="col-12 col-sm-12 col-md-6 col-lg-8 col-xl-8 col-xxl-9"></div>
+                                <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3" style="display: flex !important;justify-content: end!important;">
+                                  <a class="btn btn_extend text-bg-success rounded-3" [ngClass]="!bool_esquema_registro ? 'disabled' : ''" [attr.disabled]="!bool_esquema_registro ? true : null"
+                                    [attr.aria-disabled]="!bool_esquema_registro ? true : null" (click)="bool_esquema_registro && registraEsquemaImpuesto();">
+                                    <i class="fa-solid fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+                                  </a>
+                                </div>
+                                <div class="col-12 col-sm-3 col-md-3 col-lg-4 col-xl-4 col-xxl-4"></div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </p-tabpanel>
+                  <p-tabpanel value="1">
+                    <div class="card card_main col-12" style="padding: 0!important;">
+                      <div class="card-body" style="padding: 10px!important;">
+                        <div class="btn-group lista_botones col" role="group" aria-label="Basic example">
+                          <a class="btn btn_extend bg-indigo-600" (click)="catalogo_general_impuestos(indicadorImpuestosCat);">
+                            <i class="fa-solid fa-rotate" style="margin-left: 5px;"></i>&nbsp;{{'list_updt' | translate}}
+                          </a>
+                          <a class="btn btn_extend bg-indigo-600" data-bs-toggle="modal" data-bs-target="#modalImpuestosEliminados">
+                            <i class="fa-solid fa-rotate" style="margin-left: 5px;"></i>&nbsp;impuestos eliminados
+                          </a>
+                          <a class="btn btn_extend bg-green-600 descarga_lista_excel" [ngClass]="impuestosListaTrue.length == 0 ? 'disabled' : ''" [attr.disabled]="impuestosListaTrue.length == 0 ? true : null"
+                            [attr.aria-disabled]="impuestosListaTrue.length == 0 ? true : null" (click)="impuestosListaTrue.length > 0 && descarga_excel_impuestos();">
+                            <i class="fa-solid fa-file-excel" style="margin-left: 5px;"></i>&nbsp;descargar
+                          </a>
+                        </div>
+                        <p-table [value]="impuestos_nuevo_registro">
+                          <ng-template #header>
+                            <tr>
+                              <th pSortableColumn="code">Abreviaci&oacute;n&nbsp;<p-sortIcon field="code" /></th>
+                              <th pSortableColumn="code">Concepto&nbsp;<p-sortIcon field="code" /></th>
+                              <th pSortableColumn="code">M&oacute;dulo&nbsp;<p-sortIcon field="code" /></th>
+                              <th pSortableColumn="code">nivel de aplicaci&oacute;n&nbsp;<p-sortIcon field="code" /></th>
+                              <th pSortableColumn="code">Clave sat&nbsp;<p-sortIcon field="code" /></th>
+                              <th pSortableColumn="code">Tipo&nbsp;<p-sortIcon field="code" /></th>
+                              <th pSortableColumn="code">Exento&nbsp;<p-sortIcon field="code" /></th>
+                              <th pSortableColumn="code">Tasa o cuota&nbsp;<p-sortIcon field="code" /></th>
+                              <th pSortableColumn="code">Importe del impuesto&nbsp;<p-sortIcon field="code" /></th>
+                              <th pSortableColumn="code">Tipo de cambio aplicado&nbsp;<p-sortIcon field="code" /></th>
+                              <th pSortableColumn="code">Moneda aplicada&nbsp;<p-sortIcon field="code" /></th>
+                              <th pSortableColumn="code">Aplica sobre&nbsp;<p-sortIcon field="code" /></th>
+                              <th pSortableColumn="code">Desglose&nbsp;<p-sortIcon field="code" /></th>
+                              <th pSortableColumn="code">GL por pagar o cobrar&nbsp;<p-sortIcon field="code" /></th>
+                              <th pSortableColumn="code">GL efectivamente pagada o cobrada&nbsp;<p-sortIcon field="code" /></th>
+                              <th pSortableColumn="code">{{'observ' | translate}}&nbsp;<p-sortIcon field="code" /></th>
+                              <th class="ultimo"></th>
+                            </tr>
+                          </ng-template>
+                          <ng-template #body let-impVig let-i="rowIndex">
+                            <tr>
+                              <td>
+                                <div class="col-12 text_area">
+                                  <textarea name="large_abrev" id="impuesto_abreviacion" class="validate" (keypress)="onKeyPressAlfa($event);"
+                                    style="width: 100% !important;height: 50px !important;min-width: 300px !important;" (keyup)="keyupImpuestoAbreviacion($event.target);"></textarea>
+                                </div>
+                              </td>
+                              <td>
+                                <div class="col-12 text_area">
+                                  <textarea name="large_concepto" id="impuesto_concepto" class="validate" style="width: 100% !important;height: 50px !important;min-width: 300px !important;"
+                                    (keypress)="onKeyPressAlfa($event);" (keyup)="keyupImpuestoConcepto($event.target);"></textarea>
+                                </div>
+                              </td>
+                              <td>
+                                <select name="txtGeneroAltaServ" id="impuesto_modulo" required class="browser-default" (change)="keyupImpuestoModulo($event.target);">
+                                  <option value="" disabled selected>{{'opt_select' | translate}}</option>
+                                  <option value="ingresos">ingresos</option>
+                                  <option value="egresos">egresos</option>
+                                  <option value="declaracion">Declaraci&oacute;n</option>
+                                  <option value="valorhumano">valor humano</option>
+                                </select>
+                              </td>
+                              <td>
+                                <select name="txtGeneroAltaServ" id="impuesto_nivel_aplicacion" required class="browser-default" (change)="keyupImpuestoNivel($event.target);">
+                                  <option value="" disabled selected>{{'opt_select' | translate}}</option>
+                                  <option value="federal">federal</option>
+                                  <option value="estatal">estatal</option>
+                                  <option value="local">local</option>
+                                  <option value="municipal">municipal</option>
+                                  <option value="otro">otro</option>
+                                </select>
+                              </td>
+                              <td>
+                                <input class="validate" id="impuesto_clave_sat" type="text" name="aliasImp" (keyup)="keyupImpuestoClaveSat($event.target);" (keypress)="onKeyPressNumbers($event);">
+                              </td>
+                              <td>
+                                <select class="validate" id="impuesto_tipo" name="tipoSelectImp" style="width: 220px!important;" (change)="keyupImpuestoTipo($event.target);">
+                                  <option value="" disabled selected>{{'opt_select' | translate}}</option>
+                                  <option value="retenido">Retenido</option>
+                                  <option value="trasladado">Trasladado</option>
+                                </select>
+                              </td>
+                              <td>
+                                <div class="form-check form-switch form-check-reverse switch_primario">
+                                  <label class="form-check-label" for="flexSwitchCheckReverse">No</label>
+                                  <input class="form-check-input selectSwitchProvProd" id="impuesto_exento" name="selectImpProd" type="checkbox" (click)="keyupImpuestoExento($event.target);">
+                                  <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                                </div>
+                              </td>
+                              <td>
+                                <select class="validate" id="impuesto_tasa_cuota" name="subTipoSelectImp" style="width: 220px!important;" [ngClass]="impuesto_exento ? 'disabled' : ''"
+                                  [attr.disabled]="impuesto_exento ? true : null" [attr.aria-disabled]="impuesto_exento ? true : null" (change)="keyupImpuestoTasacuota($event.target);">
+                                  <option value="" disabled selected>{{'opt_select' | translate}}</option>
+                                  <option value="tasa">Tasa</option>
+                                  <option value="cuota">cuota</option>
+                                </select>
+                              </td>
+                              <td>
+                                <div class="col-12 text_area">
+                                  @if (impuesto_importe_simbolo != '' && impuesto_importe_simbolo == '$') {
+                                    <p style="width: 15px!important;">$</p>
+                                  }
+                                  <input id="imppassoc_importe" class="validate" type="number" [disabled]="impuesto_tasa_cuota == '' || impuesto_exento"
+                                    style="text-align: right!important;" (keyup)="keyupImpuestoImporte($event.target);" (keypress)="onKeyPressNumbers($event);">
+                                  @if (impuesto_importe_simbolo != '' && impuesto_importe_simbolo == '%') {
+                                    <p style="width: 15px!important;">%</p>
+                                  }
+                                </div>
+                              </td>
+                              <td>
+                                <input class="validate" type="number" id="impuesto_tipo_cambio" [disabled]="impuesto_tasa_cuota == '' || impuesto_tasa_cuota == 'tasa' || impuesto_exento"
+                                  (keyup)="keyupImpuestoTipoCambio($event.target);" (keypress)="onKeyPressNumbers($event);">
+                              </td>
+                              <td>
+                                <datalist id="dataListMonedaNewCotizacion">
+                                  @for (mon of catalogo_monedas; track $index) {
+                                    <option [value]="mon.moneda">{{"código "+mon.codigo+", "+mon.decimales+" decimales"}}</option>
+                                  }
+                                </datalist>
+                                <input class="validate" id="impuesto_moneda" list="dataListMonedaNewCotizacion" type="text" [disabled]="impuesto_tasa_cuota == '' || impuesto_tasa_cuota == 'tasa' || impuesto_exento"
+                                  (keypress)="onKeyPressAlfa($event);" (change)="keyupImpuestoMoneda($event.target);">
+                              </td>
+                              <td>
+                                <select class="validate" id="impuesto_aplica_sobre" name="subTipoSelectImp" style="width: 220px!important;" [ngClass]="impuesto_exento ? 'disabled' : ''"
+                                  [attr.disabled]="impuesto_exento ? true : null" [attr.aria-disabled]="impuesto_exento ? true : null" (change)="keyupImpuestoAplicaSobre($event.target);">
+                                  <option value="" disabled selected>{{'opt_select' | translate}}</option>
+                                  <option value="preciobruto">Precio bruto</option>
+                                  <option value="subtotal">Subtotal</option>
+                                </select>
+                              </td>
+                              <td>
+                                <div class="form-check form-switch form-check-reverse switch_primario">
+                                  <label class="form-check-label" for="flexSwitchCheckReverse">No</label>
+                                  <input id="impuesto_decide_desglose" class="form-check-input selectSwitchProvProd" name="selectImpProd" type="checkbox" [ngClass]="impuesto_exento ? 'disabled' : ''"
+                                    [attr.disabled]="impuesto_exento ? true : null" [attr.aria-disabled]="impuesto_exento ? true : null" (click)="keyupImpuestoDecideDesglose($event.target);">
+                                  <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' |
+                                    translate}}</label>
+                                </div>
+                              </td>
+                              <td>
+                                <input id="impuesto_glx_pagar_o_cobrar" class="validate" [ngClass]="impuesto_exento ? 'disabled' : ''" [attr.disabled]="impuesto_exento ? true : null"
+                                  [attr.aria-disabled]="impuesto_exento ? true : null" type="text" name="aliasImp" (keyup)="keyupImpuestoGLxPagarOCobrar($event.target);"></td>
+                              <td>
+                                <input id="impuesto_gl_efec_pag_o_cob" class="validate" [ngClass]="impuesto_exento ? 'disabled' : ''" [attr.disabled]="impuesto_exento ? true : null"
+                                  [attr.aria-disabled]="impuesto_exento ? true : null" type="text" name="aliasImp" (keyup)="keyupImpuestoGLEfectivamentePagadaOCobrada($event.target);"></td>
+                              <td>
+                                <div class="col-12 text_area">
+                                  <textarea id="impuesto_observaciones" name="large_descript" style="width: 100% !important;height: 50px !important;min-width: 300px !important;"
+                                    class="validate" (keypress)="onKeyPressAlfa($event);" (keyup)="keyupImpuestoObsevaciones($event.target);"></textarea>
+                                </div>
+                              </td>
+                              <td>
+                                <a class="btn btn_extend text-bg-success rounded-3" [ngClass]="!validaRegistroImpuesto ? 'disabled' : ''" [attr.disabled]="!validaRegistroImpuesto ? true : null"
+                                  [attr.aria-disabled]="!validaRegistroImpuesto ? true : null" (click)="validaRegistroImpuesto && registraImpuesto();">
+                                  <i class="fa-solid fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+                                </a>
+                              </td>
+                            </tr>
+                          </ng-template>
+                          <ng-template pTemplate="emptymessage">
+                            <tr>
+                              <td colspan="17" class="text-center py-4">
+                                <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                                <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                  {{'no_rows' | translate}}
+                                </p>
+                              </td>
+                            </tr>
+                          </ng-template>
+                        </p-table>
+                        <p-table #impList [value]="impuestosListaTrue" [globalFilterFields]="impListaBuscar"
+                          [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }"
+                          [rowsPerPageOptions]="[10,20,30,50,100]">
+                          <ng-template #caption>
+                            <div class="flex" style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;" ngbDropdown>
+                              <a class="btn btn_extend" [ngClass]="indicadorImpuestosCat == 'hoy' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="catalogo_general_impuestos('hoy');">
+                                <i class="fa-solid fa-calendar-days"></i>&nbsp;Hoy
+                              </a>
+                              <a class="btn btn_extend" [ngClass]="indicadorImpuestosCat == 'esta_semana' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="catalogo_general_impuestos('esta_semana');">
+                                <i class="fa-solid fa-calendar-days"></i>&nbsp;Esta semana
+                              </a>
+                              <a class="btn btn_extend" [ngClass]="indicadorImpuestosCat == 'este_mes' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="catalogo_general_impuestos('este_mes');">
+                                <i class="fa-solid fa-calendar-days"></i>&nbsp;Este mes
+                              </a>
+                              <a class="btn btn_extend" [ngClass]="indicadorImpuestosCat == 'mes_anterior' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="catalogo_general_impuestos('mes_anterior');">
+                                <i class="fa-solid fa-arrow-left"></i>&nbsp;mes anterior
+                              </a>
+                              <a id="menuDropCatImpuestos" class="btn btn_extend" [ngClass]="indicadorImpuestosCat == 'otras_fechas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" ngbDropdownToggle>
+                                <i class="fa-solid fa-list-ul"></i>&nbsp;otras fechas
+                              </a>
+                              <div class="dropdown-menu-end menu-despegable" ngbDropdownMenu="menuDropCatImpuestos" style="padding: 0!important; margin: 0!important; width: max-content!important; max-height: 400px; overflow-y: auto;">
+                                <div class="col-12 input-group">
+                                  <label for="cat_impuestos_otras_fechas" class="activeInput">Periodo de fechas</label>
+                                  <p-datepicker id="cat_impuestos_otras_fechas" name="cat_impuestos_otras_fechas" [(ngModel)]="rangoPeriodoImpuestosCat" appendTo="body" dateFormat="dd/mm/yy"
+                                    placeholder="dd/mm/aaaa" selectionMode="range" (onSelect)="catalogo_general_impuestos('otras_fechas')" />
+                                </div>
+                              </div>
+                              <a class="btn btn_extend" [ngClass]="indicadorImpuestosCat == 'all_partidas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="catalogo_general_impuestos('all_partidas');">
+                                <i class="fa-solid fa-list-ul"></i>&nbsp;todos los registros
+                              </a>
+                              <p-iconfield iconPosition="left" class="ml-auto">
+                                <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                                <input pInputText type="text" (input)="impList.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+                              </p-iconfield>
+                            </div>
+                          </ng-template>
+                          <ng-template #header>
+                            <tr>
+                              <th class="ultimo"></th>
+                              <th pSortableColumn="abreviacion_impuesto">Abreviaci&oacute;n&nbsp;<p-sortIcon field="abreviacion_impuesto" /></th>
+                              <th pSortableColumn="concepto_impuesto">Concepto&nbsp;<p-sortIcon field="concepto_impuesto" /></th>
+                              <th pSortableColumn="modulo">M&oacute;dulo&nbsp;<p-sortIcon field="modulo" /></th>
+                              <th pSortableColumn="nivel_aplicacion">Nivel de aplicaci&oacute;n&nbsp;<p-sortIcon field="nivel_aplicacion" /></th>
+                              <th pSortableColumn="catalogo_sat">Clave sat&nbsp;<p-sortIcon field="catalogo_sat" /></th>
+                              <th pSortableColumn="tipo_impuesto">Tipo&nbsp;<p-sortIcon field="tipo_impuesto" /></th>
+                              <th pSortableColumn="exento">Exento&nbsp;<p-sortIcon field="exento" /></th>
+                              <th pSortableColumn="calculo">Tasa o cuota&nbsp;<p-sortIcon field="calculo" /></th>
+                              <th pSortableColumn="txtimporte">Importe del impuesto&nbsp;<p-sortIcon field="txtimporte" /></th>
+                              <th pSortableColumn="tipo_cambio">Tipo de cambio aplicado&nbsp;<p-sortIcon field="tipo_cambio" /></th>
+                              <th pSortableColumn="monedas_codigo">Moneda aplicada&nbsp;<p-sortIcon field="monedas_codigo" /></th>
+                              <th pSortableColumn="base_aplicable">Aplica sobre&nbsp;<p-sortIcon field="base_aplicable" /></th>
+                              <th pSortableColumn="desglose">Desglose&nbsp;<p-sortIcon field="desglose" /></th>
+                              <th pSortableColumn="gl_por_pagarcobrar">GL por pagar o cobrar&nbsp;<p-sortIcon field="gl_por_pagarcobrar" /></th>
+                              <th pSortableColumn="gl_pagada_o_cobrada">GL efectivamente pagada o cobrada&nbsp;<p-sortIcon field="gl_pagada_o_cobrada" /></th>
+                              <th pSortableColumn="observaciones">{{'observ' | translate}}&nbsp;<p-sortIcon field="observaciones" /></th>
+                              <th class="ultimo"></th>
+                              <th class="ultimo"></th>
+                            </tr>
+                          </ng-template>
+                          <ng-template #body let-impVig>
+                            <tr>
+                              <td>
+                                <a class="btn btn_extend bg-blue-600" data-bs-toggle="modal"
+                                  data-bs-target="#modalImpuestoSeleccionado"
+                                  (click)="verDetalleImpuesto(impVig.token_catalogo_impuesto);">
+                                  <i class="fa-solid fa-pen-to-square"></i>&nbsp;{{impVig.folio_impuesto}}
+                                </a>
+                              </td>
+                              <td class="td_names_rfc">{{impVig.abreviacion_impuesto}}</td>
+                              <td class="td_names_rfc">{{impVig.concepto_impuesto}}</td>
+                              <td>{{impVig.modulo}}</td>
+                              <td>{{impVig.nivel_aplicacion}}</td>
+                              <td>{{impVig.catalogo_sat}}</td>
+                              <td>{{impVig.tipo_impuesto}}</td>
+                              <td>{{impVig.exento | translate}}</td>
+                              <td>{{impVig.exento == 'yes' ? '---' : impVig.calculo}}</td>
+                              <td class="td_importes">{{impVig.exento == 'yes' ? '---' : impVig.txtimporte}}</td>
+                              <td class="td_importes">{{impVig.exento == 'yes' ? '---' : impVig.tipo_cambio}}</td>
+                              <td>{{impVig.exento == 'yes' ? '---' : impVig.monedas_codigo+" - "+impVig.monedas_moneda}}
+                              </td>
+                              <td>{{impVig.exento == 'yes' ? '---' : impVig.base_aplicable}}</td>
+                              <td>{{impVig.exento == 'yes' ? '---' : impVig.desglose | translate}}</td>
+                              <td>{{impVig.exento == 'yes' ? '---' : impVig.gl_por_pagarcobrar}}</td>
+                              <td>{{impVig.exento == 'yes' ? '---' : impVig.gl_pagada_o_cobrada}}</td>
+                              <td class="td_names_rfc">{{impVig.observaciones}}</td>
+                              <td>
+                                <a class="btn btn_extend text-bg-danger rounded-3"
+                                  (click)="eliminaImpuesto(impVig.token_catalogo_impuesto);">
+                                  <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                                </a>
+                              </td>
+                              <td>
+                                <a class="btn btn_extend rounded-3"
+                                  [ngClass]="!impVig.habilitado ? 'text-bg-success' : 'text-bg-danger'"
+                                  (click)="!impVig.habilitado ? habilitaImpuesto(impVig.token_catalogo_impuesto) : deshabilitaImpuesto(impVig.token_catalogo_impuesto);">
+                                  <i class="fa-solid" [ngClass]="!impVig.habilitado ? 'fa-circle-check' : 'fa-eye-slash'"></i>&nbsp;{{(!impVig.habilitado ? 'enable' : 'disable') | translate}}
+                                </a>
+                              </td>
+                            </tr>
+                          </ng-template>
+                          <ng-template pTemplate="emptymessage">
+                            <tr>
+                              <td colspan="19" class="text-center py-4">
+                                <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                                <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                  {{'no_rows' | translate}}
+                                </p>
+                              </td>
+                            </tr>
+                          </ng-template>
+                        </p-table>
+                      </div>
+                    </div>
+                  </p-tabpanel>
+                </p-tabpanels>
+              </p-tabs>
+
+              <div class="modal fade bd-example-modal-lg" id="modalEsquemaSeleccionado" tabindex="-1" role="dialog" aria-labelledby="modalEsquemaSeleccionadoLabel" aria-hidden="true">
+                <div class="modal-dialog modal-fullscreen" style="margin: 1%;width: 98%!important;">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="modalEsquemaSeleccionadoLabel">INFORMACI&Oacute;N DE ESQUEMAS DE IMPUESTOS REGISTRADOS</h1>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: transparent !important;"></button>
+                    </div>
+                    <div class="modal-body">
+                      @for (detEsq of impEsquemasDetalle; track $index) {
+                        <div class="col-12 row">
+                          <div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2 row">
+                            <a class="btn btn_extend" [ngClass]="!detEsq.habilitado ? 'text-bg-success rounded-3' : 'text-bg-danger rounded-3'"
+                              (click)="!detEsq.habilitado ? habilitaEsquemaImpuesto(detEsq.esquema_token) : deshabilitaEsquemaImpuesto(detEsq.esquema_token);">
+                              <i class="fa-solid" [ngClass]="!detEsq.habilitado ? 'fa-circle-check' : 'fa-eye-slash'"></i>&nbsp;{{!detEsq.habilitado ? ['enable' | translate] : ['disable' | translate]}}
+                            </a>
+                          </div>
+  
+                          <div class="input-group col-12">
+                            <label for="req_especificacion" class="activeInput textAreaLabel">Descripci&oacute;n</label>
+                            <textarea class="materialize-textarea validate" name="descripcion" (keyup)="keyupUpdateImpuestoEsquemaDescripcion($event.target);">{{detEsq.esquema_concepto}}</textarea>
+                          </div>
+  
+                          <div class="col-12 row" style="border-top: solid 1px lightgray!important;padding:0!important;">
+                            <div class="col-12 col-sm-3 col-md-3 col-lg-4 col-xl-4 col-xxl-4"></div>
+                            <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-4">
+                              <button class="btn btnRow text-bg-success rounded-3" type="submit" name="btnAltaProducto2" style="padding: 0!important;margin-top: 5px!important;"
+                                [disabled]="detEsq.esquema_concepto_respaldo == '' || detEsq.esquema_concepto_respaldo == detEsq.esquema_concepto"
+                                (click)="updateConceptoEsquemaImpuesto(detEsq.esquema_token,detEsq.esquema_concepto_respaldo);">
+                                <i class="fa-solid fa-floppy-disk" style="height: 15px!important;line-height: 15px!important;width: 15px!important;font-size: small!important;"></i>&nbsp;{{'sav_cam' | translate}}
+                              </button>
+                            </div>
+                            <div class="col-12 col-sm-3 col-md-3 col-lg-4 col-xl-4 col-xxl-4"></div>
+                          </div>
+                          <p-table #detEsqImp [value]="detEsq.impuestos" [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]"
+                            [globalFilterFields]="['vinculado','token_catalogo_impuesto','folio_impuesto','abreviacion_impuesto','concepto_impuesto','txtimporte','base_aplicable']">
+                            <ng-template #caption>
+                              <div class="flex">
+                                <p-iconfield iconPosition="left" class="ml-auto">
+                                  <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                                  <input pInputText type="text" (input)="detEsqImp.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+                                </p-iconfield>
+                              </div>
+                            </ng-template>
+                            <ng-template #header>
+                              <tr>
+                                <th class="ultimo"></th>
+                                <th pSortableColumn="folio_impuesto">Folio&nbsp;<p-sortIcon field="folio_impuesto" /></th>
+                                <th pSortableColumn="abreviacion_impuesto">Abreviaci&oacute;n&nbsp;<p-sortIcon field="abreviacion_impuesto" /></th>
+                                <th pSortableColumn="concepto_impuesto">Concepto&nbsp;<p-sortIcon field="concepto_impuesto" /></th>
+                                <th pSortableColumn="txtimporte">Importe del impuesto&nbsp;<p-sortIcon field="txtimporte" /></th>
+                                <th pSortableColumn="base_aplicable">Aplica sobre&nbsp;<p-sortIcon field="base_aplicable" /></th>
+                              </tr>
+                            </ng-template>
+                            <ng-template #body let-impVig>
+                              <tr>
+                                <td>
+                                  <div class="form-check radio_check">
+                                    <input class="form-check-input" type="checkbox" name="compraRow"
+                                      [checked]="impVig.vinculado"
+                                      (click)="seleccionarImpuestoForUpdateEsquemas($event.target,detEsq.esquema_token,impVig.token_catalogo_impuesto);">
+                                  </div>
+                                </td>
+                                <td>{{impVig.folio_impuesto}}</td>
+                                <td class="td_names_rfc">{{impVig.abreviacion_impuesto}}</td>
+                                <td class="td_names_rfc">{{impVig.concepto_impuesto}}</td>
+                                <td class="td_importes">{{impVig.txtimporte}}</td>
+                                <td>{{impVig.base_aplicable}}</td>
+                              </tr>
+                            </ng-template>
+                            <ng-template pTemplate="emptymessage">
+                              <tr>
+                                <td colspan="6" class="text-center py-4">
+                                  <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                                  <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                    {{'no_rows' | translate}}
+                                  </p>
+                                </td>
+                              </tr>
+                            </ng-template>
+                          </p-table>
+                        </div>
+                      }
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="modal fade bd-example-modal-lg" id="modalEsquemasEliminados" tabindex="-1" role="dialog" aria-labelledby="modalEsquemasEliminadosLabel" aria-hidden="true">
+                <div class="modal-dialog modal-fullscreen" style="margin: 1%;width: 98%!important;">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="modalEsquemasEliminadosLabel">INFORMACI&Oacute;N DE ESQUEMAS DE IMPUESTOS ELIMINADOS</h1>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: transparent !important;"></button>
+                    </div>
+                    <div class="modal-body">
+                      @if (view_lista_impuestos_delete) {
+                        <div class="col-12">
+                          <table id="list_table_impuestos_esquemas" class="display nowrap mdl-data-table white centered"
+                            style="width:100%!important;margin:0!important;">
+                            <thead>
+                              <tr>
+                                <th class="td_names_rfc">{{'desc' | translate}}</th>
+                                <th class="pfolio">{{'f_delete' | translate}}</th>
+                                <th class="ultimo"></th>
+                                <th class="ultimo"></th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              @for (esqList of impEsquemasListaFalse; track $index) {
+                                <tr>
+                                  <td>{{esqList.esquema_concepto}}</td>
+                                  <td>{{esqList.esquema_date_delete}}</td>
+                                  <td>
+                                    <a class="btn btn_extend text-bg-success rounded-3" (click)="restauraEsquemaImpuestos(esqList.esquema_token);">
+                                      <i class="fa-solid fa-trash-arrow-up"></i>&nbsp;{{'restore_row' | translate}}
+                                    </a>
+                                  </td>
+                                  <td>
+                                    <a class="btn btn_extend text-bg-danger rounded-3" (click)="eliminaPermEsquemaImpuestos(esqList.esquema_token);">
+                                      <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                                    </a>
+                                  </td>
+                                </tr>
+                              }
+                            </tbody>
+                          </table>
+                        </div>
+                      }
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="modal fade bd-example-modal-lg" id="modalImpuestoSeleccionado" tabindex="-1" role="dialog" aria-labelledby="modalImpuestoSeleccionadoLabel" aria-hidden="true">
+                <div class="modal-dialog modal-fullscreen" style="margin: 1%;width: 98%!important;">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="modalImpuestoSeleccionadoLabel">INFORMACI&Oacute;N DE IMPUESTOS REGISTRADOS</h1>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: transparent !important;"></button>
+                    </div>
+                    <div class="modal-body">
+                      @for (detail of detalleImpuestosArray; track $index) {
+                        <div class="col-12 row">
+                          <table id="list_table_impuestos_assoc_selected" class="display nowrap mdl-data-table white centered" style="width:100%!important;margin:0!important;">
+                            <thead>
+                              <tr>
+                                <th>Abreviaci&oacute;n</th>
+                                <th>Concepto</th>
+                                <th>M&oacute;dulo</th>
+                                <th>nivel de aplicaci&oacute;n</th>
+                                <th>clave sat</th>
+                                <th>Tipo</th>
+                                <th>Tasa o cuota</th>
+                                <th>Importe del impuesto</th>
+                                <th>Tipo de cambio aplicado</th>
+                                <th>Moneda aplicada</th>
+                                <th>Aplica sobre</th>
+                                <th>Desglose</th>
+                                <th>GL por pagar o cobrar</th>
+                                <th>GL efectivamente pagada o cobrada</th>
+                                <th>{{'observ' | translate}}</th>
+                                <th class="ultimo"></th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td>{{detail.abreviacion_impuesto}}</td>
+                                <td>{{detail.concepto_impuesto}}</td>
+                                <td>
+                                  <select name="txtGeneroAltaServ" id="impuesto_modulo" required class="browser-default" (change)="keyupImpuestoUpdateModulo($event.target);">
+                                    <option value="" disabled selected>{{'opt_select' | translate}}</option>
+                                    <option value="ingresos" [disabled]="detail.modulo == 'ingresos'" [selected]="detail.modulo == 'ingresos'">ingresos</option>
+                                    <option value="egresos" [disabled]="detail.modulo == 'egresos'" [selected]="detail.modulo == 'egresos'">egresos</option>
+                                    <option value="valorhumano" [disabled]="detail.modulo == 'valorhumano'" [selected]="detail.modulo == 'valorhumano'">valor humano</option>
+                                  </select>
+                                </td>
+                                <td>
+                                  <select name="txtGeneroAltaServ" id="impuesto_modulo" required class="browser-default" (change)="keyupImpuestoUpdateNivel($event.target);">
+                                    <option value="" disabled selected>{{'opt_select' | translate}}</option>
+                                    <option value="federal" [disabled]="detail.nivel_aplicacion == 'federal'" [selected]="detail.nivel_aplicacion == 'federal'">federal</option>
+                                    <option value="estatal" [disabled]="detail.nivel_aplicacion == 'estatal'" [selected]="detail.nivel_aplicacion == 'estatal'">estatal</option>
+                                    <option value="local" [disabled]="detail.nivel_aplicacion == 'local'" [selected]="detail.nivel_aplicacion == 'local'">local</option>
+                                    <option value="municipal" [disabled]="detail.nivel_aplicacion == 'municipal'" [selected]="detail.nivel_aplicacion == 'municipal'">municipal</option>
+                                    <option value="otro" [disabled]="detail.nivel_aplicacion == 'otro'" [selected]="detail.nivel_aplicacion == 'otro'">otro</option>
+                                  </select>
+                                </td>
+                                <td>
+                                  <input class="validate" type="text" name="aliasImp" [value]="detail.catalogo_sat" (keyup)="keyupImpuestoUpdateClaveSat($event.target);" (keypress)="onKeyPressNumbers($event);">
+                                </td>
+                                <td>
+                                  <select class="validate" name="tipoSelectImp" style="width: 220px!important;" (change)="keyupImpuestoUpdateTipo($event.target);">
+                                    <option value="" disabled selected>{{'opt_select' | translate}}</option>
+                                    <option value="retenido" [disabled]="detail.tipo_impuesto == 'retenido'" [selected]="detail.tipo_impuesto == 'retenido'">Retenido</option>
+                                    <option value="trasladado" [disabled]="detail.tipo_impuesto == 'trasladado'" [selected]="detail.tipo_impuesto == 'trasladado'">Trasladado</option>
+                                  </select>
+                                </td>
+                                <td>
+                                  <select class="validate" name="subTipoSelectImp" style="width: 220px!important;" (change)="keyupImpuestoUpdateTasacuota($event.target);">
+                                    <option value="" disabled selected>{{'opt_select' | translate}}</option>
+                                    <option value="tasa" [disabled]="detail.calculo == 'tasa'" [selected]="detail.calculo == 'tasa'">Tasa</option>
+                                    <option value="cuota" [disabled]="detail.calculo == 'cuota'" [selected]="detail.calculo == 'cuota'">cuota</option>
+                                  </select>
+                                </td>
+                                <td>
+                                  <div class="col-12 text_area">
+                                    @if (detail.impuesto_importe_simbolo != '' && detail.impuesto_importe_simbolo == '$') {
+                                      <p style="width: 15px!important;">$</p>
+                                    }
+                                    <input id="detailimppassoc_importe" class="validate" type="number" [disabled]="impuesto_tasa_cuota == ''" [value]="detail.importe"
+                                      (keyup)="keyupImpuestoUpdateImporte($event.target);" (keypress)="onKeyPressNumbers($event);">
+                                    @if (detail.impuesto_importe_simbolo != '' && detail.impuesto_importe_simbolo == '%') {
+                                      <p style="width: 15px!important;">%</p>
+                                    }
+                                  </div>
+                                </td>
+                                <td>
+                                  <input class="validate" type="number" [disabled]="detail.calculo_respaldo == 'tasa'" [value]="detail.tipo_cambio" 
+                                    (keyup)="keyupImpuestoUpdateTipoCambio($event.target);" (keypress)="onKeyPressNumbers($event);">
+                                </td>
+                                <td>
+                                  <datalist id="dataListMonedaNewCotizacion">
+                                    @for (mon of catalogo_monedas; track $index) {
+                                      <option [value]="mon.moneda">{{"código "+mon.codigo+", "+mon.decimales+" decimales"}}</option>
+                                    }
+                                  </datalist>
+                                  <input class="validate" list="dataListMonedaNewCotizacion" type="text" [disabled]="detail.calculo_respaldo == 'tasa'" 
+                                    (keypress)="onKeyPressAlfa($event);" (change)="keyupImpuestoUpdateMoneda($event.target);">
+                                </td>
+                                <td>
+                                  <select class="validate" name="subTipoSelectImp" style="width: 220px!important;" (change)="keyupImpuestoUpdateAplicaSobre($event.target);">
+                                    <option value="" disabled selected>{{'opt_select' | translate}}</option>
+                                    <option value="preciobruto" [disabled]="detail.base_aplicable == 'preciobruto'" [selected]="detail.base_aplicable == 'preciobruto'">Precio bruto</option>
+                                    <option value="subtotal" [disabled]="detail.base_aplicable == 'subtotal'" [selected]="detail.base_aplicable == 'subtotal'">Subtotal</option>
+                                  </select>
+                                </td>
+                                <td>
+                                  <div class="form-check form-switch form-check-reverse switch_primario">
+                                    <label class="form-check-label" for="flexSwitchCheckReverse">No</label>
+                                    <input class="form-check-input selectSwitchProvProd" name="selectImpProd" type="checkbox" (click)="keyupImpuestoUpdateDecideDesglose($event.target);">
+                                    <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                                  </div>
+                                </td>
+                                <td>
+                                  <input class="validate" type="text" name="aliasImp" [value]="detail.gl_por_pagarcobrar" (keyup)="keyupImpuestoUpdateGLxPagarOCobrar($event.target);">
+                                </td>
+                                <td>
+                                  <input class="validate" type="text" name="aliasImp" [value]="detail.gl_pagada_o_cobrada" (keyup)="keyupImpuestoUpdateGLEfectivamentePagadaOCobrada($event.target);">
+                                </td>
+                                <td>
+                                  <div class="col-12 text_area">
+                                    <textarea class="validate" name="large_descript" style="width: 100% !important;height: 50px !important;min-width: 300px !important;"
+                                      (keypress)="onKeyPressAlfa($event);" (keyup)="keyupImpuestoUpdateObsevaciones($event.target);">{{detail.observaciones}}</textarea>
+                                  </div>
+                                </td>
+                                <td>
+                                  @if (!detail.bool_impuestos_update) {
+                                    <a class="btn btn_extend text-bg-success rounded-3 disabled" disabled aria-disabled="true">
+                                      <i class="fa-solid fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+                                    </a>
+                                  }
+                                  @else {
+                                    <a class="btn btn_extend text-bg-success rounded-3" (click)="actualizaImpuesto();">
+                                      <i class="fa-solid fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+                                    </a>
+                                  }
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      }
+                    </div>
+                    <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="modal fade bd-example-modal-lg" id="modalImpuestosEliminados" tabindex="-1" role="dialog" aria-labelledby="modalImpuestosEliminadosLabel" aria-hidden="true">
+                <div class="modal-dialog modal-fullscreen" style="margin: 1%;width: 98%!important;">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="modalImpuestosEliminadosLabel">INFORMACI&Oacute;N DE IMPUESTOS ELIMINADOS</h1>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: transparent !important;"></button>
+                    </div>
+                    <div class="modal-body">
+                      @if (view_lista_impuestos_delete) {
+                        <div class="col-12">
+                          <table id="list_table_deleted_impuestos_assoc" class="display nowrap mdl-data-table white striped centered" style="width:100%!important;margin:0!important;">
+                            <thead>
+                              <tr>
+                                <th>Impuesto</th>
+                                <th>Tipo</th>
+                                <th>Tasa o cuota</th>
+                                <th>Importe del impuesto</th>
+                                <th class="pfolio">{{'f_delete' | translate}}</th>
+                                <th class="ultimo"></th>
+                                <th class="ultimo"></th>
+                            </thead>
+                            <tbody>
+                              @for (impDeleted of impuestosDeletedArray; track $index) {
+                                <tr>
+                                  <td>{{impDeleted.folio_impuesto+" "+impDeleted.alias}}</td>
+                                  <td>{{impDeleted.ret_tras}}</td>
+                                  <td>{{impDeleted.calculo}}</td>
+                                  <td>{{impDeleted.txtimporte}}</td>
+                                  <td>{{impDeleted.fecha_delete}}</td>
+                                  <td>
+                                    <a class="btn btn_extend text-bg-success rounded-3" (click)="restauraImpuesto(impDeleted.token_catalogo_impuesto);">
+                                      <i class="fa-solid fa-trash-arrow-up"></i>&nbsp;{{'restore_row' | translate}}
+                                    </a>
+                                  </td>
+                                  <td>
+                                    <a class="btn btn_extend text-bg-danger rounded-3" (click)="eliminaPermImpuesto(impDeleted.token_catalogo_impuesto);">
+                                      <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                                    </a>
+                                  </td>
+                                </tr>
+                              }
+                            </tbody>
+                          </table>
+                        </div>
+                      }
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+    <app-footer-inside></app-footer-inside>
+  </div>
+</div>

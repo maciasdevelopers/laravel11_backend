@@ -1,0 +1,67 @@
+<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco" #vContent>
+	<div class="contenido">
+    <app-loader></app-loader>
+		<nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+		<div class="contenidoPagina">
+			<div class="listas_ps revanecer">
+				<div id="listaServicios" class="lista-div lista-divNoFlex row">
+					@for (emp of empresa_detail_info; track $index) {
+						<div class="col-12 row">
+							<div class="col-12 avatar">
+								<p-avatar [image]="emp.logotypo" size="xlarge" shape="circle" />
+								<h4>{{emp.company_name}}</h4>
+							</div>
+							<!--<div class="col-12 explain">
+								<h6 class="title">{{'company_name' | translate}}</h6>
+								<h6 class="content">{{emp.empresa_folio+" "+emp.company_name}}</h6>
+							</div>-->
+							<div class="col-12 explain">
+								<h6 class="title">Abrev.</h6>
+								<h6 class="content">{{emp.name_abrev}}</h6>
+							</div>
+							<div class="col-12 explain">
+								<h6 class="title">Zona horaria</h6>
+								<h6 class="content" style="text-transform: none;">{{emp.zona_horaria}}</h6>
+							</div>
+							<div class="col-12 explain">
+								<h6 class="title">{{'rfc_generico' | translate}}</h6>
+								<h6 class="content">{{emp.rfc_generico}}</h6>
+							</div>
+							<div class="col-12 explain">
+								<h6 class="title">{{'rfc_company' | translate}}</h6>
+								<h6 class="content">{{emp.rfc_company}}</h6>
+							</div>
+							<div class="col-12 explain">
+								<h6 class="title">{{'tax_id_company' | translate}}</h6>
+								<h6 class="content">{{emp.tax_id_company}}</h6>
+							</div>
+							<div class="col-12 explain">
+								<h6 class="title">{{'reg_fis' | translate}}</h6>
+								<h6 class="content">{{emp.emp_regimen_fiscal_descripcion}}</h6>
+							</div>
+							<p-divider/>
+							<div class="col-12 row" style="padding:0!important;">
+								<div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain"><h6 class="title">¿Desea habilitar el registro de centros de trabajo?</h6></div>
+								<div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+									<label class="form-check-label" for="flexSwitchCheckReverse">No</label>
+									<input class="form-check-input" type="checkbox" (click)="habilitar_prov_para_trab_centros(emp.empresa_token,$event.target);" [checked]="emp.emp_habilita_centros_de_trabajo">
+									<label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+								</div>
+							</div>
+							<p-divider/>
+							<div class="col-12 explain">
+								<h6 class="title">fecha de nacimiento o constituci&oacute;n</h6>
+								<h6 class="content">{{emp.fecha_nac_const}}</h6>
+							</div>
+							<div class="col-12 explain">
+								<h6 class="title">{{'mon_name' | translate}}</h6>
+								<h6 class="content">{{emp.moneda_code}}</h6>
+							</div>
+						</div>
+					}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,143 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-12">
+      <!-- Loading -->
+      <div *ngIf="loading" class="text-center">
+        <i class="pi pi-spin pi-spinner" style="font-size: 2rem;"></i>
+        <p>Cargando asiento contable...</p>
+      </div>
+
+      <!-- Contenido del asiento -->
+      <div *ngIf="!loading && asiento">
+        <div class="card mb-3">
+          <div class="card-header">
+            <h5 class="card-title">Consulta de Asiento Contable</h5>
+          </div>
+          <div class="card-body">
+            <!-- Botones de acción -->
+            <div class="row mb-3">
+              <div class="col-md-12">
+                <button pButton type="button" label="Regresar" icon="pi pi-arrow-left" class="p-button-secondary" (click)="regresar()"></button>
+                <button pButton type="button" label="Imprimir" icon="pi pi-print" class="p-button-info" (click)="imprimir()"></button>
+              </div>
+            </div>
+
+            <!-- Datos generales -->
+            <div class="row mb-3">
+              <div class="col-md-3">
+                <label><strong>Fecha:</strong></label>
+                <p>{{ asiento.fecha }}</p>
+              </div>
+              <div class="col-md-3">
+                <label><strong>Tipo de Póliza:</strong></label>
+                <p>{{ asiento.tipo_poliza }}</p>
+              </div>
+              <div class="col-md-3">
+                <label><strong>Folio:</strong></label>
+                <p>{{ asiento.folio }}</p>
+              </div>
+              <div class="col-md-3">
+                <label><strong>Estado:</strong></label>
+                <p-tag [severity]="getSeverityEstado(asiento.estado)" [value]="asiento.estado"></p-tag>
+              </div>
+            </div>
+
+            <!-- Concepto -->
+            <div class="row mb-3">
+              <div class="col-md-12">
+                <label><strong>Concepto:</strong></label>
+                <p>{{ asiento.concepto }}</p>
+              </div>
+            </div>
+
+            <!-- Observaciones -->
+            <div class="row mb-3" *ngIf="asiento.observaciones">
+              <div class="col-md-12">
+                <label><strong>Observaciones:</strong></label>
+                <p>{{ asiento.observaciones }}</p>
+              </div>
+            </div>
+
+            <!-- Totales -->
+            <div class="row mb-3">
+              <div class="col-md-12">
+                <div class="alert alert-info">
+                  <div class="row">
+                    <div class="col-md-3">
+                      <strong>Total Débito:</strong> {{ asiento.total_debito | number:'1.2-2' }}
+                    </div>
+                    <div class="col-md-3">
+                      <strong>Total Crédito:</strong> {{ asiento.total_credito | number:'1.2-2' }}
+                    </div>
+                    <div class="col-md-3">
+                      <strong>Diferencia:</strong> 
+                      <span [class]="asiento.diferencia == 0 ? 'text-success' : 'text-danger'">
+                        {{ asiento.diferencia | number:'1.2-2' }}
+                      </span>
+                    </div>
+                    <div class="col-md-3">
+                      <strong>Total de Movimientos:</strong> {{ movimientos.length }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tabla de movimientos -->
+            <div class="row">
+              <div class="col-md-12">
+                <div class="card">
+                  <div class="card-header">
+                    <h6 class="card-title">Detalle de Movimientos</h6>
+                  </div>
+                  <div class="card-body">
+                    <p-table [value]="movimientos" responsiveLayout="scroll">
+                      <ng-template pTemplate="header">
+                        <tr>
+                          <th>#</th>
+                          <th>Cuenta Contable</th>
+                          <th>Tipo</th>
+                          <th>Monto</th>
+                          <th>Concepto</th>
+                        </tr>
+                      </ng-template>
+                      <ng-template pTemplate="body" let-movimiento let-i="rowIndex">
+                        <tr>
+                          <td>{{ i + 1 }}</td>
+                          <td>
+                            <strong>{{ movimiento.numero_cuenta }}</strong><br>
+                            {{ movimiento.nombre_cuenta }}
+                          </td>
+                          <td>
+                            <p-tag [severity]="getSeverityTipo(movimiento.tipo_movimiento)" 
+                                   [value]="movimiento.tipo_movimiento"></p-tag>
+                          </td>
+                          <td>{{ movimiento.monto | number:'1.2-2' }}</td>
+                          <td>{{ movimiento.concepto || '-' }}</td>
+                        </tr>
+                      </ng-template>
+                      <ng-template pTemplate="footer">
+                        <tr>
+                          <td colspan="3" class="text-right"><strong>Totales:</strong></td>
+                          <td colspan="2">
+                            <strong>Débito: {{ asiento.total_debito | number:'1.2-2' }}</strong><br>
+                            <strong>Crédito: {{ asiento.total_credito | number:'1.2-2' }}</strong>
+                          </td>
+                        </tr>
+                      </ng-template>
+                    </p-table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mensaje cuando no hay datos -->
+      <div *ngIf="!loading && !asiento" class="alert alert-warning text-center">
+        No se encontró información del asiento contable
+      </div>
+    </div>
+  </div>
+</div>

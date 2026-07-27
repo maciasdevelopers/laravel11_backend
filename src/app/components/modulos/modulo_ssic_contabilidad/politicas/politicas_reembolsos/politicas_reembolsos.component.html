@@ -1,0 +1,88 @@
+<div class="col-12" style="/* height: -webkit-fill-available; */overflow: overlay;">
+	<div class="card card_white" style="height: 100%;">
+		<div class="card-content" style="height: 100%;">
+			<span class="card-title" style="margin-bottom: 5px;font-weight: bold;text-transform: capitalize;color:#353535;">{{'politic_reem' | translate}}</span>
+			<div style="width: 100%!important;display: flex;flex-wrap: wrap;justify-content: center;">
+				<div class="col-12">
+					<div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2 row">
+						<a style="color: white;font-family: roboto_cr;border-radius: 25px;width: 100%!important;" (click)="lista_politicas_cont_reem();" class="btn btnGuardar btnRow btnBlueHead bg-blue-600">&nbsp;{{'list_updt' | translate}} 
+						<i class="fa-solid fa-rotate" style="margin-left: 5px;"></i>
+						</a>
+					</div>
+					<div class="col-12 col-sm-9 col-md-3 col-lg-20col-xl-2 col-xxl-20"></div>
+				</div>
+				<div class="col-12" *ngIf="bool_list_reem == true">
+					<table id="cont_table_politics_reem" class="display nowrap white centered" style="width:100%!important;margin:0!important;">
+						<thead>
+							<tr>
+								<th>folio</th>
+								<th>{{'concept' | translate}}</th>
+								<th class="ultimo">{{'file' | translate}}</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr *ngFor="let pol_reem of list_politicas_cont_reem">
+							<td>Alvin</td>
+							<td>Eclair</td>
+							<td><a class="btn waves-effect waves-light blue darken-1"><i class="fa-solid fa-file"></i></a></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="col-12" style="/* height: -webkit-fill-available; */margin-top:10px;overflow: overlay;">
+	<div class="card card_white">
+		<div class="card-content" style="height: 100%;display: flex;flex-wrap: wrap;align-items: center;">
+			<span class="card-title" style="margin-bottom: 5px;font-weight: bold;text-transform: capitalize;color:#353535;">{{'politic_reem' | translate}}</span>
+			<div class="col-12 input-field text_area_field">
+				<textarea name="large_descript" id="concepto_comi_polit" class="validate" (keyup)="keyupConceptoPoliticaReem($event.target);"></textarea>
+				<label class="activeInput">{{'concept' | translate}}</label>
+			</div>
+
+			<div class="col-12 field_file_drop">
+				<ngx-file-drop dropZoneLabel="Drop files here" (onFileDrop)="droppedPolitReem($event)" (onFileOver)="fileOverPolitReem($event)" (onFileLeave)="fileLeavePolitReem($event)">
+					<ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
+						<a class="btn btn_load_file" type="button" style="color: #0782d0 !important;" (click)="openFileSelector()">
+							{{'load_files' | translate}} / {{'browse_files' | translate}}
+						</a>
+					</ng-template>
+				</ngx-file-drop>
+				<table class="white centered" style="margin-top: 5px!important; width: 100% !important;">
+					<thead>
+						<tr>
+							<th>{{'file' | translate}}</th>
+							<th class="ultimo"></th>
+						</tr>
+					</thead>
+					<tbody class="upload-name-style" *ngIf="new_politica_reem_files.length != 0">
+						<tr *ngFor="let item of new_politica_reem_files; index as i">
+							<td><strong>{{ item.relativePath }}</strong></td>
+							<td class="ultimo">
+								<a class="btn btn_extend text-bg-danger rounded-3"
+									(click)="deleteAnexosPolitReem(i);">
+									<i class="fa-solid fa-xmark"></i>
+								</a>
+							</td>
+						</tr>
+					</tbody>
+					<tbody *ngIf="new_politica_reem_files.length == 0">
+						<tr><td colspan="2">{{'no_rows' | translate}}</td></tr>
+					</tbody>
+				</table>
+			</div>
+
+			<div class="col-12">
+        <div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+        <div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+          <a *ngIf="new_politica_reem_concepto != '' && new_politica_reem_anexos.length != 0" class="btn btnGuardar btnSaveRow waves-light" (click)="onSavePoliticaReem();"><i class="fa-regular fa-floppy-disk"></i> {{'save' | translate}}</a>
+        </div>
+        <div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+			</div>
+
+		</div>
+	</div>
+</div>

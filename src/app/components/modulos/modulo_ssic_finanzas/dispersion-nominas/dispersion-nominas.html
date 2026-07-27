@@ -1,0 +1,53 @@
+<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco" #vContent>
+  <div class="contenido">
+    <app-loader></app-loader>
+    <nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+    <main class="contenidoPagina">
+      <div class="listas_ps revanecer">
+        <div class="lista-div lista-divNoFlex row">
+          <h4>{{'ordens_nominadisper' | translate}}</h4>
+          <div class="col-12" style="padding: 0;">
+            <div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+              <a class="btn btnGuardar btnRow btnBlueHead bg-blue-600"><!-- (click)="lista_gral_dispersion_mes();"-->
+                <i class="fa-solid fa-rotate" style="margin-left: 5px;"></i>&nbsp;{{'list_updt' | translate}}
+              </a>
+            </div>
+            <div class="col-12 col-sm-9 col-md-9 col-lg-10 col-xl-10 col-xxl-10"></div>
+          </div>
+          <p-tabs value="0" (valueChange)="cambioDeSeccion($event)" scrollable>
+            <p-tablist>
+              <p-tab value="0">{{'list_general' | translate}}</p-tab>
+              <p-tab value="1">{{'list_pend' | translate}}</p-tab>
+              <p-tab value="2">{{'list_lib' | translate}}</p-tab>
+              <p-tab value="3">{{'list_conc' | translate}}</p-tab>
+              <p-tab value="4">{{'pag_list' | translate}}</p-tab>
+              <p-tab value="5">trabajadores</p-tab>
+            </p-tablist>
+            <p-tabpanels>
+              <p-tabpanel value="0">
+                <fnzs_dispersion_nominas_general></fnzs_dispersion_nominas_general>
+              </p-tabpanel>
+              <p-tabpanel value="1">
+                <fnzs_dispersion_nominas_pendientes></fnzs_dispersion_nominas_pendientes>
+              </p-tabpanel>
+              <p-tabpanel value="2">
+                <fnzs_dispersion_nominas_liberadas></fnzs_dispersion_nominas_liberadas>
+              </p-tabpanel>
+              <p-tabpanel value="3">
+                <fnzs_dispersion_nominas_concluidas></fnzs_dispersion_nominas_concluidas>
+              </p-tabpanel>
+              <p-tabpanel value="4">
+                <fnzs_dispersion_nominas_pagos></fnzs_dispersion_nominas_pagos>
+              </p-tabpanel>
+              <p-tabpanel value="5">
+                <fnzs_dispersion_nominas_trabajadores></fnzs_dispersion_nominas_trabajadores>
+              </p-tabpanel>
+            </p-tabpanels>
+          </p-tabs>
+        </div>
+      </div>
+    </main>
+    <app-footer-inside></app-footer-inside>
+  </div>
+</div>

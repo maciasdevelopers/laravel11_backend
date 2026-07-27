@@ -1,0 +1,91 @@
+.reqPend a,
+.cotPend a{
+    margin-top: 15px;
+    width: 100%!important;
+    background-color: #353535!important;
+    border-radius: 8px!important;
+}
+
+.reqPend a p,
+.cotPend a p{
+    margin: 0;
+    width: 90%!important;
+}
+
+.reqPend a span,
+.cotPend a span{
+    width: 10%!important;
+    font-weight: bold;
+    border-radius: 0 8px 8px 0;
+}
+
+.reqPend a span.realizado,
+.cotPend a span.realizado{
+    color: #353535!important;
+}
+
+.radioFact{
+    justify-content: center!important;
+}
+
+.filefact{
+    display: flex;
+    justify-content: space-between;
+}
+
+.filefact .input-field{
+    margin: 0;
+    width: 75%!important;
+}
+
+.filefact .input-field .file-path-wrapper{
+    width: 100%!important;
+}
+
+.titFoli{
+    width: 45%!important;
+}
+
+.btnCardCompra{
+    width: 43px!important;
+}
+
+.divTablaPS{
+    width: 100%;
+    max-height: 250px;
+    overflow: overlay;
+}
+
+.divWithModal{
+    margin-block: 10px;
+    padding: 0!important;
+    margin-top: 5px;
+}
+
+.btnwithAdd{
+    margin-block: 15px!important;  
+}
+
+.div-totalcompras .total div.titulo{
+    width: 60%!important;
+}
+
+.div-totalcompras .total div.registro{
+    width: 40%!important;
+}
+
+.div-totalcompras .total div p{
+    width: 100%!important;
+}
+
+.div-totalcompras .total div.registro p{
+    color: #353535;
+}
+
+.tituloCompra{
+    width: 90%!important;
+}
+
+.divWithMargin{
+    margin-block: 15px;
+}

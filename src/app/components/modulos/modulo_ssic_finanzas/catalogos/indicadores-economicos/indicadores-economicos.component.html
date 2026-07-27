@@ -1,0 +1,524 @@
+<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco" #vContent>
+	<div class="contenido">
+		<app-loader></app-loader>
+		<nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+		<div class="contenidoPagina">
+			<div class="listas_ps">
+				<div class="lista-div lista-divNoFlex">
+					<h4>{{'fnzs_ind_eco' | translate}}</h4>
+
+          <!--<div class="col-12 row">
+            <div class="col-12 col-sm-8 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+            <div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+              <textarea [(ngModel)]="chat_clave" placeholder="Escribe tu mensaje aquí..."></textarea>
+              <a (click)="enviaChatGPT()">Enviar</a>
+              <div *ngIf="chat_respuestas.length > 0" class="response">
+                <strong>ChatGPT:</strong>
+                <div *ngFor="let mgpt of chat_respuestas" class="response">
+                  <strong>ChatGPT:</strong>{{mgpt}}
+                </div>
+              </div>
+            </div>
+          </div>-->
+
+          <div class="col-12 row">
+            <div class="col-12 col-sm-1 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+            <div class="col-12 col-sm-10 col-md-3 col-lg-20col-xl-2 col-xxl-20 row">
+              <div class="tarjeta_portal col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                <div class="card card_indicador_main" style="margin: 0;border-radius: 8px;">
+                  <div class="card-image">
+                    <img src="./assets/images/indicadores/inpc.png" style="border-radius: 8px 8px 0 0;">
+                    <a class="btn btn_extend bg-indigo-600" data-bs-toggle="modal" data-bs-target="#modalIndicadoresInpc" (click)="identidad.jerarquia == 'P' && ver_indicador_inpc();">
+                      <i class="fa-regular fa-eye" style="font-size: 1rem;"></i>
+                    </a>
+                  </div>
+                  <div class="card-content">
+                    <p class="header">INPC</p>
+                    <p class="body">{{inpc_text}}</p>
+                  </div>
+                </div>
+              </div>
+              <div class="tarjeta_portal col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                <div class="card card_indicador_main" style="margin: 0;border-radius: 8px;">
+                  <div class="card-image">
+                    <img src="./assets/images/indicadores/recargos.png" style="border-radius: 8px 8px 0 0;">
+                    <a class="btn btn_extend bg-indigo-600" data-bs-toggle="modal" data-bs-target="#modalIndicadoresTasaRecargos"><i class="fa-regular fa-eye" style="font-size: 1rem;"></i></a>
+                  </div>
+                  <div class="card-content">
+                    <p class="header">Tasa de recargos</p>
+                    <p class="body">{{tasa_recargos_text}}</p>
+                  </div>
+                </div>
+              </div>
+              <div class="tarjeta_portal col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                <div class="card card_indicador_main" style="margin: 0;border-radius: 8px;">
+                  <div class="card-image">
+                    <img src="./assets/images/indicadores/tipo_cambio.png" style="border-radius: 8px 8px 0 0;">
+                    <a class="btn btn_extend bg-indigo-600" data-bs-toggle="modal" data-bs-target="#modalIndicadoresTipoCambioMXNUSA"><i class="fa-regular fa-eye" style="font-size: 1rem;"></i></a>
+                  </div>
+                  <div class="card-content">
+                    <p class="header">Tipo de cambio peso mexicano / dolar estadounidense (pagos)</p>
+                    <p class="body">{{tipo_cmb_pdp_text}}</p>
+                  </div>
+                </div>
+              </div>
+              <div class="tarjeta_portal col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                <div class="card card_indicador_main" style="margin: 0;border-radius: 8px;">
+                  <div class="card-image">
+                    <img src="./assets/images/indicadores/salario_minimo.png" style="border-radius: 8px 8px 0 0;">
+                    <a class="btn btn_extend bg-indigo-600" data-bs-toggle="modal" data-bs-target="#modalIndicadoresSalMinGral"><i class="fa-regular fa-eye" style="font-size: 1rem;"></i></a>
+                  </div>
+                  <div class="card-content">
+                    <p class="header">Salario m&iacute;nimo general</p>
+                    <p class="body">{{salario_minimo_text}}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-12 col-sm-1 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+          </div>
+
+          <div class="col-12 row">
+            <div class="col-12 col-sm-1 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+            <div class="col-12 col-sm-10 col-md-3 col-lg-20col-xl-2 col-xxl-20 row">
+              <div class="tarjeta_portal col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                <div class="card card_indicador_main" style="margin: 0;border-radius: 8px;">
+                  <div class="card-image">
+                    <img src="./assets/images/indicadores/salario_min_front.png" style="border-radius: 8px 8px 0 0;">
+                    <a class="btn btn_extend bg-indigo-600" data-bs-toggle="modal" data-bs-target="#modalIndicadoresSalFront"><i class="fa-regular fa-eye" style="font-size: 1rem;"></i></a>
+                  </div>
+                  <div class="card-content">
+                    <p class="header">Salario m&iacute;nimo fronterizo</p>
+                    <p class="body">{{salario_min_fronterizo_text}}</p>
+                  </div>
+                </div>
+              </div>
+              <div class="tarjeta_portal col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                <div class="card card_indicador_main" style="margin: 0;border-radius: 8px;">
+                  <div class="card-image">
+                    <img src="./assets/images/indicadores/uma.png" style="border-radius: 8px 8px 0 0;">
+                    <a class="btn btn_extend bg-indigo-600" data-bs-toggle="modal" data-bs-target="#modalIndicadoresUMA"><i class="fa-regular fa-eye" style="font-size: 1rem;"></i></a>
+                  </div>
+                  <div class="card-content">
+                    <p class="header">UMA</p>
+                    <p class="body">{{uma_text}}</p>
+                  </div>
+                </div>
+              </div>
+              <div class="tarjeta_portal col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                <div class="card card_indicador_main" style="margin: 0;border-radius: 8px;">
+                  <div class="card-image">
+                    <img src="./assets/images/indicadores/udi.png" style="border-radius: 8px 8px 0 0;">
+                    <a class="btn btn_extend bg-indigo-600" data-bs-toggle="modal" data-bs-target="#modalIndicadoresUDI"><i class="fa-regular fa-eye" style="font-size: 1rem;"></i></a>
+                  </div>
+                  <div class="card-content">
+                    <p class="header">UDI</p>
+                    <p class="body">{{udi_text}}</p>
+                  </div>
+                </div>
+              </div>
+              <div class="tarjeta_portal col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                <div class="card card_indicador_main" style="margin: 0;border-radius: 8px;">
+                  <div class="card-image">
+                    <img src="./assets/images/indicadores/tiie.png" style="border-radius: 8px 8px 0 0;">
+                    <a class="btn btn_extend bg-indigo-600" data-bs-toggle="modal" data-bs-target="#modalIndicadoresTIIE"><i class="fa-regular fa-eye" style="font-size: 1rem;"></i></a>
+                  </div>
+                  <div class="card-content">
+                    <p class="header">TIIE</p>
+                    <p class="body">{{tiie_text}}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-12 col-sm-1 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+          </div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="modalIndicadoresInpc" tabindex="-1" role="dialog" aria-labelledby="modalIndicadoresInpcLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="modalIndicadoresInpcLabel">INPC</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: transparent !important;"></button>
+      </div>
+      <div class="modal-body">
+        <div class="col-12 row">
+          <div class="col-12 row">
+            <div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+            <div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+              <input class="validate" id="txt_indicador_inpc" (keyup)="keyup_indicador_inpc($event.target);" placeholder="inpc">
+            </div>
+            <div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+          </div>
+  
+          <div class="col-12 row">
+            <div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+            <div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+              <button class="btn btnGuardar btnRow waves-effect waves-light btnGuardarCompra green darken-2" [disabled]="inpc_save == ''" (click)="indicador_inpc_to_save()">{{'save' | translate}}</button>
+            </div>
+            <div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+          </div>
+        </div>
+  
+        <div class="col-12 row" style="padding: 10px;">
+          <table id="vhum_table_lista_reem_general" class="display nowrap white centered" style="width:100%!important;margin:0!important;">
+            <thead>
+              <tr>
+                <th>folio</th>
+                <th>solicitudes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let rowi of inpc_list">
+                <td>{{rowi.fecha}}</td>
+                <td>{{rowi.valor}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer"></div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modalIndicadoresTasaRecargos" tabindex="-1" role="dialog" aria-labelledby="modalIndicadoresTasaRecargosLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="modalIndicadoresTasaRecargosLabel">Tasa de recargos</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: transparent !important;"></button>
+      </div>
+      <div class="modal-body">
+        <div class="col-12 row">
+          <div class="col-12 row">
+            <div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+            <div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+              <input class="validate" id="txt_indicador_inpc" (keyup)="keyup_indicador_inpc($event.target);" placeholder="inpc">
+            </div>
+            <div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+          </div>
+  
+          <div class="col-12 row">
+            <div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+            <div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+              <button class="btn btnGuardar btnRow waves-effect waves-light btnGuardarCompra green darken-2" [disabled]="inpc_save == ''" (click)="indicador_inpc_to_save()">{{'save' | translate}}</button>
+            </div>
+            <div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+          </div>
+        </div>
+  
+        <div class="col-12 row" style="padding: 10px;">
+          <table id="vhum_table_lista_reem_general" class="display nowrap white centered" style="width:100%!important;margin:0!important;">
+            <thead>
+              <tr>
+                <th>folio</th>
+                <th>solicitudes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let rowi of inpc_list">
+                <td>{{rowi.fecha}}</td>
+                <td>{{rowi.valor}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer"></div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modalIndicadoresTipoCambioMXNUSA" tabindex="-1" role="dialog" aria-labelledby="modalIndicadoresTipoCambioMXNUSALabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="modalIndicadoresTipoCambioMXNUSALabel">Tipo de cambio peso mexicano / dolar estadounidense (pagos)</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: transparent !important;"></button>
+      </div>
+      <div class="modal-body">
+        <div class="col-12 row">
+          <div class="col-12 row">
+            <div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+            <div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+              <input class="validate" id="txt_indicador_inpc" (keyup)="keyup_indicador_inpc($event.target);" placeholder="inpc">
+            </div>
+            <div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+          </div>
+  
+          <div class="col-12 row">
+            <div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+            <div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+              <button class="btn btnGuardar btnRow waves-effect waves-light btnGuardarCompra green darken-2" [disabled]="inpc_save == ''" (click)="indicador_inpc_to_save()">{{'save' | translate}}</button>
+            </div>
+            <div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+          </div>
+        </div>
+  
+        <div class="col-12 row" style="padding: 10px;">
+          <table id="vhum_table_lista_reem_general" class="display nowrap white centered" style="width:100%!important;margin:0!important;">
+            <thead>
+              <tr>
+                <th>folio</th>
+                <th>solicitudes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let rowi of inpc_list">
+                <td>{{rowi.fecha}}</td>
+                <td>{{rowi.valor}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer"></div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modalIndicadoresSalMinGral" tabindex="-1" role="dialog" aria-labelledby="modalIndicadoresSalMinGralLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="modalIndicadoresSalMinGralLabel">Salario m&iacute;nimo general</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: transparent !important;"></button>
+      </div>
+      <div class="modal-body">
+        <div class="col-12 row">
+          <div class="col-12 row">
+            <div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+            <div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+              <input class="validate" id="txt_indicador_inpc" (keyup)="keyup_indicador_inpc($event.target);" placeholder="inpc">
+            </div>
+            <div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+          </div>
+  
+          <div class="col-12 row">
+            <div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+            <div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+              <button class="btn btnGuardar btnRow waves-effect waves-light btnGuardarCompra green darken-2" [disabled]="inpc_save == ''" (click)="indicador_inpc_to_save()">{{'save' | translate}}</button>
+            </div>
+            <div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+          </div>
+        </div>
+  
+        <div class="col-12 row" style="padding: 10px;">
+          <table id="vhum_table_lista_reem_general" class="display nowrap white centered" style="width:100%!important;margin:0!important;">
+            <thead>
+              <tr>
+                <th>folio</th>
+                <th>solicitudes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let rowi of inpc_list">
+                <td>{{rowi.fecha}}</td>
+                <td>{{rowi.valor}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer"></div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modalIndicadoresSalFront" tabindex="-1" role="dialog" aria-labelledby="modalIndicadoresSalFrontLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="modalIndicadoresSalFrontLabel">Salario m&iacute;nimo fronterizo</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: transparent !important;"></button>
+      </div>
+      <div class="modal-body">
+        <div class="col-12 row">
+          <div class="col-12 row">
+            <div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+            <div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+              <input class="validate" id="txt_indicador_inpc" (keyup)="keyup_indicador_inpc($event.target);" placeholder="inpc">
+            </div>
+            <div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+          </div>
+  
+          <div class="col-12 row">
+            <div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+            <div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+              <button class="btn btnGuardar btnRow waves-effect waves-light btnGuardarCompra green darken-2" [disabled]="inpc_save == ''" (click)="indicador_inpc_to_save()">{{'save' | translate}}</button>
+            </div>
+            <div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+          </div>
+        </div>
+  
+        <div class="col-12 row" style="padding: 10px;">
+          <table id="vhum_table_lista_reem_general" class="display nowrap white centered" style="width:100%!important;margin:0!important;">
+            <thead>
+              <tr>
+                <th>folio</th>
+                <th>solicitudes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let rowi of inpc_list">
+                <td>{{rowi.fecha}}</td>
+                <td>{{rowi.valor}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer"></div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modalIndicadoresUMA" tabindex="-1" role="dialog" aria-labelledby="modalIndicadoresUMALabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="modalIndicadoresUMALabel">UMA</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: transparent !important;"></button>
+      </div>
+      <div class="modal-body">
+        <div class="col-12 row">
+          <div class="col-12 row">
+            <div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+            <div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+              <input class="validate" id="txt_indicador_inpc" (keyup)="keyup_indicador_inpc($event.target);" placeholder="inpc">
+            </div>
+            <div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+          </div>
+  
+          <div class="col-12 row">
+            <div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+            <div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+              <button class="btn btnGuardar btnRow waves-effect waves-light btnGuardarCompra green darken-2" [disabled]="inpc_save == ''" (click)="indicador_inpc_to_save()">{{'save' | translate}}</button>
+            </div>
+            <div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+          </div>
+        </div>
+  
+        <div class="col-12 row" style="padding: 10px;">
+          <table id="vhum_table_lista_reem_general" class="display nowrap white centered" style="width:100%!important;margin:0!important;">
+            <thead>
+              <tr>
+                <th>folio</th>
+                <th>solicitudes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let rowi of inpc_list">
+                <td>{{rowi.fecha}}</td>
+                <td>{{rowi.valor}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer"></div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modalIndicadoresUDI" tabindex="-1" role="dialog" aria-labelledby="modalIndicadoresUDILabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="modalIndicadoresUDILabel">UDI</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: transparent !important;"></button>
+      </div>
+      <div class="modal-body">
+        <div class="col-12 row">
+          <div class="col-12 row">
+            <div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+            <div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+              <input class="validate" id="txt_indicador_inpc" (keyup)="keyup_indicador_inpc($event.target);" placeholder="inpc">
+            </div>
+            <div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+          </div>
+  
+          <div class="col-12 row">
+            <div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+            <div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+              <button class="btn btnGuardar btnRow waves-effect waves-light btnGuardarCompra green darken-2" [disabled]="inpc_save == ''" (click)="indicador_inpc_to_save()">{{'save' | translate}}</button>
+            </div>
+            <div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+          </div>
+        </div>
+  
+        <div class="col-12 row" style="padding: 10px;">
+          <table id="vhum_table_lista_reem_general" class="display nowrap white centered" style="width:100%!important;margin:0!important;">
+            <thead>
+              <tr>
+                <th>folio</th>
+                <th>solicitudes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let rowi of inpc_list">
+                <td>{{rowi.fecha}}</td>
+                <td>{{rowi.valor}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer"></div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modalIndicadoresTIIE" tabindex="-1" role="dialog" aria-labelledby="modalIndicadoresTIIELabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="modalIndicadoresTIIELabel">TIIE</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: transparent !important;"></button>
+      </div>
+      <div class="modal-body">
+        <div class="col-12 row">
+          <div class="col-12 row">
+            <div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+            <div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+              <input class="validate" id="txt_indicador_inpc" (keyup)="keyup_indicador_inpc($event.target);" placeholder="inpc">
+            </div>
+            <div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+          </div>
+  
+          <div class="col-12 row">
+            <div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+            <div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+              <button class="btn btnGuardar btnRow waves-effect waves-light btnGuardarCompra green darken-2" [disabled]="inpc_save == ''" (click)="indicador_inpc_to_save()">{{'save' | translate}}</button>
+            </div>
+            <div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+          </div>
+        </div>
+  
+        <div class="col-12 row" style="padding: 10px;">
+          <table id="vhum_table_lista_reem_general" class="display nowrap white centered" style="width:100%!important;margin:0!important;">
+            <thead>
+              <tr>
+                <th>folio</th>
+                <th>solicitudes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let rowi of inpc_list">
+                <td>{{rowi.fecha}}</td>
+                <td>{{rowi.valor}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer"></div>
+    </div>
+  </div>
+</div>

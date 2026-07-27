@@ -1,0 +1,65 @@
+
+.container {
+  margin-top: 30px;
+}
+
+.header_text {
+  font-weight: bold;
+  font-size: 1.25rem;
+  margin-bottom: 15px;
+  text-transform: uppercase;
+}
+
+.card {
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  padding: 20px;
+  margin-bottom: 30px;
+}
+
+.list_opciones .list-group-item {
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.list_opciones .list-group-item:hover {
+  background-color: #f0f0f0;
+}
+
+.input-group label {
+  font-weight: 500;
+}
+
+input, select, textarea {
+  border-radius: 5px !important;
+}
+
+.btn_extend {
+  display: inline-block;
+  font-weight: bold;
+  padding: 10px;
+  border-radius: 8px;
+  text-align: center;
+  margin-top: 10px;
+}
+
+.explain .title {
+  font-weight: 600;
+  margin-top: 20px;
+  color: #333;
+  text-transform: uppercase;
+}
+
+.table thead th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+}
+
+.table td, .table th {
+  vertical-align: middle;
+}
+
+.bg-blue-300 {
+  background-color: #4dabf7 !important;
+  color: white;
+}

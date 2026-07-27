@@ -1,0 +1,1288 @@
+<div class="col-12 explain">
+  <h6 class="title">{{'tentative_departure_date_orig' | translate}}</h6>
+  <h6 class="content">{{compra_fecha_tentativa_salida}}</h6>
+</div>
+
+<div class="col-12 explain">
+  <h6 class="title"><i class="fa-solid fa-circle-info"></i> {{'prev_leg_summary' | translate}}</h6>
+</div>
+@for (punto of transito_puntos; track $index) {
+  <p-panel [toggleable]="true" [collapsed]="true" class="max-w-xs w-full">
+    <ng-template pTemplate="header">
+      <div class="flex align-items-center gap-3 w-full">
+        <div class="form-check form-switch form-check-reverse switch_primario" style="justify-content: center;flex-direction: column;">
+          <input class="form-check-input selectSwitchProvProd" name="selectImpProd" type="checkbox" style="width: 10%!important;" (click)="seleccionar_unidad(punto);">
+        </div>
+
+        <div class="col" style="width: 100%;display: flex;justify-content: start;flex-direction: column;">
+          <span class="font-bold text-lg">{{'unit_tracking_folio' | translate}} {{punto.folio_transito_transbordo}}</span>
+          <span class="font-bold text-lg">📍 {{'origin_address_dispatch' | translate}} {{punto.lugar_transbordo}}</span>
+        </div>
+      </div>
+    </ng-template>
+    <div class="col-12 row">
+      <p-table #gralBuyList [value]="punto.articulos" dataKey="articulo" [globalFilterFields]="['folio_compra']" showGridlines [resizableColumns]="true" 
+        [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]">
+        <ng-template #caption>
+          <div class="flex" style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;" ngbDropdown>
+            <p-iconfield iconPosition="left" class="ml-auto">
+              <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+              <input pInputText type="text" (input)="gralBuyList.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+            </p-iconfield>
+          </div>
+        </ng-template>
+        <ng-template #header>
+          <tr>
+            <th class="ultimo"></th>
+            <th pResizableColumn pSortableColumn="compra_relacionada_folio">{{'purchase_folio' | translate}}&nbsp;<p-sortIcon field="compra_relacionada_folio" /></th>
+            <th pResizableColumn pSortableColumn="articulo">{{'article' | translate}}&nbsp;<p-sortIcon field="articulo" /></th>
+            <th pResizableColumn pSortableColumn="cantidad_llego">{{'purchased_quantity' | translate}}&nbsp;<p-sortIcon field="cantidad_llego" /></th>
+            <th pResizableColumn pSortableColumn="cantidad_pendiente_transito">{{'pending_shipping_quantity' | translate}}&nbsp;<p-sortIcon field="cantidad_pendiente_transito" /></th>
+            <th pSortableColumn="unidad_medida">{{'uni_med' | translate}}&nbsp;<p-sortIcon field="unidad_medida" /></th>
+            <th pSortableColumn="efecto_fiscal">{{'fisc_effect' | translate}}&nbsp;<p-sortIcon field="efecto_fiscal" /></th>
+            <th>{{'sku' | translate}}</th>
+            <th>{{'code_type' | translate}}</th>
+            <th>{{'gs1_identifier' | translate}}</th>
+          </tr>
+        </ng-template>
+        <ng-template #body let-cBuy let-rowIndex="rowIndex">
+          <tr>
+            <td class="ultimo">
+              <a class="btn btn_extend bg-blue-600" variant="outlined" (click)="cBuy.ver_articulo_unidad = true"><!--(click)="op.toggle($event)"-->
+                <i class="fa-solid fa-truck-moving"></i>&nbsp;unidad de transporte
+              </a>
+
+              <p-drawer [(visible)]="cBuy.ver_articulo_unidad" header="Unidad de transporte" styleClass="w-full! md:w-80!">
+                <div class="col-12 explain explain_column" style="margin: 0!important;">
+                  <h6 class="title"><i class="fa-solid fa-truck-moving"></i>&nbsp;{{cBuy.folio_seguimiento_unidad}}</h6>
+                </div>
+                <div class="col-12 explain explain_column" style="margin: 0!important;">
+                  <h6 class="title">{{'med_trans' | translate}}</h6>
+                  <h6 class="content">{{cBuy.tipo_transporte_extend}}</h6>
+                </div>
+                <div class="col-12 explain explain_column" style="margin: 0!important;">
+                  <h6 class="title">{{'operator_name_line' | translate}}</h6>
+                  <h6 class="content">{{cBuy.operador_nombre}}</h6>
+                </div>
+          
+                <div class="col-12 explain explain_column" style="margin: 0!important;">
+                  <h6 class="title">{{'operator_phone' | translate}}</h6>
+                  <h6 class="content">{{cBuy.operador_telefono}}</h6>
+                </div>
+          
+                <div class="col-12 explain explain_column" style="margin: 0!important;">
+                  <h6 class="title">{{'tentative_arrival_date_dest' | translate}}</h6>
+                  <h6 class="content">{{cBuy.unidad_fecha_tentativa_arribo}}</h6>
+                </div>
+          
+                <p-divider/>
+                @if (cBuy.tipo_transporte === 'terrestre') {
+                  <div class="col-12 explain explain_column" style="margin: 0!important;">
+                    <h6 class="title">{{'truck_tractor_plates' | translate}}</h6>
+                    <h6 class="content">{{cBuy.identificador_principal}}</h6>
+                  </div>
+                  <div class="col-12 explain explain_column" style="margin: 0!important;">
+                    <h6 class="title">{{'trailer_box_plates' | translate}}</h6>
+                    <h6 class="content">{{cBuy.identificador_secundario}}</h6>
+                  </div>
+                  <div class="col-12 explain explain_column" style="margin: 0!important;">
+                    <h6 class="title">{{'sct_sict_permit' | translate}}</h6>
+                    <h6 class="content">{{cBuy.permiso_autorizacion}}</h6>
+                  </div>
+                }
+          
+                @if (cBuy.tipo_transporte === 'maritimo') {
+                  <div class="col-12 explain explain_column" style="margin: 0!important;">
+                    <h6 class="title">{{'container_no' | translate}}</h6>
+                    <h6 class="content">{{cBuy.identificador_principal}}</h6>
+                  </div>
+                  <div class="col-12 explain explain_column" style="margin: 0!important;">
+                    <h6 class="title">{{'booking_number_res' | translate}}</h6>
+                    <h6 class="content">{{cBuy.identificador_secundario}}</h6>
+                  </div>
+                }
+          
+                @if (cBuy.tipo_transporte === 'aereo') {
+                  <div class="col-12 explain explain_column" style="margin: 0!important;">
+                    <h6 class="title">{{'awb_number' | translate}}</h6>
+                    <h6 class="content">{{cBuy.identificador_principal}}</h6>
+                  </div>
+                  <div class="col-12 explain explain_column" style="margin: 0!important;">
+                    <h6 class="title">{{'flight_code' | translate}}</h6>
+                    <h6 class="content">{{cBuy.identificador_secundario}}</h6>
+                  </div>
+                }
+          
+                <div class="col-12 explain explain_column" style="margin: 0!important;">
+                  <h6 class="title">📍 {{'origin_address_dispatch' | translate}}</h6>
+                  <h6 class="content" style="text-align: justify;word-wrap: break-word;max-width: 100%;">{{cBuy.direccion_origen}}</h6>
+                </div>
+                <div class="col-12 explain explain_column" style="margin: 0!important;">
+                  <h6 class="title">📍 {{'destination_address_stop' | translate}}</h6>
+                  <h6 class="content" style="text-align: justify;word-wrap: break-word;max-width: 100%;">{{cBuy.direccion_destino_especifica}}</h6>
+                </div>
+              </p-drawer>
+            </td>
+            <td>{{cBuy.compra_relacionada_folio}}</td>
+            <td>{{cBuy.articulo}}</td>
+            <td>{{cBuy.cantidad_llego}}</td>
+            <td>{{cBuy.cantidad_pendiente_transito}}</td>
+            <td>{{cBuy.unidad_medida}}</td>
+            <td>{{cBuy.efecto_fiscal}}</td>
+            <td>{{cBuy.reg_sku}}</td>
+            <td>{{cBuy.reg_tipo_llave_gs1}}</td>
+            <td>{{cBuy.reg_codigo_gs1}}</td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="10" class="text-center py-4">
+              <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+              <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                {{'no_rows' | translate}}
+              </p>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </p-panel>
+}
+
+<!--<div class="col-12 row" style="display: flex;justify-content: end;">
+  <a class="btn btn_extend text-bg-success rounded-3" [ngClass]="!validar_seleccionadas_unidades ? 'disabled' : ''"
+    [attr.disabled]="!validar_seleccionadas_unidades ? true : null" [attr.aria-disabled]="!validar_seleccionadas_unidades ? true : null"
+    (click)="validar_seleccionadas_unidades && guardar_unidades_to_continuar_ruta();">
+    <i class="fa-solid fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+  </a>
+</div>-->
+
+@if (view_form_inicio_logistica) {  
+  <!--<div class="col-12 explain">
+    <h6 class="title"><i class="fa-solid fa-circle-info"></i> Resumen del Tramo Anterior (Historial de Ubicaciones):</h6>
+  </div>
+  @for (lUbi of transito_detalle; track $index) {
+  }
+  <p-divider/>--> 
+
+  <p-divider/>
+
+  <form class="col-12 row formDataLogistica" #formDataLogistica="ngForm" name="formDataLogistica" autocomplete="off" (ngSubmit)="continuarRutaLogistica(formDataLogistica)">
+    <div class="col-12 explain">
+      <h6 class="title">{{'dispatched_units_transport' | translate}}</h6>
+    </div>
+    <div class="col-12">
+      @for (transporte of logisticBuyModel.transportes; track $index; let idx = $index) {
+        <div class="card card_main col-12" style="padding: 0!important;">
+          <div class="card-body" style="padding: 10px!important;">
+            <h5 class="card-title">📦 {{'unit_box' | translate}} {{ idx + 1 }}</h5>
+            @if (logisticBuyModel.transportes.length > 1) {
+              <button type="button" class="btn btn-sm btn-danger" (click)="removerTransporte(idx)"><i class="fa-solid fa-trash"></i> {{'remove_unit' | translate}}</button>
+            }
+            <div class="inside">
+              <div class="col-12 row">
+                <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+                  <label for="medioDeTransporte" class="activeInput"><span class="obligatorio">{{'med_trans' | translate}}</span></label>
+                  <p-select [options]="listaTipoTransporte" id="medioDeTransporte" name="medioDeTransporte" optionLabel="valor" [filter]="true" filterBy="valor" optionValue="clave" 
+                    appendTo="body" [showClear]="true" [placeholder]="'opt_select' | translate" class="w-full md:w-56" (onChange)="select_tipo_transporte($event.value,transporte);">
+                    <ng-template #selectedItem let-selectedOption>
+                      <div class="flex items-center gap-2">
+                        <div>{{selectedOption.valor}}</div>
+                      </div>
+                    </ng-template>
+                    <ng-template let-dep #item>
+                      <div class="flex items-center gap-2"><div>{{dep.valor}}</div></div>
+                    </ng-template>
+                  </p-select>
+                </div>
+                <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-6 col-xxl-6 input-group">
+                  <label for="nombreDelOperadorLinea" class="activeInput"><span class="obligatorio">{{'operator_name_line' | translate}}</span></label>
+                  <input id="nombreDelOperadorLinea" name="nombreDelOperadorLinea" class="validate" type="text" required (keyup)="salida_nombre_operador($event.target,transporte);">
+                </div>
+      
+                <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group" [formGroup]="phoneForm[idx]">
+                  <label for="telefonoDelOperador" class="activeInput">{{'operator_phone' | translate}}</label>
+                  <ngx-material-intl-tel-input id="telefonoDelOperador" name="telefonoDelOperador" [fieldControl]="phoneForm[idx].get('telefono')" [preferredCountries]="preferredCountries" 
+                    enablePlaceholder]="true" maxLength="15" (input)="probarTextPhone(idx);keyupTrabContTelefonoNumero($event,transporte,idx);">
+                  </ngx-material-intl-tel-input>
+                </div>
+                
+                <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+                  <label for="fechaSalidaCompra" class="activeInput"><span class="obligatorio">{{'departure_date' | translate}}</span></label>
+                  <input class="validate datepicker" id="fechaSalidaCompra" name="fechaSalidaCompra" type="date" required (change)="fecha_salida_a_ruta($event.target,transporte);">
+                </div>
+
+                <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+                  <label for="fechaTentativaLlegada" class="activeInput"><span class="obligatorio">{{'tentative_arrival_date_dest' | translate}}</span></label>
+                  <input class="validate datepicker" id="fechaTentativaLlegada" name="fechaTentativaLlegada" type="date" required (change)="fecha_tentativa_llegada_destino($event.target,transporte);">
+                </div>
+
+                <p-divider [attr.style]="'margin-top: 15px!important; margin-bottom: 5px!important;'" />
+                @if (transporte.tipo_transporte === 'terrestre') {
+                  <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input-group mt-2">
+                    <label for="transpIdentificadorPrincipal" class="activeInput"><span class="obligatorio">{{'truck_tractor_plates' | translate}}</span></label>
+                    <input class="validate" id="transpIdentificadorPrincipal" name="transpIdentificadorPrincipal" type="text" required (keyup)="salida_identificador_principal($event.target,transporte);">
+                  </div>
+                  <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input-group mt-2">
+                    <label for="transpIdentificadorSecundario" class="activeInput">{{'trailer_box_plates' | translate}}</label>
+                    <input class="validate" id="transpIdentificadorSecundario" name="transpIdentificadorSecundario" type="text" (keyup)="salida_identificador_secundario($event.target,transporte);">
+                  </div>
+                  <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input-group mt-2">
+                    <label for="permisoSCT_SICT" class="activeInput">{{'sct_sict_permit' | translate}}</label>
+                    <input class="validate" id="permisoSCT_SICT" name="permisoSCT_SICT" type="text" (keyup)="salida_permiso_autorizacion($event.target,transporte);">
+                  </div>
+                }
+      
+                @if (transporte.tipo_transporte === 'maritimo') {
+                  <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6 input-group mt-2">
+                    <label for="transpIdentificadorPrincipal" class="activeInput"><span class="obligatorio">{{'container_no' | translate}}</span></label>
+                    <input class="validate" id="transpIdentificadorPrincipal" name="transpIdentificadorPrincipal" type="text" required placeholder="Ej. CSNU1234567" (keyup)="salida_identificador_principal($event.target,transporte);">
+                  </div>
+                  <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6 input-group mt-2">
+                    <label for="transpIdentificadorSecundario" class="activeInput"><span class="obligatorio">{{'booking_number_res' | translate}}</span></label>
+                    <input class="validate" id="transpIdentificadorSecundario" name="transpIdentificadorSecundario" type="text" required (keyup)="salida_identificador_secundario($event.target,transporte);">
+                    
+                  </div>
+                }
+      
+                @if (transporte.tipo_transporte === 'aereo') {
+                  <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6 input-group mt-2">
+                    <label for="transpIdentificadorPrincipal" class="activeInput"><span class="obligatorio">{{'awb_number' | translate}}</span></label>
+                    <input class="validate" id="transpIdentificadorPrincipal" name="transpIdentificadorPrincipal" type="text" required placeholder="000-00000000" (keyup)="salida_identificador_principal($event.target,transporte);">
+                  </div>
+                  <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6 input-group mt-2">
+                    <label for="transpIdentificadorSecundario" class="activeInput">{{'flight_code' | translate}}</label>
+                    <input class="validate" id="transpIdentificadorSecundario" name="transpIdentificadorSecundario" type="text" (keyup)="salida_identificador_secundario($event.target,transporte);">
+                  </div>
+                }
+      
+                <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6 input-group mt-2">
+                  <label for="direccionDeOrigen" class="activeInput"><span class="obligatorio">📍 {{'origin_address_dispatch' | translate}}</span></label>
+                  <input class="validate" id="direccionDeOrigen" name="direccionDeOrigen" type="text" required disabled [value]="transporte.direccion_origen"><!-- (keyup)="salida_direccion_origen($event.target,transporte);"-->
+                </div>
+                <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6 input-group mt-2">
+                  <label for="direccionDeDestino" class="activeInput"><span class="obligatorio">📍 {{'destination_address_stop' | translate}}</span></label>
+                  <input class="validate" id="direccionDeDestino" name="direccionDeDestino" type="text" required (keyup)="salida_direccion_destino_especifica($event.target,transporte);">
+                </div>
+                <div class="col-12 row" style="padding:0!important;">
+                  <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain">
+                    <h6 class="title">Establecer dirección de destino como punto de entrega final</h6>
+                  </div>
+                  <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                    <label class="form-check-label" for="flexSwitchCheckReverse">No</label>
+                    <input class="form-check-input" type="checkbox" (click)="estableceDestinoComoEntregaFinal(transporte);">
+                    <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                  </div>
+                </div>
+      
+                <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6 input-group mt-2">
+                  <label for="cartaPorteTransporte" class="activeInput">{{'xml_bill_of_lading' | translate}}</label>
+                  <p-select [options]="listaCFDICartaPorteUUID" id="cartaPorteTransporte" name="cartaPorteTransporte" optionLabel="cfdi_comprobante_registrado_carta_porte_id_ccp" 
+                    [filter]="true" filterBy="cfdi_comprobante_registrado_carta_porte_id_ccp" optionValue="cfdi_comprobante_registrado_carta_porte_id_ccp" 
+                    appendTo="body" [showClear]="true" [placeholder]="'opt_select' | translate" class="w-full md:w-56" (onChange)="select_carta_porte_transporte($event.value,transporte);">
+                    <ng-template #selectedItem let-selectedOption>
+                      <div class="flex items-center gap-2">
+                        <div>{{selectedOption.cfdi_comprobante_registrado_carta_porte_id_ccp+" compra "+selectedOption.folio_compra}}</div>
+                      </div>
+                    </ng-template>
+                    <ng-template let-cfdi #item>
+                      <div class="flex items-center gap-2"><div>{{cfdi.cfdi_comprobante_registrado_carta_porte_id_ccp+" compra "+cfdi.folio_compra}}</div></div>
+                    </ng-template>
+                  </p-select>
+                </div>
+
+                @if (transporte.dataCFDIComplemento_carta_porte_obj.length == 1) {
+                  <div class="col-12 explain">
+                    <h6 class="title">{{'bill_of_lading' | translate}}</h6>
+                  </div>
+                  @for (cporte of transporte.dataCFDIComplemento_carta_porte_obj; track $index) {
+                    <!--Version-->
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-3 explain" style="margin: 0!important;">
+                      <h6 class="title">{{'version' | translate}}</h6>
+                      <h6 class="content">{{ cporte.Version }}</h6>
+                    </div>
+                    <!--IdCCP-->
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-3 explain" style="margin: 0!important;">
+                      <h6 class="title">IdCCP</h6>
+                      <h6 class="content">{{ cporte.IdCCP }}</h6>
+                    </div>
+                    <!--TranspInternac-->
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-3 explain" style="margin: 0!important;">
+                      <h6 class="title">TranspInternac</h6>
+                      <h6 class="content">{{ cporte.TranspInternac }}</h6>
+                    </div>
+                    <!--RegimenAduanero-->
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-3 explain" style="margin: 0!important;">
+                      <h6 class="title">RegimenAduanero</h6>
+                      <h6 class="content">{{ cporte.RegimenAduanero }}</h6>
+                    </div>
+                    <!--EntradaSalidaMerc-->
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-3 explain" style="margin: 0!important;">
+                      <h6 class="title">EntradaSalidaMerc</h6>
+                      <h6 class="content">{{ cporte.EntradaSalidaMerc }}</h6>
+                    </div>
+                    <!--PaisOrigenDestino-->
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-3 explain" style="margin: 0!important;">
+                      <h6 class="title">PaisOrigenDestino</h6>
+                      <h6 class="content">{{ cporte.PaisOrigenDestino }}</h6>
+                    </div>
+                    <!--ViaEntradaSalida-->
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-3 explain" style="margin: 0!important;">
+                      <h6 class="title">ViaEntradaSalida</h6>
+                      <h6 class="content">{{ cporte.ViaEntradaSalida }}</h6>
+                    </div>
+                    <!--TotalDistRec-->
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-3 explain" style="margin: 0!important;">
+                      <h6 class="title">TotalDistRec</h6>
+                      <h6 class="content">{{ cporte.TotalDistRec }}</h6>
+                    </div>
+                    <!--RegistroISTMO-->
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-3 explain" style="margin: 0!important;">
+                      <h6 class="title">RegistroISTMO</h6>
+                      <h6 class="content">{{ cporte.RegistroISTMO }}</h6>
+                    </div>
+                    <!--UbicacionPoloOrigen-->
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-3 explain" style="margin: 0!important;">
+                      <h6 class="title">UbicacionPoloOrigen</h6>
+                      <h6 class="content">{{ cporte.UbicacionPoloOrigen }}</h6>
+                    </div>
+                    <!--UbicacionPoloDestino-->
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-3 explain" style="margin: 0!important;">
+                      <h6 class="title">UbicacionPoloDestino</h6>
+                      <h6 class="content">{{ cporte.UbicacionPoloDestino }}</h6>
+                    </div>
+                    
+                    <p-divider/>
+                    <div class="col-12 explain">
+                      <h6 class="title">{{'locations' | translate}}</h6>
+                    </div>
+                    <p-table #conceptUbicaciones [value]="cporte.ubicaciones" dataKey="id" [resizableColumns]="true" responsiveLayout="stack"
+                      [globalFilterFields]="['TipoUbicacion','Calle','NumeroExterior','NumeroInterior','Colonia','Localidad','Referencia','Municipio','Estado','Pais','CodigoPostal','RFCRemitenteDestinatario','NombreRemitenteDestinatario','FechaHoraSalidaLlegada','DistanciaRecorrida']">
+                      <ng-template #caption>
+                        <div class="flex">
+                          <p-iconfield iconPosition="left" class="ml-auto">
+                            <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                            <input pInputText type="text" (input)="conceptUbicaciones.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+                          </p-iconfield>
+                        </div>
+                      </ng-template>
+                      <ng-template #header>
+                        <tr>
+                          <th pSortableColumn="TipoUbicacion">TipoUbicacion&nbsp;<p-sortIcon field="TipoUbicacion" /></th>
+                          <th pSortableColumn="Calle">Calle&nbsp;<p-sortIcon field="Calle" /></th>
+                          <th pSortableColumn="NumeroExterior">NumeroExterior&nbsp;<p-sortIcon field="NumeroExterior" /></th>
+                          <th pSortableColumn="NumeroInterior">NumeroInterior&nbsp;<p-sortIcon field="NumeroInterior" /></th>
+                          <th pSortableColumn="Colonia">Colonia&nbsp;<p-sortIcon field="Colonia" /></th>
+                          <th pSortableColumn="Localidad">Localidad&nbsp;<p-sortIcon field="Localidad" /></th>
+                          <th pSortableColumn="Referencia">Referencia&nbsp;<p-sortIcon field="Referencia" /></th>
+                          <th pSortableColumn="Municipio">Municipio&nbsp;<p-sortIcon field="Municipio" /></th>
+                          <th pSortableColumn="Estado">Estado&nbsp;<p-sortIcon field="Estado" /></th>
+                          <th pSortableColumn="Pais">Pais&nbsp;<p-sortIcon field="Pais" /></th>
+                          <th pSortableColumn="CodigoPostal">CodigoPostal&nbsp;<p-sortIcon field="CodigoPostal" /></th>
+                          <th pSortableColumn="RFCRemitenteDestinatario">RFCRemitenteDestinatario&nbsp;<p-sortIcon field="RFCRemitenteDestinatario" /></th>
+                          <th pSortableColumn="NombreRemitenteDestinatario">NombreRemitenteDestinatario&nbsp;<p-sortIcon field="NombreRemitenteDestinatario" /></th>
+                          <th pSortableColumn="FechaHoraSalidaLlegada">FechaHoraSalidaLlegada&nbsp;<p-sortIcon field="FechaHoraSalidaLlegada" /></th>
+                          <th pSortableColumn="DistanciaRecorrida">DistanciaRecorrida&nbsp;<p-sortIcon field="DistanciaRecorrida" /></th>
+                        </tr>
+                      </ng-template>
+                      <ng-template #body let-ubica>
+                        <tr>
+                          <td>{{ubica.TipoUbicacion}}</td>
+                          <td>{{ubica.Calle}}</td>
+                          <td>{{ubica.NumeroExterior}}</td>
+                          <td>{{ubica.NumeroInterior}}</td>
+                          <td>{{ubica.Colonia}}</td>
+                          <td>{{ubica.Localidad}}</td>
+                          <td>{{ubica.Referencia}}</td>
+                          <td>{{ubica.Municipio}}</td>
+                          <td>{{ubica.Estado}}</td>
+                          <td>{{ubica.Pais}}</td>
+                          <td>{{ubica.CodigoPostal}}</td>
+                          <td>{{ubica.RFCRemitenteDestinatario}}</td>
+                          <td>{{ubica.NombreRemitenteDestinatario}}</td>
+                          <td>{{ubica.FechaHoraSalidaLlegada}}</td>
+                          <td>{{ubica.DistanciaRecorrida}}</td>
+                        </tr>
+                      </ng-template>
+                      <ng-template pTemplate="emptymessage">
+                        <tr>
+                          <td colspan="6" class="text-center py-4">
+                            <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                            <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                              {{'no_rows' | translate}}
+                            </p>
+                          </td>
+                        </tr>
+                      </ng-template>
+                    </p-table>
+                    <p-divider/>
+                    <div class="col-12 explain">
+                      <h6 class="title">{{'merchandise_pl' | translate}}</h6>
+                    </div>
+                    @let datosMercancia = cporte.mercancias;
+                    @for (merc of datosMercancia; track $index) {
+                      <div class="col-12 col-sm-12 col-md-12 col-lg-3 col-xl-3 col-xxl-3 explain" style="margin: 0!important;">
+                        <h6 class="title">{{'total_gross_weight' | translate}}</h6>
+                        <h6 class="content">{{ merc.PesoBrutoTotal }}</h6>
+                      </div>
+                      <div class="col-12 col-sm-12 col-md-12 col-lg-3 col-xl-3 col-xxl-3 explain" style="margin: 0!important;">
+                        <h6 class="title">{{'weight_unit' | translate}}</h6>
+                        <h6 class="content">{{ merc.UnidadPeso }}</h6>
+                      </div>
+                      <div class="col-12 col-sm-12 col-md-12 col-lg-3 col-xl-3 col-xxl-3 explain" style="margin: 0!important;">
+                        <h6 class="title">{{'total_merchandise_num' | translate}}</h6>
+                        <h6 class="content">{{ merc.NumTotalMercancias }}</h6>
+                      </div>
+                      <p-table #conceptMercancia [value]="merc.Mercancia" dataKey="id" [resizableColumns]="true" responsiveLayout="stack"
+                        [globalFilterFields]="['BienesTransp','Descripcion','Cantidad','ClaveUnidad','PesoEnKg']">
+                        <ng-template #caption>
+                          <div class="flex">
+                            <p-iconfield iconPosition="left" class="ml-auto">
+                              <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                              <input pInputText type="text" (input)="conceptMercancia.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+                            </p-iconfield>
+                          </div>
+                        </ng-template>
+                        <ng-template #header>
+                          <tr>
+                            <th pSortableColumn="BienesTransp">BienesTransp&nbsp;<p-sortIcon field="BienesTransp" /></th>
+                            <th pSortableColumn="Descripcion">Descripcion&nbsp;<p-sortIcon field="Descripcion" /></th>
+                            <th pSortableColumn="Cantidad">Cantidad&nbsp;<p-sortIcon field="Cantidad" /></th>
+                            <th pSortableColumn="ClaveUnidad">ClaveUnidad&nbsp;<p-sortIcon field="ClaveUnidad" /></th>
+                            <th pSortableColumn="PesoEnKg">PesoEnKg&nbsp;<p-sortIcon field="PesoEnKg" /></th>
+                          </tr>
+                        </ng-template>
+                        <ng-template #body let-merc>
+                          <tr>
+                            <td>{{merc.BienesTransp}}</td>
+                            <td>{{merc.Descripcion}}</td>
+                            <td>{{merc.Cantidad}}</td>
+                            <td>{{merc.ClaveUnidad}}</td>
+                            <td>{{merc.PesoEnKg}}</td>
+                          </tr>
+                        </ng-template>
+                        <ng-template pTemplate="emptymessage">
+                          <tr>
+                            <td colspan="6" class="text-center py-4">
+                              <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                              <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                {{'no_rows' | translate}}
+                              </p>
+                            </td>
+                          </tr>
+                        </ng-template>
+                      </p-table>
+                    }
+                    <p-divider/>
+                    <div class="col-12 explain">
+                      <h6 class="title">{{'autotransport' | translate}}</h6>
+                    </div>
+                    <p-table #conceptAutoTr [value]="cporte.Autotransporte" dataKey="id" [resizableColumns]="true" responsiveLayout="stack"
+                      [globalFilterFields]="['PermSCT','NumPermisoSCT']">
+                      <ng-template #caption>
+                        <div class="flex">
+                          <p-iconfield iconPosition="left" class="ml-auto">
+                            <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                            <input pInputText type="text" (input)="conceptAutoTr.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+                          </p-iconfield>
+                        </div>
+                      </ng-template>
+                      <ng-template #header>
+                        <tr>
+                          <th pSortableColumn="PermSCT">PermSCT&nbsp;<p-sortIcon field="PermSCT" /></th>
+                          <th pSortableColumn="NumPermisoSCT">NumPermisoSCT&nbsp;<p-sortIcon field="NumPermisoSCT" /></th>
+                          <th class="ultimo"></th>
+                          <th class="ultimo"></th>
+                          <th class="ultimo"></th>
+                        </tr>
+                      </ng-template>
+                      <ng-template #body let-transpAuto>
+                        <tr>
+                          <td>{{transpAuto.PermSCT}}</td>
+                          <td>{{transpAuto.NumPermisoSCT}}</td>
+                          <td class="ultimo">
+                            <a class="btn btn_extend bg-blue-600" (click)="verATIDVehConcepto(transpAuto,transporte);">
+                              <i class="fa-solid fa-eye" style="color: white!important;"></i>&nbsp;{{'vehicular_id' | translate}}
+                            </a>
+                          </td>
+                          <td class="ultimo">
+                            <a class="btn btn_extend bg-blue-600" (click)="verSegurosTranspConcepto(transpAuto,transporte);">
+                              <i class="fa-solid fa-eye" style="color: white!important;"></i>&nbsp;{{'insurance' | translate}}
+                            </a>
+                          </td>
+                          <td class="ultimo">
+                            <a class="btn btn_extend bg-blue-600" (click)="verRemolquesTranspConcepto(transpAuto,transporte);">
+                              <i class="fa-solid fa-eye" style="color: white!important;"></i>&nbsp;{{'trailers' | translate}}
+                            </a>
+                          </td>
+                        </tr>
+                        @if (transpAuto === transporte.ver_atidveh) {
+                          <tr>
+                            <td colspan="5">
+                              <div class="col-12 row">
+                                @if (transpAuto.ConfigVehicular) {
+                                  <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 explain explain_column" style="margin: 0!important;">
+                                    <h6 class="title">ConfigVehicular</h6>
+                                    <h6 class="content">{{ transpAuto.ConfigVehicular }}</h6>
+                                  </div>
+                                }
+                                @if (transpAuto.PesoBrutoVehicular) {
+                                  <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 explain explain_column" style="margin: 0!important;">
+                                    <h6 class="title">PesoBrutoVehicular</h6>
+                                    <h6 class="content">{{ transpAuto.PesoBrutoVehicular }}</h6>
+                                  </div>
+                                }
+                                @if (transpAuto.PlacaVM) {
+                                  <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 explain explain_column" style="margin: 0!important;">
+                                    <h6 class="title">PlacaVM</h6>
+                                    <h6 class="content">{{ transpAuto.PlacaVM }}</h6>
+                                  </div>
+                                }
+                                @if (transpAuto.AnioModeloVM) {
+                                  <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 explain explain_column" style="margin: 0!important;">
+                                    <h6 class="title">AnioModeloVM</h6>
+                                    <h6 class="content">{{ transpAuto.AnioModeloVM }}</h6>
+                                  </div>
+                                }
+                              </div>
+                            </td>
+                          </tr>
+                        }
+                        @if (transpAuto === transporte.ver_seguros) {
+                          <tr>
+                            <td colspan="5">
+                              <div class="col-12 row">
+                                @if (transpAuto.AseguraRespCivil) {
+                                  <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 explain explain_column" style="margin: 0!important;">
+                                    <h6 class="title">AseguraRespCivil</h6>
+                                    <h6 class="content">{{ transpAuto.AseguraRespCivil }}</h6>
+                                  </div>
+                                }
+                                @if (transpAuto.PolizaRespCivil) {
+                                  <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 explain explain_column" style="margin: 0!important;">
+                                    <h6 class="title">PolizaRespCivil</h6>
+                                    <h6 class="content">{{ transpAuto.PolizaRespCivil }}</h6>
+                                  </div>
+                                }
+                                @if (transpAuto.AseguraMedAmbiente) {
+                                  <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 explain explain_column" style="margin: 0!important;">
+                                    <h6 class="title">AseguraMedAmbiente</h6>
+                                    <h6 class="content">{{ transpAuto.AseguraMedAmbiente }}</h6>
+                                  </div>
+                                }
+                                @if (transpAuto.PolizaMedAmbiente) {
+                                  <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 explain explain_column" style="margin: 0!important;">
+                                    <h6 class="title">PolizaMedAmbiente</h6>
+                                    <h6 class="content">{{ transpAuto.PolizaMedAmbiente }}</h6>
+                                  </div>
+                                }
+                                @if (transpAuto.AseguraCarga) {
+                                  <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 explain explain_column" style="margin: 0!important;">
+                                    <h6 class="title">AseguraCarga</h6>
+                                    <h6 class="content">{{ transpAuto.AseguraCarga }}</h6>
+                                  </div>
+                                }
+                                @if (transpAuto.PolizaCarga) {
+                                  <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 explain explain_column" style="margin: 0!important;">
+                                    <h6 class="title">PolizaCarga</h6>
+                                    <h6 class="content">{{ transpAuto.PolizaCarga }}</h6>
+                                  </div>
+                                }
+                                @if (transpAuto.PrimaSeguro) {
+                                  <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 explain explain_column" style="margin: 0!important;">
+                                    <h6 class="title">PrimaSeguro</h6>
+                                    <h6 class="content">{{ transpAuto.PrimaSeguro }}</h6>
+                                  </div>
+                                }
+                              </div>
+                            </td>
+                          </tr>
+                        }
+                        @if (transpAuto === transporte.ver_remolques) {
+                          <tr>
+                            <td colspan="5">
+                              <p-table #impTrasList [value]="transpAuto.Remolques" dataKey="id" [resizableColumns]="true" [paginator]="true"
+                                [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]" responsiveLayout="stack"
+                                [globalFilterFields]="['SubTipoRem','Placa']">
+                                <ng-template #caption>
+                                  <div class="flex">
+                                    <p-iconfield iconPosition="left" class="ml-auto">
+                                      <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                                      <input pInputText type="text" (input)="impTrasList.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+                                    </p-iconfield>
+                                  </div>
+                                </ng-template>
+                                <ng-template #header>
+                                  <tr>
+                                    <th style="width: 100px" pSortableColumn="SubTipoRem">SubTipoRem&nbsp;<p-sortIcon field="SubTipoRem" /></th>
+                                    <th style="width: 120px" pSortableColumn="Placa">Placa&nbsp;<p-sortIcon field="Placa" /></th>
+                                  </tr>
+                                </ng-template>
+                                <ng-template #body let-remque let-i="rowIndex">
+                                  <tr>
+                                    <td>{{remque.SubTipoRem}}</td>
+                                    <td>{{remque.Placa}}</td>
+                                  </tr>
+                                </ng-template>
+                                <ng-template pTemplate="emptymessage">
+                                  <tr>
+                                    <td colspan="2" class="text-center py-4">
+                                      <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                                      <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                        {{'no_rows' | translate}}
+                                      </p>
+                                    </td>
+                                  </tr>
+                                </ng-template>
+                              </p-table>
+                            </td>
+                          </tr>
+                        }
+                      </ng-template>
+                      <ng-template pTemplate="emptymessage">
+                        <tr>
+                          <td colspan="2" class="text-center py-4">
+                            <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                            <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                              {{'no_rows' | translate}}
+                            </p>
+                          </td>
+                        </tr>
+                      </ng-template>
+                    </p-table>
+                    <p-divider/>
+                    <div class="col-12 explain">
+                      <h6 class="title">{{'maritime_transport' | translate}}</h6>
+                    </div>
+                    <p-table #conceptTranspMar [value]="cporte.TransporteMaritimo" dataKey="id" [resizableColumns]="true" responsiveLayout="stack"
+                      [globalFilterFields]="[
+                        'PermSCT',
+                        'NumPermisoSCT',
+                        'NombreAseg',
+                        'NumPolizaSeguro',
+                        'TipoEmbarcacion',
+                        'Matricula',
+                        'NumeroOMI',
+                        'AnioEmbarcacion',
+                        'NombreEmbarc',
+                        'NacionalidadEmbarc',
+                        'UnidadesDeArqBruto',
+                        'TipoCarga',
+                        'Eslora',
+                        'Manga',
+                        'Calado',
+                        'Puntal',
+                        'LineaNaviera',
+                        'NombreAgenteNaviero',
+                        'NumAutorizacionNaviero',
+                        'NumViaje',
+                        'NumConocEmbarc',
+                        'PermisoTempNavegacion'
+                      ]">
+                      <ng-template #caption>
+                        <div class="flex">
+                          <p-iconfield iconPosition="left" class="ml-auto">
+                            <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                            <input pInputText type="text" (input)="conceptTranspMar.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+                          </p-iconfield>
+                        </div>
+                      </ng-template>
+                      <ng-template #header>
+                        <tr>
+                          <th class="ultimo"></th>
+                          <th pSortableColumn="PermSCT">PermSCT&nbsp;<p-sortIcon field="PermSCT" /></th>
+                          <th pSortableColumn="NumPermisoSCT">NumPermisoSCT&nbsp;<p-sortIcon field="NumPermisoSCT" /></th>
+                          <th pSortableColumn="NombreAseg">NombreAseg&nbsp;<p-sortIcon field="NombreAseg" /></th>
+                          <th pSortableColumn="NumPolizaSeguro">NumPolizaSeguro&nbsp;<p-sortIcon field="NumPolizaSeguro" /></th>
+                          <th pSortableColumn="TipoEmbarcacion">TipoEmbarcacion&nbsp;<p-sortIcon field="TipoEmbarcacion" /></th>
+                          <th pSortableColumn="Matricula">Matricula&nbsp;<p-sortIcon field="Matricula" /></th>
+                          <th pSortableColumn="NumeroOMI">NumeroOMI&nbsp;<p-sortIcon field="NumeroOMI" /></th>
+                          <th pSortableColumn="AnioEmbarcacion">AnioEmbarcacion&nbsp;<p-sortIcon field="AnioEmbarcacion" /></th>
+                          <th pSortableColumn="NombreEmbarc">NombreEmbarc&nbsp;<p-sortIcon field="NombreEmbarc" /></th>
+                          <th pSortableColumn="NacionalidadEmbarc">NacionalidadEmbarc&nbsp;<p-sortIcon field="NacionalidadEmbarc" /></th>
+                          <th pSortableColumn="UnidadesDeArqBruto">UnidadesDeArqBruto&nbsp;<p-sortIcon field="UnidadesDeArqBruto" /></th>
+                          <th pSortableColumn="TipoCarga">TipoCarga&nbsp;<p-sortIcon field="TipoCarga" /></th>
+                          <th pSortableColumn="Eslora">Eslora&nbsp;<p-sortIcon field="Eslora" /></th>
+                          <th pSortableColumn="Manga">Manga&nbsp;<p-sortIcon field="Manga" /></th>
+                          <th pSortableColumn="Calado">Calado&nbsp;<p-sortIcon field="Calado" /></th>
+                          <th pSortableColumn="Puntal">Puntal&nbsp;<p-sortIcon field="Puntal" /></th>
+                          <th pSortableColumn="LineaNaviera">LineaNaviera&nbsp;<p-sortIcon field="LineaNaviera" /></th>
+                          <th pSortableColumn="NombreAgenteNaviero">NombreAgenteNaviero&nbsp;<p-sortIcon field="NombreAgenteNaviero" /></th>
+                          <th pSortableColumn="NumAutorizacionNaviero">NumAutorizacionNaviero&nbsp;<p-sortIcon field="NumAutorizacionNaviero" /></th>
+                          <th pSortableColumn="NumViaje">NumViaje&nbsp;<p-sortIcon field="NumViaje" /></th>
+                          <th pSortableColumn="NumConocEmbarc">NumConocEmbarc&nbsp;<p-sortIcon field="NumConocEmbarc" /></th>
+                          <th pSortableColumn="PermisoTempNavegacion">PermisoTempNavegacion&nbsp;<p-sortIcon field="PermisoTempNavegacion" /></th>
+                        </tr>
+                      </ng-template>
+                      <ng-template #body let-mariTimo>
+                        <tr>
+                          <td class="ultimo">
+                            <a class="btn btn_extend bg-blue-600" (click)="verTranspMarContenedorM(mariTimo,transporte);">
+                              <i class="fa-solid fa-eye" style="color: white!important;"></i>&nbsp;{{'container' | translate}}
+                            </a>
+                          </td>
+                          <td>{{mariTimo.PermSCT}}</td>
+                          <td>{{mariTimo.NumPermisoSCT}}</td>
+                          <td>{{mariTimo.NombreAseg}}</td>
+                          <td>{{mariTimo.NumPolizaSeguro}}</td>
+                          <td>{{mariTimo.TipoEmbarcacion}}</td>
+                          <td>{{mariTimo.Matricula}}</td>
+                          <td>{{mariTimo.NumeroOMI}}</td>
+                          <td>{{mariTimo.AnioEmbarcacion}}</td>
+                          <td>{{mariTimo.NombreEmbarc}}</td>
+                          <td>{{mariTimo.NacionalidadEmbarc}}</td>
+                          <td>{{mariTimo.UnidadesDeArqBruto}}</td>
+                          <td>{{mariTimo.TipoCarga}}</td>
+                          <td>{{mariTimo.Eslora}}</td>
+                          <td>{{mariTimo.Manga}}</td>
+                          <td>{{mariTimo.Calado}}</td>
+                          <td>{{mariTimo.Puntal}}</td>
+                          <td>{{mariTimo.LineaNaviera}}</td>
+                          <td>{{mariTimo.NombreAgenteNaviero}}</td>
+                          <td>{{mariTimo.NumAutorizacionNaviero}}</td>
+                          <td>{{mariTimo.NumViaje}}</td>
+                          <td>{{mariTimo.NumConocEmbarc}}</td>
+                          <td>{{mariTimo.PermisoTempNavegacion}}</td>
+                        </tr>
+                        @if (mariTimo === transporte.ver_contenedor_m) {
+                          <tr>
+                            <td colspan="5">
+                              <p-table #marContenedorM [value]="mariTimo.ContenedorM" dataKey="id" [resizableColumns]="true" responsiveLayout="stack"
+                                [globalFilterFields]="['TipoContenedor','MatriculaContenedor','NumPrecinto','IdCCPRelacionado','PlacaVMCCP','FechaCertificacionCCP']">
+                                <ng-template #caption>
+                                  <div class="flex">
+                                    <p-iconfield iconPosition="left" class="ml-auto">
+                                      <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                                      <input pInputText type="text" (input)="marContenedorM.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+                                    </p-iconfield>
+                                  </div>
+                                </ng-template>
+                                <ng-template #header>
+                                  <tr>
+                                    <th pSortableColumn="TipoContenedor">TipoContenedor&nbsp;<p-sortIcon field="TipoContenedor" /></th>
+                                    <th pSortableColumn="MatriculaContenedor">MatriculaContenedor&nbsp;<p-sortIcon field="MatriculaContenedor" /></th>
+                                    <th pSortableColumn="NumPrecinto">NumPrecinto&nbsp;<p-sortIcon field="NumPrecinto" /></th>
+                                    <th pSortableColumn="IdCCPRelacionado">IdCCPRelacionado&nbsp;<p-sortIcon field="IdCCPRelacionado" /></th>
+                                    <th pSortableColumn="PlacaVMCCP">PlacaVMCCP&nbsp;<p-sortIcon field="PlacaVMCCP" /></th>
+                                    <th pSortableColumn="FechaCertificacionCCP">FechaCertificacionCCP&nbsp;<p-sortIcon field="FechaCertificacionCCP" /></th>
+                                  </tr>
+                                </ng-template>
+                                <ng-template #body let-mariTimo>
+                                  <tr>
+                                    <td>{{mariTimo.TipoContenedor}}</td>
+                                    <td>{{mariTimo.MatriculaContenedor}}</td>
+                                    <td>{{mariTimo.NumPrecinto}}</td>
+                                    <td>{{mariTimo.IdCCPRelacionado}}</td>
+                                    <td>{{mariTimo.PlacaVMCCP}}</td>
+                                    <td>{{mariTimo.FechaCertificacionCCP}}</td>
+                                  </tr>
+                                </ng-template>
+                                <ng-template pTemplate="emptymessage">
+                                  <tr>
+                                    <td colspan="6" class="text-center py-4">
+                                      <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                                      <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                        {{'no_rows' | translate}}
+                                      </p>
+                                    </td>
+                                  </tr>
+                                </ng-template>
+                              </p-table>
+                            </td>
+                          </tr>
+                        }
+                      </ng-template>
+                      <ng-template pTemplate="emptymessage">
+                        <tr>
+                          <td colspan="23" class="text-center py-4">
+                            <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                            <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                              {{'no_rows' | translate}}
+                            </p>
+                          </td>
+                        </tr>
+                      </ng-template>
+                    </p-table>
+                    <p-divider/>
+                    <div class="col-12 explain">
+                      <h6 class="title">{{'air_transport' | translate}}</h6>
+                    </div>
+                    <p-table #conceptTranspAereo [value]="cporte.TransporteAereo" dataKey="id" [resizableColumns]="true" responsiveLayout="stack"
+                      [globalFilterFields]="['PermSCT','NumPermisoSCT','MatriculaAeronave','NombreAseg','NumPolizaSeguro','NumeroGuia','LugarContrato','CodigoTransportista','RFCEmbarcador','NumRegIdTribEmbarc','ResidenciaFiscalEmbarc','NombreEmbarcador']">
+                      <ng-template #caption>
+                        <div class="flex">
+                          <p-iconfield iconPosition="left" class="ml-auto">
+                            <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                            <input pInputText type="text" (input)="conceptTranspAereo.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+                          </p-iconfield>
+                        </div>
+                      </ng-template>
+                      <ng-template #header>
+                        <tr>
+                          <th pSortableColumn="PermSCT">PermSCT&nbsp;<p-sortIcon field="PermSCT" /></th>
+                          <th pSortableColumn="NumPermisoSCT">NumPermisoSCT&nbsp;<p-sortIcon field="NumPermisoSCT" /></th>
+                          <th pSortableColumn="MatriculaAeronave">MatriculaAeronave&nbsp;<p-sortIcon field="MatriculaAeronave" /></th>
+                          <th pSortableColumn="NombreAseg">NombreAseg&nbsp;<p-sortIcon field="NombreAseg" /></th>
+                          <th pSortableColumn="NumPolizaSeguro">NumPolizaSeguro&nbsp;<p-sortIcon field="NumPolizaSeguro" /></th>
+                          <th pSortableColumn="NumeroGuia">NumeroGuia&nbsp;<p-sortIcon field="NumeroGuia" /></th>
+                          <th pSortableColumn="LugarContrato">LugarContrato&nbsp;<p-sortIcon field="LugarContrato" /></th>
+                          <th pSortableColumn="CodigoTransportista">CodigoTransportista&nbsp;<p-sortIcon field="CodigoTransportista" /></th>
+                          <th pSortableColumn="RFCEmbarcador">RFCEmbarcador&nbsp;<p-sortIcon field="RFCEmbarcador" /></th>
+                          <th pSortableColumn="NumRegIdTribEmbarc">NumRegIdTribEmbarc&nbsp;<p-sortIcon field="NumRegIdTribEmbarc" /></th>
+                          <th pSortableColumn="ResidenciaFiscalEmbarc">ResidenciaFiscalEmbarc&nbsp;<p-sortIcon field="ResidenciaFiscalEmbarc" /></th>
+                          <th pSortableColumn="NombreEmbarcador">NombreEmbarcador&nbsp;<p-sortIcon field="NombreEmbarcador" /></th>
+                        </tr>
+                      </ng-template>
+                      <ng-template #body let-mariTimo>
+                        <tr>
+                          <td>{{mariTimo.PermSCT}}</td>
+                          <td>{{mariTimo.NumPermisoSCT}}</td>
+                          <td>{{mariTimo.MatriculaAeronave}}</td>
+                          <td>{{mariTimo.NombreAseg}}</td>
+                          <td>{{mariTimo.NumPolizaSeguro}}</td>
+                          <td>{{mariTimo.NumeroGuia}}</td>
+                          <td>{{mariTimo.LugarContrato}}</td>
+                          <td>{{mariTimo.CodigoTransportista}}</td>
+                          <td>{{mariTimo.RFCEmbarcador}}</td>
+                          <td>{{mariTimo.NumRegIdTribEmbarc}}</td>
+                          <td>{{mariTimo.ResidenciaFiscalEmbarc}}</td>
+                          <td>{{mariTimo.NombreEmbarcador}}</td>
+                        </tr>
+                      </ng-template>
+                      <ng-template pTemplate="emptymessage">
+                        <tr>
+                          <td colspan="12" class="text-center py-4">
+                            <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                            <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                              {{'no_rows' | translate}}
+                            </p>
+                          </td>
+                        </tr>
+                      </ng-template>
+                    </p-table>
+                    <p-divider/>
+                    <div class="col-12 explain">
+                      <h6 class="title">{{'rail_transport' | translate}}</h6>
+                    </div>
+                    <p-table #conceptTranspFerro [value]="cporte.TransporteFerroviario" dataKey="id" [resizableColumns]="true" responsiveLayout="stack"
+                      [globalFilterFields]="['TipoDeServicio','TipoDeTrafico','NombreAseg','NumPolizaSeguro']">
+                      <ng-template #caption>
+                        <div class="flex">
+                          <p-iconfield iconPosition="left" class="ml-auto">
+                            <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                            <input pInputText type="text" (input)="conceptTranspFerro.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+                          </p-iconfield>
+                        </div>
+                      </ng-template>
+                      <ng-template #header>
+                        <tr>
+                          <th class="ultimo"></th>
+                          <th class="ultimo"></th>
+                          <th pSortableColumn="TipoDeServicio">TipoDeServicio&nbsp;<p-sortIcon field="TipoDeServicio" /></th>
+                          <th pSortableColumn="TipoDeTrafico">TipoDeTrafico&nbsp;<p-sortIcon field="TipoDeTrafico" /></th>
+                          <th pSortableColumn="NombreAseg">NombreAseg&nbsp;<p-sortIcon field="NombreAseg" /></th>
+                          <th pSortableColumn="NumPolizaSeguro">NumPolizaSeguro&nbsp;<p-sortIcon field="NumPolizaSeguro" /></th>
+                        </tr>
+                      </ng-template>
+                      <ng-template #body let-rrofe>
+                        <tr>
+                          <td class="ultimo">
+                            <a class="btn btn_extend bg-blue-600" (click)="verTranspFerroDerechosDePaso(rrofe,transporte);">
+                              <i class="fa-solid fa-eye" style="color: white!important;"></i>&nbsp;{{'rights_of_way' | translate}}
+                            </a>
+                          </td>
+                          
+                          <td class="ultimo">
+                            <a class="btn btn_extend bg-blue-600" (click)="verTranspFerroCarro(rrofe,transporte);">
+                              <i class="fa-solid fa-eye" style="color: white!important;"></i>&nbsp;{{'car' | translate}}
+                            </a>
+                          </td>
+                          <td>{{rrofe.TipoDeServicio}}</td>
+                          <td>{{rrofe.TipoDeTrafico}}</td>
+                          <td>{{rrofe.NombreAseg}}</td>
+                          <td>{{rrofe.NumPolizaSeguro}}</td>
+                        </tr>
+                        @if (rrofe === transporte.ver_derechos_de_paso) {
+                          <tr>
+                            <td colspan="6">
+                              <p-table #ferroDerechosDePaso [value]="rrofe.DerechosDePaso" dataKey="id" [resizableColumns]="true" responsiveLayout="stack"
+                                [globalFilterFields]="['TipoDerechoDePaso','KilometrajePagado']">
+                                <ng-template #caption>
+                                  <div class="flex">
+                                    <p-iconfield iconPosition="left" class="ml-auto">
+                                      <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                                      <input pInputText type="text" (input)="ferroDerechosDePaso.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+                                    </p-iconfield>
+                                  </div>
+                                </ng-template>
+                                <ng-template #header>
+                                  <tr>
+                                    <th pSortableColumn="TipoDerechoDePaso">TipoDerechoDePaso&nbsp;<p-sortIcon field="TipoDerechoDePaso" /></th>
+                                    <th pSortableColumn="KilometrajePagado">KilometrajePagado&nbsp;<p-sortIcon field="KilometrajePagado" /></th>
+                                  </tr>
+                                </ng-template>
+                                <ng-template #body let-derPaso>
+                                  <tr>
+                                    <td>{{derPaso.TipoDerechoDePaso}}</td>
+                                    <td>{{derPaso.KilometrajePagado}}</td>
+                                  </tr>
+                                </ng-template>
+                                <ng-template pTemplate="emptymessage">
+                                  <tr>
+                                    <td colspan="2" class="text-center py-4">
+                                      <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                                      <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                        {{'no_rows' | translate}}
+                                      </p>
+                                    </td>
+                                  </tr>
+                                </ng-template>
+                              </p-table>
+                            </td>
+                          </tr>
+                        }
+                        @if (rrofe === transporte.ver_carro) {
+                          <tr>
+                            <td colspan="6">
+                              <p-table #ferroCarro [value]="rrofe.Carro" dataKey="id" [resizableColumns]="true" responsiveLayout="stack"
+                                [globalFilterFields]="['TipoCarro','MatriculaCarro','GuiaCarro','ToneladasNetasCarro']">
+                                <ng-template #caption>
+                                  <div class="flex">
+                                    <p-iconfield iconPosition="left" class="ml-auto">
+                                      <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                                      <input pInputText type="text" (input)="ferroCarro.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+                                    </p-iconfield>
+                                  </div>
+                                </ng-template>
+                                <ng-template #header>
+                                  <tr>
+                                    <th class="ultimo"></th>
+                                    <th pSortableColumn="TipoCarro">TipoCarro&nbsp;<p-sortIcon field="TipoCarro" /></th>
+                                    <th pSortableColumn="MatriculaCarro">MatriculaCarro&nbsp;<p-sortIcon field="MatriculaCarro" /></th>
+                                    <th pSortableColumn="GuiaCarro">GuiaCarro&nbsp;<p-sortIcon field="GuiaCarro" /></th>
+                                    <th pSortableColumn="ToneladasNetasCarro">ToneladasNetasCarro&nbsp;<p-sortIcon field="ToneladasNetasCarro" /></th>
+                                  </tr>
+                                </ng-template>
+                                <ng-template #body let-carRo>
+                                  <tr>
+                                    <td class="ultimo">
+                                      <a class="btn btn_extend bg-blue-600" (click)="verTranspCarroConten(carRo,rrofe);">
+                                        <i class="fa-solid fa-eye" style="color: white!important;"></i>&nbsp;Carro
+                                      </a>
+                                    </td>
+                                    <td>{{carRo.TipoCarro}}</td>
+                                    <td>{{carRo.MatriculaCarro}}</td>
+                                    <td>{{carRo.GuiaCarro}}</td>
+                                    <td>{{carRo.ToneladasNetasCarro}}</td>
+                                  </tr>
+                                  @if (carRo === carRo.ver_contenedor) {
+                                    <tr>
+                                      <td colspan="5">
+                                        <p-table #ferroCarro [value]="carRo.Contenedor" dataKey="id" [resizableColumns]="true" responsiveLayout="stack"
+                                          [globalFilterFields]="['TipoContenedor','PesoContenedorVacio','PesoNetoMercancia']">
+                                          <ng-template #caption>
+                                            <div class="flex">
+                                              <p-iconfield iconPosition="left" class="ml-auto">
+                                                <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                                                <input pInputText type="text" (input)="ferroCarro.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+                                              </p-iconfield>
+                                            </div>
+                                          </ng-template>
+                                          <ng-template #header>
+                                            <tr>
+                                              <th pSortableColumn="TipoContenedor">TipoContenedor&nbsp;<p-sortIcon field="TipoContenedor" /></th>
+                                              <th pSortableColumn="PesoContenedorVacio">PesoContenedorVacio&nbsp;<p-sortIcon field="PesoContenedorVacio" /></th>
+                                              <th pSortableColumn="PesoNetoMercancia">PesoNetoMercancia&nbsp;<p-sortIcon field="PesoNetoMercancia" /></th>
+                                            </tr>
+                                          </ng-template>
+                                          <ng-template #body let-carConten>
+                                            <tr>
+                                              <td>{{carConten.TipoContenedor}}</td>
+                                              <td>{{carConten.PesoContenedorVacio}}</td>
+                                              <td>{{carConten.PesoNetoMercancia}}</td>
+                                            </tr>
+                                          </ng-template>
+                                          <ng-template pTemplate="emptymessage">
+                                            <tr>
+                                              <td colspan="3" class="text-center py-4">
+                                                <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                                                <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                                  {{'no_rows' | translate}}
+                                                </p>
+                                              </td>
+                                            </tr>
+                                          </ng-template>
+                                        </p-table>
+                                      </td>
+                                    </tr>
+                                  }
+                                </ng-template>
+                                <ng-template pTemplate="emptymessage">
+                                  <tr>
+                                    <td colspan="5" class="text-center py-4">
+                                      <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                                      <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                        {{'no_rows' | translate}}
+                                      </p>
+                                    </td>
+                                  </tr>
+                                </ng-template>
+                              </p-table>
+                            </td>
+                          </tr>
+                        }
+                      </ng-template>
+                      <ng-template pTemplate="emptymessage">
+                        <tr>
+                          <td colspan="6" class="text-center py-4">
+                            <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                            <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                              {{'no_rows' | translate}}
+                            </p>
+                          </td>
+                        </tr>
+                      </ng-template>
+                    </p-table>
+                    <p-divider/>
+                    <div class="col-12 explain">
+                      <h6 class="title">{{'transport_parts' | translate}}</h6>
+                    </div>
+                    <p-table #conceptTranspAereo [value]="cporte.PartesTransporte" dataKey="id" [resizableColumns]="true" responsiveLayout="stack"
+                      [globalFilterFields]="['ParteTransporte','IdPartesTransporte']">
+                      <ng-template #caption>
+                        <div class="flex">
+                          <p-iconfield iconPosition="left" class="ml-auto">
+                            <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                            <input pInputText type="text" (input)="conceptTranspAereo.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+                          </p-iconfield>
+                        </div>
+                      </ng-template>
+                      <ng-template #header>
+                        <tr>
+                          <th pSortableColumn="ParteTransporte">ParteTransporte&nbsp;<p-sortIcon field="ParteTransporte" /></th>
+                          <th pSortableColumn="IdPartesTransporte">IdPartesTransporte&nbsp;<p-sortIcon field="IdPartesTransporte" /></th>
+                        </tr>
+                      </ng-template>
+                      <ng-template #body let-mariTimo>
+                        <tr>
+                          <td>{{mariTimo.ParteTransporte}}</td>
+                          <td>{{mariTimo.IdPartesTransporte}}</td>
+                        </tr>
+                      </ng-template>
+                      <ng-template pTemplate="emptymessage">
+                        <tr>
+                          <td colspan="2" class="text-center py-4">
+                            <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                            <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                              {{'no_rows' | translate}}
+                            </p>
+                          </td>
+                        </tr>
+                      </ng-template>
+                    </p-table>
+                    <p-divider/>
+                    <div class="col-12 explain">
+                      <h6 class="title">{{'transport_figure' | translate}}</h6>
+                    </div>
+                    <p-table #conceptMercancia [value]="cporte.FiguraTransporte" dataKey="id" [resizableColumns]="true" responsiveLayout="stack"
+                      [globalFilterFields]="['TipoFigura','RFCFigura','NumLicencia','NombreFigura']">
+                      <ng-template #caption>
+                        <div class="flex">
+                          <p-iconfield iconPosition="left" class="ml-auto">
+                            <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                            <input pInputText type="text" (input)="conceptMercancia.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+                          </p-iconfield>
+                        </div>
+                      </ng-template>
+                      <ng-template #header>
+                        <tr>
+                          <th pSortableColumn="TipoFigura">TipoFigura&nbsp;<p-sortIcon field="TipoFigura" /></th>
+                          <th pSortableColumn="RFCFigura">RFCFigura&nbsp;<p-sortIcon field="RFCFigura" /></th>
+                          <th pSortableColumn="NumLicencia">NumLicencia&nbsp;<p-sortIcon field="NumLicencia" /></th>
+                          <th pSortableColumn="NombreFigura">NombreFigura&nbsp;<p-sortIcon field="NombreFigura" /></th>
+                        </tr>
+                      </ng-template>
+                      <ng-template #body let-figut>
+                        <tr>
+                          <td>{{figut.TipoFigura}}</td>
+                          <td>{{figut.RFCFigura}}</td>
+                          <td>{{figut.NumLicencia}}</td>
+                          <td>{{figut.NombreFigura}}</td>
+                        </tr>
+                      </ng-template>
+                      <ng-template pTemplate="emptymessage">
+                        <tr>
+                          <td colspan="4" class="text-center py-4">
+                            <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                            <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                              {{'no_rows' | translate}}
+                            </p>
+                          </td>
+                        </tr>
+                      </ng-template>
+                    </p-table>
+                  }
+                }
+
+                <div class="col-12">
+                  <span class="fw-bold text-secondary">📋 {{'merchandise_dist_unit' | translate}}</span>
+                  <p-table #gralBuyList [value]="transporte.articulos" [(selection)]="transporte.articulos_seleccionados" dataKey="articulo" [globalFilterFields]="['folio_compra']" showGridlines [resizableColumns]="true" 
+                    [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]">
+                    <ng-template #caption>
+                      <div class="flex" style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;" ngbDropdown>
+                        <p-iconfield iconPosition="left" class="ml-auto">
+                          <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                          <input pInputText type="text" (input)="gralBuyList.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+                        </p-iconfield>
+                      </div>
+                    </ng-template>
+                    <ng-template #header>
+                      <tr>
+                        <th style="width: 4rem"><p-tableHeaderCheckbox [disabled]="tieneArticulosIncompletos(transporte.articulos)"/></th>
+                        <th pResizableColumn pSortableColumn="compra_relacionada_folio">{{'purchase_folio' | translate}}&nbsp;<p-sortIcon field="compra_relacionada_folio" /></th>
+                        <th pResizableColumn pSortableColumn="articulo">{{'article' | translate}}&nbsp;<p-sortIcon field="articulo" /></th>
+                        <th pResizableColumn pSortableColumn="cantidad_llego">{{'purchased_quantity' | translate}}&nbsp;<p-sortIcon field="cantidad_llego" /></th>
+                        <th pResizableColumn pSortableColumn="cantidad_pendiente_transito">{{'pending_shipping_quantity' | translate}}&nbsp;<p-sortIcon field="cantidad_pendiente_transito" /></th>
+                        <th pSortableColumn="unidad_medida">{{'uni_med' | translate}}&nbsp;<p-sortIcon field="unidad_medida" /></th>
+                        <th pSortableColumn="efecto_fiscal">{{'fisc_effect' | translate}}&nbsp;<p-sortIcon field="efecto_fiscal" /></th>
+                        <th>{{'sku' | translate}}</th>
+                        <th>{{'code_type' | translate}}</th>
+                        <th>{{'gs1_identifier' | translate}}</th>
+                      </tr>
+                    </ng-template>
+                    <ng-template #body let-cBuy let-rowIndex="rowIndex">
+                      <tr>
+                        <td>
+                          <p-tableCheckbox [value]="cBuy" 
+                            [disabled]="cBuy.cantidad_transitar == 0 || cBuy.cantidad_transitar > cBuy.cantidad_pendiente_transito || cBuy.sku === '' || cBuy.upc === '' || cBuy.cantidad === ''"
+                          />
+                        </td>
+                        <td>{{cBuy.compra_relacionada_folio}}</td>
+                        <td>{{cBuy.articulo}}</td>
+                        <td>{{cBuy.cantidad_llego}}</td>
+                        <td><input class="validate" name="articuloCantidad_{{rowIndex}}" type="number" [value]="cBuy.cantidad_pendiente_transito" (keyup)="articulo_cantidad($event.target,cBuy);"></td>
+                        <td>{{cBuy.unidad_medida}}</td>
+                        <td>{{cBuy.efecto_fiscal}}</td>
+                        <td>
+                          @if (cBuy.reg_sku != '') {
+                            {{cBuy.reg_sku}}
+                          } @else {
+                            <input class="validate" name="articuloSku_{{rowIndex}}" type="text" [value]="cBuy.new_sku" (keyup)="articulo_sku($event.target,cBuy,transporte);">
+                          }
+                        </td>
+                        <td>
+                          @if (cBuy.reg_tipo_llave_gs1 != '') {
+                            {{cBuy.reg_tipo_llave_gs1}}
+                          } @else {
+                            <div class="col-12 input-group">
+                              <p-select [options]="code_gs1_llaves_tipos" id="articuloGs1tipos_{{rowIndex}}" name="articuloGs1tipos_{{rowIndex}}" optionLabel="valor" [filter]="true" filterBy="valor" optionValue="clave"
+                                appendTo="body" [showClear]="true" [placeholder]="'opt_select' | translate" class="w-full md:w-56" (onChange)="articulo_gs1_declara_tipo($event.value,cBuy,transporte,rowIndex);">
+                                <ng-template #selectedItem let-selectedOption>
+                                  <div class="flex items-center gap-2"><div>{{selectedOption.valor}}</div></div>
+                                </ng-template>
+                                <ng-template let-dep #item>
+                                  <div class="flex items-center gap-2"><div>{{dep.valor}}</div></div>
+                                </ng-template>
+                              </p-select>
+                            </div>
+                          }
+                        </td>
+                        <td>
+                          @if (cBuy.reg_codigo_gs1 != '') {
+                            {{cBuy.reg_codigo_gs1}}
+                          } @else {
+                            <input class="validate" name="articuloUpc_{{rowIndex}}" 
+                              type="text" [value]="cBuy.new_codigo_gs1" 
+                              [placeholder]="obtenerPlaceholder(cBuy.tipo_llave_gs1)" 
+                              [maxLength]="obtenerMaxlength(cBuy.tipo_llave_gs1)" (keyup)="articulo_gs1_key($event.target,cBuy);">
+                          }
+                        </td>
+                      </tr>
+                    </ng-template>
+                    <ng-template pTemplate="emptymessage">
+                      <tr>
+                        <td colspan="10" class="text-center py-4">
+                          <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                          <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                            {{'no_rows' | translate}}
+                          </p>
+                        </td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+
+    <div class="col-12 mb-3">
+      <button type="button" class="btn btn-outline-primary" (click)="anadirTransporte()"><i class="fa-solid fa-plus"></i> {{'add_another_transport' | translate}}</button>
+    </div>
+
+    <p-divider/>
+
+    <div class="col-12 input-group">
+      <label for="especificacionesTransporte" class="activeInput">{{'global_specs_route_notes' | translate}}</label>
+      <textarea class="validate" id="especificacionesTransporte" name="especificacionesTransporte" (keyup)="especificaciones_transporte($event.target);" minlength="5" style="max-height: 80px!important;"></textarea>
+    </div>
+    
+    <div class="col-12 field_file_drop">
+      <ngx-file-drop dropZoneLabel="Drop files here" (onFileDrop)="droppedTransito($event)" (onFileOver)="fileOverTransito($event)" (onFileLeave)="fileLeaveTransito($event)">
+        <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">            
+          <a class="btn btn_load_file" type="button" style="color: #0782d0 !important;" (click)="openFileSelector()">
+            {{'load_files' | translate}} / {{'browse_files' | translate}}
+          </a>
+        </ng-template>
+      </ngx-file-drop>
+    
+      <p-table #docsList [value]="anexosTransitoFiles" [globalFilterFields]="['relativePath']" dataKey="id" [resizableColumns]="true" responsiveLayout="stack">
+        <ng-template #caption>
+          <div class="flex">
+            <p-iconfield iconPosition="left" class="ml-auto">
+              <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+              <input pInputText type="text" (input)="docsList.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+            </p-iconfield>
+          </div>
+        </ng-template>
+        <ng-template #header>
+          <tr>
+            <th>{{'file' | translate}}</th>
+            <th class="ultimo"></th>
+          </tr>
+        </ng-template>
+        <ng-template #body let-item let-rowIndex="rowIndex">
+          <tr>
+            <td><strong>{{ item.relativePath }}</strong></td>
+            <td class="ultimo">
+              <a class="btn btn_extend text-bg-danger rounded-3" (click)="deleteAnexosTransito(rowIndex);">
+                <i class="fa-solid fa-xmark"></i>
+              </a>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="2" class="text-center py-4">
+              <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+              <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                {{'no_rows' | translate}}
+              </p>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+
+    <div class="col-12 row mt-3">
+      <div class="col-12 flex justify-content-end">
+        <button class="btn text-bg-success rounded-3" type="submit" [ngClass]="!validaFormInicioTransitoCompra ? 'disabled' : ''" 
+          [attr.disabled]="!validaFormInicioTransitoCompra ? true : null" [attr.aria-disabled]="!validaFormInicioTransitoCompra ? true : null">
+          <i class="fa-solid fa-floppy-disk"></i>&nbsp;{{'settle_event_timeline' | translate}}
+        </button>
+      </div>
+    </div>
+  </form>
+}

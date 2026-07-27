@@ -1,0 +1,348 @@
+<div class="col-12 explain">
+  <h6 class="title">Fecha tentativa de salida:</h6>
+  <h6 class="content">{{compra_fecha_tentativa_salida}}</h6>
+</div>
+
+@if (view_form_inicio_logistica) {
+  <form class="row formDataLogistica" #formDataLogistica="ngForm" [formGroup]="phoneForm" autocomplete="off" (ngSubmit)="validaFormInicioTransitoCompra && registraInicioTransitoCompra(formDataLogistica);">
+    <div class="col-12 row">
+      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+        <label for="fechaSalidaCompra" class="activeInput"><span class="obligatorio">Fecha de salida</span></label>
+        <input class="validate datepicker" id="fechaSalidaCompra" name="fechaSalidaCompra" type="date" required (keyup)="select_fecha_real_salida($event.target);">
+      </div>
+  
+      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+        <label for="tipoTransporte" class="activeInput"><span class="obligatorio">Tipo de transporte</span></label>
+        <p-select [options]="listaTipoTransporte" id="tipoTransporte" name="tipoTransporte" optionLabel="valor" [filter]="true" filterBy="valor" optionValue="clave" 
+          appendTo="body" [showClear]="true" [placeholder]="'opt_select' | translate" class="w-full md:w-56" (onChange)="select_tipo_transporte($event.value);">
+          <ng-template #selectedItem let-selectedOption>
+            <div class="flex items-center gap-2">
+              <div>{{selectedOption.valor}}</div>
+            </div>
+          </ng-template>
+        </p-select>
+      </div>
+      
+      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+        <label for="fact_xml_traslado" class="activeInput">{{'cfdi_xml_import' | translate}}</label>
+        <input class="form-control" id="fact_xml_traslado" name="fact_xml_traslado" type="file" placeholder="XML" accept=".xml" (change)="cargaXmlCompra($event,$event.target);" style="padding: 0;line-height: 30px;width: 100%!important;">
+      </div>
+  
+      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+        <label for="tipoTransporte" class="activeInput">{{'cfdi_pdf_import' | translate}}</label>
+        <input class="form-control" id="facturapdf" id="facturapdf" type="file" name="facturaCompraPdf" [ngClass]="resultXml != 'validoXml' ? 'disabled' : ''" style="padding: 0;line-height: 30px;width: 100%!important;"
+          [attr.disabled]="resultXml != 'validoXml' ? true : null" [attr.aria-disabled]="resultXml != 'validoXml' ? true : null"
+          accept=".pdf" placeholder="PDF" (change)="resultXml == 'validoXml' && escanPdfCompra($event,$event.target);">
+      </div>
+
+      <p-divider [attr.style]="'margin-top: 15px!important; margin-bottom: 5px!important;'" />
+      <div class="col-12 explain">
+        <h6 class="title">Detalles operativos de la unidad:</h6>
+      </div>
+      
+      @if (logisticBuyModel.transporte_tipo === 'terrestre') {
+        <div class="col-12 col-sm-6 col-md-4 input-group">
+          <label for="placasTractor" class="activeInput"><span class="obligatorio">Placas del camión / tractor</span></label>
+          <input class="validate" id="placasTractor" name="placasTractor" type="text" required (keyup)="captura_placas_camion($event.target);">
+        </div>
+        <div class="col-12 col-sm-6 col-md-4 input-group">
+          <label for="placasRemolque" class="activeInput">Placas del remolque / caja</label>
+          <input class="validate" id="placasRemolque" name="placasRemolque" type="text" (keyup)="captura_placas_remolque($event.target);">
+        </div>
+        <div class="col-12 col-sm-12 col-md-4 input-group">
+          <label for="permisoSct" class="activeInput">Permiso SCT / SICT</label>
+          <input class="validate" id="permisoSct" name="permisoSct" type="text" (keyup)="captura_permiso_sct($event.target);">
+        </div>
+      }
+
+      @if (logisticBuyModel.transporte_tipo === 'maritimo') {
+        <div class="col-12 col-sm-6 col-md-6 input-group">
+          <label for="numeroContenedor" class="activeInput"><span class="obligatorio">ID de Contenedor (Container No.)</span></label>
+          <input class="validate" id="numeroContenedor" name="numeroContenedor" type="text" required placeholder="Ej. CSNU1234567" (keyup)="captura_contenedor($event.target);">
+        </div>
+        <div class="col-12 col-sm-6 col-md-6 input-group">
+          <label for="bookingNumber" class="activeInput"><span class="obligatorio">Booking Number / Reserva</span></label>
+          <input class="validate" id="bookingNumber" name="bookingNumber" type="text" required (keyup)="captura_booking($event.target);">
+        </div>
+      }
+
+      @if (logisticBuyModel.transporte_tipo === 'aereo') {
+        <div class="col-12 col-sm-6 col-md-6 input-group">
+          <label for="guiaAerea" class="activeInput"><span class="obligatorio">Número de Guía Aérea (AWB)</span></label>
+          <input class="validate" id="guiaAerea" name="guiaAerea" type="text" required placeholder="000-00000000" (keyup)="captura_guia_aerea($event.target);">
+        </div>
+        <div class="col-12 col-sm-6 col-md-6 input-group">
+          <label for="codigoVuelo" class="activeInput">Código de Vuelo</label>
+          <input class="validate" id="codigoVuelo" name="codigoVuelo" type="text" (keyup)="captura_codigo_vuelo($event.target);">
+        </div>
+      }
+
+      <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6 input-group">
+        <label for="logisticaOperador" class="activeInput"><span class="obligatorio">Operador</span></label>
+        <input class="validate" id="logisticaOperador" name="logisticaOperador" type="text" required (keyup)="salida_nombre_operador($event.target);">
+      </div>
+
+      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 input-group">
+        <label for="telefonoOperador" class="activeInput"><span class="obligatorio">Tel&eacute;fono de contacto del operador</span></label>
+        <!--<input class="validate" id="telefonoOperador" name="telefonoOperador" type="tel" (keyup)="keyupTrabContTelefonoNumero($event.target);">-->
+        <ngx-material-intl-tel-input id="telefonoOperador" [fieldControl]="phoneForm.get('telefono')"
+          [preferredCountries]="preferredCountries" [enablePlaceholder]="true" maxLength="15" name="phone"
+          (input)="probarTextPhone();keyupTrabContTelefonoNumero($event);">
+        </ngx-material-intl-tel-input>
+      </div>
+
+      <div class="col-12 input-group">
+        <label for="especificacionesTransporte" class="activeInput"><span class="obligatorio">Especificaciones adicionales / Incidencias del transporte</span></label>
+        <textarea class="validate" id="especificacionesTransporte" name="especificacionesTransporte" (keyup)="especificaciones_transporte($event.target);" minlength="5" style="max-height: 80px!important;"></textarea>
+      </div>
+
+      <p-divider [attr.style]="'margin-top: 10px!important;'" />
+      <div class="col-12 explain">
+        <h6 class="title">Destino:</h6>
+      </div>
+      
+      <div class="col-12">
+        <div class="form-check radio_check" style="line-height: 20px !important;">
+          <input class="form-check-input" type="radio" name="punto_ent_recept" value="establecimiento_final" [checked]="logisticBuyModel.tipoLugarDestino == 'establecimiento_final'" (click)="tipoDireccionDestino($event.target);">
+          <label class="form-check-label" for="punto_ent_recept">{{compra_estab_direccion}}</label>
+        </div>
+        <div class="form-check radio_check" style="line-height: 20px !important;">
+          <input class="form-check-input" type="radio" name="punto_ent_recept" value="otro" [checked]="logisticBuyModel.tipoLugarDestino == 'otro'" (click)="tipoDireccionDestino($event.target);">
+          <label class="form-check-label" for="punto_ent_recept">Otro</label>
+        </div>
+      </div>
+
+      @if (logisticBuyModel.tipoLugarDestino == 'otro') {
+        <div class="col-12 input-group">
+          <label class="activeInput">Describa destino</label>
+          <textarea class="validate" id="txtCodPostalUbicacionExt" name="txtCodPostalSucExt" (keyup)="describeDireccionDestino($event.target);" minlength="5" style="max-height: 80px!important;"></textarea>
+        </div>
+      }
+
+      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+        <label for="fechaTentativaLlegada" class="activeInput"><span class="obligatorio">Fecha tentativa de llegada</span></label>
+        <input class="validate datepicker" id="fechaTentativaLlegada" name="fechaTentativaLlegada" type="date" required (keyup)="select_fecha_tentativa_llegada($event.target);">
+      </div>
+      
+      <p-table #gralBuyList [value]="listado_articulos" [globalFilterFields]="['folio_compra']" showGridlines [resizableColumns]="true" 
+        [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]">
+        <ng-template #caption>
+          <div class="flex" style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;" ngbDropdown>
+            <p-iconfield iconPosition="left" class="ml-auto">
+              <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+              <input pInputText type="text" (input)="gralBuyList.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+            </p-iconfield>
+          </div>
+        </ng-template>
+        <ng-template #header>
+          <tr>
+            <th pResizableColumn pSortableColumn="articulo">articulo&nbsp;<p-sortIcon field="articulo" /></th>
+            <th pResizableColumn pSortableColumn="cantidad">cantidad&nbsp;<p-sortIcon field="cantidad" /></th>
+            <th pSortableColumn="unidad_medida">{{'uni_med' | translate}}&nbsp;<p-sortIcon field="unidad_medida" /></th>
+            <th pSortableColumn="efecto_fiscal">{{'fisc_effect' | translate}}&nbsp;<p-sortIcon field="efecto_fiscal" /></th>
+            <th>sku</th>
+            <th>upc</th>
+          </tr>
+        </ng-template>
+        <ng-template #body let-cBuy let-rowIndex="rowIndex">
+          <tr>
+            <td>{{cBuy.articulo}}</td>
+            <td>{{cBuy.cantidad}}</td>
+            <td>{{cBuy.unidad_medida}}</td>
+            <td>{{cBuy.efecto_fiscal}}</td>
+            <td><input class="validate" name="articuloSku_{{rowIndex}}" type="text" [(ngModel)]="cBuy.sku" (keyup)="articulo_sku($event.target,cBuy);"></td>
+            <td><input class="validate" name="articuloUpc_{{rowIndex}}" type="text" [(ngModel)]="cBuy.upc" (keyup)="articulo_upc($event.target,cBuy);"></td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="6" class="text-center py-4">
+              <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+              <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                {{'no_rows' | translate}}
+              </p>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+
+      <div class="col-12 field_file_drop">
+        <ngx-fi-le-drop dropZoneLabel="Drop files here" (onFileDrop)="droppedLogistica($event)" (onFileOver)="fileOverLogistica($event)" (onFileLeave)="fileLeaveLogistica($event)">
+          <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
+            {{'load_files' | translate}} / {{'browse_files' | translate}}
+            <a class="btn btn_load_file" type="button" style="color: #0782d0 !important;" (click)="openFileSelector()">
+              {{'browse_files' | translate}}
+            </a>
+          </ng-template>
+        </ngx-file-drop>
+      
+        <p-table #docsList [value]="anexosLogisticaFiles" [globalFilterFields]="['relativePath']" dataKey="id" [resizableColumns]="true" responsiveLayout="stack">
+          <ng-template #caption>
+            <div class="flex">
+              <p-iconfield iconPosition="left" class="ml-auto">
+                <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                <input pInputText type="text" (input)="docsList.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+              </p-iconfield>
+            </div>
+          </ng-template>
+          <ng-template #header>
+            <tr>
+              <th>{{'file' | translate}}</th>
+              <th class="ultimo"></th>
+            </tr>
+          </ng-template>
+          <ng-template #body let-item let-rowIndex="rowIndex">
+            <tr>
+              <td><strong>{{ item.relativePath }}</strong></td>
+              <td class="ultimo">
+                <a class="btn btn_extend text-bg-danger rounded-3" (click)="deleteAnexosLogistica(rowIndex);">
+                  <i class="fa-solid fa-xmark"></i>
+                </a>
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="2" class="text-center py-4">
+                <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                  {{'no_rows' | translate}}
+                </p>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+      
+      <div class="col-12 row">
+        <div class="col-12 col-sm-12 col-md-6 col-lg-8 col-xl-8 col-xxl-9"></div>
+        <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3" style="display: flex !important;justify-content: end!important;">
+          <button class="btn btn_extend text-bg-success rounded-3" type="submit" name="btnAltaProducto2" [ngClass]="!validaFormInicioTransitoCompra ? 'disabled' : ''" 
+            [attr.disabled]="!validaFormInicioTransitoCompra ? true : null" [attr.aria-disabled]="!validaFormInicioTransitoCompra ? true : null">
+            <i class="fa-solid fa-floppy-disk" style="height: 15px!important;line-height: 15px!important;width: 15px!important;font-size: small!important;"></i>&nbsp;{{'sav_cam' | translate}}</button>
+        </div>
+      </div>
+    </div>
+  </form>
+}
+
+
+<?xml version="1.0" encoding="UTF-8"?>
+<cfdi:Comprobante 
+    xmlns:cfdi="http://www.sat.gob.mx/cfd/4" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://www.sat.gob.mx/cfd/4 http://www.sat.gob.mx/sitio_internet/cfd/4/cfdv40.xsd" 
+    Version="4.0" 
+    Serie="TRA" 
+    Folio="000125" 
+    Fecha="2026-05-25T11:15:00" 
+    Sello="...Sello Digital del Emisor..." 
+    NoCertificado="00001000000500000000" 
+    Certificado="...Certificado..." 
+    SubTotal="0" 
+    Moneda="XXX" 
+    Total="0" 
+    TipoDeComprobante="T" 
+    Exportacion="01" 
+    LugarExpedicion="56600"> <!-- CP del Almacén Origen -->
+
+    <!-- EMISOR: Tus datos fiscales como empresa de logística/compras -->
+    <cfdi:Emisor 
+        Rfc="SOS251215AAA" 
+        Nombre="SOLUCIONES OPORTUNAS SIMPLES GA" 
+        RegimenFiscal="601"/> <!-- General de Ley Personas Morales -->
+
+    <!-- RECEPTOR: Al ser traslado interno, eres tú mismo con uso Sin Efectos Fiscales -->
+    <cfdi:Receptor 
+        Rfc="SOS251215AAA" 
+        Nombre="SOLUCIONES OPORTUNAS SIMPLES GA" 
+        DomicilioFiscalReceptor="56600" 
+        RegimenFiscalReceptor="601" 
+        UsoCFDI="S01"/> <!-- S01 = Sin efectos fiscales -->
+
+    <!-- CONCEPTOS: Detalle de las prendas que se transportan -->
+    <cfdi:Conceptos>
+        
+        <!-- Concepto 1: Playeras de algodón -->
+        <cfdi:Concepto 
+            ClaveProdServ="53101602"
+            NoIdentificacion="SKU-PLAYERA-01" 
+            Cantidad="500.00" 
+            ClaveUnidad="H87"
+            Unidad="PIEZA" 
+            Descripcion="Playeras de algodon manga corta varios colores" 
+            ValorUnitario="0.00"
+            Importe="0.00"
+            ObjetoImp="01"/> <!-- 01 = No objeto de impuesto -->
+
+        <!-- Concepto 2: Pantalones de Mezclilla -->
+        <cfdi:Concepto 
+            ClaveProdServ="53101501"
+            NoIdentificacion="SKU-JEANS-02" 
+            Cantidad="350.00" 
+            ClaveUnidad="H87"
+            Unidad="PIEZA" 
+            Descripcion="Pantalones de mezclilla azul para caballero" 
+            ValorUnitario="0.00"
+            Importe="0.00"
+            ObjetoImp="01"/> <!-- 01 = No objeto de impuesto -->
+
+    </cfdi:Conceptos>
+
+    <!-- Nota: No lleva nodo <cfdi:Impuestos> -->
+    
+</cfdi:Comprobante>
+
+<?xml version="1.0" encoding="UTF-8"?>
+<cfdi:Comprobante 
+    xmlns:cfdi="http://www.sat.gob.mx/cfd/4" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xmlns:cartaporte30="http://www.sat.gob.mx/CartaPorte30"
+    xsi:schemaLocation="http://www.sat.gob.mx/cfd/4 http://www.sat.gob.mx/sitio_internet/cfd/4/cfdv40.xsd http://www.sat.gob.mx/CartaPorte30 http://www.sat.gob.mx/sitio_internet/cfd/CartaPorte/CartaPorte30.xsd" 
+    Version="4.0" 
+    Serie="TRA" 
+    Folio="000126" 
+    Fecha="2026-05-25T11:30:00" 
+    Sello="...Sello Digital..." 
+    NoCertificado="00001000000500000000" 
+    Certificado="...Certificado..." 
+    SubTotal="0" 
+    Moneda="XXX" 
+    Total="0" 
+    TipoDeComprobante="T" 
+    Exportacion="01" 
+    LugarExpedicion="56600">
+	<cfdi:Emisor Rfc="SOS251215AAA" Nombre="SOLUCIONES OPORTUNAS SIMPLES GA" RegimenFiscal="601"/>
+	<cfdi:Receptor Rfc="SOS251215AAA" Nombre="SOLUCIONES OPORTUNAS SIMPLES GA" DomicilioFiscalReceptor="56600" RegimenFiscalReceptor="601" UsoCFDI="S01"/>
+	<cfdi:Conceptos>
+		<cfdi:Concepto ClaveProdServ="53101602" Cantidad="500.00" ClaveUnidad="H87" Unidad="PIEZA" Descripcion="Playeras de algodon manga corta varios colores" ValorUnitario="0.00" Importe="0.00" ObjetoImp="01"/>
+		<cfdi:Concepto ClaveProdServ="53101501" Cantidad="350.00" ClaveUnidad="H87" Unidad="PIEZA" Descripcion="Pantalones de mezclilla azul para caballero" ValorUnitario="0.00" Importe="0.00" ObjetoImp="01"/>
+	</cfdi:Conceptos>
+	<cfdi:Complemento>
+		<cartaporte30:CartaPorte 
+            Version="3.0" 
+            TranspInternac="No" 
+            TotalDistRec="120.00" 
+            IdCCP="ccc12345-6789-40ab-a123-1234567890ab">
+			<cartaporte30:Ubicaciones>
+				<cartaporte30:Ubicacion TipoUbicacion="Origen" IDUbicacion="OR000001" RFCRemitente="SOS251215AAA" FechaHoraSalida="2026-05-25T14:00:00">
+					<cartaporte30:Domicilio Calle="Av. Central" NumExterior="100" Colonia="0024" Municipio="025" Estado="MEX" Pais="MEX" CodigoPostal="56600"/>
+				</cartaporte30:Ubicacion>
+				<cartaporte30:Ubicacion TipoUbicacion="Destino" IDUbicacion="DE000001" RFCDestinatario="SOS251215AAA" FechaHoraProgLlegada="2026-05-25T16:30:00" DistanciaRecorrer="120.00">
+					<cartaporte30:Domicilio Calle="Blvd. Norte" NumExterior="50" Colonia="0115" Municipio="005" Estado="PUE" Pais="MEX" CodigoPostal="72000"/>
+				</cartaporte30:Ubicacion>
+			</cartaporte30:Ubicaciones>
+			<cartaporte30:Mercancias PesoBrutoTotal="425.00" UnidadPeso="KGM" NumTotalMercancias="2">
+				<cartaporte30:Mercancia BienesTrans="53101602" Descripcion="Playeras de algodon manga corta" Cantidad="500.00" ClaveUnidad="H87" PesoEnKg="175.00"/>
+				<cartaporte30:Mercancia BienesTrans="53101501" Descripcion="Pantalones de mezclilla azul" Cantidad="350.00" ClaveUnidad="H87" PesoEnKg="250.00"/>
+				<cartaporte30:Autotransporte PermSCT="TPXX00" NumPermisoSCT="PermisoNoRequerido">
+					<cartaporte30:IdentificacionVehicular ConfigVehicular="C2" PlacaVM="LE1234A" AnioModeloVM="2022"/>
+					<cartaporte30:Seguros AseguraRespCivil="Seguros Tepeyac S.A." PolizaRespCivil="POL-998877A"/>
+				</cartaporte30:Autotransporte>
+			</cartaporte30:Mercancias>
+			<cartaporte30:FiguraTransporte>
+				<cartaporte30:TiposFigura TipoFigura="01" RFCFigura="PERJ850510XX1" NumLicencia="LIC-MEX-99221" NombreFigura="JUAN PEREZ RODRIGUEZ"/>
+			</cartaporte30:FiguraTransporte>
+		</cartaporte30:CartaPorte>
+	</cfdi:Complemento>
+</cfdi:Comprobante>

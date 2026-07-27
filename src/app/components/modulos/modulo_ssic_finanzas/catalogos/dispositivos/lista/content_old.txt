@@ -1,0 +1,1616 @@
+					<div class="col-12 col-sm-3 col-md-3 col-lg-2"></div>
+					<div class="col-12 col-sm-6 col-md-3 col-lg-2"><a style="width:100%!important;" (click)="clickEscannerrqdevice();" class="btn btnGuardar btnRow waves-light">&#xf029; Buscar por QR</a></div>
+					<div class="col-12 col-sm-3 col-md-3 col-lg-2"></div>
+
+					<div class="col-12 col-sm-3 col-md-3 col-lg-2"></div>
+					<div class="col-12 col-sm-6 col-md-3 col-lg-2 noneView" id="readerrqDispositivo">
+						<div id="camerarqDispositivo" style="height: 400px;width: 100%;margin-top: 10px;
+										background-color: #353535;border-radius: 8px;"></div>
+					</div>
+					<div class="col-12 col-sm-3 col-md-3 col-lg-2"></div>
+
+					<div class="col-12 row">
+						<div class="col-12 col-sm-12 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+							<h6>Dispositivos vigentes</h6>
+							<div class="busqueda row">
+								<div class="col s1 m2 col-md-3 col-lg-2">
+									<a class="btn" placement="top" tooltip="Registrar nueva cuenta"><i class="fa-solid fa-cart-shopping"></i></a>
+								</div>
+								<div class="col s1 m2 col-md-3 col-lg-2">
+									<a class="btn" placement="top" tooltip="Buscar por banco"><i class="fa-solid fa-cart-shopping"></i></a>
+								</div>
+								<div class="col s1 m2 col-md-3 col-lg-2">
+									<a class="btn" placement="top" tooltip="Buscar por no. cuenta"><i class="fa-solid fa-cart-shopping"></i></a>
+								</div>
+								<div class="col s9 m6 col-md-3 col-lg-2">
+									<input class="datasearch" type="text" id="buscaprod" disabled
+										placeholder="{{'bus_car' | translate}}">
+								</div>
+							</div>
+							<div class="col-12">
+								<table class="centered responsive-table" cellspacing="0" cellpadding="0">
+									<thead>
+										<tr>
+											<th>Folio</th>
+											<th>Tipo de dispositivo</th>
+											<th>Alias</th>
+											<th class="ultimo"></th>
+											<th class="ultimo"></th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr *ngFor="let trDisp of arrayListaDispositivo">
+											<td class="noneView">{{trDisp.token_dispositivos}}</td>
+											<td>{{trDisp.folio}}</td>
+											<td>{{trDisp.tipo}}</td>
+											<td>{{trDisp.alias}}</td>
+											<td><a class="btn btn_extend bg-indigo-600" data-bs-toggle="modal" data-bs-target="#modalViewDisp" (click)="functViewDispositivo(trDisp.token_dispositivos);"><i class="fa-solid fa-info"></i></a></td>
+											<td><a class="btn btn_extend text-bg-danger rounded-3" (click)="functDelDispositivo($event.target);"><i class="fa-solid fa-eraser"></i></a></td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+
+							<div class="modal fade" id="modalViewDisp" tabindex="-1" role="dialog" aria-labelledby="modalViewDispLabel" aria-hidden="true">
+								<div class="modal-dialog">
+									<div class="modal-content">
+										<div class="modal-header">
+											<h1 class="modal-title fs-5 bg-blue-ModalTitle" id="modalViewDispLabel">PERFIL DE MONEDERO ELECTR&Oacute;NICO</h1>
+											<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: transparent !important;"></button>
+										</div>
+										<div class="modal-body">
+											<div class="col-12" *ngFor="let divDetDispositivo of arrayDetListDispositivo">
+												<div class="form">
+													<div class="data-reg row">
+														<div class="col-12 col-sm-2 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+														<div class="logotipo col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+															<div class="input-field file-field">
+																<div id="btnAddLogotipoServ" class="btn">
+																	<img class="circle responsive-img"
+																		src="{{divDetDispositivo.rqCode}}" alt="">
+																</div>
+															</div>
+														</div>
+		
+														<div class="logotipo col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2" *ngIf="divDetDispositivo.logotypo != ''">
+															<div class="input-field file-field" placement="top" tooltip="INGRESE EL LOGOTIPO DE SU PRODUCTO">
+																<input type="file" id="logotipoServ" name="logotipo_servicio"
+																	multiple>
+																<div id="btnAddLogotipoServ" class="btn">
+																	<img class="circle responsive-img"
+																		src="{{divDetDispositivo.logotypo}}" alt="">
+																</div>
+															</div>
+														</div>
+		
+														<div class="logotipo col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2" *ngIf="divDetDispositivo.logotypo == ''">
+															<div class="input-field file-field" placement="top" tooltip="INGRESE EL LOGOTIPO DE SU PRODUCTO">
+																<input type="file" id="logotipoServ" name="logotipo_servicio"
+																	multiple>
+																<div id="btnAddLogotipoServ" class="btn">
+																	<span id="spanImgPerfil">&#xf030;</span>
+																</div>
+															</div>
+														</div>
+		
+														<div class="col-12 col-sm-2 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+		
+														<div class="col-12">
+															<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+																<div class="info">
+																	<p class="titulo tituloFolio">Folio registrado</p>
+																	<p class="registro">{{divDetDispositivo.folio_dispositivo}}
+																	</p>
+																</div>
+															</div>
+															<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+																<div class="info">
+																	<p class="titulo tituloFolio">Fecha de registro</p>
+																	<p class="registro">{{divDetDispositivo.fecha_alta}}</p>
+																</div>
+															</div>
+														</div>
+														<div class="col-12">
+															<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+																<div class="input-field">
+																	<select name="tipoDispositivo"
+																		(change)="validaTipoDisp($event.target,perfDispositiv);">
+																		<option value=""
+																			*ngIf="divDetDispositivo.tipo_dispositivo == ''"
+																			disabled selected>{{'opt_select' | translate}}
+																		</option>
+																		<option value=""
+																			*ngIf="divDetDispositivo.tipo_dispositivo != ''">
+																			{{'opt_select' | translate}}</option>
+																		<option
+																			*ngFor="let lisTipo of divDetDispositivo.dipositivoTipo"
+																			value="{{lisTipo.token_tipo_disp}}"
+																			[selected]="lisTipo.statusTipoDisp == true">
+																			{{lisTipo.tipo}}</option>
+																	</select>
+																	<label class="active activeSelect">Tipo de
+																		dispositivo</label>
+																</div>
+															</div>
+															<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+																<div class="input-field">
+																	<input class="validate" value="{{divDetDispositivo.alias}}"
+																		name="aliasDispositivo" type="text"
+																		(keyup)="validaAliasDisp($event.target,perfDispositiv);"
+																		required>
+																	<label class="activeInput">Alias</label>
+																</div>
+															</div>
+															<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+																<div class="input-field">
+																	<input class="validate" value="{{divDetDispositivo.serie}}"
+																		name="serieDispositivo" type="text"
+																		(keyup)="validaSerie($event.target,perfDispositiv);"
+																		required>
+																	<label class="activeInput">No. serie</label>
+																</div>
+															</div>
+															<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+																<div class="input-field">
+																	<input class="datepicker validate"
+																		value="{{divDetDispositivo.vigencia}}"
+																		(change)="validaVigencia($event.target,perfDispositiv);"
+																		required>
+																	<label class="activeInput">Vigencia</label>
+																</div>
+															</div>
+														</div>
+														<div class="col-12">
+															<table class="centered responsive-table" cellspacing="0" cellpadding="0">
+																<thead>
+																	<tr>
+																		<th></th>
+																		<th>Folio</th>
+																		<th>Personal responsable</th>
+																		<th class="ultimo"></th>
+																	</tr>
+																</thead>
+																<tbody>
+																	<tr *ngFor="let responsdispdet of divDetDispositivo.responsable">
+																		<td>
+																			<img class="circle responsive-img"
+																				style="width: 40px; height: 40px;"
+																				src="{{responsdispdet.imagen}}"
+																				alt=""><!--{{trPers.imagen}}-->
+																		</td>
+																		<td>{{responsdispdet.folio}}</td>
+																		<td>{{responsdispdet.nombre_completo}}</td>
+																		<td>
+																			<p>
+																				<label>
+																					<input class="select with-gap"
+																						*ngIf="responsdispdet.relStatus == true"
+																						value="{{responsdispdet.token_personal}}"
+																						name="selectDetResponsDisp"
+																						type="radio" checked
+																						(click)="selectResponsDisp($event.target,perfDispositiv);" />
+																					<input class="select with-gap"
+																						*ngIf="responsdispdet.relStatus == false"
+																						value="{{responsdispdet.token_personal}}"
+																						name="selectDetResponsDisp"
+																						type="radio"
+																						(click)="selectResponsDisp($event.target,perfDispositiv);" />
+																				</label>
+																			</p>
+																		</td>
+																	</tr>
+																</tbody>
+															</table>
+														</div>
+														<div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+														<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+															<button #btnSaveDetDisp
+																class="btn btnGuardar btnRow waves-light green darken-2"
+																type="submit" name="guaradrDips"
+																(click)="actualizaDispositivo();"
+																*ngIf="perfDispositiv.alias_dispositivo != divDetDispositivo.alias || perfDispositiv.serie != divDetDispositivo.serie ||
+																										perfDispositiv.vigencia != divDetDispositivo.vigencia || perfDispositiv.tipo_dispositivo != divDetDispositivo.tipo_dispositivo
+																										|| perfDispositiv.token_responsable != divDetDispositivo.tokenResponsDispositivo">Actualizar</button>
+														</div>
+														<div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+														<div class="col-12">
+															<h6>Vinculaciones adicionales</h6>
+														</div>
+														<div class="col-12">
+															<p-accordion value="0">
+																<p-accordion-panel value="0">
+																	<p-accordion-header>{{"Caja vinculada "+divDetDispositivo.aliasCajaDispositivo}}</p-accordion-header>
+																	<p-accordion-content>
+																		<div class="col-12 row">
+																			<table class="centered responsive-table" cellspacing="0" cellpadding="0">
+																				<thead>
+																					<tr>
+																						<th>Caja</th>
+																						<th>Alias</th>
+																						<th>Vigencia</th>
+																						<th class="ultimo"></th>
+																					</tr>
+																				</thead>
+																				<tbody>
+																					<tr *ngFor="let cajadetDisp of divDetDispositivo.caja">
+																						<td>{{cajadetDisp.caja}}</td>
+																						<td>{{cajadetDisp.alias}}</td>
+																						<td></td>
+																						<td>
+																							<div class="switch">
+																								<label>
+																									<input
+																										class="select with-gap"
+																										*ngIf="cajadetDisp.relStatus == true"
+																										value="{{cajadetDisp.token_caja}}"
+																										name="selectCajaMon"
+																										type="checkbox"
+																										style="width: auto;"
+																										(click)="unvincCajaDisp($event.target);"
+																										checked />
+																									<input
+																										class="select with-gap"
+																										*ngIf="cajadetDisp.relStatus == false"
+																										value="{{cajadetDisp.token_caja}}"
+																										name="selectCajaMon"
+																										type="checkbox"
+																										style="width: auto;"
+																										(click)="actualizaCajaDisp($event.target);" />
+																									<span
+																										class="lever"></span>
+																								</label>
+																							</div>
+																						</td>
+																					</tr>
+																				</tbody>
+																			</table>
+																		</div>
+																	</p-accordion-content>
+																</p-accordion-panel>
+																<p-accordion-panel value="1">
+																	<p-accordion-header>{{"Cuenta bancaria vinculada "+divDetDispositivo.aliasCuentaBankDispositivo}}</p-accordion-header>
+																	<p-accordion-content>
+																		<div class="col-12 row">
+																			<table class="centered responsive-table" cellspacing="0" cellpadding="0">
+																				<thead>
+																					<tr>
+																						<th>Cuenta</th>
+																						<th>Vigencia</th>
+																						<th class="ultimo"></th>
+																					</tr>
+																				</thead>
+																				<tbody>
+																					<tr *ngFor="let cuentadetDisp of divDetDispositivo.cuenta">
+																						<td>{{cuentadetDisp.nombre_comercial+"
+																							- "+cuentadetDisp.cuenta}}</td>
+																						<td></td>
+																						<td>
+																							<div class="switch">
+																								<label>
+																									<input
+																										*ngIf="cuentadetDisp.relStatus == true"
+																										class="selectSwitchPersonalCaja"
+																										name="selectImpServ"
+																										type="checkbox"
+																										style="width: auto;"
+																										value="{{cuentadetDisp.token_cuenta}}"
+																										checked
+																										(click)="unvincCuentaBankDisp($event.target);">
+																									<input
+																										*ngIf="cuentadetDisp.relStatus == false"
+																										class="selectSwitchPersonalCaja"
+																										name="selectImpServ"
+																										type="checkbox"
+																										style="width: auto;"
+																										value="{{cuentadetDisp.token_cuenta}}"
+																										(click)="actualizaCuentaBankDisp($event.target);">
+																									<span
+																										class="lever"></span>
+																								</label>
+																							</div>
+																						</td>
+																					</tr>
+																				</tbody>
+																			</table>
+																		</div>
+																	</p-accordion-content>
+																</p-accordion-panel>
+																<p-accordion-panel value="2">
+																	<p-accordion-header>{{"Cuenta de monedero electrónico vinculada"+divDetDispositivo.aliasMonederoDispositivo}}</p-accordion-header>
+																	<p-accordion-content>
+																		<div class="col-12 row">
+																			<table class="centered responsive-table" cellspacing="0" cellpadding="0">
+																				<thead>
+																					<tr>
+																						<th>Cuenta de monedero electrónico</th>
+																						<th>Vigencia</th>
+																						<th class="ultimo"></th>
+																					</tr>
+																				</thead>
+																				<tbody>
+																					<tr *ngFor="let monederodetDisp of divDetDispositivo.monedero">
+																						<td>{{monederodetDisp.folio_cuentmon+" - "+monederodetDisp.nombre+" - "+monederodetDisp.cuenta}}</td>
+																						<td></td>
+																						<td>
+																							<div class="switch">
+																								<label>
+																									<input
+																										*ngIf="monederodetDisp.relStatus == true"
+																										class="selectSwitchPersonalCaja"
+																										name="selectImpServ"
+																										type="checkbox"
+																										style="width: auto;"
+																										value="{{monederodetDisp.token_cuentaMon}}"
+																										checked
+																										(click)="univincCuentaMonederoDisp($event.target)">
+																									<input
+																										*ngIf="monederodetDisp.relStatus == false"
+																										class="selectSwitchPersonalCaja"
+																										name="selectImpServ"
+																										type="checkbox"
+																										style="width: auto;"
+																										value="{{monederodetDisp.token_cuentaMon}}"
+																										(click)="actualizaCuentaMonederoDisp($event.target)">
+																									<span
+																										class="lever"></span>
+																								</label>
+																							</div>
+																						</td>
+																					</tr>
+																				</tbody>
+																			</table>
+																		</div>
+																	</p-accordion-content>
+																</p-accordion-panel>
+															</p-accordion>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="modal-footer"></div>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="col-12 col-sm-12 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+							<h6>Dispositivos eliminados</h6>
+							<div class="busqueda row">
+								<div class="col s1 m2 col-md-3 col-lg-2">
+									<a class="btn" placement="top" tooltip="Registrar nueva cuenta"><i class="fa-solid fa-cart-shopping"></i></a>
+								</div>
+								<div class="col s1 m2 col-md-3 col-lg-2">
+									<a class="btn" placement="top" tooltip="Buscar por banco"><i class="fa-solid fa-cart-shopping"></i></a>
+								</div>
+								<div class="col s1 m2 col-md-3 col-lg-2">
+									<a class="btn" placement="top" tooltip="Buscar por no. cuenta"><i class="fa-solid fa-cart-shopping"></i></a>
+								</div>
+								<div class="col s9 m6 col-md-3 col-lg-2">
+									<input class="datasearch" type="text" id="buscaprod" disabled placeholder="{{'bus_car' | translate}}">
+								</div>
+							</div>
+							<div class="col-12">
+								<table class="centered responsive-table" cellspacing="0" cellpadding="0">
+									<thead>
+										<tr>
+											<th>Folio</th>
+											<th>Tipo de dispositivo</th>
+											<th>Alias</th>
+											<th>{{'f_delete' | translate}}</th>
+											<th class="ultimo"></th>
+											<th class="ultimo"></th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr *ngFor="let trDelDisp of arrayListaDelDispositivo">
+											<td class="noneView">{{trDelDisp.token_dispositivos}}</td>
+											<td>{{trDelDisp.folio}}</td>
+											<td>{{trDelDisp.tipo}}</td>
+											<td>{{trDelDisp.alias}}</td>
+											<td>{{trDelDisp.fecha_delete_disp}}</td>
+											<td><a class="btn text-bg-success rounded-3"
+													(click)="restauraDispositivo($event.target);">&#xf2f9;</a></td>
+											<td><a class="btn btn_extend text-bg-danger rounded-3"
+													(click)="eliminapermDispositivo($event.target);"><i class="fa-solid fa-eraser"></i></a>
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+
+          import { Component, ElementRef, Input, OnInit, Output, Renderer2, ViewChild } from '@angular/core';
+iimport { Usuarios } from '../../../../../../modelos/Usuarios';
+import { ValidatorServService } from '../../../../../../servicios/validator-serv.service';
+import Swal from 'sweetalert2';
+import { DispositivosServService } from '../../../../../../servicios/ssic/dispositivos-serv.service';
+import { dispositivosAngularModelo } from '../../../../../../modelos/dispositivosAngularModelo';
+import {Html5Qrcode, Html5QrcodeScanner, Html5QrcodeScannerState} from "html5-qrcode";
+//<qrcode [qrdata]="'Tu cadena de datos'" [width]="256" [errorCorrectionLevel]="'M'"></qrcode> imports QRCodeComponent,
+import { global } from '../../../../../../servicios/global_ssic';
+import { TranslateService } from '@ngx-translate/core';
+
+
+@Component({
+  selector: 'app-interno-tesoreria-catalogos',
+  templateUrl: './tes_listadevices.component.html',
+  standalone:false,
+  styleUrls: [
+    '../../../../../../styles/listas_ps.css',
+    '../../../../../../styles/datatable.css',
+    '../../../../../../styles/dropdown.css',
+    '../../../../../../styles/tabs.css',
+    '../../../../../../styles/input_group.css',
+    '../../../../../../styles/file_input.css',
+    '../../../../../../styles/buttons.css',
+    '../../../../../../styles/modals.css',
+    '../../../../../../styles/cabecera.css',
+    '../../../../../../styles/cards.css',
+    '../../../../../../styles/clientes.css',
+    '../../../../../../styles/collapsible.css',
+    '../../../../../../styles/row.css',
+    '../../../../../../styles/encabezados.css',
+    '../../../../../../styles/buscador.css',
+    '../../../../../../styles/radioButtons.css',
+    '../../../../../../styles/paginador.css',
+    '../../../../../../styles/landing.css',
+    '../../../finanzas.css',
+    './tes_listadevices.component.css']
+})
+export class ListaDevicesTesoreriaComponent implements OnInit {
+  public usuario:Usuarios;
+  public dispositiv:dispositivosAngularModelo;
+  public perfDispositiv:dispositivosAngularModelo;
+
+  arrayListaDispositivo:any = [];
+  arrayDetListDispositivo:any = [];
+
+  arrayListaDelDispositivo:any = [];
+
+  constructor(
+    public dispositivo:DispositivosServService,
+    public validator:ValidatorServService,
+    private translate:TranslateService) {
+    this.usuario = new Usuarios(1,"","","","","","","",1,1,"","","","");
+    this.dispositiv = new dispositivosAngularModelo('','','','','','','','');
+    this.perfDispositiv = new dispositivosAngularModelo('','','','','','','','');
+  }
+
+  ngOnInit(): void {
+    
+
+    this.dispositivo.verListaDispositivos().subscribe(
+      response => {
+        console.log(response.status);
+        if (response.status == 'success') {
+          this.arrayListaDispositivo = response.dispositivo;
+          //console.log(this.arrayListaDispositivo);
+        }
+      },
+      error =>{
+        console.log(error);
+      }
+    )
+
+    this.dispositivo.verListaDeleteDispositivo().subscribe(
+      response => {
+        console.log(response.status);
+        if (response.status == 'success') {
+          this.arrayListaDelDispositivo = response.dispositivo;
+          //console.log(this.arrayListaDelDispositivo);
+        }
+      },
+      error =>{
+        console.log(error);
+      }
+    )
+
+  }
+
+  recargaListaDispositivo(){
+    this.dispositivo.verListaDispositivos().subscribe(
+      response => {
+        console.log(response.status);
+        if (response.status == 'success') {
+          this.arrayListaDispositivo = response.dispositivo;
+          //console.log(this.arrayListaDispositivo);
+        }
+      },
+      error =>{
+        console.log(error);
+      }
+    )
+
+    this.dispositivo.verListaDeleteDispositivo().subscribe(
+      response => {
+        console.log(response.status);
+        if (response.status == 'success') {
+          this.arrayListaDelDispositivo = response.dispositivo;
+          //console.log(this.arrayListaDelDispositivo);
+        }
+      },
+      error =>{
+        console.log(error);
+      }
+    )
+  }
+
+  clickEscannerrqdevice(){//readerSitFiscalProv
+    $("#readerrqDispositivo").removeClass("noneView");
+    var cameraId:any = '';
+    Html5Qrcode.getCameras().then(devices => {
+      if (devices && devices.length) {
+        cameraId = devices[0].id;
+        console.log(cameraId);
+      }
+    }).catch(err => {
+      // handle err
+    });
+    let config:any = {fps:10,qrbox: { width: 250, height: 250 }};
+    let codeQrstdivice:any = new Html5QrcodeScanner("camerarqDispositivo",config,false);
+    codeQrstdivice.render(this.scanYesDevice,this.onScanError);
+  }
+
+  scanYesDevice(decodedText:any, decodedResult:any) {
+    console.log(`Scan result: ${decodedText}`, decodedResult);
+    global.imagenUrlQrDispositivoTes = decodedText;
+    Swal.fire({
+      position:'center',
+      icon: 'success',
+      title: 'escaneo completado',
+      showConfirmButton:false,
+      timer: 3000
+    })
+  }
+  onScanError(errorMessage:any) {console.log(`Code scan error = ${errorMessage}`);}
+
+
+  getDispositivoQr(){
+    if (global.imagenUrlQrDispositivoTes != '') {
+      //$("#modalViewDisp").modal();
+      this.functViewDispositivo(global.imagenUrlQrDispositivoTes);
+      const readerQr = new Html5Qrcode("camerarqDispositivo");
+      readerQr.stop();
+    }
+  }
+
+  functViewDispositivo(token_dispositivos:any){
+    alert("funciona");
+    this.dispositivo.detalleDispositivo(token_dispositivos).subscribe(
+      response => {
+        console.log(response.status);
+        if (response.status == 'success') {
+          
+          //$("#modalViewDisp").modal();
+          $(document).ready(function() {
+            //$('#modalViewDisp').modal();
+          });
+          
+          
+          this.arrayDetListDispositivo = response.dispositivo;
+          console.log(response.dispositivo);
+          this.perfDispositiv.tipo_dispositivo = response.dispositivo[0]['tipo_dispositivo'];
+          this.perfDispositiv.alias_dispositivo = response.dispositivo[0]['alias'];
+          this.perfDispositiv.serie = response.dispositivo[0]['serie'];
+          this.perfDispositiv.vigencia = response.dispositivo[0]['vigencia'];
+          this.perfDispositiv.token_responsable = response.dispositivo[0]['tokenResponsDispositivo'];
+          if (response.dispositivo[0]['cuenta'].length != 0) {
+            for (let index = 0; index < response.dispositivo[0]['cuenta'].length; index++) {
+              const cuenta = response.dispositivo[0]['cuenta'][index];
+              if (cuenta['relStatus'] == true) {
+                this.dispositiv.token_cuentaBanc = cuenta['token_cuenta'];
+              }
+            }
+          }
+          if (response.dispositivo[0]['caja'].length != 0) {
+            for (let index = 0; index < response.dispositivo[0]['caja'].length; index++) {
+              const caja = response.dispositivo[0]['caja'][index];
+              if (caja['relStatus'] == true) {
+                this.dispositiv.token_caja = caja['token_caja'];
+              }
+            }
+          }
+          if (response.dispositivo[0]['monedero'].length != 0) {
+            for (let index = 0; index < response.dispositivo[0]['monedero'].length; index++) {
+              const monedero = response.dispositivo[0]['monedero'][index];
+              if (monedero['relStatus'] == true) {
+                this.dispositiv.token_monElect = monedero['token_cuentamonedero'];
+              }
+            }
+          }
+          
+        }
+      },
+      error =>{
+        console.log(error);
+      }
+    );
+  }
+
+  validaTipoDisp(event:any,modelDtCuenta:any){
+    if (event.value != '') {
+      modelDtCuenta.tipo_dispositivo = event.value;
+      console.log(this.dispositiv);
+    }
+  }
+
+  validaAliasDisp(event:any,modelDtCuenta:any){
+    if (event.value == '' || !this.validator.filtroAlfaNumerico(event.value)) {
+      this.validator.errorInput(event,"Alias invalido");
+    } else {
+      this.validator.correctoInput(event,"Alias");
+      modelDtCuenta.alias_dispositivo = event.value;
+      console.log(this.dispositiv);
+    }
+  }
+
+  validaSerie(event:any,modelDtCuenta:any){
+    if (event.value == '' || !this.validator.filtroCuenta(event.value) == true) {
+      this.validator.errorInput(event,"No. serie invalido");
+    } else {
+      this.validator.correctoInput(event,"No. serie");
+      modelDtCuenta.serie = event.value;
+      console.log(this.dispositiv);
+    }
+  }
+
+  validaVigencia(event:any,modelDtCuenta:any){
+    if (event.value != '') {
+      modelDtCuenta.vigencia = event.value;
+      console.log(modelDtCuenta);
+    }
+  }
+
+  selectResponsDisp(event:any,modelo:any){
+    if(event.value !=''){
+      modelo.token_responsable = event.value;
+    }
+    console.log(this.dispositiv);
+  }
+
+  actualizaDispositivo():void{
+    Swal.fire({
+      title: this.translate.instant("swal_attenc"),
+      text: "¿Desea actualizar este dispositivo?",
+      icon: 'warning',
+      confirmButtonColor: '#388E3C',
+      confirmButtonText: this.translate.instant("swal_yes_insert"),
+      showCancelButton: true,
+      cancelButtonColor: '#D32F2F',
+        cancelButtonText: this.translate.instant("swal_cancel"),
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.dispositivo.actualizaDispositivo(this.arrayDetListDispositivo[0]['token_dispositivos'],this.perfDispositiv.tipo_dispositivo,
+        this.perfDispositiv.alias_dispositivo,this.perfDispositiv.serie,this.perfDispositiv.vigencia,this.perfDispositiv.token_responsable).subscribe(
+          response => {
+            let translate_response = this.translate.instant(response.message);
+            if (response.status == 'success') {
+              Swal.fire({
+                position:'center',
+                icon: 'success',
+                title: translate_response,
+                showConfirmButton:false,
+                timer: 3000
+              })
+              this.functViewDispositivo(this.arrayDetListDispositivo[0]['token_dispositivos']);
+            }
+            if (response.status == 'error') {
+              Swal.fire({
+                position:'top-end',
+                icon: 'warning',
+                title: translate_response,
+                showConfirmButton:false,
+                timer: 3000
+              })
+            }
+          },
+          error => {
+            console.log(error);
+
+          }
+        )
+      }
+    });
+  }
+
+  unvincCajaDisp(event:any){
+    if(event.value != ''){
+      Swal.fire({
+        title: this.translate.instant("swal_attenc"),
+        text: "¿Desea desvincular su dispositivo a esta caja?",
+        icon: 'warning',
+        confirmButtonColor: '#388E3C',
+        confirmButtonText: this.translate.instant("swal_yes_insert"),
+        showCancelButton: true,
+        cancelButtonColor: '#D32F2F',
+        cancelButtonText: this.translate.instant("swal_cancel"),
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.dispositivo.unvinccajaDispositivo(this.arrayDetListDispositivo[0]['token_dispositivos'],event.value).subscribe(
+            response => {
+              let translate_response = this.translate.instant(response.message);
+              if (response.status == 'success') {
+                Swal.fire({
+                  position:'center',
+                  icon: 'success',
+                  title: translate_response,
+                  showConfirmButton:false,
+                  timer: 3000
+                })
+                this.functViewDispositivo(this.arrayDetListDispositivo[0]['token_dispositivos']);
+              }
+              if (response.status == 'error') {
+                Swal.fire({
+                  position:'top-end',
+                  icon: 'warning',
+                  title: translate_response,
+                  showConfirmButton:false,
+                  timer: 3000
+                })
+              }
+            },
+            error => {
+              console.log(error);
+            }
+          )
+        } else {
+          $(event).removeAttr("checked");
+        }
+      });
+    } else {
+      Swal.fire({
+        position:'top-end',
+        icon: 'warning',
+        title: 'la caja que ha seleccionado contiene informacion invalida o nula',
+        showConfirmButton:false,
+        timer: 3000
+      })
+    }
+  }
+
+  actualizaCajaDisp(event:any){
+    if(event.value != ''){
+      Swal.fire({
+        title: this.translate.instant("swal_attenc"),
+        text: "¿Desea vincular su dispositivo a esta caja?",
+        icon: 'warning',
+        confirmButtonColor: '#388E3C',
+        confirmButtonText: this.translate.instant("swal_yes_insert"),
+        showCancelButton: true,
+        cancelButtonColor: '#D32F2F',
+        cancelButtonText: this.translate.instant("swal_cancel"),
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.dispositivo.actualizacajaDispositivo(this.arrayDetListDispositivo[0]['token_dispositivos'],event.value).subscribe(
+            response => {
+              let translate_response = this.translate.instant(response.message);
+              if (response.status == 'success') {
+                Swal.fire({
+                  position:'center',
+                  icon: 'success',
+                  title: translate_response,
+                  showConfirmButton:false,
+                  timer: 3000
+                })
+                this.functViewDispositivo(this.arrayDetListDispositivo[0]['token_dispositivos']);
+              }
+              if (response.status == 'error') {
+                Swal.fire({
+                  position:'top-end',
+                  icon: 'warning',
+                  title: translate_response,
+                  showConfirmButton:false,
+                  timer: 3000
+                })
+              }
+            },
+            error => {
+              console.log(error);
+
+            }
+          )
+        } else {
+          $(event).removeAttr("checked");
+        }
+      });
+    } else {
+      Swal.fire({
+        position:'top-end',
+        icon: 'warning',
+        title: 'la caja que ha seleccionado contiene informacion invalida o nula',
+        showConfirmButton:false,
+        timer: 3000
+      })
+    }
+  }
+
+  unvincCuentaBankDisp(event:any){
+    if(event.value != ''){
+      Swal.fire({
+        title: this.translate.instant("swal_attenc"),
+        text: "¿Desea desvincular su dispositivo a esta cuenta bancaria?",
+        icon: 'warning',
+        confirmButtonColor: '#388E3C',
+        confirmButtonText: this.translate.instant("swal_yes_insert"),
+        showCancelButton: true,
+        cancelButtonColor: '#D32F2F',
+        cancelButtonText: this.translate.instant("swal_cancel"),
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.dispositivo.unvincCuentaBankDispositivo(this.arrayDetListDispositivo[0]['token_dispositivos'],event.value).subscribe(
+            response => {
+              let translate_response = this.translate.instant(response.message);
+              if (response.status == 'success') {
+                Swal.fire({
+                  position:'center',
+                  icon: 'success',
+                  title: translate_response,
+                  showConfirmButton:false,
+                  timer: 3000
+                })
+                this.functViewDispositivo(this.arrayDetListDispositivo[0]['token_dispositivos']);
+              }
+              if (response.status == 'error') {
+                Swal.fire({
+                  position:'top-end',
+                  icon: 'warning',
+                  title: translate_response,
+                  showConfirmButton:false,
+                  timer: 3000
+                })
+              }
+            },
+            error => {
+              console.log(error);
+
+            }
+          )
+        } else {
+          $(event).removeAttr("checked");
+        }
+      });
+    } else {
+      Swal.fire({
+        position:'top-end',
+        icon: 'warning',
+        title: 'la cuenta bancaria que ha seleccionado contiene informacion invalida o nula',
+        showConfirmButton:false,
+        timer: 3000
+      })
+    }
+  }
+
+  actualizaCuentaBankDisp(event:any){
+    if(event.value != ''){
+      Swal.fire({
+        title: this.translate.instant("swal_attenc"),
+        text: "¿Desea vincular su dispositivo a esta cuenta bancaria?",
+        icon: 'warning',
+        confirmButtonColor: '#388E3C',
+        confirmButtonText: this.translate.instant("swal_yes_insert"),
+        showCancelButton: true,
+        cancelButtonColor: '#D32F2F',
+        cancelButtonText: this.translate.instant("swal_cancel"),
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.dispositivo.actualizacuentaBankDispositivo(this.arrayDetListDispositivo[0]['token_dispositivos'],event.value).subscribe(
+            response => {
+              let translate_response = this.translate.instant(response.message);
+              if (response.status == 'success') {
+                Swal.fire({
+                  position:'center',
+                  icon: 'success',
+                  title: translate_response,
+                  showConfirmButton:false,
+                  timer: 3000
+                })
+                this.functViewDispositivo(this.arrayDetListDispositivo[0]['token_dispositivos']);
+              }
+              if (response.status == 'error') {
+                Swal.fire({
+                  position:'top-end',
+                  icon: 'warning',
+                  title: translate_response,
+                  showConfirmButton:false,
+                  timer: 3000
+                })
+              }
+            },
+            error => {
+              console.log(error);
+
+            }
+          )
+        } else {
+          $(event).removeAttr("checked");
+        }
+      });
+    } else {
+      Swal.fire({
+        position:'top-end',
+        icon: 'warning',
+        title: 'la cuenta bancaria que ha seleccionado contiene informacion invalida o nula',
+        showConfirmButton:false,
+        timer: 3000
+      })
+    }
+  }
+
+  univincCuentaMonederoDisp(event:any){
+    if(event.value != ''){
+      Swal.fire({
+        title: this.translate.instant("swal_attenc"),
+        text: "¿Desea vincular su dispositivo a esta cuenta de monedero electrónico?",
+        icon: 'warning',
+        confirmButtonColor: '#388E3C',
+        confirmButtonText: this.translate.instant("swal_yes_insert"),
+        showCancelButton: true,
+        cancelButtonColor: '#D32F2F',
+        cancelButtonText: this.translate.instant("swal_cancel"),
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.dispositivo.unvinccuentaMonDispositivo(this.arrayDetListDispositivo[0]['token_dispositivos'],event.value).subscribe(
+            response => {
+              let translate_response = this.translate.instant(response.message);
+              if (response.status == 'success') {
+                Swal.fire({
+                  position:'center',
+                  icon: 'success',
+                  title: translate_response,
+                  showConfirmButton:false,
+                  timer: 3000
+                })
+                this.functViewDispositivo(this.arrayDetListDispositivo[0]['token_dispositivos']);
+              }
+              if (response.status == 'error') {
+                Swal.fire({
+                  position:'top-end',
+                  icon: 'warning',
+                  title: translate_response,
+                  showConfirmButton:false,
+                  timer: 3000
+                })
+              }
+            },
+            error => {
+              console.log(error);
+
+            }
+          )
+        } else {
+          $(event).removeAttr("checked");
+        }
+      });
+    } else {
+      Swal.fire({
+        position:'top-end',
+        icon: 'warning',
+        title: 'la cuenta de monedero electrónico que ha seleccionado contiene informacion invalida o nula',
+        showConfirmButton:false,
+        timer: 3000
+      })
+    }
+  }
+
+  actualizaCuentaMonederoDisp(event:any){
+    if(event.value != ''){
+      Swal.fire({
+        title: this.translate.instant("swal_attenc"),
+        text: "¿Desea vincular su dispositivo a esta cuenta de monedero electrónico?",
+        icon: 'warning',
+        confirmButtonColor: '#388E3C',
+        confirmButtonText: this.translate.instant("swal_yes_insert"),
+        showCancelButton: true,
+        cancelButtonColor: '#D32F2F',
+        cancelButtonText: this.translate.instant("swal_cancel"),
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.dispositivo.actualizacuentaMonDispositivo(this.arrayDetListDispositivo[0]['token_dispositivos'],event.value).subscribe(
+            response => {
+              let translate_response = this.translate.instant(response.message);
+              if (response.status == 'success') {
+                Swal.fire({
+                  position:'center',
+                  icon: 'success',
+                  title: translate_response,
+                  showConfirmButton:false,
+                  timer: 3000
+                })
+                this.functViewDispositivo(this.arrayDetListDispositivo[0]['token_dispositivos']);
+              }
+              if (response.status == 'error') {
+                Swal.fire({
+                  position:'top-end',
+                  icon: 'warning',
+                  title: translate_response,
+                  showConfirmButton:false,
+                  timer: 3000
+                })
+              }
+            },
+            error => {
+              console.log(error);
+
+            }
+          )
+        } else {
+          $(event).removeAttr("checked");
+        }
+      });
+    } else {
+      Swal.fire({
+        position:'top-end',
+        icon: 'warning',
+        title: 'la cuenta de monedero electrónico que ha seleccionado contiene informacion invalida o nula',
+        showConfirmButton:false,
+        timer: 3000
+      })
+    }
+  }
+
+  functDelDispositivo(event:any){
+    alert("funciona");
+    Swal.fire({
+      title: this.translate.instant("swal_attenc"),
+      text: "¿Desea eliminar este dispositivo?",
+      icon: 'warning',
+      confirmButtonColor: '#388E3C',
+      confirmButtonText: 'Sí, aliminar',
+      showCancelButton: true,
+      cancelButtonColor: '#D32F2F',
+        cancelButtonText: this.translate.instant("swal_cancel"),
+    }).then((result) => {
+      if (result.isConfirmed) {
+
+        /*this.dispositivo.deleteDispositivo().subscribe(
+          response => {
+            console.log(response.status);
+            let translate_response = this.translate.instant(response.message);
+            if (response.status == 'success') {
+              this.recargaListaDispositivo();
+              Swal.fire({
+                position:'center',
+                icon: 'success',
+                title: translate_response,
+                showConfirmButton:false,
+                timer: 3000
+              })
+            }
+            if (response.status == 'error') {
+              Swal.fire({
+                position:'top-end',
+                icon: 'warning',
+                title: translate_response,
+                showConfirmButton:false,
+                timer: 3000
+              })
+            }
+          },
+          error =>{
+            console.log(error);
+          }
+        );*/
+      }
+    });
+  }
+
+  restauraDispositivo(event:any){
+    Swal.fire({
+      title: this.translate.instant("swal_attenc"),
+      text: "¿Desea restaurar este dispositivo?",
+      icon: 'warning',
+      confirmButtonColor: '#388E3C',
+      confirmButtonText: this.translate.instant("swal_yes_restore"),
+      showCancelButton: true,
+      cancelButtonColor: '#D32F2F',
+        cancelButtonText: this.translate.instant("swal_cancel"),
+    }).then((result) => {
+      if (result.isConfirmed) {
+
+        this.dispositivo.restaurarDispositivo().subscribe(
+          response => {
+            console.log(response.status);
+            let translate_response = this.translate.instant(response.message);
+            if (response.status == 'success') {
+              this.recargaListaDispositivo();
+              Swal.fire({
+                position:'center',
+                icon: 'success',
+                title: translate_response,
+                showConfirmButton:false,
+                timer: 3000
+              })
+
+            }
+            if (response.status == 'error') {
+              Swal.fire({
+                position:'top-end',
+                icon: 'warning',
+                title: translate_response,
+                showConfirmButton:false,
+                timer: 3000
+              })
+            }
+          },
+          error =>{
+            console.log(error);
+          }
+        );
+      }
+    });
+  }
+
+  eliminapermDispositivo(event:any){
+    alert("funciona");
+     Swal.fire({
+      title: this.translate.instant("swal_attenc"),
+      text: "¿Desea eliminar permanentemente este dispositivo?",
+      icon: 'warning',
+      confirmButtonColor: '#388E3C',
+      confirmButtonText: 'Sí, aliminar',
+      showCancelButton: true,
+      cancelButtonColor: '#D32F2F',
+        cancelButtonText: this.translate.instant("swal_cancel"),
+    }).then((result) => {
+      if (result.isConfirmed) {
+
+        this.dispositivo.deletePermDispositivo().subscribe(
+          response => {
+            console.log(response.status);
+            let translate_response = this.translate.instant(response.message);
+            if (response.status == 'success') {
+              this.recargaListaDispositivo();
+              Swal.fire({
+                position:'center',
+                icon: 'success',
+                title: translate_response,
+                showConfirmButton:false,
+                timer: 3000
+              })
+
+            }
+            if (response.status == 'error') {
+              Swal.fire({
+                position:'top-end',
+                icon: 'warning',
+                title: translate_response,
+                showConfirmButton:false,
+                timer: 3000
+              })
+            }
+          },
+          error =>{
+            console.log(error);
+          }
+        );
+      }
+    });
+  }
+
+}
+
+
+					<div class="col-12 col-sm-3 col-md-3 col-lg-2"></div>
+					<div class="col-12 col-sm-6 col-md-3 col-lg-2"><a style="width:100%!important;" (click)="clickEscannerrqdevice();" class="btn btnGuardar btnRow waves-light">&#xf029; Buscar por QR</a></div>
+					<div class="col-12 col-sm-3 col-md-3 col-lg-2"></div>
+
+					<div class="col-12 col-sm-3 col-md-3 col-lg-2"></div>
+					<div class="col-12 col-sm-6 col-md-3 col-lg-2 noneView" id="readerrqDispositivo">
+						<div id="camerarqDispositivo" style="height: 400px;width: 100%;margin-top: 10px;
+										background-color: #353535;border-radius: 8px;"></div>
+					</div>
+					<div class="col-12 col-sm-3 col-md-3 col-lg-2"></div>
+
+					<div class="col-12 row">
+						<div class="col-12 col-sm-12 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+							<h6>Dispositivos vigentes</h6>
+							<div class="busqueda row">
+								<div class="col s1 m2 col-md-3 col-lg-2">
+									<a class="btn" placement="top" tooltip="Registrar nueva cuenta"><i class="fa-solid fa-cart-shopping"></i></a>
+								</div>
+								<div class="col s1 m2 col-md-3 col-lg-2">
+									<a class="btn" placement="top" tooltip="Buscar por banco"><i class="fa-solid fa-cart-shopping"></i></a>
+								</div>
+								<div class="col s1 m2 col-md-3 col-lg-2">
+									<a class="btn" placement="top" tooltip="Buscar por no. cuenta"><i class="fa-solid fa-cart-shopping"></i></a>
+								</div>
+								<div class="col s9 m6 col-md-3 col-lg-2">
+									<input class="datasearch" type="text" id="buscaprod" disabled
+										placeholder="{{'bus_car' | translate}}">
+								</div>
+							</div>
+							<div class="col-12">
+								<table class="centered responsive-table" cellspacing="0" cellpadding="0">
+									<thead>
+										<tr>
+											<th>Folio</th>
+											<th>Tipo de dispositivo</th>
+											<th>Alias</th>
+											<th class="ultimo"></th>
+											<th class="ultimo"></th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr *ngFor="let trDisp of arrayListaDispositivo">
+											<td class="noneView">{{trDisp.token_dispositivos}}</td>
+											<td>{{trDisp.folio}}</td>
+											<td>{{trDisp.tipo}}</td>
+											<td>{{trDisp.alias}}</td>
+											<td><a class="btn btn_extend bg-indigo-600" data-bs-toggle="modal" data-bs-target="#modalViewDisp" (click)="functViewDispositivo(trDisp.token_dispositivos);"><i class="fa-solid fa-info"></i></a></td>
+											<td><a class="btn btn_extend text-bg-danger rounded-3" (click)="functDelDispositivo($event.target);"><i class="fa-solid fa-eraser"></i></a></td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+
+							<div class="modal fade" id="modalViewDisp" tabindex="-1" role="dialog" aria-labelledby="modalViewDispLabel" aria-hidden="true">
+								<div class="modal-dialog">
+									<div class="modal-content">
+										<div class="modal-header">
+											<h1 class="modal-title fs-5 bg-blue-ModalTitle" id="modalViewDispLabel">PERFIL DE MONEDERO ELECTR&Oacute;NICO</h1>
+											<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: transparent !important;"></button>
+										</div>
+										<div class="modal-body">
+											<div class="col-12" *ngFor="let divDetDispositivo of arrayDetListDispositivo">
+												<div class="form">
+													<div class="data-reg row">
+														<div class="col-12 col-sm-2 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+														<div class="logotipo col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+															<div class="input-field file-field">
+																<div id="btnAddLogotipoServ" class="btn">
+																	<img class="circle responsive-img"
+																		src="{{divDetDispositivo.rqCode}}" alt="">
+																</div>
+															</div>
+														</div>
+		
+														<div class="logotipo col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2" *ngIf="divDetDispositivo.logotypo != ''">
+															<div class="input-field file-field" placement="top" tooltip="INGRESE EL LOGOTIPO DE SU PRODUCTO">
+																<input type="file" id="logotipoServ" name="logotipo_servicio"
+																	multiple>
+																<div id="btnAddLogotipoServ" class="btn">
+																	<img class="circle responsive-img"
+																		src="{{divDetDispositivo.logotypo}}" alt="">
+																</div>
+															</div>
+														</div>
+		
+														<div class="logotipo col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2" *ngIf="divDetDispositivo.logotypo == ''">
+															<div class="input-field file-field" placement="top" tooltip="INGRESE EL LOGOTIPO DE SU PRODUCTO">
+																<input type="file" id="logotipoServ" name="logotipo_servicio"
+																	multiple>
+																<div id="btnAddLogotipoServ" class="btn">
+																	<span id="spanImgPerfil">&#xf030;</span>
+																</div>
+															</div>
+														</div>
+		
+														<div class="col-12 col-sm-2 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+		
+														<div class="col-12">
+															<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+																<div class="info">
+																	<p class="titulo tituloFolio">Folio registrado</p>
+																	<p class="registro">{{divDetDispositivo.folio_dispositivo}}
+																	</p>
+																</div>
+															</div>
+															<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+																<div class="info">
+																	<p class="titulo tituloFolio">Fecha de registro</p>
+																	<p class="registro">{{divDetDispositivo.fecha_alta}}</p>
+																</div>
+															</div>
+														</div>
+														<div class="col-12">
+															<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+																<div class="input-field">
+																	<select name="tipoDispositivo"
+																		(change)="validaTipoDisp($event.target,perfDispositiv);">
+																		<option value=""
+																			*ngIf="divDetDispositivo.tipo_dispositivo == ''"
+																			disabled selected>{{'opt_select' | translate}}
+																		</option>
+																		<option value=""
+																			*ngIf="divDetDispositivo.tipo_dispositivo != ''">
+																			{{'opt_select' | translate}}</option>
+																		<option
+																			*ngFor="let lisTipo of divDetDispositivo.dipositivoTipo"
+																			value="{{lisTipo.token_tipo_disp}}"
+																			[selected]="lisTipo.statusTipoDisp == true">
+																			{{lisTipo.tipo}}</option>
+																	</select>
+																	<label class="active activeSelect">Tipo de
+																		dispositivo</label>
+																</div>
+															</div>
+															<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+																<div class="input-field">
+																	<input class="validate" value="{{divDetDispositivo.alias}}"
+																		name="aliasDispositivo" type="text"
+																		(keyup)="validaAliasDisp($event.target,perfDispositiv);"
+																		required>
+																	<label class="activeInput">Alias</label>
+																</div>
+															</div>
+															<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+																<div class="input-field">
+																	<input class="validate" value="{{divDetDispositivo.serie}}"
+																		name="serieDispositivo" type="text"
+																		(keyup)="validaSerie($event.target,perfDispositiv);"
+																		required>
+																	<label class="activeInput">No. serie</label>
+																</div>
+															</div>
+															<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+																<div class="input-field">
+																	<input class="datepicker validate"
+																		value="{{divDetDispositivo.vigencia}}"
+																		(change)="validaVigencia($event.target,perfDispositiv);"
+																		required>
+																	<label class="activeInput">Vigencia</label>
+																</div>
+															</div>
+														</div>
+														<div class="col-12">
+															<table class="centered responsive-table" cellspacing="0" cellpadding="0">
+																<thead>
+																	<tr>
+																		<th></th>
+																		<th>Folio</th>
+																		<th>Personal responsable</th>
+																		<th class="ultimo"></th>
+																	</tr>
+																</thead>
+																<tbody>
+																	<tr *ngFor="let responsdispdet of divDetDispositivo.responsable">
+																		<td>
+																			<img class="circle responsive-img"
+																				style="width: 40px; height: 40px;"
+																				src="{{responsdispdet.imagen}}"
+																				alt=""><!--{{trPers.imagen}}-->
+																		</td>
+																		<td>{{responsdispdet.folio}}</td>
+																		<td>{{responsdispdet.nombre_completo}}</td>
+																		<td>
+																			<p>
+																				<label>
+																					<input class="select with-gap"
+																						*ngIf="responsdispdet.relStatus == true"
+																						value="{{responsdispdet.token_personal}}"
+																						name="selectDetResponsDisp"
+																						type="radio" checked
+																						(click)="selectResponsDisp($event.target,perfDispositiv);" />
+																					<input class="select with-gap"
+																						*ngIf="responsdispdet.relStatus == false"
+																						value="{{responsdispdet.token_personal}}"
+																						name="selectDetResponsDisp"
+																						type="radio"
+																						(click)="selectResponsDisp($event.target,perfDispositiv);" />
+																				</label>
+																			</p>
+																		</td>
+																	</tr>
+																</tbody>
+															</table>
+														</div>
+														<div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+														<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+															<button #btnSaveDetDisp
+																class="btn btnGuardar btnRow waves-light green darken-2"
+																type="submit" name="guaradrDips"
+																(click)="actualizaDispositivo();"
+																*ngIf="perfDispositiv.alias_dispositivo != divDetDispositivo.alias || perfDispositiv.serie != divDetDispositivo.serie ||
+																										perfDispositiv.vigencia != divDetDispositivo.vigencia || perfDispositiv.tipo_dispositivo != divDetDispositivo.tipo_dispositivo
+																										|| perfDispositiv.token_responsable != divDetDispositivo.tokenResponsDispositivo">Actualizar</button>
+														</div>
+														<div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+														<div class="col-12">
+															<h6>Vinculaciones adicionales</h6>
+														</div>
+														<div class="col-12">
+															<p-accordion value="0">
+																<p-accordion-panel value="0">
+																	<p-accordion-header>{{"Caja vinculada "+divDetDispositivo.aliasCajaDispositivo}}</p-accordion-header>
+																	<p-accordion-content>
+																		<div class="col-12 row">
+																			<table class="centered responsive-table" cellspacing="0" cellpadding="0">
+																				<thead>
+																					<tr>
+																						<th>Caja</th>
+																						<th>Alias</th>
+																						<th>Vigencia</th>
+																						<th class="ultimo"></th>
+																					</tr>
+																				</thead>
+																				<tbody>
+																					<tr *ngFor="let cajadetDisp of divDetDispositivo.caja">
+																						<td>{{cajadetDisp.caja}}</td>
+																						<td>{{cajadetDisp.alias}}</td>
+																						<td></td>
+																						<td>
+																							<div class="switch">
+																								<label>
+																									<input
+																										class="select with-gap"
+																										*ngIf="cajadetDisp.relStatus == true"
+																										value="{{cajadetDisp.token_caja}}"
+																										name="selectCajaMon"
+																										type="checkbox"
+																										style="width: auto;"
+																										(click)="unvincCajaDisp($event.target);"
+																										checked />
+																									<input
+																										class="select with-gap"
+																										*ngIf="cajadetDisp.relStatus == false"
+																										value="{{cajadetDisp.token_caja}}"
+																										name="selectCajaMon"
+																										type="checkbox"
+																										style="width: auto;"
+																										(click)="actualizaCajaDisp($event.target);" />
+																									<span
+																										class="lever"></span>
+																								</label>
+																							</div>
+																						</td>
+																					</tr>
+																				</tbody>
+																			</table>
+																		</div>
+																	</p-accordion-content>
+																</p-accordion-panel>
+																<p-accordion-panel value="1">
+																	<p-accordion-header>{{"Cuenta bancaria vinculada "+divDetDispositivo.aliasCuentaBankDispositivo}}</p-accordion-header>
+																	<p-accordion-content>
+																		<div class="col-12 row">
+																			<table class="centered responsive-table" cellspacing="0" cellpadding="0">
+																				<thead>
+																					<tr>
+																						<th>Cuenta</th>
+																						<th>Vigencia</th>
+																						<th class="ultimo"></th>
+																					</tr>
+																				</thead>
+																				<tbody>
+																					<tr *ngFor="let cuentadetDisp of divDetDispositivo.cuenta">
+																						<td>{{cuentadetDisp.nombre_comercial+"
+																							- "+cuentadetDisp.cuenta}}</td>
+																						<td></td>
+																						<td>
+																							<div class="switch">
+																								<label>
+																									<input
+																										*ngIf="cuentadetDisp.relStatus == true"
+																										class="selectSwitchPersonalCaja"
+																										name="selectImpServ"
+																										type="checkbox"
+																										style="width: auto;"
+																										value="{{cuentadetDisp.token_cuenta}}"
+																										checked
+																										(click)="unvincCuentaBankDisp($event.target);">
+																									<input
+																										*ngIf="cuentadetDisp.relStatus == false"
+																										class="selectSwitchPersonalCaja"
+																										name="selectImpServ"
+																										type="checkbox"
+																										style="width: auto;"
+																										value="{{cuentadetDisp.token_cuenta}}"
+																										(click)="actualizaCuentaBankDisp($event.target);">
+																									<span
+																										class="lever"></span>
+																								</label>
+																							</div>
+																						</td>
+																					</tr>
+																				</tbody>
+																			</table>
+																		</div>
+																	</p-accordion-content>
+																</p-accordion-panel>
+																<p-accordion-panel value="2">
+																	<p-accordion-header>{{"Cuenta de monedero electrónico vinculada"+divDetDispositivo.aliasMonederoDispositivo}}</p-accordion-header>
+																	<p-accordion-content>
+																		<div class="col-12 row">
+																			<table class="centered responsive-table" cellspacing="0" cellpadding="0">
+																				<thead>
+																					<tr>
+																						<th>Cuenta de monedero electrónico</th>
+																						<th>Vigencia</th>
+																						<th class="ultimo"></th>
+																					</tr>
+																				</thead>
+																				<tbody>
+																					<tr *ngFor="let monederodetDisp of divDetDispositivo.monedero">
+																						<td>{{monederodetDisp.folio_cuentmon+" - "+monederodetDisp.nombre+" - "+monederodetDisp.cuenta}}</td>
+																						<td></td>
+																						<td>
+																							<div class="switch">
+																								<label>
+																									<input
+																										*ngIf="monederodetDisp.relStatus == true"
+																										class="selectSwitchPersonalCaja"
+																										name="selectImpServ"
+																										type="checkbox"
+																										style="width: auto;"
+																										value="{{monederodetDisp.token_cuentaMon}}"
+																										checked
+																										(click)="univincCuentaMonederoDisp($event.target)">
+																									<input
+																										*ngIf="monederodetDisp.relStatus == false"
+																										class="selectSwitchPersonalCaja"
+																										name="selectImpServ"
+																										type="checkbox"
+																										style="width: auto;"
+																										value="{{monederodetDisp.token_cuentaMon}}"
+																										(click)="actualizaCuentaMonederoDisp($event.target)">
+																									<span
+																										class="lever"></span>
+																								</label>
+																							</div>
+																						</td>
+																					</tr>
+																				</tbody>
+																			</table>
+																		</div>
+																	</p-accordion-content>
+																</p-accordion-panel>
+															</p-accordion>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="modal-footer"></div>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="col-12 col-sm-12 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+							<h6>Dispositivos eliminados</h6>
+							<div class="busqueda row">
+								<div class="col s1 m2 col-md-3 col-lg-2">
+									<a class="btn" placement="top" tooltip="Registrar nueva cuenta"><i class="fa-solid fa-cart-shopping"></i></a>
+								</div>
+								<div class="col s1 m2 col-md-3 col-lg-2">
+									<a class="btn" placement="top" tooltip="Buscar por banco"><i class="fa-solid fa-cart-shopping"></i></a>
+								</div>
+								<div class="col s1 m2 col-md-3 col-lg-2">
+									<a class="btn" placement="top" tooltip="Buscar por no. cuenta"><i class="fa-solid fa-cart-shopping"></i></a>
+								</div>
+								<div class="col s9 m6 col-md-3 col-lg-2">
+									<input class="datasearch" type="text" id="buscaprod" disabled placeholder="{{'bus_car' | translate}}">
+								</div>
+							</div>
+							<div class="col-12">
+								<table class="centered responsive-table" cellspacing="0" cellpadding="0">
+									<thead>
+										<tr>
+											<th>Folio</th>
+											<th>Tipo de dispositivo</th>
+											<th>Alias</th>
+											<th>{{'f_delete' | translate}}</th>
+											<th class="ultimo"></th>
+											<th class="ultimo"></th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr *ngFor="let trDelDisp of arrayListaDelDispositivo">
+											<td class="noneView">{{trDelDisp.token_dispositivos}}</td>
+											<td>{{trDelDisp.folio}}</td>
+											<td>{{trDelDisp.tipo}}</td>
+											<td>{{trDelDisp.alias}}</td>
+											<td>{{trDelDisp.fecha_delete_disp}}</td>
+											<td><a class="btn text-bg-success rounded-3"
+													(click)="restauraDispositivo($event.target);">&#xf2f9;</a></td>
+											<td><a class="btn btn_extend text-bg-danger rounded-3"
+													(click)="eliminapermDispositivo($event.target);"><i class="fa-solid fa-eraser"></i></a>
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>

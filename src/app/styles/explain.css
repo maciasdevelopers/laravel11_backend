@@ -1,0 +1,33 @@
+div.explain{padding: 0;display: flex;margin: 0;flex-wrap: wrap;justify-content: flex-start;align-items: center;align-content: center;margin-right: 2px;}
+div.explain_column{flex-direction: column!important;align-items: start!important;align-content: start!important;}
+div.explain h6{font-size: smaller;text-align: left;color: #353535;white-space: break-spaces !important;font-family: lato, FontAwesome!important;}
+div.explain h6.title{width: max-content;margin: 0!important;margin-right: 3px!important;font-weight: bold!important;}
+div.explain h6.content{font-family: roboto_cr, FontAwesome;width: max-content;margin: 0!important;}
+div.explain_column h6.content{padding-left: 3px!important;}
+div.explain select{width: auto!important;height: 15px!important;line-height: 15px!important;padding: 0;font-size: 12px;}
+div.explain select option{height: 15px!important;line-height: 15px!important;}
+
+div.explain h6.content_text_large{word-break: break-all;text-align: justify;word-wrap: break-word;max-width: 100%;}
+
+div.explain_est_cuent h6{
+  text-transform: initial!important;
+  font-family: Prompt!important;
+}
+
+.explain-label {
+    display: block;
+    font-size: 0.75rem;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 2px;
+    font-family: Prompt!important; 
+}
+
+.explain-value {
+    display: block;
+    font-size: 0.75rem;
+    color: #1f2937; /* Casi negro */
+    font-weight: 600;
+    font-family: 'Roboto Mono', monospace;
+}

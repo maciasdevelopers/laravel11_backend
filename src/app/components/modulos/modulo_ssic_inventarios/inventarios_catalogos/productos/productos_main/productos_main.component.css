@@ -1,0 +1,20 @@
+/*proveedores*/
+    ul.tabs_listaprov{
+        height: auto!important;
+    }
+
+    ul.tabs_listaprov li{
+        display: flex!important;
+        justify-content: center!important;
+    }
+
+    ul.tabs_listaprov li a{
+        width: 50px!important;
+        height: 50px!important;
+        border-radius: 50%;
+        font-size: 4vh;
+    }
+
+.p-dataview{
+    border: none!important;
+}

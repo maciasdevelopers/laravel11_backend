@@ -1,0 +1,69 @@
+<p-table #ServTrueVentList [value]="listaServTrueVentas"
+  [globalFilterFields]="['folio_sistema','servicio','catalogo_sat','modulo_destino']" dataKey="id" [paginator]="true"
+  [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]">
+  <ng-template #caption>
+    <div class="flex">
+      <p-iconfield iconPosition="left" class="ml-auto">
+        <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+        <input pInputText type="text" (input)="ServTrueVentList.filterGlobal($event.target.value, 'contains')"
+          placeholder="{{'bus_car' | translate}}" />
+      </p-iconfield>
+    </div>
+  </ng-template>
+  <ng-template #header>
+    <tr>
+      <th class="ultimo"></th>
+      <th class="ultimo"></th>
+      <th pSortableColumn="folio_sistema">folio&nbsp;<p-sortIcon field="folio_sistema" /></th>
+      <th pSortableColumn="servicio">servicio&nbsp;<p-sortIcon field="servicio" /></th>
+      <th pSortableColumn="catalogo_sat">catalogo de sat&nbsp;<p-sortIcon field="catalogo_sat" /></th>
+      <th pSortableColumn="modulo_destino">m&oacute;dulo&nbsp;<p-sortIcon field="modulo_destino" /></th>
+      <th class="ultimo"></th>
+      <th class="ultimo"></th>
+    </tr>
+  </ng-template>
+  <ng-template #body let-srv>
+    <tr>
+      <td class="ultimo">
+        <a class="btn bg-blue-600" data-bs-toggle="modal" data-bs-target="#windowServicioVentasDetalle"
+          (click)="verServicioVentas(srv.token_cat_servicios);">
+          <i class="fa-solid fa-info"></i>
+        </a>
+      </td>
+      <td class="img_dat">
+        <div class="col-12">
+          <img class="circle optimizedImage" src="{{srv.logotipo}}" alt="">
+        </div>
+      </td>
+      <td class="name">{{srv.folio_sistema}}</td>
+      <td class="name">{{srv.servicio}}</td>
+      <td class="name">{{srv.catalogo_sat}}</td>
+      <td class="name">{{srv.modulo_destino | translate}}</td>
+      <td class="ultimo">
+        <a class="btn btn_extend rounded-3" [ngClass]="srv.authorized ? 'text-bg-success' : 'text-bg-primary'"
+          [attr.disabled]="srv.authorized ? true : null" [attr.aria-disabled]="srv.authorized ? true : null"
+          (click)="!srv.authorized && solicita_auth_servicio(srv.token_cat_servicios);">
+          <i class="fa-solid" [ngClass]="srv.authorized ? 'fa-check' : 'fa-check-double'"></i>
+          {{srv.authorized ? srv.authorized_fecha : ('auth_solicita' | translate)}}
+        </a>
+      </td>
+      <td>
+        <a class="btn btn_extend text-bg-danger rounded-3" [ngClass]="srv.utilizado ? 'disabled' : ''"
+          [attr.disabled]="srv.utilizado ? true : null" [attr.aria-disabled]="srv.utilizado ? true : null"
+          (click)="!srv.utilizado && funcDeleteServEgr(srv.token_cat_servicios);">
+          <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+        </a>
+      </td>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td colspan="8" class="text-center py-4">
+        <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+        <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+          {{'no_rows' | translate}}
+        </p>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>

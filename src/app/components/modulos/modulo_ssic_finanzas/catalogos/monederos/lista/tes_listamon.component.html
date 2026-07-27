@@ -1,0 +1,469 @@
+<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco" #vContent>
+  <div class="contenido"><app-loader></app-loader>
+    <nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+    <div class="contenidoPagina">
+      <div class="listas_ps">
+        <div id="listaMon" class="lista-div lista-divNoFlex">
+          <h4>CATALOGO DE MONEDERO ELECTR&Oacute;NICO</h4>
+          <div class="col-12">
+            <div class="btn-group lista_botones col" role="group" arial-label="Basic example">
+              <a class="btn btn_extend bg-indigo-600" (click)="listaMonederosElect();listarMonederosElectDelete();">
+                <i class="fa-solid fa-rotate"></i>&nbsp;{{'list_updt' | translate}}
+              </a>
+              <a class="btn btn_extend bg-indigo-600" (click)="openFormNuevoMonElectronico();">
+                <i class="fa-solid fa-plus"></i>&nbsp;Registrar nuevo monedero electr&oacute;nico
+              </a>
+              <a class="btn btn_extend bg-indigo-600" (click)="openListMonederosElectDelete();">
+                <i class="fa-solid fa-trash" style="margin-left: 5px;"></i>&nbsp;Monederos electr&oacute;nicos eliminados
+              </a>
+              <a class="btn btn_extend bg-green-600 descarga_lista_excel"
+                [ngClass]="listMonederoElectro.length == 0 ? 'disabled' : ''"
+                [attr.disabled]="listMonederoElectro.length == 0 ? true : null"
+                [attr.aria-disabled]="listMonederoElectro.length == 0 ? true : null"
+                (click)="listMonederoElectro.length > 0 && descarga_excel_monedero();">
+                <i class="fa-solid fa-file-excel" style="margin-left: 5px;"></i>&nbsp;descargar
+              </a>
+            </div>
+          </div>
+          <p-table #monElectList id="tableMonederoElectro" [value]="listMonederoElectro" [globalFilterFields]="['token_cuentaMon','folio_cuenta','monedero','cuenta_monedero','egresos','ingresos','v_humano']"
+            dataKey="id" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]">
+            <ng-template #caption>
+              <div class="flex" style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;" ngbDropdown>
+                <a class="btn btn_extend" [ngClass]="indicadorMonederoElectro == 'hoy' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="verMonederosElect('hoy');">
+                  <i class="fa-solid fa-calendar-days"></i>&nbsp;Hoy
+                </a>
+                <a class="btn btn_extend" [ngClass]="indicadorMonederoElectro == 'esta_semana' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="verMonederosElect('esta_semana');">
+                  <i class="fa-solid fa-calendar-days"></i>&nbsp;Esta semana
+                </a>
+                <a class="btn btn_extend" [ngClass]="indicadorMonederoElectro == 'este_mes' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="verMonederosElect('este_mes');">
+                  <i class="fa-solid fa-calendar-days"></i>&nbsp;Este mes
+                </a>
+                <a class="btn btn_extend" [ngClass]="indicadorMonederoElectro == 'mes_anterior' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="verMonederosElect('mes_anterior');">
+                  <i class="fa-solid fa-arrow-left"></i>&nbsp;mes anterior
+                </a>
+                <a id="menuDroElectMoned" class="btn btn_extend" [ngClass]="indicadorMonederoElectro == 'otras_fechas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" ngbDropdownToggle>
+                  <i class="fa-solid fa-list-ul"></i>&nbsp;otras fechas
+                </a>
+                <div class="dropdown-menu-end menu-despegable" ngbDropdownMenu="menuDroElectMoned" style="padding: 0!important; margin: 0!important; width: max-content!important; max-height: 400px; overflow-y: auto;">
+                  <div class="col-12 input-group">
+                    <label for="moned_otras_fechas" class="activeInput">Periodo de fechas</label>
+                    <p-datepicker id="moned_otras_fechas" name="moned_otras_fechas" [(ngModel)]="rangoPeriodoMonederoElectro" appendTo="body" dateFormat="dd/mm/yy" 
+                      placeholder="dd/mm/aaaa" selectionMode="range" (onSelect)="verMonederosElect('otras_fechas');"/>
+                  </div>
+                </div>
+                <a class="btn btn_extend" [ngClass]="indicadorMonederoElectro == 'all_partidas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="verMonederosElect('all_partidas');">
+                  <i class="fa-solid fa-list-ul"></i>&nbsp;todos los registros
+                </a>
+                <a class="btn btn_extend bg-green-600 descarga_lista_excel" style="height: 25px !important;"><!-- (click)="descarga_excel_pagos();"-->
+                  descargar&nbsp;<i class="fa-solid fa-file-excel"></i>
+                </a>
+                <p-iconfield iconPosition="left" class="ml-auto">
+                  <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                  <input pInputText type="text" (input)="monElectList.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+                </p-iconfield>
+              </div>
+            </ng-template>
+            <ng-template #header>
+              <tr>
+                <th class="ultimo"></th>
+                <th pSortableColumn="folio_cuenta">Folio&nbsp;<p-sortIcon field="folio_cuenta" /></th>
+                <th pSortableColumn="monedero">Monedero&nbsp;<p-sortIcon field="monedero" /></th>
+                <th pSortableColumn="cuenta_monedero">Cuenta&nbsp;<p-sortIcon field="cuenta_monedero" /></th>
+                <th pSortableColumn="egresos">Egresos y cuentas por pagar&nbsp;<p-sortIcon field="egresos" /></th>
+                <th pSortableColumn="ingresos">Ingresos y cuentas por cobrar&nbsp;<p-sortIcon field="ingresos" /></th>
+                <th pSortableColumn="v_humano">Valor humano&nbsp;<p-sortIcon field="v_humano" /></th>
+                <th pSortableColumn="saldo_cuenta_format">Saldo&nbsp;<p-sortIcon field="saldo_cuenta_format" /></th>
+                <th class="ultimo"></th>
+              </tr>
+            </ng-template>
+            <ng-template #body let-monElect>
+              <tr>
+                <td class="ultimo">
+                  <a class="btn bg-blue-600" (click)="functViewMonderoElectronico(monElect.token_cuentaMon);">
+                    <i class="fa-solid fa-info"></i>
+                  </a>
+                </td>
+                <td>{{monElect.folio_cuenta}}</td>
+                <td>{{monElect.plataforma_electronica}}</td>
+                <td>{{monElect.cuenta_monedero}}</td>
+                <td>{{monElect.egresos ? ['enabled' | translate] : ['disabled' | translate]}}</td>
+                <td>{{monElect.ingresos ? ['enabled' | translate] : ['disabled' | translate]}}</td>
+                <td>{{monElect.v_humano ? ['enabled' | translate] : ['disabled' | translate]}}</td>
+                <td>{{monElect.saldo_cuenta_format}}</td>
+                <td class="ultimo">
+                  <a class="btn btn_extend text-bg-danger rounded-3"
+                    (click)="functDeleteMnderoElctronico(monElect.token_cuentaMon);">
+                    <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                  </a>
+                </td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="8" class="text-center py-4">
+                  <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                  <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                    {{'no_rows' | translate}}
+                  </p>
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p-dialog header="Registro de monedero electr&oacute;nico" [(visible)]="verFormNuevoMonElectronico" [modal]="true"
+  [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  <app-nuevo-monedero-electronico-finanzas></app-nuevo-monedero-electronico-finanzas>
+</p-dialog>
+
+<p-dialog header="Informaci&oacute;n de monederos electr&oacute;nicos" [(visible)]="verDetMonElectronico" [modal]="true"
+  [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  @if (verFormDetListMonedero) {
+  @for (det of arrayDetListMonedero; track det.id; let i = $index) {
+  <form class="row formDataMonElectro" #formDataMonElectro="ngForm" [formGroup]="infoForm" autocomplete="off"
+    (ngSubmit)="validaFormMonedero && actualizaMonedero();">
+    <div class="input-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4">
+      <label for="editMonElectMedioPagoElect" class="activeInput">Medios de pago electr&oacute;nicos</label>
+      <p-select [options]="arrayListMonederos" id="editMonElectMedioPagoElect" formControlName="plataforma_electronica"
+        optionValue="nombre" optionLabel="nombre" [filter]="true" filterBy="nombre" [editable]="true" [showClear]="true"
+        [placeholder]="'opt_select' | translate" class="w-full md:w-56"
+        (onChange)="selectListaMonederoElectro($event.value);"><!--(click)="selectListaMonederoElectro(mon.token_plataforma_digital);"-->
+        <ng-template #selectedItem let-selectedOption>
+          <div class="flex items-center gap-2">
+            <div>{{selectedOption.nombre}}</div>
+          </div>
+        </ng-template>
+        <ng-template let-elect #item>
+          <div class="flex items-center gap-2">
+            <div>{{elect.nombre}}</div>
+          </div>
+        </ng-template>
+      </p-select>
+    </div>
+    <div class="input-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input_group_pass">
+      <label for="editMonElectReferencia" class="activeInput">No. de referencia</label>
+      <input class="txtPasssContrato validate inputWthPass" name="editMonElectReferencia" id="editMonElectReferencia"
+        type="password" [value]="det.referencia" (keyup)="validaNoRef($event.target);">
+      <a class="btn" [ngClass]="monderoElect.no_referencia == '' ? 'disabled' : ''"
+        [attr.disabled]="monderoElect.no_referencia == '' ? true : null"
+        [attr.aria-disabled]="monderoElect.no_referencia == '' ? true : null"
+        (click)="monderoElect.no_referencia != '' && verContrato();">
+        <i class="fa-solid"
+          [ngClass]="monderoElect.no_referencia != '' && viewContrato ? 'fa-eye-slash' : 'fa-eye'"></i>
+      </a>
+    </div>
+    <div class="input-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input_group_pass">
+      <label for="editMonElectNoCuenta" class="activeInput">No. de cuenta</label>
+      <input class="txtPassCuenta validate inputWthPass" name="editMonElectNoCuenta" id="editMonElectNoCuenta"
+        type="password" required [value]="det.cuenta" (keyup)="validaNoCuenta($event.target);">
+      <a class="btn" [ngClass]="monderoElect.cuenta == '' ? 'disabled' : ''"
+        [attr.disabled]="monderoElect.cuenta == '' ? true : null"
+        [attr.aria-disabled]="monderoElect.cuenta == '' ? true : null"
+        (click)="monderoElect.cuenta != '' && verCuenta();">
+        <i class="fa-solid" [ngClass]="monderoElect.cuenta != '' && viewCuenta ? 'fa-eye-slash' : 'fa-eye'"></i>
+      </a>
+    </div>
+    <div class="input-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input_group_pass">
+      <label for="editMonElectClabeInter" class="activeInput">Clabe interbancaria</label>
+      <input class="txtPassClabeInter validate inputWthPass" name="editMonElectClabeInter" id="editMonElectClabeInter"
+        type="password" [value]="det.clabe_inter" maxlength="18" required (keyup)="validaClabeInter($event.target);">
+      <a class="btn" [ngClass]="monderoElect.clabe_inter == '' ? 'disabled' : ''"
+        [attr.disabled]="monderoElect.clabe_inter == '' ? true : null"
+        [attr.aria-disabled]="monderoElect.clabe_inter == '' ? true : null"
+        (click)="monderoElect.clabe_inter != '' && verClabeInter();">
+        <i class="fa-solid"
+          [ngClass]="monderoElect.clabe_inter != '' && viewClabeInterbanc ? 'fa-eye-slash' : 'fa-eye'"></i>
+      </a>
+    </div>
+    <div class="input-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4">
+      <label for="editMonElectTitular" class="activeInput">Titular</label>
+      <input class="validate" id="editMonElectTitular" name="editMonElectTitular" type="text" required
+        [value]="det.titular" (keyup)="validaTitular($event.target);">
+    </div>
+    <div class="input-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4">
+      <label for="editMonElectMoneda" class="activeInput">{{'mon_name' | translate}}</label>
+      <p-select [options]="catalogoMonedasApi" id="editMonElectMoneda" name="editMonElectMoneda"
+        formControlName="mon_moneda" optionValue="code" optionLabel="_filtro_busqueda" [filter]="true"
+        filterBy="_filtro_busqueda" [showClear]="true" [placeholder]="det.moneda" class="w-full md:w-56"
+        (onChange)="selectMonedaMonedero($event.value);">
+        <ng-template #selectedItem let-selectedOption>
+          <div class="flex items-center gap-2">
+            <div>{{selectedOption.code+" "+selectedOption.langEN}}</div>
+          </div>
+        </ng-template>
+        <ng-template let-mon #item>
+          <div class="flex items-center gap-2">
+            <div>{{mon.code+" "+mon.langEN}}</div>
+          </div>
+        </ng-template>
+      </p-select>
+    </div>
+    <div class="input-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4">
+      <label class="activeInput">Cuenta contable</label>
+      <input class="validate" name="titularMonElectronico" type="text" required [value]="det.cuenta_contable"
+        (keyup)="validaCuentaContable($event.target);">
+    </div>
+    <div class="col-12">
+      <div class="explain" style="margin-right: 5px;">&Aacute;rea de utilidad:</div>
+      <div class="col-12 form-check radio_check">
+        <input class="form-check-input" name="areaUtilEgresos" type="checkbox" value="egresos"
+          [checked]="det.mon_egresos" (click)="validaAreaEgresos($event.target);">
+        <label class="form-check-label" for="flexRadioDefault1"><i
+            class="fa-solid fa-arrow-up-short-wide"></i>&nbsp;Egresos y cuentas por pagar</label>
+      </div>
+      <div class="col-12 form-check radio_check">
+        <input class="form-check-input" name="areaUtilIngresos" type="checkbox" value="ingresos"
+          [checked]="det.mon_ingresos" (click)="validaAreaIngresos($event.target);">
+        <label class="form-check-label" for="flexRadioDefault2"><i
+            class="fa-solid fa-arrow-down-short-wide"></i>&nbsp;Ingresos y cuentas por cobrar</label>
+      </div>
+      <div class="col-12 form-check radio_check">
+        <input class="form-check-input" name="areaUtilVHumano" type="checkbox" value="v_humano"
+          [checked]="det.mon_v_humano" (click)="validaAreaVHumano($event.target);">
+        <label class="form-check-label" for="flexRadioDefault2">Valor humano</label>
+      </div>
+    </div>
+
+    <div class="col-12 row">
+      <div class="explain">
+        <h6 class="title">Medios de operaci&oacute;n</h6>
+      </div>
+      <div class="explain">
+        <h6 class="title">Registrados</h6>
+      </div>
+      <div class="col-12" style="margin-top: 5px;">
+        <p-table #dt [value]="listMediosOperacionRegistrados" dataKey="id" [paginator]="true" [rows]="10"
+          [rowsPerPageOptions]="[10,20,30,50,100]" [globalFilterFields]="['nombre']">
+          <ng-template #header>
+            <tr>
+              <th pSortableColumn="clave">Manejo de:&nbsp;<p-sortIcon field="clave" /></th>
+              <th pSortableColumn="valor">No. de referencia&nbsp;<p-sortIcon field="valor" /></th>
+              <th class="ultimo"><i class="fa-solid fa-eraser"></i></th>
+            </tr>
+          </ng-template>
+          <ng-template #body let-adi>
+            <tr>
+              <td>{{adi.clave}}</td>
+              <td>{{adi.valor}}</td>
+              <td>
+                <div class="form-check form-switch form-check-reverse switch_primario switch_delete"
+                  style="justify-content: center;flex-direction: column;">
+                  <input class="form-check-input selectSwitchProvProd" name="selectImpProd" type="checkbox"
+                    [checked]="adi.proceso_eliminacion"
+                    (click)="manejoMonederoListDelete($event.target,adi.token_medio_operacion);"
+                    style="width: 80%!important;">
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="2" class="text-center py-4">
+                <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                  {{'no_rows' | translate}}
+                </p>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+      <p-divider />
+      <div class="explain">
+        <h6 class="title">Para registrar</h6>
+      </div>
+      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input-group">
+        <label for="editMonElectManejoMonedero" class="activeInput" id="lblCheque">Manejo de:</label>
+        <select id="editMonElectManejoMonedero" name="editMonElectManejoMonedero"
+          (change)="selectManejoMonedero($event.target);">
+          <option value="" disabled selected>{{'opt_select' | translate}}</option>
+          <option value="chequera">Chequera</option>
+          <option value="creditCard">Tarjetas de cr&eacute;dito</option>
+          <option value="debitCard">Tarjetas de d&eacute;bito</option>
+        </select>
+      </div>
+      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input-group">
+        <label for="editMonElectManejoReferencia" class="activeInput">No. de referencia</label>
+        <input #txtReferenciaManejoMon id="editMonElectManejoReferencia" name="editMonElectManejoReferencia"
+          class="validate" type="text" (keyup)="referenciaManejoMon($event.target);">
+      </div>
+      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4"
+        style="display: flex;justify-content: start;align-items: end;margin-top: 5px;margin-bottom: 5px;">
+        <a class="btn btn_extend btn text-bg-success rounded-3" [ngClass]="!validaNoReferencia ? 'disabled' : ''"
+          [attr.disabled]="!validaNoReferencia ? true : null" [attr.aria-disabled]="!validaNoReferencia ? true : null"
+          (click)="validaNoReferencia && addManejoMonedero();">
+          <i class="fa-solid fa-plus"></i>&nbsp;{{'btn_add' | translate}}
+        </a>
+      </div>
+
+      <div class="col-12" style="margin-top: 5px;">
+        <p-table #dt [value]="listMediosOperacionNew" dataKey="id" [paginator]="true" [rows]="10"
+          [rowsPerPageOptions]="[10,20,30,50,100]" [globalFilterFields]="['nombre']">
+          <ng-template #header>
+            <tr>
+              <th pSortableColumn="clave">Manejo de:&nbsp;<p-sortIcon field="clave" /></th>
+              <th pSortableColumn="valor">No. de referencia&nbsp;<p-sortIcon field="valor" /></th>
+              <th class="ultimo"></th>
+            </tr>
+          </ng-template>
+          <ng-template #body let-adn>
+            <tr>
+              <td>{{adn.clave}}</td>
+              <td>{{adn.valor}}</td>
+              <td>
+                <a class="btn btn_extend text-bg-danger rounded-3" (click)="deleteManejoMonedero(adn.num_lista);">
+                  <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                </a>
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="3" class="text-center py-4">
+                <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                  {{'no_rows' | translate}}
+                </p>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+
+    <div class="input-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4">
+      <label for="editMonElectResponsableVinculado" class="activeInput">Vincular personal responsable</label>
+      <p-select [options]="arrayPersonal" id="editMonElectResponsableVinculado" name="editMonElectResponsableVinculado"
+        formControlName="responsableVinculado" optionValue="nombre_completo" optionLabel="nombre_completo"
+        [filter]="true" filterBy="nombre_completo" appendTo="body" [showClear]="true"
+        [placeholder]="det.responsable_name" class="w-full md:w-56" (onChange)="selectResponsableMon($event.value);">
+        <ng-template #selectedItem let-selectedOption>
+          <div class="flex items-center gap-2">
+            <div>{{selectedOption.nombre_completo}}</div>
+          </div>
+        </ng-template>
+        <ng-template let-elect #item>
+          <div class="flex items-center gap-2">
+            <div>{{elect.nombre_completo}}</div>
+          </div>
+        </ng-template>
+      </p-select>
+    </div>
+
+    <div class="input-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4">
+      <label for="editMonElectCajaVinculada" class="activeInput">Vincular caja</label>
+      <p-select [options]="arrayCajaMonedero" id="editMonElectCajaVinculada" name="editMonElectCajaVinculada"
+        formControlName="cajaVinculada" optionValue="_filtro_busqueda" optionLabel="_filtro_busqueda" [filter]="true"
+        filterBy="_filtro_busqueda" appendTo="body" [showClear]="true" [placeholder]="det.caja_alias"
+        class="w-full md:w-56" (onChange)="selectCajaMondElect($event.value);">
+        <ng-template #selectedItem let-selectedOption>
+          <div class="flex items-center gap-2">
+            <div>{{selectedOption.caja_folio+" "+selectedOption.caja_alias}}</div>
+          </div>
+        </ng-template>
+        <ng-template let-caj #item>
+          <div class="flex items-center gap-2">
+            <div>{{caj.caja_folio+" "+caj.caja_alias}}</div>
+          </div>
+        </ng-template>
+      </p-select>
+    </div>
+
+    <div class="input-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4">
+      <label for="editMonElectCuentaBancariaVinculada" class="activeInput">Vincular cuenta bancaria</label>
+      <p-select [options]="listaCuentasBancarias" id="editMonElectCuentaBancariaVinculada"
+        name="editMonElectCuentaBancariaVinculada" formControlName="cuentaBancariaVinculada"
+        optionValue="_filtro_busqueda" optionLabel="_filtro_busqueda" [filter]="true" filterBy="_filtro_busqueda"
+        appendTo="body" [showClear]="true" [placeholder]="det.cuenta_filtro" class="w-full md:w-56"
+        (onChange)="selectCuentaMondElect($event.value);">
+        <ng-template #selectedItem let-selectedCB>
+          <div class="flex items-center gap-2">
+            <div>{{selectedCB.banco_nombre_comercial+" "+selectedCB.folio_cuenta+" "+selectedCB.cuenta_bancaria}}</div>
+          </div>
+        </ng-template>
+        <ng-template let-cb #item>
+          <div class="flex items-center gap-2">
+            <div>{{cb.banco_nombre_comercial+" "+cb.folio_cuenta+" "+cb.cuenta_bancaria}}</div>
+          </div>
+        </ng-template>
+      </p-select>
+    </div>
+    <p-divider />
+    <div class="col-12" style="display: flex !important;justify-content: end!important;">
+      <button class="btn btn_extend text-bg-success rounded-3" type="submit" name="btnAltaProducto2"
+        [ngClass]="!validaFormMonedero ? 'disabled' : ''" [attr.disabled]="!validaFormMonedero ? true : null"
+        [attr.aria-disabled]="!validaFormMonedero ? true : null">
+        <i class="fa-solid fa-floppy-disk"
+          style="height: 15px!important;line-height: 15px!important;width: 15px!important;font-size: small!important;"></i>&nbsp;{{'sav_cam'
+        | translate}}</button>
+    </div>
+  </form>
+  } @empty {
+  <div>No hay elementos</div>
+  }
+  }
+</p-dialog>
+
+<p-dialog header="Informaci&oacute;n de monederos electr&oacute;nicos eliminados"
+  [(visible)]="verlistaMonElectronicoDeleted" [modal]="true" [style]="{ width: '50rem' }"
+  [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  <p-table #monElectDel [value]="listMonederoElectDel"
+    [globalFilterFields]="['folio_cuenta','monedero','cuenta_frontend','egresos','ingresos','v_humano','token_cuentaMon']"
+    dataKey="id" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]">
+    <ng-template #caption>
+      <div class="flex">
+        <p-iconfield iconPosition="left" class="ml-auto">
+          <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+          <input pInputText type="text" (input)="monElectDel.filterGlobal($event.target.value, 'contains')"
+            placeholder="{{'bus_car' | translate}}" />
+        </p-iconfield>
+      </div>
+    </ng-template>
+    <ng-template #header>
+      <tr>
+        <th pSortableColumn="folio_cuenta">Folio&nbsp;<p-sortIcon field="folio_cuenta" /></th>
+        <th pSortableColumn="monedero">Monedero&nbsp;<p-sortIcon field="monedero" /></th>
+        <th pSortableColumn="cuenta_frontend">Cuenta&nbsp;<p-sortIcon field="cuenta_frontend" /></th>
+        <th pSortableColumn="egresos">Egresos y cuentas por pagar&nbsp;<p-sortIcon field="egresos" /></th>
+        <th pSortableColumn="ingresos">Ingresos y cuentas por cobrar&nbsp;<p-sortIcon field="ingresos" /></th>
+        <th pSortableColumn="v_humano">Valor humano&nbsp;<p-sortIcon field="v_humano" /></th>
+        <th class="ultimo"></th>
+        <th class="ultimo"></th>
+      </tr>
+    </ng-template>
+    <ng-template #body let-monElect>
+      <tr>
+        <td>{{monElect.folio_cuenta}}</td>
+        <td>{{monElect.monedero}}</td>
+        <td>{{monElect.cuenta_frontend}}</td>
+        <td>{{monElect.egresos ? ['enabled' | translate] : ['disabled' | translate]}}</td>
+        <td>{{monElect.ingresos ? ['enabled' | translate] : ['disabled' | translate]}}</td>
+        <td>{{monElect.v_humano ? ['enabled' | translate] : ['disabled' | translate]}}</td>
+        <td class="ultimo">
+          <a class="btn btn_extend bg-teal-700" (click)="functRestauraMonedElectronico(monElect.token_cuentaMon);"><i
+              class="fa-solid fa-trash-arrow-up"></i>&nbsp;{{'restore_row' | translate}}</a>
+        </td>
+        <td class="ultimo">
+          <a class="btn btn_extend text-bg-danger rounded-3"
+            (click)="functDeletPermMndroElectronico(monElect.token_cuentaMon);"><i
+              class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}</a>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="8" class="text-center py-4">
+          <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+          <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+            {{'no_rows' | translate}}
+          </p>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</p-dialog>

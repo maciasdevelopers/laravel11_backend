@@ -1,0 +1,179 @@
+<form #asientoForm="ngForm">
+  <!-- Datos generales del asiento -->
+  <div class="row mb-3">
+    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+      <label for="familiaProducto" class="activeInput">Fecha <span class="text-danger">*</span></label>
+      <!--<p-calendar [(ngModel)]="fecha" dateFormat="yy-mm-dd" placeholder="YYYY-MM-DD" [showIcon]="true"></p-calendar>-->
+      <input id="txtFechaSalidafinal" class="datepicker" name="fechaAltaProd" type="date"><!-- (change)="validaFechaSalidaFinal($event.target);"-->
+    </div>
+    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+      <label for="familiaProducto" class="activeInput">Tipo de Póliza <span class="text-danger">*</span></label>
+      <!--<p-dropdown [options]="tiposPoliza" [(ngModel)]="tipo_poliza" optionLabel="label" placeholder="Seleccione..." [showClear]="true"></p-dropdown>-->
+      
+      <p-select [options]="tiposPoliza" id="selectedUnidadMedidaSAT" optionLabel="concepto"
+        [filter]="true" filterBy="nombre,simbolo,categoria" [showClear]="true"
+        [placeholder]="'opt_select' | translate" class="w-full md:w-56"><!-- (onChange)="keyupUnidadMedidaSalidaApiServ($event.value);"-->
+        <ng-template #selectedItem let-selectedOption>
+          <div class="flex items-center gap-2">
+            <div>{{ selectedOption.nombre }}</div>
+          </div>
+        </ng-template>
+        <ng-template let-medU #item>
+          <div class="flex items-center gap-2">
+            <div>{{medU.nombre+" "+medU.simbolo+" ("+medU.categoria+")"}}</div>
+          </div>
+        </ng-template>
+      </p-select>
+    </div>
+    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+      <label for="familiaProducto" class="activeInput">Estado</label>
+      <input type="text" class="form-control" [value]="estado" disabled>
+    </div>
+    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+      <label for="familiaProducto" class="activeInput">&nbsp;</label>
+      <div class="d-flex gap-2">
+        <button pButton type="button" label="Guardar" icon="pi pi-save" class="btn btn_extend p-button-success" (click)="guardarAsiento()"></button>
+        <button pButton type="button" label="Cancelar" icon="pi pi-times" class="btn btn_extend p-button-secondary" (click)="cancelar()"></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12 input-group">
+    <label for="familiaProducto" class="activeInput">Concepto <span class="text-danger">*</span></label>
+    <textarea pInputTextarea [(ngModel)]="concepto" name="concepto" rows="2" class="form-control" placeholder="Ingrese el concepto del asiento"></textarea>
+  </div>
+  <div class="col-12 input-group">
+    <label for="familiaProducto" class="activeInput">Observaciones</label>
+    <textarea pInputTextarea [(ngModel)]="observaciones" name="observaciones" rows="2" class="form-control" placeholder="Observaciones adicionales (opcional)"></textarea>
+  </div>
+
+  <!-- Totales -->
+  <div class="row mb-3">
+    <div class="col-md-12">
+      <div class="alert alert-info">
+        <div class="row">
+          <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3">
+            <strong>Total Débito:</strong> {{ totalDebe | number:'1.2-2' }}
+          </div>
+          <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3">
+            <strong>Total Crédito:</strong> {{ totalHaber | number:'1.2-2' }}
+          </div>
+          <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3">
+            <strong>Diferencia:</strong> 
+            <span [class]="tieneDiferencia ? 'text-danger' : 'text-success'">{{ diferencia | number:'1.2-2' }}</span>
+          </div>
+          <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3">
+            <strong>Movimientos:</strong> {{ movimientos.length }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Movimientos -->
+  <div class="row mb-3">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-header">
+          <h6 class="card-title">Movimientos del Asiento</h6>
+        </div>
+        <div class="card-body">
+          <!-- Formulario para agregar movimiento -->
+          <div class="row mb-3">
+            <div class="col-md-4">
+              <label for="familiaProducto" class="activeInput">Cuenta Contable <span class="text-danger">*</span></label>
+              <!--<p-autoComplete [(ngModel)]="nuevoMovimiento.cuenta_contable" 
+                              [suggestions]="cuentasFiltradas" 
+                              (completeMethod)="filtrarCuentas($event)"
+                              field="nombre" 
+                              placeholder="Buscar cuenta..."
+                              [minLength]="2"
+                              [dropdown]="true">
+              </p-autoComplete>-->
+            </div>
+            <div class="col-md-2">
+              <label for="familiaProducto" class="activeInput">Tipo <span class="text-danger">*</span></label>
+              <!--<p-dropdown [options]="[{label:'DEBE',value:'DEBE'},{label:'HABER',value:'HABER'}]" 
+                          [(ngModel)]="nuevoMovimiento.tipo_movimiento"
+                          placeholder="Seleccione...">
+              </p-dropdown>-->
+              
+              <p-select [options]="[{label:'DEBE',value:'DEBE'},{label:'HABER',value:'HABER'}]" id="selectedUnidadMedidaSAT" optionLabel="concepto"
+                [filter]="true" filterBy="nombre,simbolo,categoria" [showClear]="true"
+                [placeholder]="'opt_select' | translate" class="w-full md:w-56"><!-- (onChange)="keyupUnidadMedidaSalidaApiServ($event.value);"-->
+                <ng-template #selectedItem let-selectedOption>
+                  <div class="flex items-center gap-2">
+                    <div>{{ selectedOption.nombre }}</div>
+                  </div>
+                </ng-template>
+                <ng-template let-medU #item>
+                  <div class="flex items-center gap-2">
+                    <div>{{medU.nombre+" "+medU.simbolo+" ("+medU.categoria+")"}}</div>
+                  </div>
+                </ng-template>
+              </p-select>
+            </div>
+            <div class="col-md-2">
+              <label for="familiaProducto" class="activeInput">Monto <span class="text-danger">*</span></label>
+              <input type="number" pInputText [(ngModel)]="nuevoMovimiento.monto" 
+                     class="form-control" placeholder="0.00" step="0.01" min="0">
+            </div>
+            <div class="col-md-3">
+              <label for="familiaProducto" class="activeInput">Concepto del Movimiento</label>
+              <input type="text" pInputText [(ngModel)]="nuevoMovimiento.concepto" 
+                     class="form-control" placeholder="Concepto (opcional)">
+            </div>
+            <div class="col-md-1">
+              <label for="familiaProducto" class="activeInput">&nbsp;</label>
+              <button pButton type="button" icon="pi pi-plus" class="btn btn_extend p-button-success p-button-rounded" 
+                      (click)="agregarMovimiento()" pTooltip="Agregar Movimiento" tooltipPosition="top"></button>
+            </div>
+          </div>
+
+          <!-- Tabla de movimientos -->
+          <div class="row">
+            <div class="col-md-12">
+              <p-table [value]="movimientos" responsiveLayout="scroll">
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th>#</th>
+                    <th>Cuenta Contable</th>
+                    <th>Tipo</th>
+                    <th>Monto</th>
+                    <th>Concepto</th>
+                    <th>Acciones</th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-movimiento let-i="rowIndex">
+                  <tr>
+                    <td>{{ i + 1 }}</td>
+                    <td>
+                      <strong>{{ movimiento.numero_cuenta }}</strong><br>
+                      {{ movimiento.nombre_cuenta }}
+                    </td>
+                    <td>
+                      <!--<p-tag [severity]="getSeverityTipo(movimiento.tipo_movimiento)" 
+                             [value]="movimiento.tipo_movimiento"></p-tag>-->
+                    </td>
+                    <td>{{ movimiento.monto | number:'1.2-2' }}</td>
+                    <td>{{ movimiento.concepto || '-' }}</td>
+                    <td>
+                      <button pButton type="button" icon="pi pi-trash" 
+                              class="p-button-rounded p-button-danger p-button-sm" 
+                              (click)="eliminarMovimiento(i)" pTooltip="Eliminar" tooltipPosition="top"></button>
+                    </td>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                  <tr>
+                    <td colspan="6" class="text-center">No hay movimientos agregados</td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>

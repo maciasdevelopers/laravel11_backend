@@ -1,0 +1,241 @@
+<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco" #vContent>
+	<div class="contenido">
+		<app-loader></app-loader>
+		<nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+		<div class="contenidoPagina">
+			<div class="listas_ps">
+				<div class="lista-div lista-divNoFlex">
+					<h4>Control de movimientos bancarios</h4>
+
+					<div class="col-12 row"><div class="col-12 col-sm-6 col-md-3 col-lg-2"><h6 style="text-align: left;text-transform: initial;">Banco: {{name_banc}}</h6></div></div>
+					<div class="col-12 row"><div class="col-12 col-sm-6 col-md-3 col-lg-2"><h6 style="text-align: left;text-transform: initial;">Cuenta bancaria: {{name_cuenta_banc}}</h6></div></div>
+
+					<div class="col-12 row">
+						<div class="col-12 col-sm-6 col-md-3 col-lg-2">
+							<select id="selectCatalogoCuentas" class="browser-default" style="height: 30px!important;margin-bottom: 2px!important;" (change)="selectCuentaBancaria($event.target);">
+								<option value="">{{'opt_select' | translate}}</option>
+								<option *ngFor="let cuentaRow of arrayCuentBanc" [value]="cuentaRow.token_cuenta">{{cuentaRow.cuenta_frontend+" Saldo: "+cuentaRow.saldo_cuenta_format}}</option>
+							</select>
+						</div>
+						<div class="col-12 col-sm-2 col-md-3 col-lg-2"></div>
+						<div class="col-12 col-sm-4 col-md-3 col-lg-2"><!-- *ngIf="arrayCuentMovBanc.length != 0"-->
+							@if (modulo_registro_ajuste) {
+								<a class="btn btnGuardar btnRow waves-light" style="display: flex;justify-content: space-evenly;" (click)="changeBoolaRegistro();">
+									<i class="fa-solid fa-caret-up"></i> Nuevo registro
+								</a>
+							} @else {
+								<a class="btn btnGuardar btnRow waves-light" style="display: flex;justify-content: space-evenly;" (click)="changeBoolaRegistro();">
+									<i class="fa-solid fa-caret-down"></i> Nuevo registro
+								</a>
+							}
+						</div>
+					</div>
+
+					<div class="col-12 row" *ngIf="modulo_registro_ajuste == true" style="padding: 3px;">
+						<div class="cabecera col-12 row">
+							<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+								<h6 class="title">Tipo de poliza</h6>
+								<select id="selectTipoPoliza" class="browser-default" style="height: 30px!important;margin-bottom: 2px!important;" (change)="selectTipoPoliza($event.target);">
+									<option value="">{{'opt_select' | translate}}</option>
+									<option value="ing">ingresos (deposito)</option>
+									<option value="egr">egresos (retiro)</option>
+									<option value="cpr">cuentas propias</option>
+								</select>
+							</div>
+
+							<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+								<h6 class="title">Forma de operaci&oacute;n</h6>
+								<select id="selectFormaOperacion" class="browser-default" style="height: 30px!important;margin-bottom: 2px!important;" (change)="selectFormaOperacion($event.target);">
+									<option value="">{{'opt_select' | translate}}</option>
+									<option value="efect">efectivo</option>
+									<option value="trans">transferencia</option>
+								</select>
+							</div>
+
+							<div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+								<h6 class="title">Fecha de movimiento</h6>
+								<input class="datepicker" name="fechaMovimiento" type="date" (change)="validaFechaMovimiento($event.target);" id="txt_ajuste_fecha">
+							</div>
+
+							<div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+								<h6 class="title">Importe total</h6>
+								<input class="validate" id="monto_ajuste" name="monto_ajuste" type="number" (keyup)="validaSaldoAjuste($event.target);">
+							</div>
+
+							<div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+								<h6 class="title">beneficiario / ordenante</h6>
+								<select id="selectOrigenDestinoMovimiento" class="browser-default" style="height: 30px!important;margin-bottom: 2px!important;" (change)="validaOrigenDestinoMovimiento($event.target);">
+									<option value="">{{'opt_select' | translate}}</option>
+									<option value="cliente">cliente</option>
+									<option value="proveedor">proveedor</option>
+									<option value="empleado">empleado</option>
+								</select>
+							</div>
+
+							<div class="col-12" *ngIf="origen_destino_movimiento != ''">
+								<h6 *ngIf="origen_destino_movimiento == 'cliente'" class="title">cliente</h6>
+								<input *ngIf="origen_destino_movimiento == 'cliente'" list="clientes_list" name="browser" id="cliente_selected" type="text" (change)="validaCliente($event.target);">
+								<datalist *ngIf="origen_destino_movimiento == 'cliente'" id="clientes_list">
+									<option *ngFor="let lclient of list_clientes" [value]="lclient.nombre">{{"folio "+lclient.folio_client}} {{"rfc "+lclient.rfc}}</option>
+								</datalist>
+
+								<h6 *ngIf="origen_destino_movimiento == 'proveedor'" class="title">proveedor</h6>
+								<input *ngIf="origen_destino_movimiento == 'proveedor'" list="proveedores_list" name="browser" id="proveedor_selected" type="text" (change)="validaProveedor($event.target);">
+								<datalist *ngIf="origen_destino_movimiento == 'proveedor'" id="proveedores_list">
+									<option *ngFor="let lprov of list_proveedores" [value]="lprov.nombre">{{"folio "+lprov.folio}} {{"rfc "+lprov.rfc_prov}}</option>
+								</datalist>
+
+								<h6 *ngIf="origen_destino_movimiento == 'empleado'" class="title">empleado</h6>
+								<input *ngIf="origen_destino_movimiento == 'empleado'" list="empleados_list" name="browser" id="empleado_selected" type="text" (change)="validaEmpleado($event.target);">
+								<datalist *ngIf="origen_destino_movimiento == 'empleado'" id="empleados_list">
+									<option *ngFor="let lpers of list_empleados" [value]="lpers.nombre_completo">{{"folio "+lpers.folio_empleado}}</option>
+								</datalist>
+							</div>
+
+							<div class="col-12">
+								<h6 class="title">¿Conoce la información de CFDI vinculado?</h6>
+								<h6 class="content">
+									<div class="switch">
+										<label>
+											{{'no' | translate}}
+											<input type="checkbox" (click)="cfdiVinculadoExist();" [checked]="bool_cfdi_vinculado == true" [disabled]="saldo_ajuste == ''">
+											<span class="lever"></span>
+											{{'yes' | translate}}
+										</label>
+									</div>
+								</h6>
+							</div>
+
+							<div class="col-12" style="overflow: overlay!important;" *ngIf="bool_cfdi_vinculado == true">
+								<table class="responsive-table centered" style="width: max-content!important;">
+									<thead>
+										<tr>
+											<th>Fecha de emisi&oacute;n</th>
+											<th>Folio interno</th>
+											<th>UIDD (FOLIO FISCAL)</th>
+											<th>M&eacute;todo de pago</th>
+											<th>Forma de pago</th>
+											<th>Moneda</th>
+											<th>importe de factura</th>
+											<th>importe aplicado</th>
+											<th>restante</th>
+											<th class="ultimo"></th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td><input class="datepicker" id="cfdiFechaEmision_txt" name="fechaEmisionCfdi" type="date" (change)="validaCfdiFechaEmision($event.target);"></td>
+											<td><input class="validate" id="cfdifolioInterno_txt" name="tipoCambioOrdenPago" type="text" (keyup)="validaCfdifolioInterno($event.target);"></td>
+											<td><input class="validate" id="cfdiUuid_txt" name="cfdi_uuid_txt" type="text" (keyup)="validaCfdiUuid($event.target);"></td>
+											<td>									
+												<select id="cfdiMetodoPago" class="browser-default" name="formaPago" (change)="metodoPagoCfdiChange($event.target);">
+													<option value="" disabled selected>{{'opt_select' | translate}}</option>
+													<option *ngFor="let mpago of array_metodo_pago" [value]="mpago.token_metodopago">{{mpago.abrev+" - "+mpago.metodo}}</option>
+												</select>
+											</td>
+											<td>
+												<select id="cfdiFormaPago" class="browser-default"name="formaPago" (change)="formaPagoCfdiChange($event.target);">
+													<option value="" disabled selected>{{'opt_select' | translate}}</option>
+													<option *ngFor="let fpago of array_forma_pago" [value]="fpago.token_formapago">{{fpago.clave+" "+fpago.forma}}</option>
+												</select>
+											</td>
+											<td>
+												<input list="monedas_list" name="browser" id="moneda_selected" type="text" (change)="monedaCfdiChange($event.target);">
+												<datalist id="monedas_list">
+													<option *ngFor="let arraMon of arrayMonedas" [value]="arraMon.moneda">{{"código "+arraMon.codigo+", "+arraMon.decimales+" decimales"}}</option>
+												</datalist>
+											</td>
+											<td><input class="validate" id="cfdi_txt_importe_total" name="cfdi_txt_importe_total" type="number" (keyup)="validaCfdiImporteTotal($event.target);"></td>
+											<td><input class="validate" id="cfdi_txt_importe_aplicado" name="cfdi_txt_importe_aplicado" type="number" (keyup)="validaCfdiImporteAplicado($event.target);"></td>
+											<td>{{cfdi_importe_restante}}</td>
+	
+											<td class="ultimo">
+												<a class="btn text-bg-success rounded-3" *ngIf="cfdi_data_bool == false" disabled><i class="fa-solid fa-plus"></i></a>
+												<a class="btn text-bg-success rounded-3" *ngIf="cfdi_data_bool == true" (click)="add_cfdi_data();"><i class="fa-solid fa-plus"></i></a>
+											</td>
+										</tr>
+									</tbody>
+									<tbody *ngIf="cfdi_data.length != 0">
+										<tr *ngFor="let row of cfdi_data;index as posicion">
+											<td>{{row.fecha_emision}}</td>
+											<td>{{row.folio_interno}}</td>
+											<td>{{row.folio_fiscal}}</td>
+											<td>{{row.metodo_pago_name}}</td>
+											<td>{{row.forma_pago_name}}</td>
+											<td>{{row.moneda_name}}</td>
+											<td>{{row.importe_total_format}}</td>
+											<td>{{row.importe_aplicado_format}}</td>
+											<td>{{row.importe_restante}}</td>
+											<td class="ultimo">
+												<a class="btn text-bg-danger rounded-3" (click)="delete_cfdi_data(posicion);"><i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}</a>
+											</td>
+										</tr>
+									</tbody>
+									<tfoot *ngIf="cfdi_data.length != 0" style="display: contents;">
+										<tr>
+											<td colspan="7"></td>
+											<td style="text-align: right;">Importe total</td>
+											<td>{{facturas_importe_total}}</td>
+											<td></td>
+										</tr>
+										<tr>
+											<td colspan="7"></td>
+											<td style="text-align: right;">Importe restante</td>
+											<td>{{facturas_importe_restante}}</td>
+											<td></td>
+										</tr>
+									</tfoot>
+									<tbody *ngIf="cfdi_data.length == 0">
+										<tr><td colspan="10">{{'no_rows' | translate}}</td></tr>
+									</tbody>
+								</table>
+							</div>
+							
+							<div class="col-12 row">
+								<div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+								<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2" *ngIf="bool_registro_nuevo == true">
+									<a class="btn btnGuardar btnRow waves-light" style="display: flex;justify-content: space-evenly;" (click)="registrar_ajuste();">
+										<i class="fa-solid fa-floppy-disk"></i> Registrar ajuste</a>
+								</div>
+								<div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+							</div>
+						</div>
+					</div>
+
+					<table class="responsive-table centered">
+						<thead>
+						  <tr>
+								<th class="ultimo"></th>
+								<th>movimiento</th>
+								<th>folio</th>
+								<th>fecha</th>
+								<th>beneficiario / proveedor</th>
+								<th>realiz&oacute;</th>
+								<th>monto</th>
+						  </tr>
+						</thead>
+						<tbody>
+						  <tr class="trlink" *ngFor="let row of arrayCuentMovBanc">
+								<td>{{row.tipo_movimiento}}</td>
+								<td>{{row.subtipo_movimiento}}</td><!--<td>{{row.pago_realizado}}</td>-->
+								<td>{{row.folio_movimiento}}</td>
+								<td>{{row.fecha_movimiento}}</td>
+								<td>{{row.mov_beneficiario}}</td><!--<td>{{row.pago_realizado}}</td>-->
+								<td>{{row.realizo_movimiento}}</td><!--<td>{{row.pago_realizado}}</td>-->
+								<td>{{row.mov_monto}}</td>
+						  </tr>
+						</tbody>
+						<tfoot *ngIf="arrayCuentMovBanc.length != 0" style="display: contents;">
+							<tr>
+								<td colspan="5"></td>
+								<td style="text-align: right;">Saldo total</td>
+								<td>{{saldo_cuenta_banc}}</td>
+							</tr>
+						</tfoot>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

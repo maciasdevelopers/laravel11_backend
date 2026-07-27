@@ -1,0 +1,138 @@
+<h4 class="col-12">{{'comi_soli' | translate}}</h4>
+<h6 *ngIf="!permiso_crear" class="access_denied">{{'perm_denied' | translate}}</h6>
+<div class="col-12" *ngIf="permiso_crear" style="padding: 0;">
+  <div class="data-reg row" style="width: 100%!important;">
+    <form id="form_reem_new_soli" name="form_reem_new_soli" class="row" (ngSubmit)="comi_to_validate && onSaveComisionSolicitud();">
+      <div class="col-12 col-sm-6 col-md-6 col-lg-8 col-xl-8 col-xxl-8 input-group">
+        <label class="activeInput">{{'proy' | translate}}</label>
+        <input class="validate" name="comi_proyecto" id="comi_proyecto" type="text" (keyup)="keyupProyectoComision($event.target);">
+      </div>
+
+      <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-4 input-group">
+        <label class="activeInput">{{'comi_sionado' | translate}}</label>
+        <p-select [options]="arrayComisionados" id="comi_sionado_opcion" [(ngModel)]="reem_opcion_comi" name="comi_sionado_opcion" 
+          optionValue="comisionado_token" optionLabel="comisionado_nombre" [filter]="true" filterBy="comisionado_nombre" appendTo="body" 
+          [showClear]="true" [placeholder]="'opt_select' | translate" class="w-full md:w-56" 
+          (onChange)="changeEmpleadoComision($event.value);">
+          <ng-template #selectedItem let-selectedOption>
+            <div class="flex items-center gap-2"><div>{{selectedOption.comisionado_folio+" "+selectedOption.comisionado_nombre}}</div></div>
+          </ng-template>
+          <ng-template let-prov #item>
+            <div class="flex items-center gap-2"><div>{{prov.comisionado_folio+" "+prov.comisionado_nombre}}</div></div>
+          </ng-template>
+        </p-select>
+      </div>
+      
+      <div class="col-12 input-group text_area_field">
+        <label class="activeInput">{{'observ' | translate}}</label>
+        <textarea name="comi_large_observ" id="comi_large_observ" class="validate" (keyup)="keyupObservaComision($event.target);"></textarea>
+      </div>
+
+      <div class="col-12 col-sm-6 col-md-3 col-lg-3 col-xl-2 col-xxl-2 input-group">
+        <label class="activeInput">{{'comi_date' | translate}}</label>
+        <input class="validate" name="comi_date_salida" id="comi_date_salida" type="date" (change)="keyupFechaSalidaComision($event.target);">
+      </div>
+    
+      <div class="col-12 col-sm-6 col-md-3 col-lg-3 col-xl-2 col-xxl-2 input-group">
+        <label class="activeInput">{{'comi_time' | translate}}</label>
+        <input class="validate" name="comi_time_duracion" id="comi_time_duracion" type="number" (keyup)="keyupTiempoDuracionComision($event.target);">
+      </div>
+      <p-divider/>
+      <div class="col-12 radio" style="display: flex;flex-wrap: wrap;justify-content: left;align-content: center;margin: 0;">
+        <div class="form-check form-switch form-check-reverse switch_primario">
+          <label class="form-check-label" for="flexSwitchCheckReverse" style="font-size: smaller!important;text-align: left;">{{'comi_recibe_dinero' | translate}}</label>
+          <label class="form-check-label" for="flexSwitchCheckReverse" style="font-size: smaller!important;">No</label>
+          <input class="form-check-input" type="checkbox" (click)="changeRecibeDineroComision($event.target);" id="radioUploadEvid">
+          <label class="form-check-label" for="flexSwitchCheckReverse" style="font-size: smaller!important;margin-left: 3px!important;">{{'yes' | translate}}</label>
+        </div>
+      </div>
+      <div class="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-2 col-xxl-3 input-group">
+        <label class="activeInput" [ngClass]="!comi_recibe_dinero ? 'disabled' : ''" [attr.disabled]="!comi_recibe_dinero ? true : null" [attr.aria-disabled]="!comi_recibe_dinero ? true : null">{{'total_import' | translate}}</label>
+        <input class="validate" name="comi_dinero_recibido" id="comi_dinero_recibido" type="number" min="1" max="100000000000000" [ngClass]="!comi_recibe_dinero ? 'disabled' : ''" 
+          [attr.disabled]="!comi_recibe_dinero ? true : null" [attr.aria-disabled]="!comi_recibe_dinero ? true : null" (keyup)="comi_recibe_dinero && keyupDineroRecibido($event.target);">
+      </div>
+      <div class="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-2 col-xxl-3 input-group">
+        <datalist id="dataListMonedaNewReemOut"><option *ngFor="let rowMon of catalogo_monedas_api" [value]="rowMon.langEN">{{"código "+rowMon.code+", "+rowMon.decimales+" decimales"}}</option></datalist>
+        <label class="activeInput" [ngClass]="!activateMoneda ? 'disabled' : ''" [attr.disabled]="!activateMoneda ? true : null" [attr.aria-disabled]="!activateMoneda ? true : null">{{'mon_name' | translate}}</label>
+        <input class="validate" name="comi_moneda" id="comi_moneda" type="text" list="dataListMonedaNewReemOut" [ngClass]="!activateMoneda ? 'disabled' : ''" 
+          [attr.disabled]="!activateMoneda ? true : null" [attr.aria-disabled]="!activateMoneda ? true : null" (change)="activateMoneda && keyupValidateMonedaComi($event.target);">
+      </div>
+      <p-divider/>
+      <div class="col-12 radio" style="display: flex;flex-wrap: wrap;justify-content: left;align-content: center;margin: 0;">
+        <div class="form-check form-switch form-check-reverse switch_primario">
+          <label class="form-check-label" for="flexSwitchCheckReverse"> {{'comi_valida_vhum' | translate}} No</label>
+          <input class="form-check-input" type="checkbox" (click)="califica_vhum($event.target);">
+          <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+        </div>
+      </div>
+      <p-divider/>
+      <div class="col-12 explain">
+        <h6 class="title">C&oacute;digo postal asignado al lugar donde se enviara a comisi&oacute;n</h6>
+      </div>
+      <div class="col-12 row" style="padding: 0;">
+        <ul class="list-group collection_postales" style="margin-top: 0;">
+          <li class="list-group-item">
+            <div class="busqueda row">
+              <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6" style="display: flex;justify-content: flex-start;margin: auto;padding: 0;height: 30px;line-height: 30px;">
+                <h6>C&oacute;digo postal: </h6>
+              </div>
+              <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6 field_buscar">
+                <input id="txt_buscador_cpostal" class="validate" type="text" placeholder="{{'bus_car' | translate}}" (keyup)="buscaCodPostalDipomex($event.target);">
+              </div>
+            </div>
+          </li>
+          <li class="list-group-item">Estado: {{dipomex_cod_postal_estado}}</li>
+          <li class="list-group-item">Municipio: {{dipomex_cod_postal_municipio}}</li>
+          <li class="list-group-item">C&oacute;digo postal: {{dipomex_cod_postal_cp}}</li>
+          <li class="list-group-item" *ngIf="dipomex_cod_postal_colonias.length == 0">Colonias: ---</li>
+          <li class="list-group-item itemFor" *ngIf="dipomex_cod_postal_colonias.length > 0">Colonias: <p *ngFor="let col of dipomex_cod_postal_colonias" (click)="seleccionaColoniaCPDipomex(col);">{{col}}</p></li>
+          <li class="list-group-item itemColoniaSeleted" *ngIf="dipomex_cod_postal_colonia_vinculada != ''">Colonia seleccionada: {{dipomex_cod_postal_colonia_vinculada}}</li>
+        </ul>
+
+        <table *ngIf="dipomex_cod_postal_cp != '' && dipomex_cod_postal_cp == ('unk_nown' | translate)" class="centered responsive-table">
+          <thead>
+            <tr>
+              <th>Estado</th>
+              <th>Municipio</th>
+              <th>C&oacute;digo postal</th>
+              <th>Colonia</th>
+              <th class="ultimo"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><input id="newDipoMexEstado" class="validate" type="text" (keyup)="keyupCPostal_EstName($event.target);"></td>
+              <td><input id="newDipoMexMunicipio" class="validate" type="text" (keyup)="keyupCPostal_Municipio($event.target);"></td>
+              <td><input id="newDipoMexCP" class="validate" type="text" (keyup)="keyupCPostal_CP($event.target);"></td>
+              <td><input id="newDipoMexColonia" class="validate" type="text" (keyup)="keyupCPostal_Colonia($event.target);"></td>
+              <td class="ultimo">
+                <a class="btn btnGuardar btnRow text-bg-success rounded-3" [ngClass]="!validaCPNew ? 'disabled' : ''"
+                  [attr.disabled]="!validaCPNew ? true : null" [attr.aria-disabled]="!validaCPNew ? true : null" (click)="validaCPNew && addListPostal();">
+                  <i class="fa-solid fa-floppy-disk"></i></a>
+              </td>
+            </tr>
+            <tr *ngFor="let newCP of listnewdireccionNac;index as pos">
+              <td>{{newCP.estado}}</td>
+              <td>{{newCP.municipio}}</td>
+              <td>{{newCP.codigo_postal}}</td>
+              <td>{{newCP.colonia}}</td>
+              <td class="ultimo">
+                <a class="btn btnGuardar btnRow text-bg-danger rounded-3" (click)="deleteListCPostal(pos);"><i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}</a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="col-12 row" style="margin-top: 5px!important;">
+        <div class="col-12 col-sm-12 col-md-6 col-lg-8 col-xl-8 col-xxl-9"></div>
+        <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3" style="display: flex !important;justify-content: end!important;">
+          <button class="btn btn_extend text-bg-success rounded-3" type="submit" 
+            [ngClass]="!comi_to_validate ? 'disabled' : ''" [attr.disabled]="!comi_to_validate ? true : null" [attr.aria-disabled]="!comi_to_validate ? true : null">
+            <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

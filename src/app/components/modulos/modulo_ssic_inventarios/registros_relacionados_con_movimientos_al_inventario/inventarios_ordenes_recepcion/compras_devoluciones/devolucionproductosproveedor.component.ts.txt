@@ -1,0 +1,356 @@
+import { Component, OnInit } from '@angular/core';
+import { ComprasServService } from '../../../../../../servicios/ssic/compras-serv.service';
+import Swal from 'sweetalert2';
+import { TranslateService } from '@ngx-translate/core';
+import { ValidatorServService } from '../../../../../../servicios/validator-serv.service';
+import { DireccionesService } from '../../../../../../servicios/ssic/direcciones.service';
+import { EstablecimientosService } from '../../../../../../servicios/establecimientos';
+
+@Component({
+  selector: 'app-devolucionproductosproveedor',
+  standalone: false,
+  
+  templateUrl: './devolucionproductosproveedor.component.html',
+  styleUrls: [
+    '../../../../../../styles/datatable.css',
+    '../../../../../../styles/input_group.css',
+    '../../../../../../styles/buttons.css',
+    '../../../../../../styles/modals.css',
+    '../../../../../../styles/proveedores.css',
+    '../../../../../../styles/collapsible.css',
+    '../../../../../../styles/row.css',
+    '../../../../../../styles/cards.css',
+    '../../../../../../styles/encabezados.css',
+    '../../../../../../styles/div_busqueda.css',
+    '../../../../../../styles/radioButtons.css',
+    '../../../../../../styles/paginador.css',
+    '../../../../../../styles/tabs.css',
+    '../../../../../../styles/loading.css',
+    '../../../../../../styles/listas_ps.css',
+    '../../../../../../styles/landing.css',
+    '../../../../../../styles/colores.css',
+    '../../../../../../styles/explain.css',
+    '../../../../../../styles/switches.css',
+    '../../../../../../styles/ubicaciones.css',
+    '../../../inventarios.css',
+    './devolucionproductosproveedor.component.css'
+  ]
+})
+export class DevolucionproductosproveedorComponent implements OnInit{
+  listaDevoluciones:any = [];
+  seccionDevolucionDesglose:string = "";
+
+  //registro
+  arrayComprasGeneral:any = [];
+  public tipo_devolucion:string = "";
+  public compra_selected:string = "";
+  public proveedor_selected:string = "";
+  public establecimiento_selected:string = "";
+  public observaciones:string = "";
+  arrayDetalleCompra:any = [];
+  arrayArticulos:any = [];
+  seccionImpuestosUno:string = "";
+  arrayEstablecCompras:any = []; 
+
+  constructor(
+    public _comprServ: ComprasServService,
+    private translate:TranslateService,
+    public validator:ValidatorServService,
+    public _almService:DireccionesService,
+    private estabServ:EstablecimientosService,
+  ){}
+
+  ngOnInit(): void {
+    this.listaGencompras();
+    this.recargaEstablecimientos();
+    this.listarDevolucionesCompras();  
+  }
+
+  listaGencompras(){
+    this._comprServ.listaGeneralCompras('all_partidas','','').subscribe(
+      response => {
+        if (response.status == 'success') {
+          console.log(response);
+          this.arrayComprasGeneral = response.compras;
+        }
+      },
+      error => {
+        console.log(error);
+      }
+    );
+  }
+
+  recargaEstablecimientos(){
+    this.estabServ.listaEstablecimientoscomplete().subscribe(
+      response => {
+        console.log(response.status);
+        if (response.status == 'success') {
+          this.arrayEstablecCompras = response.listaEstablecimientos;
+          console.log(this.arrayEstablecCompras);
+        }
+      },
+      error =>{
+        console.log(error);
+      }
+    )
+  }
+
+  listarDevolucionesCompras(){
+    this._comprServ.listaComprasDevoluciones().subscribe(
+      response => {
+        if (response.status == 'success') {
+          this.listaDevoluciones = response.compras;
+          console.log(this.listaDevoluciones);
+        }
+      },
+      error => {
+        console.log(error);
+      }
+    );
+  }
+
+  abreDesgloseDevoluciones(row:any){
+    this.seccionDevolucionDesglose = this.seccionDevolucionDesglose === row ? null : row;
+  }
+
+  autorizaDevolucion(token_compras_devoluciones:any){
+    Swal.fire({
+      title: this.translate.instant("swal_attenc"),
+      text: this.translate.instant("swal_update"),
+      icon: 'warning',
+      confirmButtonColor: '#388E3C',
+      confirmButtonText: this.translate.instant("swal_yes_update"),
+      showCancelButton: true,
+      cancelButtonColor: '#D32F2F',
+      cancelButtonText: this.translate.instant("swal_cancel"),
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this._comprServ.autorizarComprasDevoluciones(token_compras_devoluciones).subscribe(
+          response => {
+            let translate_response = this.translate.instant(response.message);
+            if (response.status == 'success') {
+              Swal.fire({
+                position:'center',
+                icon: 'success',
+                title: translate_response,
+                showConfirmButton:false,
+                timer: 3000
+              })
+            }
+            if (response.status == 'error') {
+              Swal.fire({
+                position:'top-end',
+                icon: 'warning',
+                title: translate_response,
+                showConfirmButton:false,
+                timer: 3000
+              })
+            }
+          },
+          error => {
+            console.log(error);
+          }
+        )
+      }
+    })
+  }
+
+  cancelaDevolucion(token_compras_devoluciones:any){
+    Swal.fire({
+      title: this.translate.instant("swal_attenc"),
+      text: this.translate.instant("swal_update"),
+      icon: 'warning',
+      confirmButtonColor: '#388E3C',
+      confirmButtonText: this.translate.instant("swal_yes_update"),
+      showCancelButton: true,
+      cancelButtonColor: '#D32F2F',
+      cancelButtonText: this.translate.instant("swal_cancel"),
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this._comprServ.cancelarComprasDevoluciones(token_compras_devoluciones).subscribe(
+          response => {
+            let translate_response = this.translate.instant(response.message);
+            if (response.status == 'success') {
+              Swal.fire({
+                position:'center',
+                icon: 'success',
+                title: translate_response,
+                showConfirmButton:false,
+                timer: 3000
+              })
+            }
+            if (response.status == 'error') {
+              Swal.fire({
+                position:'top-end',
+                icon: 'warning',
+                title: translate_response,
+                showConfirmButton:false,
+                timer: 3000
+              })
+            }
+          },
+          error => {
+            console.log(error);
+          }
+        )
+      }
+    })
+  }
+
+//registro
+  seleccionaTipoDevolucion(event:any){
+    const validacion = event.value != "" && this.validator.filtroAlfaNumerico(event.value);
+    this.tipo_devolucion = validacion ? event.value : '';
+    validacion ? this.validator.correctoInputRow(event) : this.validator.errorInputRow(event);
+  }
+
+  seleccionaCompraDevolucion(event:any){
+    const buy = this.arrayComprasGeneral.find((row:any) => row.folio_compra === event.value);
+    const validacion = event.value != "" && this.validator.filtroAlfaNumerico(event.value);
+    this.compra_selected = validacion ? buy.token_compras : '';
+    validacion ? this.validator.correctoInputRow(event) : this.validator.errorInputRow(event);
+    validacion ? this.compraDesgloseDevolucion(buy.token_compras) : null;
+  }
+
+  compraDesgloseDevolucion(token_compras:any){
+    this._comprServ.detalleComprasAutorizadas(token_compras).subscribe(
+      response => {
+        if (response.status == 'success') {
+          console.log(response.compras);
+          this.arrayDetalleCompra = response.compras;
+          response.compras.forEach((row:any) => {
+            this.proveedor_selected = row.proveedor_token;
+            this.arrayArticulos = row.articulos;
+            console.log(this.arrayArticulos);
+          });
+        }
+      },
+      error => {
+        console.log(error);
+      }
+    );
+  }
+
+  cantidadCompraArticulo(event:any,token_articulo:any,token_detcompra:any){
+    const art = this.arrayArticulos.find((row:any) => row.token_articulo === token_articulo && row.token_detcompra === token_detcompra);
+    art.cantidad = event.value;
+    const validacion = event.value != "" && this.validator.filtroNum(event.value) == true && typeof art !== 'undefined' && art.cantidad <= art.cantidad_background;
+    validacion ? this.validator.correctoInputRow(event) : this.validator.errorInputRow(event);
+  }
+
+  verImpuestosUno(row:any) {
+    this.seccionImpuestosUno = this.seccionImpuestosUno === row ? null : row;
+  }
+
+  checkloPedido(event:any,token_articulo:any,token_detcompra:any){
+    const art = this.arrayArticulos.find((row:any) => row.token_articulo === token_articulo && row.token_detcompra === token_detcompra);
+    art.lo_pedido = event.value == 'si' ? true : false;
+  }
+  
+  checkllegoTiempo(event:any,token_articulo:any,token_detcompra:any){
+    const art = this.arrayArticulos.find((row:any) => row.token_articulo === token_articulo && row.token_detcompra === token_detcompra);
+    art.llegoTiempo = event.value == 'si' ? true : false;
+  }
+
+  checkBuenEstado(event:any,token_articulo:any,token_detcompra:any){
+    const art = this.arrayArticulos.find((row:any) => row.token_articulo === token_articulo && row.token_detcompra === token_detcompra);
+    art.buenEstado = event.value == 'si' ? true : false;
+  }
+
+  checkCalidad(event:any,token_articulo:any,token_detcompra:any){
+    const art = this.arrayArticulos.find((row:any) => row.token_articulo === token_articulo && row.token_detcompra === token_detcompra);
+    art.calidadRecepcion = event.value == 'si' ? true : false;
+  }
+    
+  observacionesKeyup(event:any,token_articulo:any,token_detcompra:any){
+    const validacion = event.value != '' && this.validator.filtroAlfaNumerico(event.value);
+    const art = this.arrayArticulos.find((row:any) => row.token_articulo === token_articulo && row.token_detcompra === token_detcompra);
+    art.observaciones = validacion ? event.value : '';
+  }
+
+  validaObservaciones(event:any){
+    const validacion = event.value != '' && this.validator.filtroAlfaNumerico(event.value); 
+    this.observaciones = validacion ? event.value : '';
+    validacion ? this.validator.correctoInputRow(event) : this.validator.errorInputRow(event);
+  }
+
+  validateCheckDevolucion(token_articulo:any,token_detcompra:any): boolean {
+    const art = this.arrayArticulos.find((row:any) => row.token_articulo === token_articulo && row.token_detcompra === token_detcompra);
+    const validacion_cant = art.cantidad != 0 && this.validator.filtroNum(art.cantidad) == true && typeof art !== 'undefined' && art.cantidad <= art.cantidad_background;
+    return art.lo_pedido != null && art.llegoTiempo != null && art.buenEstado != null && art.calidadRecepcion != null && art.observaciones != null && validacion_cant;
+  }
+  
+  seleccionaCompraArticulo(event:any,token_articulo:any,token_detcompra:any) {
+    const art = this.arrayArticulos.find((row:any) => row.token_articulo === token_articulo && row.token_detcompra === token_detcompra);
+    art.seleccionado = event.checked ? true : false;
+    console.log(art);
+  }
+
+  validaEstablecimientoDevolucion(event:any){
+    const estab = this.arrayEstablecCompras.find((row:any) => row.estab_folio === event.value);
+    const validacion = event.value != '' && this.validator.filtroAlfaNumerico(event.value); 
+    this.establecimiento_selected = validacion ? estab.token_establecimiento : '';
+    validacion ? this.validator.correctoInputRow(event) : this.validator.errorInputRow(event);
+    //this.listaResponsableAlmacen(estab.token_establecimiento);
+  }
+  
+  get validaDevolucionRegistro():Boolean{
+    const validacion_tipo_devolucion = this.tipo_devolucion != "" && this.validator.filtroAlfaNumerico(this.tipo_devolucion) == true;
+    const validacion_compra_selected = this.compra_selected != "";
+    const validacion_proveedor_selected = this.proveedor_selected != "";
+    const validacion_articulo_selected = this.arrayArticulos.filter((row:any) => row.seleccionado === true);
+    const validacion_establecimiento_selected = this.establecimiento_selected != '';
+    const validacion_observaciones = this.observaciones != '';
+    return validacion_tipo_devolucion && validacion_compra_selected && validacion_proveedor_selected && validacion_articulo_selected.length > 0 && validacion_establecimiento_selected && validacion_observaciones;
+  }
+
+  registraDevolucion(){
+    Swal.fire({
+      title: this.translate.instant("swal_attenc"),
+      text: this.translate.instant("swal_insert"),
+      icon: 'warning',
+      confirmButtonColor: '#388E3C',
+      confirmButtonText: this.translate.instant("swal_yes_insert"),
+      showCancelButton: true,
+      cancelButtonColor: '#D32F2F',
+      cancelButtonText: this.translate.instant("swal_cancel"),
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this._comprServ.comprasRegistrarDevolucion(
+          this.tipo_devolucion,
+          this.compra_selected,
+          this.proveedor_selected,
+          this.arrayArticulos.filter((row:any) => row.seleccionado === true),
+          this.establecimiento_selected,
+          this.observaciones,
+        ).subscribe(
+          response => {
+            let translate_response = this.translate.instant(response.message);
+            if (response.status == 'success') {
+              Swal.fire({
+                position:'center',
+                icon: 'success',
+                title: translate_response,
+                showConfirmButton:false,
+                timer: 3000
+              })
+              location.reload();
+            }
+            if (response.status == 'error') {
+              Swal.fire({
+                position:'top-end',
+                icon: 'warning',
+                title: translate_response,
+                showConfirmButton:false,
+                timer: 3000
+              })
+            }
+          },
+          error => {
+            console.log(error);
+          }
+        );
+      }
+    })
+  }
+}

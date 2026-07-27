@@ -1,0 +1,321 @@
+<div class="form data-reg row"><!-- noneView-->
+  <div class="container col-12 row" style="padding: 0!important;margin: 0!important;">
+    <form class="row formRegDeudores" #formRegDeudores="ngForm" autocomplete="off" name="formRegDeudores"
+      enctype="multipart/form-data" (ngSubmit)="registrarDeudor(formRegDeudores);">
+      <div class="col-12">
+        <label class="activeInput">Tipo de deudor</label>
+        <div class="col-12 form-check radio_check">
+          <input class="form-check-input" type="radio" [checked]="deudorModelo.tipoDeudor === 'nacional'"
+            (change)="tipoSeleccionado('nacional');" name="tipoDeudor">
+          <label class="form-check-label">Nacional</label>
+        </div>
+        <div class="col-12 form-check radio_check">
+          <input class="form-check-input" type="radio" [checked]="deudorModelo.tipoDeudor === 'extranjero'"
+            (change)="tipoSeleccionado('extranjero');" name="tipoDeudor">
+          <label class="form-check-label">Extranjero</label>
+        </div>
+      </div>
+
+      <div class="col-12">
+        <label class="activeInput">Tipo de persona</label>
+        <div class="col-12 form-check radio_check">
+          <input class="form-check-input" type="radio" [ngClass]="!deudorModelo.tipoDeudor ? 'disabled' : ''"
+            [attr.disabled]="!deudorModelo.tipoDeudor ? true : null"
+            [attr.aria-disabled]="!deudorModelo.tipoDeudor ? true : null"
+            [checked]="deudorModelo.subtipoDeudor === 'deudorFisica'"
+            (change)="deudorModelo.subtipoDeudor = 'deudorFisica'" name="subtipoDeudor">
+          <label class="form-check-label">Persona física</label>
+        </div>
+        <div class="col-12 form-check radio_check">
+          <input class="form-check-input" type="radio" [ngClass]="!deudorModelo.tipoDeudor ? 'disabled' : ''"
+            [attr.disabled]="!deudorModelo.tipoDeudor ? true : null"
+            [attr.aria-disabled]="!deudorModelo.tipoDeudor ? true : null"
+            [checked]="deudorModelo.subtipoDeudor === 'deudorMoral'"
+            (change)="deudorModelo.subtipoDeudor = 'deudorMoral'" name="subtipoDeudor">
+          <label class="form-check-label">Persona moral</label>
+        </div>
+      </div>
+
+      <div class="col-12 row">
+        <!-- RFC (solo nacional) -->
+        <div class="input-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6">
+          <label class="activeInput form-label">RFC con Homoclave</label>
+          <input id="verif_rfcDeudor" class="verif_rfc validate inputWthPass rfcMayus" type="text"
+            [placeholder]="deudorModelo.subtipoDeudor != '' ? (deudorModelo.subtipoDeudor === 'deudorFisica' ? 'Ej. ABCD000000XXX' : 'Ej. ABC000000XXX') : ''"
+            name="rfc" minlength="12" maxlength="13"
+            (input)="limitarLongitudRfc($event,13);validaDeudorRfc($event.target);">
+        </div>
+
+        <!-- Tax ID (solo extranjero) *ngIf="esNacional || esExtranjero" -->
+        <div class="input-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6" *ngIf="esExtranjero">
+          <label class="activeInput form-label">Tax ID</label>
+          <input id="verif_taxIDDeudor" type="text" class="verif_rfc validate inputWthPass rfcMayus"
+            formControlName="taxID" placeholder="Ej. 123456789" (input)="keyupverif_TaxIdDeudor($event.target);">
+        </div>
+
+        <!-- Nombre o razón social -->
+        <div class="input-group col-12">
+          <label class="activeInput form-label">Nombre / Raz&oacute;n social</label>
+          <input id="verifNameDeudor" type="text" class="validate" name="nombre"
+            (keyup)="keyupNombreDeudor($event.target);">
+        </div>
+
+        <!-- Nombre o razón social -->
+        <div class="input-group col-12">
+          <label class="activeInput form-label">Nombre Comercial</label>
+          <input id="verifNameComercialDeudor" type="text" class="validate" name="nombre_comercial"
+            (keyup)="keyupNombreComercialDeudor($event.target);">
+        </div>
+
+        <!-- Nombre o razón social -->
+        <div class="input-group col-12">
+          <label class="activeInput form-label">{{'email' | translate}}</label>
+          <input id="verifNameEmailDeudor" type="email" class="validate" name="correo_electronico"
+            (keyup)="keyupMailDeudor($event.target);">
+        </div>
+
+        <div class="input-group col-12">
+          <label for="fechaAltaProd" class="activeInput">Cuenta contable</label>
+          <input id="verifccontableDeudor" class="validate" type="text" name="cuenta_contable"
+            (keyup)="keyupCuentaContableDeudor($event.target);">
+        </div>
+      </div>
+
+      <div class="col-12">
+        <label class="activeInput">Accesos</label>
+        <div class="col-12 form-check radio_check">
+          <input class="form-check-input" type="radio" name="habilita_reembolsos"
+            [checked]="deudorModelo.habilita_reembolsos" (click)="selectHabilitaReembolsos($event.target);">
+          <label class="form-check-label">Reembolsos</label>
+        </div>
+      </div>
+
+      <div class="input-group col-12">
+        <label class="activeInput"><span class="obligatorio">Regimen fiscal</span></label>
+        <p-select
+          [ngClass]="deudorModelo.tipoDeudor === '' || deudorModelo.subtipoDeudor === '' || !deudorModelo.habilita_reembolsos ? 'disabled' : ''"
+          [disabled]="deudorModelo.tipoDeudor === '' || deudorModelo.subtipoDeudor === '' || !deudorModelo.habilita_reembolsos"
+          [attr.aria-disabled]="deudorModelo.tipoDeudor === '' || deudorModelo.subtipoDeudor === '' || !deudorModelo.habilita_reembolsos ? true : null"
+          [options]="deudorModelo.subtipoDeudor == 'acreeFisica' ? PfAllRegFisArray : PmAllRegFisArray"
+          id="selectedFiscalRegimen" optionLabel="regimen" [filter]="true" filterBy="regimen" [showClear]="true"
+          [placeholder]="acree_reg_fiscal" class="w-full md:w-56" (onChange)="changeRegimenFiscal($event.value);">
+          <ng-template #selectedItem let-sel>
+            <div class="flex items-center gap-2">
+              <div>{{sel.regimen}}</div>
+            </div>
+          </ng-template>
+          <ng-template let-reg #item>
+            <div class="flex items-center gap-2">
+              <div>{{reg.regimen}}</div>
+            </div>
+          </ng-template>
+        </p-select>
+      </div>
+      <p-divider />
+      <div class="col-12 row" style="padding:0!important;">
+        <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain" style="margin: 0!important;">
+          <h6 class="title">Vincular trabajador</h6>
+        </div>
+        <div
+          class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+          <label class="form-check-label" for="flexSwitchCheckReverse">No</label>
+          <input class="form-check-input" type="checkbox" (click)="decideVinculaTrab($event.target);">
+          <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+        </div>
+        <div id="decideinfotrabajador" class="col-12 noneView" style="padding: 0;">
+          <p-table #deuRelTrab [value]="listaRelationsTrab" [paginator]="true" [rows]="10"
+            [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]"
+            [globalFilterFields]="['people_relacionado_token','people_relacionado_folio','people_relacionado_nombre_completo','people_relacionado_comercial_nombre']">
+            <ng-template #caption>
+              <div class="flex">
+                <p-iconfield iconPosition="left" class="ml-auto">
+                  <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                  <input pInputText type="text" (input)="deuRelTrab.filterGlobal($event.target.value, 'contains')"
+                    placeholder="{{'bus_car' | translate}}" />
+                </p-iconfield>
+              </div>
+            </ng-template>
+            <ng-template #header>
+              <tr>
+                <th class="ultimo"></th>
+                <th pSortableColumn="people_relacionado_folio">folio&nbsp;<p-sortIcon
+                    field="people_relacionado_folio" /></th>
+                <th pSortableColumn="people_relacionado_nombre_completo">nombre&nbsp;<p-sortIcon
+                    field="people_relacionado_nombre_completo" /></th>
+                <th pSortableColumn="people_relacionado_comercial_nombre">combre comercial&nbsp;<p-sortIcon
+                    field="people_relacionado_comercial_nombre" /></th>
+              </tr>
+            </ng-template>
+            <ng-template #body let-trab>
+              <tr>
+                <td>
+                  <div class="form-check radio_check">
+                    <input class="form-check-input" type="radio" name="artCatSelect"
+                      (click)="vincula_select_trabajador(trab.people_relacionado_token);">
+                  </div>
+                </td>
+                <td>{{trab.people_relacionado_folio}}</td>
+                <td>{{trab.people_relacionado_nombre_completo}}</td>
+                <td>{{trab.people_relacionado_comercial_nombre}}</td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="4" class="text-center py-4">
+                  <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                  <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                    {{'no_rows' | translate}}
+                  </p>
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+      </div>
+      <p-divider />
+      <div class="col-12 row" style="padding:0!important;">
+        <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain" style="margin: 0!important;">
+          <h6 class="title">Vincular proveedor</h6>
+        </div>
+        <div
+          class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+          <label class="form-check-label" for="flexSwitchCheckReverse">No</label>
+          <input class="form-check-input" type="checkbox" (click)="decideVinculaProv($event.target);">
+          <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+        </div>
+        <div id="decideinfoproveedor" class="col-12 noneView" style="padding: 0;">
+          <p-table #deuRelProv [value]="listaRelationsProv" [paginator]="true" [rows]="10"
+            [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]"
+            [globalFilterFields]="['people_relacionado_token','people_relacionado_folio','people_relacionado_nombre_completo','people_relacionado_comercial_nombre']">
+            <ng-template #caption>
+              <div class="flex">
+                <p-iconfield iconPosition="left" class="ml-auto">
+                  <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                  <input pInputText type="text" (input)="deuRelProv.filterGlobal($event.target.value, 'contains')"
+                    placeholder="{{'bus_car' | translate}}" />
+                </p-iconfield>
+              </div>
+            </ng-template>
+            <ng-template #header>
+              <tr>
+                <th class="ultimo"></th>
+                <th pSortableColumn="people_relacionado_folio">folio&nbsp;<p-sortIcon
+                    field="people_relacionado_folio" /></th>
+                <th pSortableColumn="people_relacionado_nombre_completo">nombre&nbsp;<p-sortIcon
+                    field="people_relacionado_nombre_completo" /></th>
+                <th pSortableColumn="people_relacionado_comercial_nombre">combre comercial&nbsp;<p-sortIcon
+                    field="people_relacionado_comercial_nombre" /></th>
+              </tr>
+            </ng-template>
+            <ng-template #body let-prov>
+              <tr>
+                <td>
+                  <div class="form-check radio_check">
+                    <input class="form-check-input" type="radio" name="artCatSelect"
+                      (click)="vincula_select_proveedor(prov.people_relacionado_token);">
+                  </div>
+                </td>
+                <td>{{prov.people_relacionado_folio}}</td>
+                <td>{{prov.people_relacionado_nombre_completo}}</td>
+                <td>{{prov.people_relacionado_comercial_nombre}}</td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="4" class="text-center py-4">
+                  <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                  <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                    {{'no_rows' | translate}}
+                  </p>
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+      </div>
+      <p-divider />
+      <div class="col-12 row" style="padding:0!important;">
+        <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain" style="margin: 0!important;">
+          <h6 class="title">Vincular acreedor</h6>
+        </div>
+        <div
+          class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+          <label class="form-check-label" for="flexSwitchCheckReverse">No</label>
+          <input class="form-check-input" type="checkbox" (click)="decideocupaAcreedor($event.target);">
+          <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+        </div>
+        <div id="decideinfoacreedor" class="col-12 noneView" style="padding: 0;">
+          <p-table #deuRelAcr [value]="listaRelationsAcr" [paginator]="true" [rows]="10"
+            [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]"
+            [globalFilterFields]="['people_relacionado_token','people_relacionado_folio','people_relacionado_nombre_completo','people_relacionado_comercial_nombre']">
+            <ng-template #caption>
+              <div class="flex">
+                <p-iconfield iconPosition="left" class="ml-auto">
+                  <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                  <input pInputText type="text" (input)="deuRelAcr.filterGlobal($event.target.value, 'contains')"
+                    placeholder="{{'bus_car' | translate}}" />
+                </p-iconfield>
+              </div>
+            </ng-template>
+            <ng-template #header>
+              <tr>
+                <th class="ultimo"></th>
+                <th pSortableColumn="people_relacionado_folio">folio&nbsp;<p-sortIcon
+                    field="people_relacionado_folio" /></th>
+                <th pSortableColumn="people_relacionado_nombre_completo">nombre&nbsp;<p-sortIcon
+                    field="people_relacionado_nombre_completo" /></th>
+                <th pSortableColumn="people_relacionado_comercial_nombre">combre comercial&nbsp;<p-sortIcon
+                    field="people_relacionado_comercial_nombre" /></th>
+                <th pSortableColumn="trab_nombre">empleado vinculado&nbsp;<p-sortIcon field="trab_nombre" /></th>
+                <th pSortableColumn="prov_nombre">proveedor vinculado&nbsp;<p-sortIcon field="prov_nombre" /></th>
+                <th pSortableColumn="deu_nombre">deudor vinculado&nbsp;<p-sortIcon field="deu_nombre" /></th>
+              </tr>
+            </ng-template>
+            <ng-template #body let-acr>
+              <tr>
+                <td>
+                  <div class="form-check radio_check">
+                    <input class="form-check-input" type="radio" name="artCatSelect"
+                      (click)="vincula_select_acreedor(acr.people_relacionado_token);">
+                  </div>
+                </td>
+                <td>{{acr.people_relacionado_folio}}</td>
+                <td>{{acr.people_relacionado_nombre_completo}}</td>
+                <td>{{acr.people_relacionado_comercial_nombre}}</td>
+                <td [ngClass]="acr.trab_nombre != 'N/A' ? 'name' : ''">{{acr.trab_folio != 'N/A' ? acr.trab_folio+"
+                  "+acr.trab_nombre : acr.trab_nombre}}</td>
+                <td [ngClass]="acr.prov_nombre != 'N/A' ? 'name' : ''">{{acr.prov_folio != 'N/A' ? acr.prov_folio+"
+                  "+acr.prov_nombre : acr.prov_nombre}}</td>
+                <td [ngClass]="acr.deu_nombre != 'N/A' ? 'name' : ''">{{acr.deu_folio != 'N/A' ? acr.deu_folio+"
+                  "+acr.deu_nombre : acr.deu_nombre}}</td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="7" class="text-center py-4">
+                  <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                  <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                    {{'no_rows' | translate}}
+                  </p>
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+      </div>
+
+      <!-- Botón enviar -->
+      <div class="col-12 row" style="padding:0!important;">
+        <div class="col-12 col-sm-12 col-md-6 col-lg-8 col-xl-8 col-xxl-8"></div>
+        <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-4"
+          style="padding: 0!important;display: flex;justify-content: end;">
+          <button id="btnBuscaProvDB" class="btn btn_extend text-bg-success rounded-3"
+            [ngClass]="!validaDeudorRegistro ? 'disabled' : ''" [attr.disabled]="!validaDeudorRegistro ? true : null"
+            [attr.aria-disabled]="!validaDeudorRegistro ? true : null">
+            <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

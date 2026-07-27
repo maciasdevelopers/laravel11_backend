@@ -1,0 +1,112 @@
+@if (view_form_reg_act_fijo) {
+  <form class="formRegActfijos" #formRegActfijos="ngForm" autocomplete="off" name="formRegActfijos" enctype="multipart/form-data" (ngSubmit)="validateRegistroActivo && registraActivoFijo(formRegActfijos);">
+    <div class="col-12 row">
+      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input-group">
+        <label for="new_actf_categoria" class="activeInput">Categoria</label>
+        <p-autocomplete id="new_actf_categoria" name="new_actf_categoria"
+          [(ngModel)]="act_categoria" 
+          [suggestions]="categorias_list" 
+          (completeMethod)="filtrar($event)" 
+          optionLabel="valor" 
+          (onKeyUp)="activoCategoriaInput($event.target);" 
+          (onSelect)="activoCategoriaSelect($event.value);"/>
+      </div>
+      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input-group">
+        <label for="new_actf_cat_ccontable" class="activeInput">Cuenta contable</label>
+        <input id="new_actf_cat_ccontable" name="new_actf_cat_ccontable" type="text" class="validate" (keyup)="catCuentaContable($event.target);" required>
+      </div>
+      <p-divider/>
+      <div class="col-12 explain"><h6 class="title">Depreciaci&oacute;n contable:</h6></div>
+      <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-2 col-xxl-2 input-group">
+        <label for="new_actf_depcont_tipo" class="activeInput">Tipo de depreciaci&oacute;n</label>
+        <p-select [options]="depreciacion_tipos" id="new_actf_depcont_tipo" name="new_actf_depcont_tipo" optionLabel="valor" [filter]="true" filterBy="valor" optionValue="clave"
+          appendTo="body" [showClear]="true" [placeholder]="'opt_select' | translate" class="w-full md:w-56" (onChange)="depreciacionContableTipo($event.value);">
+          <ng-template #selectedItem let-selectedOption>
+            <div class="flex items-center gap-2"><div>{{selectedOption.valor}}</div></div>
+          </ng-template>
+          <ng-template let-dep #item>
+            <div class="flex items-center gap-2"><div>{{dep.valor}}</div></div>
+          </ng-template>
+        </p-select>
+      </div>
+      <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-2 col-xxl-2 input-group">
+        <label for="new_actf_depcont_periodo" class="activeInput">Periodo de depreciaci&oacute;n</label>
+        <p-select [options]="depreciacion_periodos" id="new_actf_depcont_periodo" name="new_actf_depcont_periodo" optionLabel="valor" [filter]="true" filterBy="valor" optionValue="clave"
+          appendTo="body" [showClear]="true" [placeholder]="'opt_select' | translate" class="w-full md:w-56" (onChange)="depreciacionContablePeriodo($event.value);">
+          <ng-template #selectedItem let-selectedOption>
+            <div class="flex items-center gap-2"><div>{{selectedOption.valor}}</div></div>
+          </ng-template>
+          <ng-template let-dep #item>
+            <div class="flex items-center gap-2"><div>{{dep.valor}}</div></div>
+          </ng-template>
+        </p-select>
+      </div>
+      <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-2 col-xxl-2 input-group">
+        <label class="activeInput">Importe de depreciaci&oacute;n</label>
+        <input class="validate" name="deprecContable" type="number" (keyup)="depreciacionContableImporte($event.target);" required>
+      </div>
+      <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-3 col-xxl-3 input-group">
+        <label class="activeInput">Cuenta contable de activo</label>
+        <input class="validate" name="deprecContable" type="text" (keyup)="depreciacionContableCuenta($event.target);" required>
+      </div>
+      <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-3 col-xxl-3 input-group">
+        <label class="activeInput">Cuenta contable de resultados</label>
+        <input class="validate" name="deprecContable" type="text" (keyup)="depreciacionContableCuentaDos($event.target);" required>
+      </div>
+
+      <p-divider/>
+      <div class="col-12 explain"><h6 class="title">Depreciaci&oacute;n fiscal:</h6></div>
+      <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-2 col-xxl-2 input-group">
+        <label for="new_actf_depfiscal_tipo" class="activeInput">Tipo de depreciaci&oacute;n</label>
+        <p-select [options]="depreciacion_tipos" id="new_actf_depfiscal_tipo" name="new_actf_depfiscal_tipo" optionLabel="valor" [filter]="true" filterBy="valor" optionValue="clave"
+          appendTo="body" [showClear]="true" [placeholder]="'opt_select' | translate" class="w-full md:w-56" (onChange)="depreciacionFiscalTipo($event.value);">
+          <ng-template #selectedItem let-selectedOption>
+            <div class="flex items-center gap-2"><div>{{selectedOption.valor}}</div></div>
+          </ng-template>
+          <ng-template let-dep #item>
+            <div class="flex items-center gap-2"><div>{{dep.valor}}</div></div>
+          </ng-template>
+        </p-select>
+      </div>
+      <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-2 col-xxl-2 input-group">
+        <label for="new_actf_depfiscal_periodo" class="activeInput">Periodo de depreciaci&oacute;n</label>
+        <p-select [options]="depreciacion_periodos" id="new_actf_depfiscal_periodo" name="new_actf_depfiscal_periodo" optionLabel="valor" [filter]="true" filterBy="valor" optionValue="clave"
+          appendTo="body" [showClear]="true" [placeholder]="'opt_select' | translate" class="w-full md:w-56" (onChange)="depreciacionFiscalPeriodo($event.value);">
+          <ng-template #selectedItem let-selectedOption>
+            <div class="flex items-center gap-2"><div>{{selectedOption.valor}}</div></div>
+          </ng-template>
+          <ng-template let-dep #item>
+            <div class="flex items-center gap-2"><div>{{dep.valor}}</div></div>
+          </ng-template>
+        </p-select>
+      </div>
+      <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-2 col-xxl-2 input-group">
+        <label class="activeInput">Importe de depreciaci&oacute;n</label>
+        <input class="validate" name="deprecContable" type="number" (keyup)="depreciacionFiscalImporte($event.target);" required>
+      </div>
+      <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-3 col-xxl-3 input-group">
+        <label class="activeInput">Cuenta de orden fiscal uno</label>
+        <input class="validate" name="deprecContable" type="text" (keyup)="depreciacionFiscalCuenta($event.target);" required>
+      </div>      
+      <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-3 col-xxl-3 input-group">
+        <label class="activeInput">Cuenta de orden fiscal dos</label>
+        <input class="validate" name="deprecContable" type="text" (keyup)="depreciacionFiscalCuentaDos($event.target);" required>
+      </div>
+      <p-divider/>
+
+      <div class="col-12 input-group" style="margin-bottom: 10px!important;">
+        <label class="activeInput">{{'observ' | translate}}</label>
+        <textarea id="pago_large_observ" class="validate" (keyup)="activoObservaciones($event.target);"></textarea>
+      </div>
+
+      <div class="col-12 row" style="margin-top: 5px!important;">
+        <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6"></div>
+        <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6" style="display: flex !important;justify-content: end!important;">
+          <button class="btn btn_extend text-bg-success rounded-3" [ngClass]="!validateRegistroActivo ? 'disabled' : ''" [attr.disabled]="!validateRegistroActivo ? true : null" 
+            [attr.aria-disabled]="!validateRegistroActivo ? true : null" type="submit" name="btnAltaServicio2">
+            <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}</button>
+        </div>
+      </div>
+    </div>
+  </form>
+}

@@ -1,0 +1,206 @@
+a.btn,
+p.btn,
+p.spanButton,
+p-button.btn,
+button.btn{
+  background-color: #2962ff;
+  height: 25px;
+  line-height: 25px;
+  border-radius: 50%;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: ubuntu, FontAwesome;
+  z-index: 0; 
+  font-size:smaller;
+  text-transform:inherit;
+  font-family:'roboto_cr'!important;
+}
+
+p-button.btn,
+a.btn{
+  width: 25px;
+}
+
+.btn_extend{
+  width: max-content!important;
+  border-radius:25px!important;
+  padding:5px !important;
+  font-size:smaller;
+  text-transform:inherit;
+  font-family:'roboto_cr'!important;
+}
+
+.btn_menu_lateral_title{
+  background-color: transparent!important;
+  box-shadow: none;
+  color: #353535;
+  justify-content: start !important;
+  border-radius: 0 !important;
+  width: max-content !important;
+	height: 20px !important;
+	margin-left: 2px;
+	margin-right: 2px;
+	border-radius: 25px !important;
+	padding: 5px !important;
+	font-size: smaller;
+	text-transform: inherit;
+	font-family: roboto_cr!important;
+}
+
+.btn_menu_lateral_title i{height: 20px!important;line-height: 20px!important;}
+
+.btn_menu_lateral{
+  width: 100%!important;
+  padding-left: 20px!important;
+  font-size:smaller;
+  text-transform:inherit;
+  font-family:'roboto_cr'!important;
+  background-color: transparent!important;
+  box-shadow: none;
+  color: #353535;
+  justify-content:start!important;
+  border-radius:0!important;
+}
+
+.btn_menu_lateral_title i,
+.btn_menu_lateral i{
+  font-size: 15px;
+  margin-right: 3px;
+  height: 25px !important;
+  line-height: 25px !important;
+}
+
+.btn_menu_lateral:hover,
+.btn_menu_active{
+  background-color: #353535!important;
+  color: white!important;
+}
+
+.card .card_content_inside .explain:last-child .btn_menu_lateral{
+  border-radius: 0 0 8px 8px!important;
+}
+
+button.btn{
+  /*width: 25px;*/
+  padding: 5px!important;
+  border-radius: 25px!important;
+}
+
+form a,form button{
+  width: auto;
+  font-family: Arial, FontAwesome;
+  color: #fff !important;
+  text-transform: inherit;
+}
+
+form a i,form button i{font-size: small;}
+
+div.spaceButton{
+  display: flex!important;
+  justify-content: center!important;
+}
+
+.btnError{
+  background-color: #6D1300!important;
+}
+
+.btnCorrecto{
+  background-color: #00ff00!important;
+  color: #353535!important;
+}
+
+button.btnGuardar{
+  width: 100%!important;
+}
+
+.btnGuardar{
+  width: 20%!important;
+  border-radius: 8px;
+}
+
+a.btnSaveRow{
+  width: 100%!important;
+  border-radius: 8px!important;
+}
+
+a:disabled,
+a.btnDisabled,
+button:disabled{
+  background-color: #999!important;
+  background-color: #686868!important;
+  pointer-events: none;
+}
+
+p.spanButton{
+ background-color: #e74a3b!important;
+}
+
+p.spanButton span{
+  width: 25px!important;
+  height:25px!important;
+  line-height:25px!important;
+  font-size: 15px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.btnBlueHead{
+  margin: 2px!important;
+  color: white!important;
+  font-family: roboto_cr!important;
+  border-radius: 25px!important;
+  width:max-content!important;
+  padding-left:5px!important;
+  padding-right:5px!important;
+}
+
+.btnSaveRow i,
+.btnBlueHead i{
+  width: 25px !important;
+  height: 25px !important;
+  line-height: 25px !important;
+  font-size: 15px;
+  text-align: center;
+}
+
+.lista_botones{
+  /*padding-left: 0;*/
+  padding: 0!important;
+  /*margin-bottom: 5px!important;*/
+  margin: 0!important;
+}
+.lista_botones .btn{border-radius: 0!important;}
+.lista_botones .btn:first-child{border-radius: 8px 0 0 8px!important;}
+
+.lista_botones .btn:last-child{
+  border-radius: 0 8px 8px 0!important;
+}
+
+.lista_botones .btn:hover{
+  border-color: solid 1px #444d9b;
+  /*background-color: #525dbf!important;
+  border-color: solid 1px #4b55ab!important;*/
+  background-color: #3f4898!important;
+}
+
+.lista_botones .btn:only-child{
+  border-radius: 8px!important;
+}
+
+.lista_botones .btn:disabled{
+  border-color: transparent!important;
+}
+
+.btn_load_file{
+  width: auto !important;
+  height: 25px !important;
+  color: #0782d0 !important;
+  font-family: Arial, FontAwesome;
+  background-color: transparent !important;
+  border-radius: 25px!important;
+  line-height: 20px;
+  border: 1px solid;
+  padding: 5px !important;
+}

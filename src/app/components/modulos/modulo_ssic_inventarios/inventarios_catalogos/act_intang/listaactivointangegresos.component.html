@@ -1,0 +1,400 @@
+<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco" #vContent>
+  <div class="contenido"><app-loader></app-loader>
+    <nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+    <div class="contenidoPagina">
+      <div class="listas_ps revanecer">
+        <div id="listaActivosDif" class="lista-div lista-divNoFlex row">
+          <h4 class="col-12">CATALOGO DE ACTIVOS DIFERIDOS</h4>
+          <div class="col-12">
+            <div class="btn-group lista_botones col" role="group" aria-label="Basic example">
+              <a class="btn btn_extend bg-indigo-600" (click)="listar_activos_intang_true();listar_activos_intang_deleted();">
+                <i class="fa-solid fa-rotate"></i>&nbsp;{{'list_updt' | translate}}
+              </a>
+              <a class="btn btn_extend bg-indigo-600" (click)="verRegistroFamiliaActivos();">
+                <i class="fa-solid fa-plus"></i>&nbsp;Registrar familia de activos
+              </a>
+              <a class="btn btn_extend bg-indigo-600" (click)="verDeletedFamActFijos();">
+                <i class="fa-solid fa-trash"></i>&nbsp;Familia de activos eliminadas
+              </a>
+              <a class="btn btn_extend bg-green-600 descarga_lista_excel"
+                [ngClass]="listActivosTrue.length == 0 ? 'disabled' : ''"
+                [attr.disabled]="listActivosTrue.length == 0 ? true : null"
+                [attr.aria-disabled]="listActivosTrue.length == 0 ? true : null"
+                (click)="listActivosTrue.length > 0 && descarga_excel_activos_diferidos();">
+                <i class="fa-solid fa-file-excel" style="margin-left: 5px;"></i>&nbsp;descargar
+              </a>
+            </div>
+          </div>
+          
+          <p-table #intanListTrue [value]="listActivosTrue"
+            [globalFilterFields]="['token_act_intang','folio_activo','categoria','tipo_amortizacion_desc','amort_contable','amort_fiscal','periodo_deprec']"
+            showGridlines [resizableColumns]="true" [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]">
+            <ng-template #caption>
+              <div class="flex" style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;" ngbDropdown>
+                <a class="btn btn_extend" [ngClass]="indicadorActivosGeneral == 'hoy' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_activos_intang_true('hoy');">
+                  <i class="fa-solid fa-calendar-days"></i>&nbsp;Hoy
+                </a>
+                <a class="btn btn_extend" [ngClass]="indicadorActivosGeneral == 'esta_semana' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_activos_intang_true('esta_semana');">
+                  <i class="fa-solid fa-calendar-days"></i>&nbsp;Esta semana
+                </a>
+                <a class="btn btn_extend" [ngClass]="indicadorActivosGeneral == 'este_mes' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_activos_intang_true('este_mes');">
+                  <i class="fa-solid fa-calendar"></i>&nbsp;Este mes
+                </a>
+                <a class="btn btn_extend" [ngClass]="indicadorActivosGeneral == 'mes_anterior' ? ' bg-indigo-600' : ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_activos_intang_true('mes_anterior');">
+                  <i class="fa-solid fa-arrow-left"></i>&nbsp;mes anterior
+                </a>
+                <a id="menuDropActRangos" class="btn btn_extend" [ngClass]="indicadorActivosGeneral == 'otras_fechas' ? ' bg-indigo-600' : 'bg-blue-600'" style="margin-right:5px!important;" ngbDropdownToggle>
+                  <i class="fa-solid fa-list-ul"></i>&nbsp;otras fechas
+                </a>
+                <div class="dropdown-menu-end menu-despegable" ngbDropdownMenu="menuDropActRangos" style="padding: 0!important; margin: 0!important; width: max-content!important; max-height: 400px; overflow-y: auto;">
+                  <div class="col-12 input-group">
+                    <label for="act_otras_fechas" class="activeInput">Periodo de fechas</label>
+                    <p-datepicker id="act_otras_fechas" name="act_otras_fechas" [(ngModel)]="rangoPeriodoActivos"
+                      appendTo="body" dateFormat="dd/mm/yy" placeholder="dd/mm/aaaa" selectionMode="range"
+                      (onSelect)="ver_activos_intang_true('otras_fechas');" />
+                  </div>
+                </div>
+                <a class="btn btn_extend" [ngClass]="indicadorActivosGeneral == 'all_partidas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_activos_intang_true('all_partidas');">
+                  <i class="fa-solid fa-list-ul"></i>&nbsp;todos los registros
+                </a>
+                <p-iconfield iconPosition="left" class="ml-auto">
+                  <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                  <input pInputText type="text" (input)="intanListTrue.filterGlobal($event.target.value, 'contains')"
+                    placeholder="{{'bus_car' | translate}}" />
+                </p-iconfield>
+              </div>
+            </ng-template>
+            <ng-template #header>
+              <tr>
+                <th rowspan="2" class="ultimo"></th>
+                <th rowspan="2" pSortableColumn="folio_activo">Folio&nbsp;<p-sortIcon field="folio_activo" /></th>
+                <th rowspan="2" pSortableColumn="categoria">Categoria&nbsp;<p-sortIcon field="categoria" /></th>
+                <th rowspan="2" pSortableColumn="categoria_cuenta_contable">Cuenta contable&nbsp;<p-sortIcon field="categoria_cuenta_contable" /></th>
+                <th colspan="4">Amortizaci&oacute;n contable&nbsp;</th>
+                <th colspan="4">Amortizaci&oacute;n fiscal&nbsp;</th>
+                <th rowspan="2">{{'observ' | translate}}</th>
+                <th rowspan="2" class="ultimo"></th>
+              </tr>
+              <tr>
+                <th pSortableColumn="amortizacion_contable_periodo">Periodo&nbsp;<p-sortIcon field="amortizacion_contable_periodo" /></th>
+                <th pSortableColumn="amortizacion_contable_tiempo_ejecucion">Tiempo de amortizaci&oacute;n&nbsp;<p-sortIcon field="amortizacion_contable_tiempo_ejecucion" /></th>
+                <th pSortableColumn="amortizacion_contable_cuenta">Cuenta contable&nbsp;<p-sortIcon field="amortizacion_contable_cuenta" /></th>
+                <th pSortableColumn="amortizacion_contable_cuenta_dos">Cuenta contable dos<p-sortIcon field="amortizacion_contable_cuenta_dos" /></th>
+
+                <th pSortableColumn="amortizacion_fiscal_periodo">Periodo&nbsp;<p-sortIcon field="amortizacion_fiscal_periodo" /></th>
+                <th pSortableColumn="amortizacion_fiscal_tiempo_ejecucion">Tiempo de amortizaci&oacute;n&nbsp;<p-sortIcon field="amortizacion_fiscal_tiempo_ejecucion" /></th>
+                <th pSortableColumn="amortizacion_fiscal_cuenta">Cuenta contable&nbsp;<p-sortIcon field="amortizacion_fiscal_cuenta" /></th>
+                <th pSortableColumn="amortizacion_fiscal_cuenta_dos">Cuenta contable dos&nbsp;<p-sortIcon field="amortizacion_fiscal_cuenta_dos" /></th>
+              </tr>
+            </ng-template>
+            <ng-template #body let-acti>
+              <tr>
+                <td>
+                  <a class="btn bg-blue-600" (click)="funcViewActivoIntangible(acti.token_act_intang);">
+                    <i class="fa-solid fa-info"></i>
+                  </a>
+                </td>
+                <td>{{acti.folio_activo}}</td>
+                <td>{{acti.categoria}}</td>
+                <td>{{acti.categoria_cuenta_contable}}</td>
+                
+                <td>{{acti.amortizacion_contable_periodo}}</td>
+                <td>{{acti.amortizacion_contable_tiempo_ejecucion}}</td>
+                <td>{{acti.amortizacion_contable_cuenta}}</td>
+                <td>{{acti.amortizacion_contable_cuenta_dos}}</td>
+
+                <td>{{acti.amortizacion_fiscal_periodo}}</td>
+                <td>{{acti.amortizacion_fiscal_tiempo_ejecucion}}</td>
+                <td>{{acti.amortizacion_fiscal_cuenta}}</td>
+                <td>{{acti.amortizacion_fiscal_cuenta_dos}}</td>
+                
+                <td>{{acti.activo_observaciones}}</td>
+                <td>
+                  <a class="btn btn_extend text-bg-danger rounded-3"
+                    (click)="funcDeleteActivoIntangible(acti.token_act_intang);">
+                    <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                  </a>
+                </td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="14" class="text-center py-4">
+                  <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                  <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                    {{'no_rows' | translate}}
+                  </p>
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p-dialog header="Familia de activos" [(visible)]="modal_registro_activo_familia" [modal]="true"
+  [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  <inventarios_registro_fam_activos_diferidos></inventarios_registro_fam_activos_diferidos>
+</p-dialog>
+
+<p-dialog header="Familia de activos" [(visible)]="modal_activo_familia_detalle" [modal]="true"
+  [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  @for (act_det of detalleActivoDiferido; track $index) {
+    @if (!act_det.puede_editar) {
+      <div class="col-12 explain">
+        <h6 class="title">Categoria</h6>
+        <h6 class="content">{{act_det.categoria}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">Cuenta contable</h6>
+        <h6 class="content">{{act_det.categoria_cuenta_contable}}</h6>
+      </div>
+      <p-divider />
+      <div class="col-12 explain">
+        <h6 class="title">Depreciaci&oacute;n contable:</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">Tipo de depreciaci&oacute;n</h6>
+        <h6 class="content">{{act_det.deprec_contable_tipo}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">Periodo de depreciaci&oacute;n</h6>
+        <h6 class="content">{{act_det.deprec_contable_periodo_no_edit}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">Importe de depreciaci&oacute;n</h6>
+        <h6 class="content">{{act_det.deprec_contable_importe_no_edit}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">Cuenta contable</h6>
+        <h6 class="content">{{act_det.deprec_contable_cuenta}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">Cuenta contable dos</h6>
+        <h6 class="content">{{act_det.deprec_contable_cuenta_dos}}</h6>
+      </div>
+    
+      <p-divider />
+      <div class="col-12 explain">
+        <h6 class="title">Depreciaci&oacute;n fiscal:</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">Tipo de depreciaci&oacute;n</h6>
+        <h6 class="content">{{act_det.deprec_fiscal_tipo}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">Periodo de depreciaci&oacute;n</h6>
+        <h6 class="content">{{act_det.deprec_fiscal_periodo_no_edit}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">Importe de depreciaci&oacute;n</h6>
+        <h6 class="content">{{act_det.deprec_fiscal_importe_no_edit}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">Cuenta contable</h6>
+        <h6 class="content">{{act_det.deprec_fiscal_cuenta}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">Cuenta contable dos</h6>
+        <h6 class="content">{{act_det.deprec_fiscal_cuenta_dos}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">{{'observ' | translate}}</h6>
+        <h6 class="content">{{act_det.activo_observaciones}}</h6>
+      </div>
+    } @else if (view_form_reg_act_diferido) {
+      <form class="formRegActfijos" #formRegActfijos="ngForm" [formGroup]="actInfoForm" autocomplete="off"
+        name="formRegActfijos" enctype="multipart/form-data"
+        (ngSubmit)="validateUpdateActivo(act_det) && updateActivoFijo(formRegActfijos,act_det);">
+        <div class="col-12 row">
+          <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input-group">
+            <label for="new_actf_categoria" class="activeInput">Categoria</label>
+            <input id="new_actf_categoria" name="new_actf_categoria" type="text" class="validate" [value]="act_det.categoria" (keyup)="activoCategoria($event.target,act_det);" required>
+          </div>
+          <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input-group">
+            <label for="new_actf_cat_ccontable" class="activeInput">Cuenta contable</label>
+            <input id="new_actf_cat_ccontable" name="new_actf_cat_ccontable" type="text" class="validate" [value]="act_det.categoria_cuenta_contable" (keyup)="catCuentaContable($event.target,act_det);" required>
+          </div>
+    
+          <p-divider />
+          <div class="col-12 explain">
+            <h6 class="title">Amortizaci&oacute;n contable:</h6>
+          </div>
+          <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-2 col-xxl-2 input-group">
+            <label for="edit_actd_amort_cont_periodo" class="activeInput">Periodo de amortizaci&oacute;n</label>
+            <p-select [options]="amortizacion_periodos" id="edit_actd_amort_cont_periodo" name="edit_actd_amort_cont_periodo"
+              formControlName="amortizacionContablePeriodo" optionLabel="valor" [filter]="true" filterBy="valor"
+              optionValue="clave" appendTo="body" [showClear]="true" [placeholder]="'opt_select' | translate"
+              class="w-full md:w-56" (onChange)="amortizacionContablePeriodo($event.value,act_det);">
+              <ng-template #selectedItem let-selectedOption>
+                <div class="flex items-center gap-2">
+                  <div>{{selectedOption.valor}}</div>
+                </div>
+              </ng-template>
+              <ng-template let-dep #item>
+                <div class="flex items-center gap-2">
+                  <div>{{dep.valor}}</div>
+                </div>
+              </ng-template>
+            </p-select>
+          </div>
+          <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-2 col-xxl-2 input-group">
+            <label class="activeInput">Tiempo de amortizaci&oacute;n</label>
+            <input class="validate" name="deprecContable" type="number" [value]="act_det.amortizacion_contable_tiempo_ejecucion"
+              (keyup)="amortizacionContableTiempoEjecucion($event.target,act_det);" required>
+          </div>
+          <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-3 col-xxl-3 input-group">
+            <label class="activeInput">Cuenta contable</label>
+            <input class="validate" name="deprecContable" type="text" [value]="act_det.amortizacion_contable_cuenta"
+              (keyup)="amortizacionContableCuenta($event.target,act_det);" required>
+          </div>
+          <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-3 col-xxl-3 input-group">
+            <label class="activeInput">Cuenta contable dos</label>
+            <input class="validate" name="deprecContable" type="text" [value]="act_det.amortizacion_contable_cuenta_dos"
+              (keyup)="amortizacionContableCuentaDos($event.target,act_det);" required>
+          </div>
+    
+          <p-divider />
+          <div class="col-12 explain">
+            <h6 class="title">Amortizaci&oacute;n fiscal:</h6>
+          </div>
+          <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-2 col-xxl-2 input-group">
+            <label for="edit_actd_amort_fiscal_periodo" class="activeInput">Periodo de amortizaci&oacute;n</label>
+            <p-select [options]="amortizacion_periodos" id="edit_actd_amort_fiscal_periodo" name="edit_actd_amort_fiscal_periodo"
+              formControlName="amortizacionFiscalPeriodo" optionLabel="valor" [filter]="true" filterBy="valor"
+              optionValue="clave" appendTo="body" [showClear]="true" [placeholder]="'opt_select' | translate"
+              class="w-full md:w-56" (onChange)="amortizacionFiscalPeriodo($event.value,act_det);">
+              <ng-template #selectedItem let-selectedOption>
+                <div class="flex items-center gap-2">
+                  <div>{{selectedOption.valor}}</div>
+                </div>
+              </ng-template>
+              <ng-template let-dep #item>
+                <div class="flex items-center gap-2">
+                  <div>{{dep.valor}}</div>
+                </div>
+              </ng-template>
+            </p-select>
+          </div>
+          <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-2 col-xxl-2 input-group">
+            <label class="activeInput">Tiempo de amortizaci&oacute;n</label>
+            <input class="validate" name="deprecContable" type="number" [value]="act_det.amortizacion_fiscal_tiempo_ejecucion"
+              (keyup)="amortizacionFiscalTiempoEjecucion($event.target,act_det);" required>
+          </div>
+          <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-3 col-xxl-3 input-group">
+            <label class="activeInput">Cuenta contable</label>
+            <input class="validate" name="deprecContable" type="text" [value]="act_det.amortizacion_fiscal_cuenta"
+              (keyup)="amortizacionFiscalCuenta($event.target,act_det);" required>
+          </div>
+          <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-3 col-xxl-3 input-group">
+            <label class="activeInput">Cuenta contable dos</label>
+            <input class="validate" name="deprecContable" type="text" [value]="act_det.amortizacion_fiscal_cuenta_dos"
+              (keyup)="amortizacionFiscalCuentaDos($event.target,act_det);" required>
+          </div>
+          <p-divider />
+    
+          <div class="col-12 input-group" style="margin-bottom: 10px!important;">
+            <label class="activeInput">{{'observ' | translate}}</label>
+            <textarea id="pago_large_observ" class="validate" [value]="act_det.activo_observaciones"
+              (keyup)="activoObservaciones($event.target,act_det);"></textarea>
+          </div>
+    
+          <div class="col-12 row" style="margin-top: 5px!important;">
+            <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6"></div>
+            <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6"
+              style="display: flex !important;justify-content: end!important;">
+              <button class="btn btn_extend text-bg-success rounded-3"
+                [ngClass]="!validateUpdateActivo(act_det) ? 'disabled' : ''"
+                [attr.disabled]="!validateUpdateActivo(act_det) ? true : null"
+                [attr.aria-disabled]="!validateUpdateActivo(act_det) ? true : null" type="submit"
+                name="btnAltaServicio2">
+                <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}</button>
+            </div>
+          </div>
+        </div>
+      </form>
+    }
+  }
+</p-dialog>
+
+<p-dialog header="Familia de activos eliminados" [(visible)]="modal_activo_familia_deleted" [modal]="true"
+  [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  <p-table #fijListDel [value]="listDeletedActivos" datakey="id" [paginator]="true" [rows]="10"
+    [rowsPerPageOptions]="[10,20,30,50,100]"
+    [globalFilterFields]="['token_act_intang','folio_activo','categoria','tipo_depreciacion_desc','deprec_contable','deprec_fiscal','periodo_deprec','fecha_delete']">
+    <ng-template #caption>
+      <div class="flex">
+        <p-iconfield iconPosition="left" class="ml-auto">
+          <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+          <input pInputText type="text" (input)="fijListDel.filterGlobal($event.target.value, 'contains')"
+            placeholder="{{'bus_car' | translate}}" />
+        </p-iconfield>
+      </div>
+    </ng-template>
+    <ng-template #header>
+      <tr>
+        <th rowspan="2" pSortableColumn="folio_activo">Folio&nbsp;<p-sortIcon field="folio_activo" /></th>
+        <th rowspan="2" pSortableColumn="categoria">Categoria&nbsp;<p-sortIcon field="categoria" /></th>
+        <th rowspan="2" pSortableColumn="categoria_cuenta_contable">Cuenta contable&nbsp;<p-sortIcon field="categoria_cuenta_contable" /></th>
+        <th colspan="4">Amortizaci&oacute;n contable&nbsp;</th>
+        <th colspan="4">Amortizaci&oacute;n fiscal&nbsp;</th>
+        <th rowspan="2">{{'observ' | translate}}</th>
+        <th rowspan="2" class="ultimo"></th>
+        <th rowspan="2" class="ultimo"></th>
+      </tr>
+      <tr>
+        <th pSortableColumn="amortizacion_contable_periodo">Periodo&nbsp;<p-sortIcon field="amortizacion_contable_periodo" /></th>
+        <th pSortableColumn="amortizacion_contable_tiempo_ejecucion">Tiempo de amortizaci&oacute;n&nbsp;<p-sortIcon field="amortizacion_contable_tiempo_ejecucion" /></th>
+        <th pSortableColumn="amortizacion_contable_cuenta">Cuenta contable&nbsp;<p-sortIcon field="amortizacion_contable_cuenta" /></th>
+        <th pSortableColumn="amortizacion_contable_cuenta_dos">Cuenta contable dos<p-sortIcon field="amortizacion_contable_cuenta_dos" /></th>
+
+        <th pSortableColumn="amortizacion_fiscal_periodo">Periodo&nbsp;<p-sortIcon field="amortizacion_fiscal_periodo" /></th>
+        <th pSortableColumn="amortizacion_fiscal_tiempo_ejecucion">Tiempo de amortizaci&oacute;n&nbsp;<p-sortIcon field="amortizacion_fiscal_tiempo_ejecucion" /></th>
+        <th pSortableColumn="amortizacion_fiscal_cuenta">Cuenta contable&nbsp;<p-sortIcon field="amortizacion_fiscal_cuenta" /></th>
+        <th pSortableColumn="amortizacion_fiscal_cuenta_dos">Cuenta contable dos&nbsp;<p-sortIcon field="amortizacion_fiscal_cuenta_dos" /></th>
+      </tr>
+    </ng-template>
+    <ng-template #body let-actDel>
+      <tr>
+        <td>{{actDel.folio_activo}}</td>
+        <td>{{actDel.categoria}}</td>
+        <td>{{actDel.categoria_cuenta_contable}}</td>
+                
+        <td>{{actDel.amortizacion_contable_periodo}}</td>
+        <td>{{actDel.amortizacion_contable_tiempo_ejecucion}}</td>
+        <td>{{actDel.amortizacion_contable_cuenta}}</td>
+        <td>{{actDel.amortizacion_contable_cuenta_dos}}</td>
+
+        <td>{{actDel.amortizacion_fiscal_periodo}}</td>
+        <td>{{actDel.amortizacion_fiscal_tiempo_ejecucion}}</td>
+        <td>{{actDel.amortizacion_fiscal_cuenta}}</td>
+        <td>{{actDel.amortizacion_fiscal_cuenta_dos}}</td>
+                
+        <td>{{actDel.activo_observaciones}}</td>
+        <td>
+          <a class="btn btn_extend text-bg-success rounded-3" (click)="funcRestoreActivoIntangible(actDel.token_act_intang);">
+            <i class="fa-solid fa-trash-arrow-up"></i>&nbsp;{{'restore_row' | translate}}
+          </a>
+        </td>
+        <td>
+          <a class="btn btn_extend text-bg-danger rounded-3" (click)="funcDeleteTotalActivoIntangible(actDel.token_act_intang);">
+            <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+          </a>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="13" class="text-center py-4">
+          <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+          <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+            {{'no_rows' | translate}}
+          </p>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</p-dialog>

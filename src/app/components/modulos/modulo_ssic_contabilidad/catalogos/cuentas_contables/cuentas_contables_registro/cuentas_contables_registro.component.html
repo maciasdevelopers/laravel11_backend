@@ -1,0 +1,115 @@
+<div class="form data-reg row"><!-- noneView-->
+  <form class="row formRegAcreedores" #formRegAcreedores="ngForm" autocomplete="off" name="formRegAcreedores" enctype="multipart/form-data" (ngSubmit)="registrarCuenta()">
+    <div class="data-reg row">
+      <div class="col-12 row" style="padding: 0;">
+        <div class="input-group col-12">
+          <label for="txt_cuenta_contable" class="activeInput">Nombre de la cuenta contable</label>
+          <input id="txt_cuenta_contable" type="text" (keyup)="keyupValidateCContableNombre($event.target);"/>
+        </div>
+
+        <div class="input-group col-12 col-sm-12 col-md-4 col-lg-4 col-xl-2 col-xxl-2">
+          <label for="codigo" class="activeInput">Clasificaci&oacute;n primer nivel</label>
+          <p-select id="selectcContabNivelUno" [options]="cuentaContableClasificacionNivelUno" [(ngModel)]="cuenta_contable_niveluno_clasificacion" name="niveluno_clasificacion" optionLabel="class" 
+            [filter]="true" filterBy="class" [showClear]="true" [placeholder]="'opt_select' | translate" class="w-full md:w-56" (onChange)="selectCuentaClasificacionNivelUno($event.value);">
+            <ng-template #selectedItem let-opt>
+              <div class="flex items-center gap-2"><div>{{opt.codigo+" "+opt.nombre}}</div></div>
+            </ng-template>
+            <ng-template let-tcc #item>
+              <div class="flex items-center gap-2"><div>{{tcc.codigo+" "+tcc.nombre}}</div></div>
+            </ng-template>
+          </p-select>
+        </div>
+
+        <div class="input-group col-12 col-sm-12 col-md-4 col-lg-4 col-xl-2 col-xxl-2">
+          <label for="codigo" class="activeInput">Clasificaci&oacute;n segundo nivel</label>
+          <p-select id="selectcContabNivelDos" [options]="cuentaContableClasificacionNivelDos" [(ngModel)]="cuenta_contable_niveldos_clasificacion" name="niveldos_clasificacion" optionLabel="class" 
+            [filter]="true" filterBy="class" [showClear]="true" [placeholder]="'opt_select' | translate" class="w-full md:w-56" (onChange)="selectCuentaClasificacionNivelDos($event.value);">
+            <ng-template #selectedItem let-opt>
+              <div class="flex items-center gap-2"><div>{{opt.nivel_dos_codigo+" "+opt.nivel_dos_nombre}}</div></div>
+            </ng-template>
+            <ng-template let-tcc #item>
+              <div class="flex items-center gap-2"><div>{{tcc.nivel_dos_codigo+" "+tcc.nivel_dos_nombre}}</div></div>
+            </ng-template>
+          </p-select>
+        </div>
+
+        <div class="input-group col-12 col-sm-12 col-md-4 col-lg-4 col-xl-2 col-xxl-2">
+          <label for="txt_cuenta_contable" class="activeInput">N&uacute;mero de cuenta contable</label>
+          <input id="txt_cuenta_contable" type="text" placeholder="Ej. 0001" maxlength="4" (keyup)="keyupValidateCuentaContable($event.target);"/>
+        </div>
+        
+        <div class="input-group col-12 col-sm-12 col-md-4 col-lg-4 col-xl-2 col-xxl-2">
+          <label for="codigo" class="activeInput">Tipo</label>
+          <p-select id="selectedcContabTipo" [options]="listTipoCuentaContable"  [(ngModel)]="cuenta_contable_tipo" name="tipo" optionLabel="tipo" 
+            [filter]="true" filterBy="tipo" [showClear]="true" [placeholder]="'opt_select' | translate" class="w-full md:w-56" (onChange)="selectCuentaContableTipo($event.value);">
+            <ng-template #selectedItem let-selectedOption>
+              <div class="flex items-center gap-2"><div>{{ selectedOption.tipo }}</div></div>
+            </ng-template>
+            <ng-template let-tcc #item>
+              <div class="flex items-center gap-2"><div>{{tcc.tipo}}</div></div>
+            </ng-template>
+          </p-select>
+        </div>
+
+        <div class="input-group col-12 col-sm-12 col-md-4 col-lg-4 col-xl-2 col-xxl-2">
+          <label for="codigo" class="activeInput">Naturaleza</label>
+          <p-select id="selectedcContabNat" 
+            [options]="listaNaturalezaCuentaContable"
+            [(ngModel)]="cuenta_contable_naturaleza" 
+            name="naturaleza"
+            optionLabel="nat" 
+            [filter]="true" 
+            filterBy="nat" 
+            [showClear]="true" 
+            [placeholder]="'opt_select' | translate" 
+            class="w-full md:w-56" 
+            (onChange)="selectCuentaNaturaleza($event.value);">
+            <ng-template #selectedItem let-selectedOption>
+              <div class="flex items-center gap-2"><div>{{ selectedOption.nat }}</div></div>
+            </ng-template>
+            <ng-template let-tcc #item>
+              <div class="flex items-center gap-2"><div>{{tcc.nat}}</div></div>
+            </ng-template>
+          </p-select>
+        </div>
+        
+        <div class="input-group col-12 col-sm-12 col-md-4 col-lg-4 col-xl-2 col-xxl-2">
+          <label for="codigo" class="activeInput">Cuentas bancarias</label>
+          <p-select id="cuentas_bancarias_id" [options]="cuentas_bancarias_lista" [(ngModel)]="cuenta_contable_cbancaria" name="niveldos_clasificacion" optionLabel="class" 
+            [filter]="true" filterBy="class" [showClear]="true" [placeholder]="'opt_select' | translate" class="w-full md:w-56" (onChange)="select_cuenta_bancaria($event.value);">
+            <ng-template #selectedItem let-opt>
+              <div class="flex items-center gap-2"><div>{{opt.folio_cuenta+" "+opt.banco_clave+' '+opt.banco_nombre_comercial}}</div></div>
+            </ng-template>
+            <ng-template let-ban #item>
+              <div class="flex items-center gap-2"><div>{{ban.folio_cuenta+" "+ban.banco_clave+' '+ban.banco_nombre_comercial}}</div></div>
+            </ng-template>
+          </p-select>
+        </div>
+
+        <div class="col-12 explain" style="padding-left: 10px!important;margin: 0!important;margin-top: 10px!important;">
+        	<h6 class="title">N&uacute;mero de cuenta contable</h6>
+        	<h6 class="content">{{cuenta_contable_codigo_completo}}</h6>
+        </div>
+
+        <div class="col-12 input-group">
+        	<label class="activeInput">{{'observ' | translate}}</label>
+        	<textarea id="compraCFDI_large_observ" class="validate" (keyup)="keyupObservacionCuentaContable($event.target);"></textarea>
+        </div>
+        <p-divider/>
+        <div class="col-12 row">
+          <div class="col-12 col-sm-12 col-md-6 col-lg-8 col-xl-8 col-xxl-8"></div>
+          <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-4" style="padding: 0!important;display: flex;justify-content: end;">
+            <button 
+              id="btnBuscaProvDB" 
+              class="btn btn_extend text-bg-success rounded-3" 
+              [ngClass]="!validaCuentaContableRegistro ? 'disabled' : ''" 
+              [attr.disabled]="!validaCuentaContableRegistro ? true : null" 
+              [attr.aria-disabled]="!validaCuentaContableRegistro ? true : null">
+              <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

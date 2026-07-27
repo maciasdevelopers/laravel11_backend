@@ -1,0 +1,1171 @@
+<div class="col-12" *ngIf="url_activa == '/plataformas/ssic/egresos/ordenes_de_compra'">
+  <h6 *ngIf="!permiso_crear" class="access_denied">{{'perm_denied' | translate}}</h6>
+  <div class="col-12" *ngIf="permiso_crear" style="padding: 0;">
+    <div class="data-reg row">
+
+      <p-tabs value="0">
+        <p-tablist>
+          <p-tab value="0">manual</p-tab>
+          <p-tab value="1">documento</p-tab>
+        </p-tablist>
+        <p-tabpanels>
+          <p-tabpanel value="0">
+            <div class="col-12 row" style="padding:0!important;">
+              <div class="input-group proyecto col-12 col-sm-12 col-md-6 col-lg-8 col-xl-8 col-xxl-8">
+                <label for="txtFconstpm_reg" class="activeInput">Proyecto</label>
+                <input class="validate" name="proyecto" type="text" id="reqProyecto" required (keyup)="validaProyName($event.target);">
+              </div>
+              <div class="input-group input-field-select fechaReq col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-4">
+                <label for="txtFconstpm_reg" class="active">Prioridad</label>
+                <select id="selectPrioridadReq" class="browser-default" (change)="validaProyPrioridad($event.target);">
+                  <option value="">{{'opt_select' | translate}}</option>
+                  <option class="pryori_baj" value="baj">baja</option>
+                  <option class="pryori_med" value="med">media</option>
+                  <option class="pryori_alt" value="alt">alta</option>
+                </select>
+              </div>
+              <div class="input-group col-12">
+                <label for="req_especificacion" class="activeInput textAreaLabel">Justificaci&oacute;n</label>
+                <textarea class="materialize-textarea validate" name="justificacion" id="req_otras_caract" (keyup)="validaProyJustificacion($event.target);"></textarea>
+              </div>
+              <div class="col-12" style="border-top: solid 1px  lightgray;">
+                <h6>listado de articulos</h6>
+                <div class="col-12">
+                  <div class="col-12">
+                    <div class="modal fade bd-example-modal-lg" id="windowConceptoListNew" tabindex="-1" role="dialog" aria-labelledby="windowConceptoListNewLabel" aria-hidden="true">
+                      <div class="modal-dialog modal-fullscreen" style="margin: 1%;width: 98%!important;">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="windowConceptoListNewLabel">DETALLE DE CONCEPTO DE REQUISICION</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: transparent !important;"></button>
+                          </div>
+                          <div class="modal-body">
+                            <div class="col-12">
+                              <table id="tableCaracteristicasReqNew" class="display nowrap mdl-data-table white centered" style="width:100%!important;margin:0!important;">
+                                <thead>
+                                  <tr>
+                                    <th>caracter&iacute;stica</th>
+                                    <th>valor</th>
+                                    <th class="ultimo"></th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  <tr>
+                                    <td>
+                                      <select name="tipoReq" id="selectCaractClaveReq" class="browser-default" (change)="validaProyNecesidadCaractReqClave($event.target);">
+                                        <option value="">{{'opt_select' | translate}}</option>
+                                        <option *ngFor="let lCaract of arrayListaCaract" [value]="lCaract.valor">{{lCaract.valor}}</option>
+                                      </select>
+                                    </td>
+                                    <td class="concepto">
+                                      <input class="req_cantidad validate" type="text" name="req_cantidad" id="writeCaractValorReqNew" required (keyup)="validaProyNecesidadCaractReqValor($event.target);">
+                                    </td>
+                                    <td class="ultimo">
+                                      <a class="btn text-bg-success rounded-3" [ngClass]="validaReqCaracterBoolAdd == false ? 'disabled' : ''" [attr.disabled]="validaReqCaracterBoolAdd == false ? true : null"
+                                        [attr.aria-disabled]="validaReqCaracterBoolAdd == false ? true : null" (click)="validaReqCaracterBoolAdd == true && addCaractPartida();"><i class="fa-solid fa-plus"></i>&nbsp;{{'btn_add' | translate}}
+                                      </a>
+                                    </td>
+                                  </tr>
+                                </tbody>
+                                <tbody *ngIf="validaReqCaracteristicas.length > 0">
+                                  <tr *ngFor="let carval of validaReqCaracteristicas">
+                                    <td>{{carval.clave}}</td>
+                                    <td>{{carval.valorFront}}</td>
+                                    <td class="ultimo"><a class="btn btn_extend text-bg-danger rounded-3" (click)="deleteCaractPartida(carval.id_caract);"><i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}</a></td>
+                                  </tr>
+                                </tbody>
+                                <tbody *ngIf="validaReqCaracteristicas.length == 0"><tr><td colspan="3">{{'no_rows' | translate}}</td></tr></tbody>
+                              </table>
+                            </div>
+                            <div class="input-group col-12">
+                              <label for="req_especificacion" class="activeInput">Otras caracter&iacute;sticas</label>
+                              <textarea class="materialize-textarea validate" name="especificaciones" id="req_otras_caract" (keyup)="validaProyNecesidadCaractOtrasValor($event.target);"></textarea>
+                            </div>
+                          </div>
+                          <div class="modal-footer"></div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="modal fade" id="windowConceptoListRow" tabindex="-1" aria-labelledby="windowConceptoListRowLabel" aria-hidden="true">
+                      <div class="modal-dialog ModalFullscreenClass">
+                        <div class="modal-content modal-fullscreen">
+                          <div class="modal-header">
+                            <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="windowConceptoListRowLabel">DETALLE DE CONCEPTO DE REQUISICION</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: rgb(28, 167, 153) !important;"></button>
+                          </div>
+                          <div class="modal-body">
+                            <div class="col-12" *ngFor="let reqrow of requisicion_selected">
+                              <div class="cabecera col-12" style="margin-top: 5px!important;">
+                                <h6 class="title">Concepto</h6>
+                                <h6 class="content">{{reqrow.requi_necesidad}}</h6>
+                              </div>
+                              <div class="col-12">
+                                <table id="tableCaracteristicasReqList" class="display nowrap mdl-data-table white centered" style="width:100%!important;margin:0!important;">
+                                  <thead>
+                                    <tr>
+                                      <th>caracter&iacute;stica</th>
+                                      <th>valor</th>
+                                      <th class="ultimo"></th>
+                                    </tr>
+                                  </thead>
+                                  <tbody *ngIf="reqrow.requi_necesidad_caracteristicas.length > 0">
+                                    <tr *ngFor="let carval of reqrow.requi_necesidad_caracteristicas">
+                                      <td>{{carval.clave}}</td>
+                                      <td>{{carval.valorFront}}</td>
+                                      <td>---</td>
+                                    </tr>
+                                  </tbody>
+                                </table>
+                              </div>
+                              <div class="cabecera col-12">
+                                <h6 class="title">Otras caracter&iacute;sticas</h6>
+                                <h6 class="content" *ngIf="reqrow.requi_necesidad_otras_caracteristicas != ''">{{reqrow.requi_necesidad_otras_caracteristicas}}</h6>
+                                <h6 class="content" *ngIf="reqrow.requi_necesidad_otras_caracteristicas == ''">---</h6>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="modal-footer">
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="modal fade bd-example-modal-lg" id="windowLoadDocs" tabindex="-1" role="dialog" aria-labelledby="windowLoadDocsLabel" aria-hidden="true">
+                      <div class="modal-dialog modal-fullscreen" style="margin: 1%;width: 98%!important;">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="windowLoadDocsLabel">{{'doc_an' | translate}}</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: transparent !important;"></button>
+                          </div>
+                          <div class="modal-body">
+                            <div class="col-12">
+                              <ngx-file-drop dropZoneLabel="Drop files here" (onFileDrop)="droppedPartida($event)" (onFileOver)="fileOverPartida($event)" (onFileLeave)="fileLeavePartida($event)">
+                                <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
+                                  <a class="btn btn_load_file" type="button" style="color: #0782d0 !important;" (click)="openFileSelector()">
+                                    {{'load_files' | translate}} / {{'browse_files' | translate}}
+                                  </a>
+                                </ng-template>
+                              </ngx-file-drop>
+                            </div>
+                            <div class="col-12">
+                              <table class="white centered" style="margin-top:5px!important;width: 100% !important;">
+                                <thead>
+                                  <tr>
+                                    <th>{{'file' | translate}}</th>
+                                    <th class="ultimo"></th>
+                                  </tr>
+                                </thead>
+                                <tbody class="upload-name-style" *ngIf="filesPartidaNames.length != 0">
+                                  <tr *ngFor="let item of filesPartidaNames; index as i">
+                                    <td><strong>{{item.nameFile}}</strong></td>
+                                    <td class="ultimo"><a class="btn btn_extend text-bg-danger rounded-3" (click)="deleteAnexosPartida(i);"><i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}</a></td>
+                                  </tr>
+                                </tbody>
+                                <tbody *ngIf="filesPartidaNames.length == 0">
+                                  <tr><td colspan="2">{{'no_rows' | translate}}</td></tr>
+                                </tbody>
+                              </table>
+                            </div>
+                            <div class="col-12 row">
+                              <div class="col-12 col-sm-12 col-md-8 col-lg-9 col-xl-9 col-xxl-9"></div>
+                              <div class="col-12 col-sm-12 col-md-4 col-lg-3 col-xl-3 col-xxl-3">
+                                <a class="btn btn_extend text-bg-success rounded-3 disabled" style="width: 100% !important;border-radius: 8px !important;"
+                                  *ngIf="filesPartidaAnexos.length == 0" disabled aria-disabled="true">
+                                  <i class="fa-regular fa-floppy-disk"></i> {{'save' | translate}}</a>
+                                <a class="btn btn_extend text-bg-success rounded-3" style="width: 100% !important;border-radius: 8px !important;"
+                                  *ngIf="filesPartidaAnexos.length != 0" (click)="loadDocsRequisicionPartida(requisicion_tkn,requisicion_token_detalle);">
+                                  <i class="fa-regular fa-floppy-disk"></i> {{'save' | translate}}</a>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="modal-footer"></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-12" id="listaPartidasReqNew" style="padding: 0!important;" *ngIf="vistaPartidas == true">
+                    <table id="tablePartidasReqNew" class="display nowrap mdl-data-table white centered" style="width:100%!important;margin:0!important;">
+                      <thead>
+                        <tr>
+                          <th class="ultimo"></th>
+                          <th>tipo de requisici&oacute;n</th>
+                          <th>{{'concept' | translate}}</th>
+                          <th class="ultimo"></th>
+                          <th><i class="fas fa-sort-numeric-down-alt"></i>&nbsp;Cantidad</th>
+                          <th><i class="fas fa-balance-scale-right"></i>&nbsp;Unidad de medida</th>
+                          <th>marca sugerida</th>
+                          <th class="ultimo"></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td class="ultimo">---</td>
+                          <td>
+                            <select name="tipoReq" id="selectTipoReq" class="browser-default" (change)="validaProyTipoReq($event.target);">
+                              <option value="">{{'opt_select' | translate}}</option>
+                              <option value="Merc">Mercancia</option>
+                              <option value="Gast">Gastos</option>
+                              <option value="Acti">Activos</option>
+                              <option value="Mixt">Mixto</option>
+                            </select>
+                          </td>
+                          <td>
+                            <datalist id="dataListProductos"><option *ngFor="let arrayProdVig of arrayProductosVig" value="{{arrayProdVig.producto}}"></datalist>
+                            <input id="req_necesidad" list="dataListProductos" class="req_necesidad validate" type="text" name="req_necesidad" (keyup)="validaProyNecesidadReq($event.target);">
+                          </td>
+                          <td class="ultimo">
+                            <a class="btn btn_color_brown" data-bs-toggle="modal" data-bs-target="#windowConceptoListNew"><i class="fa-solid fa-list-check"></i></a>
+                          </td>
+                          <td><input class="req_cantidad validate" type="number" name="req_cantidad" id="req_cantidad" (keyup)="validaProyCantidadReq($event.target);"></td>
+                          <td>
+                            <datalist id="dataListUmedida">
+                              <option *ngFor="let medU of arrayCompUMedida" value="{{medU.nombre}}">{{"("+medU.simbolo+") "+medU.categoria}}</option>
+                            </datalist>
+                            <input class="req_uMedida validate" name="req_uMedida" type="text" id="req_uMedida" list="dataListUmedida" (change)="validaProyUnidadMedidaReq($event.target);">
+                          </td>
+                          <td>
+                            <datalist id="dataListMarcas"><option value="Sin marca"></datalist>
+                              <input id="req_marca" list="dataListMarcas" class="req_marca validate" type="text" name="req_marca" (keyup)="validaProyMarcaReq($event.target);">
+                          </td>
+                          <td class="ultimo">
+                            <a class="btn btn_extend text-bg-success rounded-3" [ngClass]="validaReqBoolAdd == false ? 'disabled' : ''" [attr.disabled]="validaReqBoolAdd == false ? true : null"
+                              [attr.aria-disabled]="validaReqBoolAdd == false ? true : null" (click)="validaReqBoolAdd == true && addPartidaReqNew();">
+                              <i class="fa-solid fa-plus"></i>&nbsp;{{'btn_add' | translate}}
+                            </a>
+                          </td>
+                        </tr>
+                      </tbody>
+                      <tbody>
+                        <tr *ngFor="let reqrow of requisicionesModelo.lista_articulos">
+                          <td class="ultimo">{{reqrow.index_lista_req}}</td>
+                          <td>{{reqrow.requi_tipo_front}}</td>
+                          <td>{{reqrow.requi_necesidad}}</td>
+                          <td class="ultimo">
+                            <a class="btn btn_color_brown" [ngClass]="reqrow.requi_necesidad_caracteristicas.length == 0 && reqrow.requi_necesidad_otras_caracteristicas == '' ? 'disabled' : ''" 
+                              [attr.disabled]="reqrow.requi_necesidad_caracteristicas.length == 0 && reqrow.requi_necesidad_otras_caracteristicas == '' ? true : null"
+                              [attr.aria-disabled]="reqrow.requi_necesidad_caracteristicas.length == 0 && reqrow.requi_necesidad_otras_caracteristicas == '' ? true : null" 
+                              data-bs-toggle="modal" data-bs-target="#windowConceptoListRow"
+                              (click)="(reqrow.requi_necesidad_caracteristicas.length > 0 || reqrow.requi_necesidad_otras_caracteristicas != '') && addPartidaReqNew();">
+                              <i class="fa-solid fa-list-check"></i>
+                            </a>
+                          </td>
+                          <td>{{reqrow.requi_cantidad}}</td>
+                          <td>{{reqrow.requi_uni_med_front}}</td>
+                          <td>{{reqrow.requi_marca_front}}</td>
+                          <td class="ultimo"><a class="btn btn_extend text-bg-danger rounded-3" (click)="deletePartidaReqNew(reqrow.index_lista_req);"><i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}</a></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 row" style="margin-top: 10px!important;margin-bottom: 10px!important;">
+                <div class="col-12 col-sm-12 col-md-9 col-lg-10 col-xl-10 col-xxl-10"></div>
+                <div class="col-12 col-sm-12 col-md-3 col-lg-2 col-xl-2 col-xxl-2" style="display: flex;flex-wrap: wrap;justify-content: space-evenly;">
+                  <a *ngIf="requisicionesModelo.proyecto == '' || requisicionesModelo.prioridad == '' || requisicionesModelo.justificacion == '' || requisicionesModelo.lista_articulos.length == 0"
+                    class="btn btn_extend text-bg-success rounded-3 disabled" disabled aria-disabled="true"><i class="fa-solid fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}</a>
+                  <a *ngIf="requisicionesModelo.proyecto != '' && requisicionesModelo.prioridad != '' && requisicionesModelo.justificacion != '' && requisicionesModelo.lista_articulos.length != 0"
+                    class="btn btn_extend text-bg-success rounded-3" (click)="registraRequisicionList();"><i class="fa-solid fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}</a>
+                </div>
+              </div>
+              <div class="col-12 row" *ngIf="detalle_requisicion.length > 0">
+                <div class="cabecera cabecera_opacity col-12">
+                  <table id="tableRequisicionDetalleRegistrar" class="display nowrap mdl-data-table white centered" style="width:100%!important;margin:0!important;">
+                    <thead>
+                      <tr>
+                        <th>tipo de requisici&oacute;n</th>
+                        <th class="concepto">concepto</th>
+                        <th><i class="fa-solid fa-list-check"></i> caracteristicas</th>
+                        <th><i class="fas fa-sort-numeric-down-alt"></i> cantidad</th>
+                        <th><i class="fas fa-sort-numeric-down-alt"></i> cantidad autorizada</th>
+                        <th><i class="fas fa-balance-scale-right"></i> unidad de medida</th>
+                        <th>marca sugerida</th>
+                        <th class="ultimo"></th>
+                        <th class="ultimo"> 
+                          <p style="margin: 0!important;width: max-content !important;border-radius: 25px;padding-left: 5px;padding-right: 5px;text-transform: math-auto;" class="btn btn_extend bg-indigo-600">
+                            <i class="fa-solid fa-file" style="width: 25px !important;height: 25px !important;line-height: 25px !important;font-size: 15px;text-align: center;"></i> {{'files_uploaded' | translate}}
+                          </p> 
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let reqrow of detalle_requisicion">
+                        <td>{{reqrow.requi_tipo_front}}</td>
+                        <td>{{reqrow.requi_necesidad}}</td>
+                        <td>
+                          <select name="tipoReq" class="browser-default" [disabled]="reqrow.requi_caracteristicas_list.length == 0 && reqrow.requi_caracteristicas_other == null">
+                            <option value="">{{'opt_select' | translate}}</option>
+                            <option *ngFor="let carval of reqrow.requi_caracteristicas_list">{{carval.clave+" "+carval.valorFront}}</option>
+                            <option *ngIf="reqrow.requi_caracteristicas_other != null">{{"Otras características "+reqrow.requi_caracteristicas_other}}</option>
+                          </select>
+                        </td>
+                        <td>{{reqrow.requi_cantidad}}</td>
+                        <td>{{reqrow.requi_cantidad_autorizada}}</td>
+                        <td>{{reqrow.requi_unidad_medida_name_small}}</td>
+                        <td>{{reqrow.requi_marca}}</td>
+                        <td class="ultimo">
+                          <a class="btn btn_extend btn_color_brown" data-bs-toggle="modal" data-bs-target="#windowLoadDocs" (click)="selectDataCargarDocs(reqrow.token_detalle_requisicion)">
+                            <i class="fa-solid fa-file-arrow-up"></i> {{'load_files' | translate}} / {{'browse_files' | translate}}
+                          </a>
+                        </td>
+                        <td class="ultimo">
+                          <select name="tipoReq" class="browser-default" (change)="viewDocumento($event.target);" [disabled]="reqrow.archivosPartida.length == 0">
+                            <option value="">{{'opt_select' | translate}}</option>
+                            <option *ngFor="let doc of reqrow.archivosPartida" [value]="doc.url">{{doc.nombre_documento}}</option>
+                          </select>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>	
+                </div>
+                <div class="col-12 col-sm-12 col-md-8 col-lg-9 col-xl-9 col-xxl-9"></div>
+                <div class="col-12 col-sm-12 col-md-4 col-lg-3 col-xl-3 col-xxl-3">
+                  <a class="btn btn_extend text-bg-success rounded-3" (click)="terminar_registro();"><i class="fa-regular fa-floppy-disk"></i> {{'save' | translate}}</a>
+                </div>
+              </div>
+            </div>
+          </p-tabpanel>
+          <p-tabpanel value="1">
+            <div class="col-12 row" style="padding:0!important;">
+              <form class="contenido-md-nRequisicion" method="post" enctype="multipart/form-data" (ngSubmit)="registraRequisicionByDocs();">
+                <div class="col-12 row" style="padding:0!important;">
+                  <div class="input-group proyecto col-12 col-sm-12 col-md-6 col-lg-8 col-xl-8 col-xxl-8">
+                    <label for="txtFconstpm_reg" class="activeInput">Proyecto</label>
+                    <input class="validate" name="proyecto" type="text" id="reqProyecto" required (keyup)="validaProyName($event.target);">
+                  </div>
+                  <div class="input-group input-field-select fechaReq col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-4">
+                    <label for="txtFconstpm_reg" class="active">Prioridad</label>
+                    <select id="selectPrioridadReq" class="browser-default" (change)="validaProyPrioridad($event.target);">
+                      <option value="">{{'opt_select' | translate}}</option>
+                      <option class="pryori_baj" value="baj">baja</option>
+                      <option class="pryori_med" value="med">media</option>
+                      <option class="pryori_alt" value="alt">alta</option>
+                    </select>
+                  </div>
+                  <div class="col-12 docRequisicion center evidenciaReg" style="padding: 10px;">
+                    <ngx-file-drop dropZoneLabel="Drop files here" (onFileDrop)="dropped($event)" (onFileOver)="fileOver($event)" (onFileLeave)="fileLeave($event)">
+                      <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
+                        <a class="btn btn_load_file" type="button" style="color: #0782d0 !important;" (click)="openFileSelector()">
+                          {{'load_files' | translate}} / {{'browse_files' | translate}}
+                        </a>
+                      </ng-template>
+                    </ngx-file-drop>
+                    <div class="upload-table">
+                      <table class="table">
+                        <thead>
+                          <tr>
+                            <th>{{'file' | translate}}</th>
+                            <th class="ultimo"></th>
+                          </tr>
+                        </thead>
+                        <tbody class="upload-name-style" *ngIf="filesPartidaAltaWithDocs.length != 0">
+                          <tr *ngFor="let item of filesPartidaAltaWithDocs; index as i">
+                            <td style="color: #e7e7ea!important;"><strong>{{item.relativePath }}</strong></td>
+                            <td style="color: #e7e7ea!important;" class="ultimo">
+                              <a class="btn btn_extend text-bg-danger rounded-3" (click)="deleteEvidencias(i);"><i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}</a>
+                            </td>					<h4>NUEVA REQUISICION DE COMPRA</h4>
+                            <h6 *ngIf="!permiso_crear" class="access_denied">{{'perm_denied' | translate}}</h6>
+                            <div class="col-12" *ngIf="permiso_crear" style="padding: 0;">
+                              <div class="data-reg row">
+                  
+                                <p-tabs value="0">
+                                  <p-tablist>
+                                    <p-tab value="0">manual</p-tab>
+                                    <p-tab value="1">documento</p-tab>
+                                  </p-tablist>
+                                  <p-tabpanels>
+                                    <p-tabpanel value="0">
+                                      <div class="col-12 row" style="padding:0!important;">
+                                        <div class="input-group proyecto col-12 col-sm-12 col-md-6 col-lg-8 col-xl-8 col-xxl-8">
+                                          <label for="txtFconstpm_reg" class="activeInput">Proyecto</label>
+                                          <input class="validate" name="proyecto" type="text" id="reqProyecto" required (keyup)="validaProyName($event.target);">
+                                        </div>
+                                        <div class="input-group input-field-select fechaReq col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-4">
+                                          <label for="txtFconstpm_reg" class="active">Prioridad</label>
+                                          <select id="selectPrioridadReq" class="browser-default" (change)="validaProyPrioridad($event.target);">
+                                            <option value="">{{'opt_select' | translate}}</option>
+                                            <option class="pryori_baj" value="baj">baja</option>
+                                            <option class="pryori_med" value="med">media</option>
+                                            <option class="pryori_alt" value="alt">alta</option>
+                                          </select>
+                                        </div>
+                                        <div class="input-group col-12">
+                                          <label for="req_especificacion" class="activeInput textAreaLabel">Justificaci&oacute;n</label>
+                                          <textarea class="materialize-textarea validate" name="justificacion" id="req_otras_caract" (keyup)="validaProyJustificacion($event.target);"></textarea>
+                                        </div>
+                                        <div class="col-12" style="border-top: solid 1px  lightgray;">
+                                          <h6>listado de articulos</h6>
+                                          <div class="col-12">
+                                            <div class="col-12">
+                                              <div class="modal fade bd-example-modal-lg" id="windowConceptoListNew" tabindex="-1" role="dialog" aria-labelledby="windowConceptoListNewLabel" aria-hidden="true">
+                                                <div class="modal-dialog modal-fullscreen" style="margin: 1%;width: 98%!important;">
+                                                  <div class="modal-content">
+                                                    <div class="modal-header">
+                                                      <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="windowConceptoListNewLabel">DETALLE DE CONCEPTO DE REQUISICION</h1>
+                                                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: transparent !important;"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                      <div class="col-12">
+                                                        <table id="tableCaracteristicasReqNew" class="display nowrap mdl-data-table white centered" style="width:100%!important;margin:0!important;">
+                                                          <thead>
+                                                            <tr>
+                                                              <th>caracter&iacute;stica</th>
+                                                              <th>valor</th>
+                                                              <th class="ultimo"></th>
+                                                            </tr>
+                                                          </thead>
+                                                          <tbody>
+                                                            <tr>
+                                                              <td>
+                                                                <select name="tipoReq" id="selectCaractClaveReq" class="browser-default" (change)="validaProyNecesidadCaractReqClave($event.target);">
+                                                                  <option value="">{{'opt_select' | translate}}</option>
+                                                                  <option *ngFor="let lCaract of arrayListaCaract" [value]="lCaract.valor">{{lCaract.valor}}</option>
+                                                                </select>
+                                                              </td>
+                                                              <td class="concepto">
+                                                                <input class="req_cantidad validate" type="text" name="req_cantidad" id="writeCaractValorReqNew" required (keyup)="validaProyNecesidadCaractReqValor($event.target);">
+                                                              </td>
+                                                              <td class="ultimo">
+                                                                <a class="btn text-bg-success rounded-3" [ngClass]="validaReqCaracterBoolAdd == false ? 'disabled' : ''" [attr.disabled]="validaReqCaracterBoolAdd == false ? true : null"
+                                                                  [attr.aria-disabled]="validaReqCaracterBoolAdd == false ? true : null" (click)="validaReqCaracterBoolAdd == true && addCaractPartida();"><i class="fa-solid fa-plus"></i>&nbsp;{{'btn_add' | translate}}
+                                                                </a>
+                                                              </td>
+                                                            </tr>
+                                                          </tbody>
+                                                          <tbody *ngIf="validaReqCaracteristicas.length > 0">
+                                                            <tr *ngFor="let carval of validaReqCaracteristicas">
+                                                              <td>{{carval.clave}}</td>
+                                                              <td>{{carval.valorFront}}</td>
+                                                              <td class="ultimo"><a class="btn btn_extend text-bg-danger rounded-3" (click)="deleteCaractPartida(carval.id_caract);"><i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}</a></td>
+                                                            </tr>
+                                                          </tbody>
+                                                          <tbody *ngIf="validaReqCaracteristicas.length == 0"><tr><td colspan="3">{{'no_rows' | translate}}</td></tr></tbody>
+                                                        </table>
+                                                      </div>
+                                                      <div class="input-group col-12">
+                                                        <label for="req_especificacion" class="activeInput">Otras caracter&iacute;sticas</label>
+                                                        <textarea class="materialize-textarea validate" name="especificaciones" id="req_otras_caract" (keyup)="validaProyNecesidadCaractOtrasValor($event.target);"></textarea>
+                                                      </div>
+                                                    </div>
+                                                    <div class="modal-footer"></div>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                              <div class="modal fade" id="windowConceptoListRow" tabindex="-1" aria-labelledby="windowConceptoListRowLabel" aria-hidden="true">
+                                                <div class="modal-dialog ModalFullscreenClass">
+                                                  <div class="modal-content modal-fullscreen">
+                                                    <div class="modal-header">
+                                                      <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="windowConceptoListRowLabel">DETALLE DE CONCEPTO DE REQUISICION</h1>
+                                                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: rgb(28, 167, 153) !important;"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                      <div class="col-12" *ngFor="let reqrow of requisicion_selected">
+                                                        <div class="cabecera col-12" style="margin-top: 5px!important;">
+                                                          <h6 class="title">Concepto</h6>
+                                                          <h6 class="content">{{reqrow.requi_necesidad}}</h6>
+                                                        </div>
+                                                        <div class="col-12">
+                                                          <table id="tableCaracteristicasReqList" class="display nowrap mdl-data-table white centered" style="width:100%!important;margin:0!important;">
+                                                            <thead>
+                                                              <tr>
+                                                                <th>caracter&iacute;stica</th>
+                                                                <th>valor</th>
+                                                                <th class="ultimo"></th>
+                                                              </tr>
+                                                            </thead>
+                                                            <tbody *ngIf="reqrow.requi_necesidad_caracteristicas.length > 0">
+                                                              <tr *ngFor="let carval of reqrow.requi_necesidad_caracteristicas">
+                                                                <td>{{carval.clave}}</td>
+                                                                <td>{{carval.valorFront}}</td>
+                                                                <td>---</td>
+                                                              </tr>
+                                                            </tbody>
+                                                          </table>
+                                                        </div>
+                                                        <div class="cabecera col-12">
+                                                          <h6 class="title">Otras caracter&iacute;sticas</h6>
+                                                          <h6 class="content" *ngIf="reqrow.requi_necesidad_otras_caracteristicas != ''">{{reqrow.requi_necesidad_otras_caracteristicas}}</h6>
+                                                          <h6 class="content" *ngIf="reqrow.requi_necesidad_otras_caracteristicas == ''">---</h6>
+                                                        </div>
+                                                      </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                    </div>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                              <div class="modal fade bd-example-modal-lg" id="windowLoadDocs" tabindex="-1" role="dialog" aria-labelledby="windowLoadDocsLabel" aria-hidden="true">
+                                                <div class="modal-dialog modal-fullscreen" style="margin: 1%;width: 98%!important;">
+                                                  <div class="modal-content">
+                                                    <div class="modal-header">
+                                                      <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="windowLoadDocsLabel">{{'doc_an' | translate}}</h1>
+                                                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: transparent !important;"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                      <div class="col-12">
+                                                        <ngx-file-drop dropZoneLabel="Drop files here" (onFileDrop)="droppedPartida($event)" (onFileOver)="fileOverPartida($event)" (onFileLeave)="fileLeavePartida($event)">
+                                                          <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
+                                                            <a class="btn btn_load_file" type="button" style="color: #0782d0 !important;" (click)="openFileSelector()">
+                                                              {{'load_files' | translate}} / {{'browse_files' | translate}}
+                                                            </a>
+                                                          </ng-template>
+                                                        </ngx-file-drop>
+                                                      </div>
+                                                      <div class="col-12">
+                                                        <table class="white centered" style="margin-top:5px!important;width: 100% !important;">
+                                                          <thead>
+                                                            <tr>
+                                                              <th>{{'file' | translate}}</th>
+                                                              <th class="ultimo"></th>
+                                                            </tr>
+                                                          </thead>
+                                                          <tbody class="upload-name-style" *ngIf="filesPartidaNames.length != 0">
+                                                            <tr *ngFor="let item of filesPartidaNames; index as i">
+                                                              <td><strong>{{item.nameFile}}</strong></td>
+                                                              <td class="ultimo"><a class="btn btn_extend text-bg-danger rounded-3" (click)="deleteAnexosPartida(i);"><i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}</a></td>
+                                                            </tr>
+                                                          </tbody>
+                                                          <tbody *ngIf="filesPartidaNames.length == 0">
+                                                            <tr><td colspan="2">{{'no_rows' | translate}}</td></tr>
+                                                          </tbody>
+                                                        </table>
+                                                      </div>
+                                                      <div class="col-12 row">
+                                                        <div class="col-12 col-sm-12 col-md-8 col-lg-9 col-xl-9 col-xxl-9"></div>
+                                                        <div class="col-12 col-sm-12 col-md-4 col-lg-3 col-xl-3 col-xxl-3">
+                                                          <a class="btn btn_extend text-bg-success rounded-3 disabled" style="width: 100% !important;border-radius: 8px !important;"
+                                                            *ngIf="filesPartidaAnexos.length == 0" disabled aria-disabled="true">
+                                                            <i class="fa-regular fa-floppy-disk"></i> {{'save' | translate}}</a>
+                                                          <a class="btn btn_extend text-bg-success rounded-3" style="width: 100% !important;border-radius: 8px !important;"
+                                                            *ngIf="filesPartidaAnexos.length != 0" (click)="loadDocsRequisicionPartida(requisicion_tkn,requisicion_token_detalle);">
+                                                            <i class="fa-regular fa-floppy-disk"></i> {{'save' | translate}}</a>
+                                                        </div>
+                                                      </div>
+                                                    </div>
+                                                    <div class="modal-footer"></div>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            </div>
+                                            <div class="col-12" id="listaPartidasReqNew" style="padding: 0!important;" *ngIf="vistaPartidas == true">
+                                              <table id="tablePartidasReqNew" class="display nowrap mdl-data-table white centered" style="width:100%!important;margin:0!important;">
+                                                <thead>
+                                                  <tr>
+                                                    <th class="ultimo"></th>
+                                                    <th>tipo de requisici&oacute;n</th>
+                                                    <th>{{'concept' | translate}}</th>
+                                                    <th class="ultimo"></th>
+                                                    <th><i class="fas fa-sort-numeric-down-alt"></i>&nbsp;Cantidad</th>
+                                                    <th><i class="fas fa-balance-scale-right"></i>&nbsp;Unidad de medida</th>
+                                                    <th>marca sugerida</th>
+                                                    <th class="ultimo"></th>
+                                                  </tr>
+                                                </thead>
+                                                <tbody>
+                                                  <tr>
+                                                    <td class="ultimo">---</td>
+                                                    <td>
+                                                      <select name="tipoReq" id="selectTipoReq" class="browser-default" (change)="validaProyTipoReq($event.target);">
+                                                        <option value="">{{'opt_select' | translate}}</option>
+                                                        <option value="Merc">Mercancia</option>
+                                                        <option value="Gast">Gastos</option>
+                                                        <option value="Acti">Activos</option>
+                                                        <option value="Mixt">Mixto</option>
+                                                      </select>
+                                                    </td>
+                                                    <td>
+                                                      <datalist id="dataListProductos"><option *ngFor="let arrayProdVig of arrayProductosVig" value="{{arrayProdVig.producto}}"></datalist>
+                                                      <input id="req_necesidad" list="dataListProductos" class="req_necesidad validate" type="text" name="req_necesidad" (keyup)="validaProyNecesidadReq($event.target);">
+                                                    </td>
+                                                    <td class="ultimo">
+                                                      <a class="btn btn_color_brown" data-bs-toggle="modal" data-bs-target="#windowConceptoListNew"><i class="fa-solid fa-list-check"></i></a>
+                                                    </td>
+                                                    <td><input class="req_cantidad validate" type="number" name="req_cantidad" id="req_cantidad" (keyup)="validaProyCantidadReq($event.target);"></td>
+                                                    <td>
+                                                      <datalist id="dataListUmedida">
+                                                        <option *ngFor="let medU of arrayCompUMedida" value="{{medU.nombre}}">{{"("+medU.simbolo+") "+medU.categoria}}</option>
+                                                      </datalist>
+                                                      <input class="req_uMedida validate" name="req_uMedida" type="text" id="req_uMedida" list="dataListUmedida" (change)="validaProyUnidadMedidaReq($event.target);">
+                                                    </td>
+                                                    <td>
+                                                      <datalist id="dataListMarcas"><option value="Sin marca"></datalist>
+                                                        <input id="req_marca" list="dataListMarcas" class="req_marca validate" type="text" name="req_marca" (keyup)="validaProyMarcaReq($event.target);">
+                                                    </td>
+                                                    <td class="ultimo">
+                                                      <a class="btn btn_extend text-bg-success rounded-3" [ngClass]="validaReqBoolAdd == false ? 'disabled' : ''" [attr.disabled]="validaReqBoolAdd == false ? true : null"
+                                                        [attr.aria-disabled]="validaReqBoolAdd == false ? true : null" (click)="validaReqBoolAdd == true && addPartidaReqNew();">
+                                                        <i class="fa-solid fa-plus"></i>&nbsp;{{'btn_add' | translate}}
+                                                      </a>
+                                                    </td>
+                                                  </tr>
+                                                </tbody>
+                                                <tbody>
+                                                  <tr *ngFor="let reqrow of requisicionesModelo.lista_articulos">
+                                                    <td class="ultimo">{{reqrow.index_lista_req}}</td>
+                                                    <td>{{reqrow.requi_tipo_front}}</td>
+                                                    <td>{{reqrow.requi_necesidad}}</td>
+                                                    <td class="ultimo">
+                                                      <a class="btn btn_color_brown" [ngClass]="reqrow.requi_necesidad_caracteristicas.length == 0 && reqrow.requi_necesidad_otras_caracteristicas == '' ? 'disabled' : ''" 
+                                                        [attr.disabled]="reqrow.requi_necesidad_caracteristicas.length == 0 && reqrow.requi_necesidad_otras_caracteristicas == '' ? true : null"
+                                                        [attr.aria-disabled]="reqrow.requi_necesidad_caracteristicas.length == 0 && reqrow.requi_necesidad_otras_caracteristicas == '' ? true : null" 
+                                                        data-bs-toggle="modal" data-bs-target="#windowConceptoListRow"
+                                                        (click)="(reqrow.requi_necesidad_caracteristicas.length > 0 || reqrow.requi_necesidad_otras_caracteristicas != '') && addPartidaReqNew();">
+                                                        <i class="fa-solid fa-list-check"></i>
+                                                      </a>
+                                                    </td>
+                                                    <td>{{reqrow.requi_cantidad}}</td>
+                                                    <td>{{reqrow.requi_uni_med_front}}</td>
+                                                    <td>{{reqrow.requi_marca_front}}</td>
+                                                    <td class="ultimo"><a class="btn btn_extend text-bg-danger rounded-3" (click)="deletePartidaReqNew(reqrow.index_lista_req);"><i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}</a></td>
+                                                  </tr>
+                                                </tbody>
+                                              </table>
+                                            </div>
+                                          </div>
+                                        </div>
+                                        <div class="col-12 row" style="margin-top: 10px!important;margin-bottom: 10px!important;">
+                                          <div class="col-12 col-sm-12 col-md-9 col-lg-10 col-xl-10 col-xxl-10"></div>
+                                          <div class="col-12 col-sm-12 col-md-3 col-lg-2 col-xl-2 col-xxl-2" style="display: flex;flex-wrap: wrap;justify-content: space-evenly;">
+                                            <a *ngIf="requisicionesModelo.proyecto == '' || requisicionesModelo.prioridad == '' || requisicionesModelo.justificacion == '' || requisicionesModelo.lista_articulos.length == 0"
+                                              class="btn btn_extend text-bg-success rounded-3 disabled" disabled aria-disabled="true"><i class="fa-solid fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}</a>
+                                            <a *ngIf="requisicionesModelo.proyecto != '' && requisicionesModelo.prioridad != '' && requisicionesModelo.justificacion != '' && requisicionesModelo.lista_articulos.length != 0"
+                                              class="btn btn_extend text-bg-success rounded-3" (click)="registraRequisicionList();"><i class="fa-solid fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}</a>
+                                          </div>
+                                        </div>
+                                        <div class="col-12 row" *ngIf="detalle_requisicion.length > 0">
+                                          <div class="cabecera cabecera_opacity col-12">
+                                            <table id="tableRequisicionDetalleRegistrar" class="display nowrap mdl-data-table white centered" style="width:100%!important;margin:0!important;">
+                                              <thead>
+                                                <tr>
+                                                  <th>tipo de requisici&oacute;n</th>
+                                                  <th class="concepto">concepto</th>
+                                                  <th><i class="fa-solid fa-list-check"></i> caracteristicas</th>
+                                                  <th><i class="fas fa-sort-numeric-down-alt"></i> cantidad</th>
+                                                  <th><i class="fas fa-sort-numeric-down-alt"></i> cantidad autorizada</th>
+                                                  <th><i class="fas fa-balance-scale-right"></i> unidad de medida</th>
+                                                  <th>marca sugerida</th>
+                                                  <th class="ultimo"></th>
+                                                  <th class="ultimo"> 
+                                                    <p style="margin: 0!important;width: max-content !important;border-radius: 25px;padding-left: 5px;padding-right: 5px;text-transform: math-auto;" class="btn btn_extend bg-indigo-600">
+                                                      <i class="fa-solid fa-file" style="width: 25px !important;height: 25px !important;line-height: 25px !important;font-size: 15px;text-align: center;"></i> {{'files_uploaded' | translate}}
+                                                    </p> 
+                                                  </th>
+                                                </tr>
+                                              </thead>
+                                              <tbody>
+                                                <tr *ngFor="let reqrow of detalle_requisicion">
+                                                  <td>{{reqrow.requi_tipo_front}}</td>
+                                                  <td>{{reqrow.requi_necesidad}}</td>
+                                                  <td>
+                                                    <select name="tipoReq" class="browser-default" [disabled]="reqrow.requi_caracteristicas_list.length == 0 && reqrow.requi_caracteristicas_other == null">
+                                                      <option value="">{{'opt_select' | translate}}</option>
+                                                      <option *ngFor="let carval of reqrow.requi_caracteristicas_list">{{carval.clave+" "+carval.valorFront}}</option>
+                                                      <option *ngIf="reqrow.requi_caracteristicas_other != null">{{"Otras características "+reqrow.requi_caracteristicas_other}}</option>
+                                                    </select>
+                                                  </td>
+                                                  <td>{{reqrow.requi_cantidad}}</td>
+                                                  <td>{{reqrow.requi_cantidad_autorizada}}</td>
+                                                  <td>{{reqrow.requi_unidad_medida_name_small}}</td>
+                                                  <td>{{reqrow.requi_marca}}</td>
+                                                  <td class="ultimo">
+                                                    <a class="btn btn_extend btn_color_brown" data-bs-toggle="modal" data-bs-target="#windowLoadDocs" (click)="selectDataCargarDocs(reqrow.token_detalle_requisicion)">
+                                                      <i class="fa-solid fa-file-arrow-up"></i> {{'load_files' | translate}} / {{'browse_files' | translate}}
+                                                    </a>
+                                                  </td>
+                                                  <td class="ultimo">
+                                                    <select name="tipoReq" class="browser-default" (change)="viewDocumento($event.target);" [disabled]="reqrow.archivosPartida.length == 0">
+                                                      <option value="">{{'opt_select' | translate}}</option>
+                                                      <option *ngFor="let doc of reqrow.archivosPartida" [value]="doc.url">{{doc.nombre_documento}}</option>
+                                                    </select>
+                                                  </td>
+                                                </tr>
+                                              </tbody>
+                                            </table>	
+                                          </div>
+                                          <div class="col-12 col-sm-12 col-md-8 col-lg-9 col-xl-9 col-xxl-9"></div>
+                                          <div class="col-12 col-sm-12 col-md-4 col-lg-3 col-xl-3 col-xxl-3">
+                                            <a class="btn btn_extend text-bg-success rounded-3" (click)="terminar_registro();"><i class="fa-regular fa-floppy-disk"></i> {{'save' | translate}}</a>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </p-tabpanel>
+                                    <p-tabpanel value="1">
+                                      <div class="col-12 row" style="padding:0!important;">
+                                        <form class="contenido-md-nRequisicion" method="post" enctype="multipart/form-data" (ngSubmit)="registraRequisicionByDocs();">
+                                          <div class="col-12 row" style="padding:0!important;">
+                                            <div class="input-group proyecto col-12 col-sm-12 col-md-6 col-lg-8 col-xl-8 col-xxl-8">
+                                              <label for="txtFconstpm_reg" class="activeInput">Proyecto</label>
+                                              <input class="validate" name="proyecto" type="text" id="reqProyecto" required (keyup)="validaProyName($event.target);">
+                                            </div>
+                                            <div class="input-group input-field-select fechaReq col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-4">
+                                              <label for="txtFconstpm_reg" class="active">Prioridad</label>
+                                              <select id="selectPrioridadReq" class="browser-default" (change)="validaProyPrioridad($event.target);">
+                                                <option value="">{{'opt_select' | translate}}</option>
+                                                <option class="pryori_baj" value="baj">baja</option>
+                                                <option class="pryori_med" value="med">media</option>
+                                                <option class="pryori_alt" value="alt">alta</option>
+                                              </select>
+                                            </div>
+                                            <div class="col-12 docRequisicion center evidenciaReg" style="padding: 10px;">
+                                              <ngx-file-drop dropZoneLabel="Drop files here" (onFileDrop)="dropped($event)" (onFileOver)="fileOver($event)" (onFileLeave)="fileLeave($event)">
+                                                <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
+                                                  <a class="btn btn_load_file" type="button" style="color: #0782d0 !important;" (click)="openFileSelector()">
+                                                    {{'load_files' | translate}} / {{'browse_files' | translate}}
+                                                  </a>
+                                                </ng-template>
+                                              </ngx-file-drop>
+                                              <div class="upload-table">
+                                                <table class="table">
+                                                  <thead>
+                                                    <tr>
+                                                      <th>{{'file' | translate}}</th>
+                                                      <th class="ultimo"></th>
+                                                    </tr>
+                                                  </thead>
+                                                  <tbody class="upload-name-style" *ngIf="filesPartidaAltaWithDocs.length != 0">
+                                                    <tr *ngFor="let item of filesPartidaAltaWithDocs; index as i">
+                                                      <td style="color: #e7e7ea!important;"><strong>{{item.relativePath }}</strong></td>
+                                                      <td style="color: #e7e7ea!important;" class="ultimo">
+                                                        <a class="btn btn_extend text-bg-danger rounded-3" (click)="deleteEvidencias(i);"><i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}</a>
+                                                      </td>
+                                                    </tr>
+                                                  </tbody>
+                                                  <tbody class="upload-name-style" *ngIf="filesPartidaAltaWithDocs.length == 0"><tr><td colspan="2">{{'no_rows' | translate}}</td></tr></tbody>
+                                                </table>s
+                                              </div>
+                                            </div>
+                                            <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9"></div>
+                                            <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3" style="display: flex;flex-wrap: wrap;justify-content: space-evenly;">
+                                              <button type="submit" class="btn btn_extend text-bg-success rounded-3" style="width:100%!important;border-radius:8px!important;" 
+                                                [disabled]="requisicionesModelo.proyecto == '' || requisicionesModelo.prioridad == '' || requisicionesModelo.requisicion_documento.length == 0">
+                                                <i class="fa-regular fa-floppy-disk"></i> {{'save' | translate}}
+                                              </button>
+                                            </div>
+                                          </div>
+                                        </form>
+                                      </div>
+                                    </p-tabpanel>
+                                  </p-tabpanels>
+                                </p-tabs>
+                              </div>
+                            </div>
+                          </tr>
+                        </tbody>
+                        <tbody class="upload-name-style" *ngIf="filesPartidaAltaWithDocs.length == 0"><tr><td colspan="2">{{'no_rows' | translate}}</td></tr></tbody>
+                      </table>
+                    </div>
+                  </div>
+                  <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9"></div>
+                  <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3" style="display: flex;flex-wrap: wrap;justify-content: space-evenly;">
+                    <button type="submit" class="btn btn_extend text-bg-success rounded-3" style="width:100%!important;border-radius:8px!important;" 
+                      [disabled]="requisicionesModelo.proyecto == '' || requisicionesModelo.prioridad == '' || requisicionesModelo.requisicion_documento.length == 0">
+                      <i class="fa-regular fa-floppy-disk"></i> {{'save' | translate}}
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </p-tabpanel>
+        </p-tabpanels>
+      </p-tabs>
+    </div>
+  </div>
+</div>
+
+<bienvenido-component *ngIf="url_activa == '/plataformas/ssic/egresos/compras/requisiciones/registro'"></bienvenido-component>
+<div id="vContent" class="marco" #vContent *ngIf="url_activa == '/plataformas/ssic/egresos/compras/requisiciones/registro'">
+	<div class="contenido"><app-loader></app-loader>
+		<nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+		<div class="contenidoPagina">
+			<div class="listas_ps revanecer">
+				<div id="formRequisi" class="lista-div lista-divNoFlex row">
+					<h4>NUEVA REQUISICION DE COMPRA</h4>
+					<h6 *ngIf="!permiso_crear" class="access_denied">{{'perm_denied' | translate}}</h6>
+					<div class="col-12" *ngIf="permiso_crear" style="padding: 0;">
+						<div class="data-reg row">
+
+							<p-tabs value="0">
+								<p-tablist>
+									<p-tab value="0">manual</p-tab>
+									<p-tab value="1">documento</p-tab>
+								</p-tablist>
+								<p-tabpanels>
+									<p-tabpanel value="0">
+										<div class="col-12 row" style="padding:0!important;">
+											<div class="input-group proyecto col-12 col-sm-12 col-md-6 col-lg-8 col-xl-8 col-xxl-8">
+												<label for="txtFconstpm_reg" class="activeInput">Proyecto</label>
+												<input class="validate" name="proyecto" type="text" id="reqProyecto" required (keyup)="validaProyName($event.target);">
+											</div>
+											<div class="input-group input-field-select fechaReq col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-4">
+												<label for="txtFconstpm_reg" class="active">Prioridad</label>
+												<select id="selectPrioridadReq" class="browser-default" (change)="validaProyPrioridad($event.target);">
+													<option value="">{{'opt_select' | translate}}</option>
+													<option class="pryori_baj" value="baj">baja</option>
+													<option class="pryori_med" value="med">media</option>
+													<option class="pryori_alt" value="alt">alta</option>
+												</select>
+											</div>
+											<div class="input-group col-12">
+												<label for="req_especificacion" class="activeInput textAreaLabel">Justificaci&oacute;n</label>
+												<textarea class="materialize-textarea validate" name="justificacion" id="req_otras_caract" (keyup)="validaProyJustificacion($event.target);"></textarea>
+											</div>
+											<div class="col-12" style="border-top: solid 1px  lightgray;">
+												<h6>listado de articulos</h6>
+												<div class="col-12">
+													<div class="col-12">
+														<div class="modal fade bd-example-modal-lg" id="windowConceptoListNew" tabindex="-1" role="dialog" aria-labelledby="windowConceptoListNewLabel" aria-hidden="true">
+															<div class="modal-dialog modal-fullscreen" style="margin: 1%;width: 98%!important;">
+																<div class="modal-content">
+																	<div class="modal-header">
+																		<h1 class="modal-title fs-5 bg-blue-ModalTitle" id="windowConceptoListNewLabel">DETALLE DE CONCEPTO DE REQUISICION</h1>
+																		<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: transparent !important;"></button>
+																	</div>
+																	<div class="modal-body">
+																		<div class="col-12">
+																			<table id="tableCaracteristicasReqNew" class="display nowrap mdl-data-table white centered" style="width:100%!important;margin:0!important;">
+																				<thead>
+																					<tr>
+																						<th>caracter&iacute;stica</th>
+																						<th>valor</th>
+																						<th class="ultimo"></th>
+																					</tr>
+																				</thead>
+																				<tbody>
+																					<tr>
+																						<td>
+																							<select name="tipoReq" id="selectCaractClaveReq" class="browser-default" (change)="validaProyNecesidadCaractReqClave($event.target);">
+																								<option value="">{{'opt_select' | translate}}</option>
+																								<option *ngFor="let lCaract of arrayListaCaract" [value]="lCaract.valor">{{lCaract.valor}}</option>
+																							</select>
+																						</td>
+																						<td class="concepto">
+																							<input class="req_cantidad validate" type="text" name="req_cantidad" id="writeCaractValorReqNew" required (keyup)="validaProyNecesidadCaractReqValor($event.target);">
+																						</td>
+																						<td class="ultimo">
+																							<a class="btn text-bg-success rounded-3" [ngClass]="validaReqCaracterBoolAdd == false ? 'disabled' : ''" [attr.disabled]="validaReqCaracterBoolAdd == false ? true : null"
+																								[attr.aria-disabled]="validaReqCaracterBoolAdd == false ? true : null" (click)="validaReqCaracterBoolAdd == true && addCaractPartida();"><i class="fa-solid fa-plus"></i>&nbsp;{{'btn_add' | translate}}
+																							</a>
+																						</td>
+																					</tr>
+																				</tbody>
+																				<tbody *ngIf="validaReqCaracteristicas.length > 0">
+																					<tr *ngFor="let carval of validaReqCaracteristicas">
+																						<td>{{carval.clave}}</td>
+																						<td>{{carval.valorFront}}</td>
+																						<td class="ultimo"><a class="btn btn_extend text-bg-danger rounded-3" (click)="deleteCaractPartida(carval.id_caract);"><i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}</a></td>
+																					</tr>
+																				</tbody>
+																				<tbody *ngIf="validaReqCaracteristicas.length == 0"><tr><td colspan="3">{{'no_rows' | translate}}</td></tr></tbody>
+																			</table>
+																		</div>
+																		<div class="input-group col-12">
+																			<label for="req_especificacion" class="activeInput">Otras caracter&iacute;sticas</label>
+																			<textarea class="materialize-textarea validate" name="especificaciones" id="req_otras_caract" (keyup)="validaProyNecesidadCaractOtrasValor($event.target);"></textarea>
+																		</div>
+																	</div>
+																	<div class="modal-footer"></div>
+																</div>
+															</div>
+														</div>
+														<div class="modal fade" id="windowConceptoListRow" tabindex="-1" aria-labelledby="windowConceptoListRowLabel" aria-hidden="true">
+															<div class="modal-dialog ModalFullscreenClass">
+																<div class="modal-content modal-fullscreen">
+																	<div class="modal-header">
+																		<h1 class="modal-title fs-5 bg-blue-ModalTitle" id="windowConceptoListRowLabel">DETALLE DE CONCEPTO DE REQUISICION</h1>
+																		<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: rgb(28, 167, 153) !important;"></button>
+																	</div>
+																	<div class="modal-body">
+																		<div class="col-12" *ngFor="let reqrow of requisicion_selected">
+																			<div class="cabecera col-12" style="margin-top: 5px!important;">
+																				<h6 class="title">Concepto</h6>
+																				<h6 class="content">{{reqrow.requi_necesidad}}</h6>
+																			</div>
+																			<div class="col-12">
+																				<table id="tableCaracteristicasReqList" class="display nowrap mdl-data-table white centered" style="width:100%!important;margin:0!important;">
+																					<thead>
+																						<tr>
+																							<th>caracter&iacute;stica</th>
+																							<th>valor</th>
+																							<th class="ultimo"></th>
+																						</tr>
+																					</thead>
+																					<tbody *ngIf="reqrow.requi_necesidad_caracteristicas.length > 0">
+																						<tr *ngFor="let carval of reqrow.requi_necesidad_caracteristicas">
+																							<td>{{carval.clave}}</td>
+																							<td>{{carval.valorFront}}</td>
+																							<td>---</td>
+																						</tr>
+																					</tbody>
+																				</table>
+																			</div>
+																			<div class="cabecera col-12">
+																				<h6 class="title">Otras caracter&iacute;sticas</h6>
+																				<h6 class="content" *ngIf="reqrow.requi_necesidad_otras_caracteristicas != ''">{{reqrow.requi_necesidad_otras_caracteristicas}}</h6>
+																				<h6 class="content" *ngIf="reqrow.requi_necesidad_otras_caracteristicas == ''">---</h6>
+																			</div>
+																		</div>
+																	</div>
+																	<div class="modal-footer">
+																	</div>
+																</div>
+															</div>
+														</div>
+														<div class="modal fade bd-example-modal-lg" id="windowLoadDocs" tabindex="-1" role="dialog" aria-labelledby="windowLoadDocsLabel" aria-hidden="true">
+															<div class="modal-dialog modal-fullscreen" style="margin: 1%;width: 98%!important;">
+																<div class="modal-content">
+																	<div class="modal-header">
+																		<h1 class="modal-title fs-5 bg-blue-ModalTitle" id="windowLoadDocsLabel">{{'doc_an' | translate}}</h1>
+																		<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: transparent !important;"></button>
+																	</div>
+																	<div class="modal-body">
+																		<div class="col-12">
+																			<ngx-file-drop dropZoneLabel="Drop files here" (onFileDrop)="droppedPartida($event)" (onFileOver)="fileOverPartida($event)" (onFileLeave)="fileLeavePartida($event)">
+																				<ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
+                                          <a class="btn btn_load_file" type="button" style="color: #0782d0 !important;" (click)="openFileSelector()">
+                                            {{'load_files' | translate}} / {{'browse_files' | translate}}
+                                          </a>
+																				</ng-template>
+																			</ngx-file-drop>
+																		</div>
+																		<div class="col-12">
+																			<table class="white centered" style="margin-top:5px!important;width: 100% !important;">
+																				<thead>
+																					<tr>
+																						<th>{{'file' | translate}}</th>
+																						<th class="ultimo"></th>
+																					</tr>
+																				</thead>
+																				<tbody class="upload-name-style" *ngIf="filesPartidaNames.length != 0">
+																					<tr *ngFor="let item of filesPartidaNames; index as i">
+																						<td><strong>{{item.nameFile}}</strong></td>
+																						<td class="ultimo"><a class="btn btn_extend text-bg-danger rounded-3" (click)="deleteAnexosPartida(i);"><i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}</a></td>
+																					</tr>
+																				</tbody>
+																				<tbody *ngIf="filesPartidaNames.length == 0">
+																					<tr><td colspan="2">{{'no_rows' | translate}}</td></tr>
+																				</tbody>
+																			</table>
+																		</div>
+																		<div class="col-12 row">
+																			<div class="col-12 col-sm-12 col-md-8 col-lg-9 col-xl-9 col-xxl-9"></div>
+																			<div class="col-12 col-sm-12 col-md-4 col-lg-3 col-xl-3 col-xxl-3">
+																				<a class="btn btn_extend text-bg-success rounded-3 disabled" style="width: 100% !important;border-radius: 8px !important;"
+																					*ngIf="filesPartidaAnexos.length == 0" disabled aria-disabled="true">
+																					<i class="fa-regular fa-floppy-disk"></i> {{'save' | translate}}</a>
+																				<a class="btn btn_extend text-bg-success rounded-3" style="width: 100% !important;border-radius: 8px !important;"
+																					*ngIf="filesPartidaAnexos.length != 0" (click)="loadDocsRequisicionPartida(requisicion_tkn,requisicion_token_detalle);">
+																					<i class="fa-regular fa-floppy-disk"></i> {{'save' | translate}}</a>
+																			</div>
+																		</div>
+																	</div>
+																	<div class="modal-footer"></div>
+																</div>
+															</div>
+														</div>
+													</div>
+													<div class="col-12" id="listaPartidasReqNew" style="padding: 0!important;" *ngIf="vistaPartidas == true">
+														<table id="tablePartidasReqNew" class="display nowrap mdl-data-table white centered" style="width:100%!important;margin:0!important;">
+															<thead>
+																<tr>
+																	<th class="ultimo"></th>
+																	<th>tipo de requisici&oacute;n</th>
+																	<th>{{'concept' | translate}}</th>
+																	<th class="ultimo"></th>
+																	<th><i class="fas fa-sort-numeric-down-alt"></i>&nbsp;Cantidad</th>
+																	<th><i class="fas fa-balance-scale-right"></i>&nbsp;Unidad de medida</th>
+																	<th>marca sugerida</th>
+																	<th class="ultimo"></th>
+																</tr>
+															</thead>
+															<tbody>
+																<tr>
+																	<td class="ultimo">---</td>
+																	<td>
+																		<select name="tipoReq" id="selectTipoReq" class="browser-default" (change)="validaProyTipoReq($event.target);">
+																			<option value="">{{'opt_select' | translate}}</option>
+																			<option value="Merc">Mercancia</option>
+																			<option value="Gast">Gastos</option>
+																			<option value="Acti">Activos</option>
+																			<option value="Mixt">Mixto</option>
+																		</select>
+																	</td>
+																	<td>
+																		<datalist id="dataListProductos"><option *ngFor="let arrayProdVig of arrayProductosVig" value="{{arrayProdVig.producto}}"></datalist>
+																		<input id="req_necesidad" list="dataListProductos" class="req_necesidad validate" type="text" name="req_necesidad" (keyup)="validaProyNecesidadReq($event.target);">
+																	</td>
+																	<td class="ultimo">
+																		<a class="btn btn_color_brown" data-bs-toggle="modal" data-bs-target="#windowConceptoListNew"><i class="fa-solid fa-list-check"></i></a>
+																	</td>
+																	<td><input class="req_cantidad validate" type="number" name="req_cantidad" id="req_cantidad" (keyup)="validaProyCantidadReq($event.target);"></td>
+																	<td>
+																		<datalist id="dataListUmedida">
+																			<option *ngFor="let medU of arrayCompUMedida" value="{{medU.nombre}}">{{"("+medU.simbolo+") "+medU.categoria}}</option>
+																		</datalist>
+																		<input class="req_uMedida validate" name="req_uMedida" type="text" id="req_uMedida" list="dataListUmedida" (change)="validaProyUnidadMedidaReq($event.target);">
+																	</td>
+																	<td>
+																		<datalist id="dataListMarcas"><option value="Sin marca"></datalist>
+																			<input id="req_marca" list="dataListMarcas" class="req_marca validate" type="text" name="req_marca" (keyup)="validaProyMarcaReq($event.target);">
+																	</td>
+																	<td class="ultimo">
+																		<a class="btn btn_extend text-bg-success rounded-3" [ngClass]="validaReqBoolAdd == false ? 'disabled' : ''" [attr.disabled]="validaReqBoolAdd == false ? true : null"
+																			[attr.aria-disabled]="validaReqBoolAdd == false ? true : null" (click)="validaReqBoolAdd == true && addPartidaReqNew();">
+																			<i class="fa-solid fa-plus"></i>&nbsp;{{'btn_add' | translate}}
+																		</a>
+																	</td>
+																</tr>
+															</tbody>
+															<tbody>
+																<tr *ngFor="let reqrow of requisicionesModelo.lista_articulos">
+																	<td class="ultimo">{{reqrow.index_lista_req}}</td>
+																	<td>{{reqrow.requi_tipo_front}}</td>
+																	<td>{{reqrow.requi_necesidad}}</td>
+																	<td class="ultimo">
+																		<a class="btn btn_color_brown" [ngClass]="reqrow.requi_necesidad_caracteristicas.length == 0 && reqrow.requi_necesidad_otras_caracteristicas == '' ? 'disabled' : ''" 
+																			[attr.disabled]="reqrow.requi_necesidad_caracteristicas.length == 0 && reqrow.requi_necesidad_otras_caracteristicas == '' ? true : null"
+																			[attr.aria-disabled]="reqrow.requi_necesidad_caracteristicas.length == 0 && reqrow.requi_necesidad_otras_caracteristicas == '' ? true : null" 
+																			data-bs-toggle="modal" data-bs-target="#windowConceptoListRow"
+																			(click)="(reqrow.requi_necesidad_caracteristicas.length > 0 || reqrow.requi_necesidad_otras_caracteristicas != '') && addPartidaReqNew();">
+																			<i class="fa-solid fa-list-check"></i>
+																		</a>
+																	</td>
+																	<td>{{reqrow.requi_cantidad}}</td>
+																	<td>{{reqrow.requi_uni_med_front}}</td>
+																	<td>{{reqrow.requi_marca_front}}</td>
+																	<td class="ultimo"><a class="btn btn_extend text-bg-danger rounded-3" (click)="deletePartidaReqNew(reqrow.index_lista_req);"><i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}</a></td>
+																</tr>
+															</tbody>
+														</table>
+													</div>
+												</div>
+											</div>
+											<div class="col-12 row" style="margin-top: 10px!important;margin-bottom: 10px!important;">
+												<div class="col-12 col-sm-12 col-md-9 col-lg-10 col-xl-10 col-xxl-10"></div>
+												<div class="col-12 col-sm-12 col-md-3 col-lg-2 col-xl-2 col-xxl-2" style="display: flex;flex-wrap: wrap;justify-content: space-evenly;">
+													<a *ngIf="requisicionesModelo.proyecto == '' || requisicionesModelo.prioridad == '' || requisicionesModelo.justificacion == '' || requisicionesModelo.lista_articulos.length == 0"
+														class="btn btn_extend text-bg-success rounded-3 disabled" disabled aria-disabled="true"><i class="fa-solid fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}</a>
+													<a *ngIf="requisicionesModelo.proyecto != '' && requisicionesModelo.prioridad != '' && requisicionesModelo.justificacion != '' && requisicionesModelo.lista_articulos.length != 0"
+														class="btn btn_extend text-bg-success rounded-3" (click)="registraRequisicionList();"><i class="fa-solid fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}</a>
+												</div>
+											</div>
+											<div class="col-12 row" *ngIf="detalle_requisicion.length > 0">
+												<div class="cabecera cabecera_opacity col-12">
+													<table id="tableRequisicionDetalleRegistrar" class="display nowrap mdl-data-table white centered" style="width:100%!important;margin:0!important;">
+														<thead>
+															<tr>
+																<th>tipo de requisici&oacute;n</th>
+																<th class="concepto">concepto</th>
+																<th><i class="fa-solid fa-list-check"></i> caracteristicas</th>
+																<th><i class="fas fa-sort-numeric-down-alt"></i> cantidad</th>
+																<th><i class="fas fa-sort-numeric-down-alt"></i> cantidad autorizada</th>
+																<th><i class="fas fa-balance-scale-right"></i> unidad de medida</th>
+																<th>marca sugerida</th>
+																<th class="ultimo"></th>
+																<th class="ultimo"> 
+																	<p style="margin: 0!important;width: max-content !important;border-radius: 25px;padding-left: 5px;padding-right: 5px;text-transform: math-auto;" class="btn btn_extend bg-indigo-600">
+																		<i class="fa-solid fa-file" style="width: 25px !important;height: 25px !important;line-height: 25px !important;font-size: 15px;text-align: center;"></i> {{'files_uploaded' | translate}}
+																	</p> 
+																</th>
+															</tr>
+														</thead>
+														<tbody>
+															<tr *ngFor="let reqrow of detalle_requisicion">
+																<td>{{reqrow.requi_tipo_front}}</td>
+																<td>{{reqrow.requi_necesidad}}</td>
+																<td>
+																	<select name="tipoReq" class="browser-default" [disabled]="reqrow.requi_caracteristicas_list.length == 0 && reqrow.requi_caracteristicas_other == null">
+																		<option value="">{{'opt_select' | translate}}</option>
+																		<option *ngFor="let carval of reqrow.requi_caracteristicas_list">{{carval.clave+" "+carval.valorFront}}</option>
+																		<option *ngIf="reqrow.requi_caracteristicas_other != null">{{"Otras características "+reqrow.requi_caracteristicas_other}}</option>
+																	</select>
+																</td>
+																<td>{{reqrow.requi_cantidad}}</td>
+																<td>{{reqrow.requi_cantidad_autorizada}}</td>
+																<td>{{reqrow.requi_unidad_medida_name_small}}</td>
+																<td>{{reqrow.requi_marca}}</td>
+																<td class="ultimo">
+																	<a class="btn btn_extend btn_color_brown" data-bs-toggle="modal" data-bs-target="#windowLoadDocs" (click)="selectDataCargarDocs(reqrow.token_detalle_requisicion)">
+																		<i class="fa-solid fa-file-arrow-up"></i> {{'load_files' | translate}} / {{'browse_files' | translate}}
+																	</a>
+																</td>
+																<td class="ultimo">
+																	<select name="tipoReq" class="browser-default" (change)="viewDocumento($event.target);" [disabled]="reqrow.archivosPartida.length == 0">
+																		<option value="">{{'opt_select' | translate}}</option>
+																		<option *ngFor="let doc of reqrow.archivosPartida" [value]="doc.url">{{doc.nombre_documento}}</option>
+																	</select>
+																</td>
+															</tr>
+														</tbody>
+													</table>	
+												</div>
+												<div class="col-12 col-sm-12 col-md-8 col-lg-9 col-xl-9 col-xxl-9"></div>
+												<div class="col-12 col-sm-12 col-md-4 col-lg-3 col-xl-3 col-xxl-3">
+													<a class="btn btn_extend text-bg-success rounded-3" (click)="terminar_registro();"><i class="fa-regular fa-floppy-disk"></i> {{'save' | translate}}</a>
+												</div>
+											</div>
+										</div>
+									</p-tabpanel>
+									<p-tabpanel value="1">
+										<div class="col-12 row" style="padding:0!important;">
+											<form class="contenido-md-nRequisicion" method="post" enctype="multipart/form-data" (ngSubmit)="registraRequisicionByDocs();">
+												<div class="col-12 row" style="padding:0!important;">
+													<div class="input-group proyecto col-12 col-sm-12 col-md-6 col-lg-8 col-xl-8 col-xxl-8">
+														<label for="txtFconstpm_reg" class="activeInput">Proyecto</label>
+														<input class="validate" name="proyecto" type="text" id="reqProyecto" required (keyup)="validaProyName($event.target);">
+													</div>
+													<div class="input-group input-field-select fechaReq col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-4">
+														<label for="txtFconstpm_reg" class="active">Prioridad</label>
+														<select id="selectPrioridadReq" class="browser-default" (change)="validaProyPrioridad($event.target);">
+															<option value="">{{'opt_select' | translate}}</option>
+															<option class="pryori_baj" value="baj">baja</option>
+															<option class="pryori_med" value="med">media</option>
+															<option class="pryori_alt" value="alt">alta</option>
+														</select>
+													</div>
+													<div class="col-12 docRequisicion center evidenciaReg" style="padding: 10px;">
+														<ngx-file-drop dropZoneLabel="Drop files here" (onFileDrop)="dropped($event)" (onFileOver)="fileOver($event)" (onFileLeave)="fileLeave($event)">
+															<ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
+                                <a class="btn btn_load_file" type="button" style="color: #0782d0 !important;" (click)="openFileSelector()">
+                                  {{'load_files' | translate}} / {{'browse_files' | translate}}
+                                </a>
+															</ng-template>
+														</ngx-file-drop>
+														<div class="upload-table">
+															<table class="table">
+																<thead>
+																	<tr>
+																		<th>{{'file' | translate}}</th>
+																		<th class="ultimo"></th>
+																	</tr>
+																</thead>
+																<tbody class="upload-name-style" *ngIf="filesPartidaAltaWithDocs.length != 0">
+																	<tr *ngFor="let item of filesPartidaAltaWithDocs; index as i">
+																		<td style="color: #e7e7ea!important;"><strong>{{item.relativePath }}</strong></td>
+																		<td style="color: #e7e7ea!important;" class="ultimo">
+																			<a class="btn btn_extend text-bg-danger rounded-3" (click)="deleteEvidencias(i);"><i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}</a>
+																		</td>
+																	</tr>
+																</tbody>
+																<tbody class="upload-name-style" *ngIf="filesPartidaAltaWithDocs.length == 0"><tr><td colspan="2">{{'no_rows' | translate}}</td></tr></tbody>
+															</table>
+														</div>
+													</div>
+													<div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9"></div>
+													<div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3" style="display: flex;flex-wrap: wrap;justify-content: space-evenly;">
+														<button type="submit" class="btn btn_extend text-bg-success rounded-3" style="width:100%!important;border-radius:8px!important;" 
+															[disabled]="requisicionesModelo.proyecto == '' || requisicionesModelo.prioridad == '' || requisicionesModelo.requisicion_documento.length == 0">
+															<i class="fa-regular fa-floppy-disk"></i> {{'save' | translate}}
+														</button>
+													</div>
+												</div>
+											</form>
+										</div>
+									</p-tabpanel>
+								</p-tabpanels>
+							</p-tabs>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,139 @@
+<div class="fondoCompleteRegistro" *ngIf="arrayEmpresa.length != 0">
+	<form *ngFor="let empregistro of arrayEmpresa" method="post" class="formRegistro" name="formRegistro" id="formRegistro" enctype="multipart/form-data">
+		<div class="header caracteristicas">
+			<h4 class="h4Header">COMPLETA EL REGISTRO DE TU EMPRESA</h4>
+			<div class="input-field file-field fotoperfil">
+				<div id="btnAddLogoEmpresa" class="btn">
+					<span id="spanLogoEmpresa">&#xf030;</span>
+				</div>
+				<input type="file" id="logo_empresa" class="tooltipped" data-position="bottom" data-tooltip="Foto de perfil">
+			</div>
+
+			<h5>{{empregistro.company_name}}</h5>
+			<h6 id="tipoPersona">{{empregistro.tipoPersona}}</h6>
+
+			<!--?php $this->adminModelo->listaRegimenFiscal();?-->
+			<div class="input-field selectRegimen">
+				<select name="selectRegimen" id="selectRegimen">';
+					<option value="" disabled selected>{{'opt_select' | translate}}</option>
+					<option value="'.$vRegimen->c_token.'/'.$vRegimen->clave.' - '.$vRegimen->descripcion.'"></option>
+				</select>
+				<label for="CSelectProdClass" id="label_clasificacion" class="active activeSelect">Regimen fiscal</label>
+			</div>
+			<div class="input-field">
+				<input class="validate" type="text" id="txtporcentajeRegfiscal"disabled>
+				<label for="txtporcentajeRegfiscal" id="lblporcentajeRegfiscal" class="activeInput disabled">Porcentaje</label>
+			</div>
+			<a class="btn waves-effect waves-light darken-2" id="addRegimenList" disabled>&#xf055;</a>
+			<div id="divTablaRegFiscal" class="divTablaData">
+				<table id="tablaRegFiscal" class="centered responsive-table">
+					<thead id="tHeadTablaRegFiscal">
+						<tr>
+							<th>Regimen fiscal</th>
+							<th>porcentaje</th>
+							<th class="ultimo"></th>
+						</tr>
+					</thead>
+					<tbody id="bodyTablaRegFiscal">
+						<tr id="trCamposVaciosFiscal">
+							<td colspan="3">{{'no_rows' | translate}}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+
+		</div>
+
+		<div class="caracteristicas cuerpo">
+			<div class="input-field file-field fotoperfil">
+				<div id="btnAddFotoPerfil" class="btn">
+					<span id="spanImgPerfil" class="span">&#xf030;</span>
+				</div>
+				<input type="file" id="foto_perfil" class="tooltipped" data-position="bottom" data-tooltip="Foto de perfil">
+			</div>
+			<h6>Informaci&oacute;n del usuario principal</h6>
+			<div class="input-field">
+				<input class="validate" name="txtpaterno" type="text" id="txtpaterno">
+				<label for="CSelectProdClass" id="label_clasificacion" class="activeInput">Apellido Paterno</label>
+			</div>
+			<div class="input-field">
+				<input class="validate" name="txtmaterno" type="text" id="txtmaterno">
+				<label for="CSelectProdClass" id="label_clasificacion" class="activeInput">Apellido Paterno</label>
+			</div>
+			<div class="input-field">
+				<input class="validate" name="txtnombres" type="text" id="txtnombres">
+				<label for="CSelectProdClass" id="label_clasificacion" class="activeInput">Nombre(s)</label>
+			</div>
+			<div class="areaCargo">
+				<h6>Informaci&oacute;n de &aacute;rea y cargo</h6>
+				<div class="input-field area">
+					<input class="validate" name="txtarea" type="text" id="txtarea">
+					<label for="CSelectProdClass" id="label_clasificacion" class="activeInput">&Aacute;rea</label>
+				</div>
+				<div class="input-field">
+					<input class="validate" name="txtcargo" type="text" id="txtcargo">
+					<label for="CSelectProdClass" id="label_clasificacion" class="activeInput">Cargo</label>
+				</div>
+			</div>
+			<h6>Telefonos y correos de contacto</h6>
+			<div class="radio">
+				<p class="radio">
+					<label>
+						<input type="radio" name="telefonocelular" value="celular" id="celular" checked>
+						<span> Celular </span>
+					</label>
+				</p>
+
+				<p class="radio">
+					<label>
+						<input type="radio" name="telefonocelular" value="corporativo" id="corporativo">
+						<span> Tel&eacute;fono corporativo </span>
+					</label>
+				</p>
+			</div>
+			<div class="input-field" id="divTelefonoComplet"><!--class telefono -->
+				<input class="validate" type="number" id="txttelefono" maxlength="10">
+				<label for="CSelectProdClass" id="label_clasificacion" class="activeInput">Tel&eacute;fono</label>
+			</div>
+			<div class="input-field extension noneView" id="divExtensionComplet">
+				<input class="validate" type="number" id="txtExtension">
+				<label for="CSelectProdClass" id="label_clasificacion" class="activeInput">Extensi&oacute;n</label>
+			</div>
+			<div class="input-field">
+				<input class="validate email" type="email" id="txtemail">
+				<label for="CSelectProdClass" id="label_clasificacion" class="activeInput">Correo</label>
+			</div>
+			<a class="btn waves-effect waves-light darken-2" id="addTelMail">&#xf055;</a>
+
+			<!--<div class="boton">
+					<a class="btn text-bg-danger rounded-3" id="deleteTelMail"><i class="fa-solid fa-eraser"></i></a>
+			</div>-->
+			<div id="divTablaTelMail" class="divTablaData">
+				<table id="tablaTelMail" class="centered responsive-table">
+					<thead id="tHeadTablaTelMail">
+						<tr>
+							<th>Tel&eacute;fono</th>
+							<th>Extensi&oacute;n</th>
+							<th>{{'email' | translate}}</th>
+							<th class="ultimo"></th>
+						</tr>
+					</thead>
+					<tbody *ngIf="arrayEmpresa.length != 0">
+						<tr>
+								<td>{{empregistro.telefono}}</td>
+								<td>{{empregistro.extension}}</td>
+								<td class="correo">{{empregistro.correo}}</td>
+								<td class="ultimo"><a class="btn text-bg-danger rounded-3" id="deleteTelMail"><i class="fa-solid fa-eraser"></i></a></td>
+						</tr>
+					</tbody>
+					<tbody *ngIf="arrayEmpresa.length == 0">
+						<tr>
+							<td colspan="4">{{'no_rows' | translate}}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<a id="guardaRegistro" class="btn btnGuardar waves-effect"><i class="fa-regular fa-floppy-disk"></i> Registrar</a>
+		</div>
+	</form>
+</div>

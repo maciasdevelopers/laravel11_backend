@@ -1,0 +1,31 @@
+.totales p{
+	text-align: right;
+	margin: 0 !important;
+	text-transform: Capitalize!important;
+	font-family: Arial, sans-serif!important;
+}
+
+.totales h6{
+	text-align: right;
+	width: 50%!important;
+	margin: 0!important;
+	text-transform: Capitalize!important;
+	font-family: Arial, sans-serif!important;
+}
+
+.label {
+  font-weight: bold;
+  color: black;
+}
+
+
+
+.data_totales_title,
+.data_totales_cant{
+  padding: 0!important;
+  margin: 0!important;
+}
+
+.data_totales_cant{
+  max-width: 200px!important;
+}

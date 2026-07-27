@@ -1,0 +1,19 @@
+<div class="card cardError">
+  <div class="col-12 logoNotFound">
+    <div class="col-12 logoNotFound iconNotFound">
+      <i class="large material-icons">desktop_windows</i>
+    </div>
+    <div class="col-12 spaceNotFound"></div>
+    <div class="col-12 titleNotFound" *ngIf="url_denegado_link == ''">
+      <p>{{'perm_denied' | translate}}</p>
+    </div>
+
+    <div class="col-12 titleNotFound"*ngIf="url_denegado_link != ''">
+      <p style="display: flex;flex-wrap: wrap;flex-direction: row;justify-content: space-between;">{{'perm_denied' | translate}} <a routerLink="{{home_link}}" style="width: auto;height: 20p;" class="btn btnGuardar btnRow waves-effect waves-light btnGuardarCompra red darken-2">regresar a la p&aacute;gina principal</a></p>
+      <a *ngIf="url_denegado_link != ''" (click)="reintentoIngreso();" class="btn text-bg-primary rounded-3">reintentar ingreso {{url_denegado_name}}</a>
+    </div>
+
+  </div>
+
+</div>
+

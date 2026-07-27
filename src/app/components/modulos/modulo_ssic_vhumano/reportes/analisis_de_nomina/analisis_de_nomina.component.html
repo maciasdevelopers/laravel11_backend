@@ -1,0 +1,722 @@
+<!--<p-confirmpopup #cp>
+  <ng-template #headless let-message>
+    <div class="rounded p-4">
+      <i class="fa-solid fa-circle-info"></i>&nbsp;
+      <span>{{ message.message }}</span>
+      <div class="flex items-center gap-2 mt-4">
+        <p-button id="popUpAccept" class="accept" (onClick)="cp.onAccept()" [label]="popUpAccept" size="small" />
+        <p-button id="popUpReject" class="reject" (onClick)="cp.onReject()" [label]="popUpReject" [text]="true" size="small" severity="secondary" />
+      </div>
+    </div>
+  </ng-template>
+</p-confirmpopup>-->
+<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco" #vContent>
+  <div class="contenido">
+    <app-loader></app-loader>
+    <nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+    <div class="contenidoPagina">
+      <div class="listas_ps revanecer">
+        <div class="lista-div lista-divNoFlex">
+          <h4>{{'menu_payroll_analysis' | translate}}</h4>
+
+          <div class="col-12">
+            <div class="btn-group lista_botones col" role="group" arial-label="Basic example">
+              <a class="btn btn_extend bg-indigo-600"
+                (click)="listando_reportes_de_nomina();listando_reportes_eliminados_de_nomina();">
+                <i class="fa-solid fa-rotate"></i>&nbsp;{{'list_updt' | translate}}
+              </a>
+              <a class="btn btn_extend bg-green-600 descarga_lista_excel" (click)="descargarPlantillaNomina();">
+                Descargar plantilla para carga masiva&nbsp;<i class="fa-solid fa-file-excel"></i>
+              </a>
+              <a class="btn btn_extend bg-green-600 descarga_lista_excel"
+                [ngClass]="list_nomina_reportes.length == 0 ? 'disabled' : ''"
+                [attr.disabled]="list_nomina_reportes.length == 0 ? true : null"
+                [attr.aria-disabled]="list_nomina_reportes.length == 0 ? true : null"
+                (click)="list_nomina_reportes.length > 0 && descarga_excel_nomina_reportes();">
+                Descargar reporte de nóminas&nbsp;<i class="fa-solid fa-file-excel"></i>
+              </a>
+            </div>
+          </div>
+
+          <p-tabs value="0" scrollable>
+            <p-tablist>
+              <p-tab value="0">reportes de n&oacute;mina</p-tab>
+              <p-tab value="1" (click)="verReportesEliminados();listando_reportes_eliminados_de_nomina();">
+                <i class="fa-solid fa-trash"></i>&nbsp;reportes de n&oacute;mina eliminados
+              </p-tab>
+              <p-tab value="2"><i class="fa-solid fa-plus"></i>&nbsp;Nuevo reporte de n&oacute;mina</p-tab>
+            </p-tablist>
+            <p-tabpanels>
+              <p-tabpanel value="0">
+                <p-table #nomiReps [value]="list_nomina_reportes" showGridlines [resizableColumns]="true"
+                  [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }"
+                  [rowsPerPageOptions]="[10,20,30,50,100]"
+                  [globalFilterFields]="['folio_interior','nomina_numero','centrotrab_registro_patronal_imss','nomina_moneda','nomina_periodo_pago','nomina_periodicidad']">
+                  <ng-template #caption>
+                    <div class="flex">
+                      <p-iconfield iconPosition="left" class="ml-auto">
+                        <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                        <input pInputText type="text" (input)="nomiReps.filterGlobal($event.target.value, 'contains')"
+                          placeholder="{{'bus_car' | translate}}" />
+                      </p-iconfield>
+                    </div>
+                  </ng-template>
+                  <ng-template #header>
+                    <tr>
+                      <th rowspan="2" pResizableColumn pSortableColumn="folio_interior">folio&nbsp;<p-sortIcon field="folio_interior" /></th>
+                      <th rowspan="2" pResizableColumn pSortableColumn="nomina_fecha_contabilizacion">{{'fecha_cont' | translate}}&nbsp;<p-sortIcon field="nomina_fecha_contabilizacion" /></th>
+                      <th rowspan="2" pResizableColumn pSortableColumn="nomina_numero">N&uacute;mero de n&oacute;mina&nbsp;<p-sortIcon field="nomina_numero" /></th>
+                      <th colspan="5"><i class="fa-solid fa-money-check"></i>&nbsp;Orden de pago (Efectivo)</th>
+                      <th colspan="5"><i class="fa-solid fa-money-check"></i>&nbsp;Orden de pago (Especie)</th>
+                      <th rowspan="2" class="ultimo"></th>
+                      <th rowspan="2" class="ultimo"></th>
+                    </tr>
+                    <tr>
+                      <th pResizableColumn pSortableColumn="nomina_reporte_efectivo">reporte total&nbsp;<p-sortIcon field="nomina_reporte_efectivo" /></th>
+                      <th pResizableColumn pSortableColumn="nomina_pago_efectivo">pagado&nbsp;<p-sortIcon field="nomina_pago_efectivo" /></th>
+                      <th pResizableColumn pSortableColumn="nomina_saldo_efectivo">Saldo&nbsp;<p-sortIcon field="nomina_saldo_efectivo" /></th>
+                      <th pResizableColumn pSortableColumn="nomina_efectivo_ord_pago_folio">Orden de pago&nbsp;<p-sortIcon field="nomina_efectivo_ord_pago_folio" /></th>
+                      <th class="ultimo"></th>
+
+                      <th pResizableColumn pSortableColumn="nomina_reporte_especie">reporte total&nbsp;<p-sortIcon field="nomina_reporte_especie" /></th>
+                      <th pResizableColumn pSortableColumn="nomina_pago_especie">pagado&nbsp;<p-sortIcon field="nomina_pago_especie" /></th>
+                      <th pResizableColumn pSortableColumn="nomina_saldo_especie">Saldo&nbsp;<p-sortIcon field="nomina_saldo_especie" /></th>
+                      <th pResizableColumn pSortableColumn="nomina_especie_ord_pago_folio">Orden de pago&nbsp;<p-sortIcon field="nomina_especie_ord_pago_folio" /></th>
+                      <th class="ultimo"></th>
+                    </tr>
+                  </ng-template>
+                  <ng-template #body let-nom>
+                    <tr>
+                      <td>{{nom.folio_interior}}</td>
+                      <td>{{nom.nomina_fecha_contabilizacion}}</td>
+                      <td>{{nom.nomina_numero}}</td>
+                      <td class="td_importes">{{nom.nomina_reporte_efectivo}}</td>
+                      <td class="td_importes">{{nom.nomina_pago_efectivo}}</td>
+                      <td class="td_importes">{{nom.nomina_saldo_efectivo}}</td>
+                      <td>{{nom.nomina_efectivo_ord_pago_folio}}</td>
+                      <td class="ultimo">
+                        <a class="btn btn_extend text-bg-success rounded-3"
+                          [ngClass]="nom.nomina_efectivo_ord_pago_token == '' ? 'disabled' : ''"
+                          [attr.disabled]="nom.nomina_efectivo_ord_pago_token == '' ? true : null"
+                          [attr.aria-disabled]="nom.nomina_efectivo_ord_pago_token == '' ? true : null"
+                          (click)="nom.nomina_efectivo_ord_pago_token != '' && verNominaEfectivoSeguimientoOrdenPago(nom.token_nominas_periodos,nom.nomina_efectivo_ord_pago_token);">
+                          <i class="fa-solid fa-money-check-dollar"></i>&nbsp;Seguimiento
+                        </a>
+                      </td>
+                      <td class="td_importes">{{nom.nomina_reporte_especie}}</td>
+                      <td class="td_importes">{{nom.nomina_pago_especie}}</td>
+                      <td class="td_importes">{{nom.nomina_saldo_especie}}</td>
+                      <td>{{nom.nomina_especie_ord_pago_folio}}</td>
+                      <td class="ultimo">
+                        <a class="btn btn_extend text-bg-success rounded-3"
+                          [ngClass]="nom.nomina_especie_ord_pago_token == '' ? 'disabled' : ''"
+                          [attr.disabled]="nom.nomina_especie_ord_pago_token == '' ? true : null"
+                          [attr.aria-disabled]="nom.nomina_especie_ord_pago_token == '' ? true : null"
+                          (click)="nom.nomina_especie_ord_pago_token != '' && verNominaEspecieSeguimientoOrdenPago(nom.token_nominas_periodos,nom.nomina_especie_ord_pago_token);">
+                          <i class="fa-solid fa-money-check-dollar"></i>&nbsp;Seguimiento
+                        </a>
+                      </td>
+                      <td class="ultimo">
+                        <a class="btn btn_extend bg-blue-600" (click)="verNominaDesglose(nom.token_nominas_periodos);">
+                          <i class="fa-solid fa-folder-open"></i>&nbsp;desglosar n&oacute;mina
+                        </a>
+                      </td>
+                      <td class="ultimo">
+                        <a class="btn btn_extend text-bg-danger rounded-3"
+                          [ngClass]="nom.vinculacion_a_pagos ? 'disabled' : ''"
+                          [attr.disabled]="nom.vinculacion_a_pagos ? true : null"
+                          [attr.aria-disabled]="nom.vinculacion_a_pagos ? true : null"
+                          (click)="!nom.vinculacion_a_pagos && deleteNomina(nom.token_nominas_periodos);">
+                          <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                        </a>
+                      </td>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="emptymessage">
+                    <tr>
+                      <td colspan="14" class="text-center py-4">
+                        <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                        <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                          {{'no_rows' | translate}}
+                        </p>
+                      </td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+              </p-tabpanel>
+              <p-tabpanel value="1">
+                <p-table #nomiElimReps [value]="list_nomina_reportes_eliminados" showGridlines [resizableColumns]="true"
+                  [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }"
+                  [rowsPerPageOptions]="[10,20,30,50,100]"
+                  [globalFilterFields]="['folio_interior','nomina_numero','centrotrab_registro_patronal_imss','nomina_moneda','nomina_periodo_pago','nomina_periodicidad']">
+                  <ng-template #caption>
+                    <div class="flex">
+                      <p-iconfield iconPosition="left" class="ml-auto">
+                        <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                        <input pInputText type="text"
+                          (input)="nomiElimReps.filterGlobal($event.target.value, 'contains')"
+                          placeholder="{{'bus_car' | translate}}" />
+                      </p-iconfield>
+                    </div>
+                  </ng-template>
+                  <ng-template #header>
+                    <tr>
+                      <th pResizableColumn pSortableColumn="folio_interior">folio&nbsp;<p-sortIcon
+                          field="folio_interior" /></th>
+                      <th pResizableColumn pSortableColumn="nomina_numero">N&uacute;mero de
+                        n&oacute;mina&nbsp;<p-sortIcon field="nomina_numero" /></th>
+                      <th pResizableColumn pSortableColumn="nomina_fecha_delete">{{'f_delete' |
+                        translate}}&nbsp;<p-sortIcon field="nomina_fecha_delete" /></th>
+                      <th class="ultimo"></th>
+                      <th class="ultimo"></th>
+                    </tr>
+                  </ng-template>
+                  <ng-template #body let-nom>
+                    <tr>
+                      <td>{{nom.folio_interior}}</td>
+                      <td>{{nom.nomina_numero}}</td>
+                      <td>{{nom.nomina_fecha_delete}}</td>
+                      <td class="ultimo">
+                        <a class="btn btn_extend text-bg-success rounded-3"
+                          (click)="restauraNomina(nom.token_nominas_periodos);">
+                          <i class="fa-solid fa-trash-arrow-up"></i>&nbsp;{{'restore_row' | translate}}
+                        </a>
+                      </td>
+                      <td class="ultimo">
+                        <a class="btn btn_extend text-bg-danger rounded-3"
+                          (click)="deletePermanenteNomina(nom.token_nominas_periodos);">
+                          <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                        </a>
+                      </td>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="emptymessage">
+                    <tr>
+                      <td colspan="5" class="text-center py-4">
+                        <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                        <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                          {{'no_rows' | translate}}
+                        </p>
+                      </td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+              </p-tabpanel>
+              <p-tabpanel value="2">
+                <vhumano_reportes_nomina_nuevo_reporte></vhumano_reportes_nomina_nuevo_reporte>
+              </p-tabpanel>
+            </p-tabpanels>
+          </p-tabs>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p-dialog header="Informaci&oacute;n de n&oacute;mina {{nomina_detalle_folio}}"
+  [(visible)]="ver_nomina_seguimiento_pagos" [modal]="true" [style]="{ width: '50rem' }"
+  [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  <p-table #opgen [value]="nomina_efectivo_seguimiento_pagos" [globalFilterFields]="searchPagoGeneral" showGridlines
+    [resizableColumns]="true" [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }"
+    [rowsPerPageOptions]="[10,20,30,50,100]">
+    <ng-template #caption>
+      <div class="flex">
+        <p-iconfield iconPosition="left" class="ml-auto">
+          <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+          <input pInputText type="text" (input)="opgen.filterGlobal($event.target.value, 'contains')"
+            placeholder="{{'bus_car' | translate}}" />
+        </p-iconfield>
+      </div>
+    </ng-template>
+    <ng-template #header>
+      <tr>
+        <th rowspan="2" class="ultimo"></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="folio_ordenPago">folio&nbsp;<p-sortIcon
+            field="folio_ordenPago" /></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="fecha_contabilizacion_orden_pago">{{'fecha_cont_pay_order' |
+          translate}}&nbsp;<p-sortIcon field="fecha_contabilizacion_orden_pago" /></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="factura_relacionada_string">{{'doc_ant' |
+          translate}}&nbsp;<p-sortIcon field="factura_relacionada_string" /></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="fecha_contabilizacion_doc_anterior">{{'fecha_cont_doc_ant' |
+          translate}}&nbsp;<p-sortIcon field="fecha_contabilizacion_doc_anterior" /></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="orden_emisor_emp">{{'company_name' |
+          translate}}&nbsp;<p-sortIcon field="orden_emisor_emp" /></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="autorizacion_pay">{{'autho_riza' |
+          translate}}&nbsp;<p-sortIcon field="autorizacion_pay" /></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="fecha_autorizacion_pay">{{'date_autho_riza' |
+          translate}}&nbsp;<p-sortIcon field="fecha_autorizacion_pay" /></th>
+        <th colspan="9" pResizableColumn>{{'payed' | translate}}</th>
+        <th rowspan="2" style="padding-left: 5px;padding-right: 5px;" pResizableColumn
+          pSortableColumn="importe_total_inicial">{{'total_refund' | translate}}&nbsp;<p-sortIcon
+            field="importe_total_inicial" /></th>
+        <th rowspan="2" style="padding-left: 5px;padding-right: 5px;" pResizableColumn
+          pSortableColumn="importe_autorizado_inicial_format">{{'total_refund_auth' | translate}}&nbsp;<p-sortIcon
+            field="importe_autorizado_inicial_format" /></th>
+        <th rowspan="2" style="padding-left: 5px;padding-right: 5px;" pResizableColumn
+          pSortableColumn="importe_autorizado_final">{{'total_refund_auth_converse' | translate}}&nbsp;<p-sortIcon
+            field="importe_autorizado_final" /></th>
+        <th rowspan="2" style="padding-left: 5px;padding-right: 5px;" pResizableColumn pSortableColumn="debe_format">
+          DEBE&nbsp;<p-sortIcon field="debe_format" /></th>
+      </tr>
+      <tr>
+        <th pResizableColumn pSortableColumn="pago_anticipado">{{'prepayment' | translate}}&nbsp;<p-sortIcon
+            field="pago_anticipado" /></th>
+        <th class="ultimo"></th>
+        <th class="noneView"></th>
+        <th pResizableColumn pSortableColumn="pago_realizado_folio">folio&nbsp;<p-sortIcon
+            field="pago_realizado_folio" /></th>
+        <th pResizableColumn pSortableColumn="pago_realizado_fecha_contabilizacion">{{'fecha_cont' |
+          translate}}&nbsp;<p-sortIcon field="pago_realizado_fecha_contabilizacion" /></th>
+        <!--<th pResizableColumn pSortableColumn="pago_realizado_proveedor_name">{{'prov' | translate}}&nbsp;<p-sortIcon field="pago_realizado_proveedor_name"/></th>-->
+        <!--<th pResizableColumn pSortableColumn="pago_realizado_acreedor_name">{{'acree_name' | translate}}&nbsp;<p-sortIcon field="pago_realizado_acreedor_name"/></th>-->
+        <th pResizableColumn pSortableColumn="pago_realizado_forma_pago_vinculada">{{'f_pago' |
+          translate}}&nbsp;<p-sortIcon field="pago_realizado_forma_pago_vinculada" /></th>
+        <th pResizableColumn pSortableColumn="pago_realizado_forma_metodo_pago_cfdi">{{'f_m_pago_cfdi' |
+          translate}}&nbsp;<p-sortIcon field="pago_realizado_forma_metodo_pago_cfdi" /></th>
+        <th pResizableColumn pSortableColumn="pago_realizado_monto">{{'total_import' | translate}}&nbsp;<p-sortIcon
+            field="pago_realizado_monto" /></th>
+        <th pResizableColumn pSortableColumn="pago_realizado_tipo_cambio">{{'mon_tipo_cambio' |
+          translate}}&nbsp;<p-sortIcon field="pago_realizado_tipo_cambio" /></th>
+        <th pResizableColumn pSortableColumn="pago_realizado_observaciones">{{'observ' | translate}}&nbsp;<p-sortIcon
+            field="pago_realizado_observaciones" /></th>
+      </tr>
+    </ng-template>
+    <ng-template #body let-lPay>
+      <tr>
+        <td class="ultimo">
+          <a class="btn bg-red-700" [ngClass]="lPay.factura_relacionada_typo == '---' ? 'disabled' : ''"
+            [attr.disabled]="lPay.factura_relacionada_typo == '---' ? true : null"
+            [attr.aria-disabled]="lPay.factura_relacionada_typo == '---' ? true : null"
+            [attr.target]="lPay.factura_relacionada_typo != '---' ? '_blank' : null"
+            [attr.href]="lPay.factura_relacionada_typo != '---' ? (lPay.factura_relacionada_typo == 'compras' ? 'https://downloads.sos-mexico.com.mx/compras_pdf/'+lPay.factura_relacionada_token : 
+							(lPay.factura_relacionada_typo == 'ventas' ? 'https://downloads.sos-mexico.com.mx/ventas_pdf/'+lPay.factura_relacionada_token : 'https://downloads.sos-mexico.com.mx/reembolso_pdf/'+lPay.factura_relacionada_token)) : null">
+            <i class="fa-solid fa-file-pdf"></i>
+          </a>
+        </td>
+        <td>{{lPay.folio_ordenPago}}</td>
+        <td>{{lPay.fecha_contabilizacion_orden_pago}}</td>
+        <td class="name">{{lPay.factura_relacionada_string}}</td>
+        <td>{{lPay.fecha_contabilizacion_doc_anterior}}</td>
+        <td>{{lPay.orden_emisor_emp}}</td>
+        <td>{{lPay.autorizacion_pay_text}}</td>
+        <td>{{lPay.fecha_autorizacion_pay}}</td>
+        <td class="td_importes">{{lPay.pago_anticipado}}</td>
+        <td class="noneView">{{lPay.status_pago_date}}</td>
+
+        <td class="ultimo">
+          <p class="btn text-bg-success rounded-3" [ngClass]="lPay.status_pago == true ? 'disabled' : ''"
+            [attr.disabled]="lPay.status_pago == true ? true : null"
+            [attr.aria-disabled]="lPay.status_pago == true ? true : null"
+            style="width: 100%!important;border-radius: 25px!important;padding: 3px;">
+            <i class="fa-solid fa-check-double"></i>{{lPay.status_pago_date}}
+          </p>
+        </td>
+        <td>{{lPay.pago_realizado_folio}}</td>
+        <td>{{lPay.pago_realizado_fecha_contabilizacion}}</td>
+        <!--<td class="name">{{lPay.pago_realizado_proveedor_name}}</td>-->
+        <!--<td class="name">{{lPay.pago_realizado_acreedor_name}}</td>-->
+        <td class="name">{{lPay.pago_realizado_forma_pago_vinculada}}</td>
+        <td class="name">{{lPay.pago_realizado_forma_metodo_pago_cfdi}}</td>
+        <td class="td_importes">{{lPay.pago_realizado_monto}}</td>
+        <td class="td_importes">{{lPay.pago_realizado_tipo_cambio}}</td>
+        <td class="name">{{lPay.pago_realizado_observaciones}}</td>
+
+        <td class="td_importes">{{lPay.importe_total_inicial}}</td>
+        <td class="td_importes">{{lPay.importe_autorizado_inicial_format}}</td>
+        <td class="td_importes">{{lPay.importe_autorizado_final}}</td>
+        <td class="td_importes">{{lPay.debe_format}}</td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="22" class="text-center py-4">
+          <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+          <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+            {{'no_rows' | translate}}
+          </p>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <p-table #lpagos_realizados id="pagos_done_lista_general" [value]="nomina_efectivo_pagos_historial"
+    [globalFilterFields]="search_pagos_done" showGridlines [resizableColumns]="true" [paginator]="true" [rows]="10"
+    [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]">
+    <ng-template #caption>
+      <div class="flex">
+        <p-iconfield iconPosition="left" class="ml-auto">
+          <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+          <input pInputText type="text" (input)="lpagos_realizados.filterGlobal($event.target.value, 'contains')"
+            placeholder="{{'bus_car' | translate}}" />
+        </p-iconfield>
+      </div>
+    </ng-template>
+    <ng-template #header>
+      <tr>
+        <th rowspan="2" class="ultimo"></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="folio_pagos">folio&nbsp;<p-sortIcon field="folio_pagos" />
+        </th>
+        <th rowspan="2" pResizableColumn pSortableColumn="fecha_contabilizacion">{{'fecha_cont' |
+          translate}}&nbsp;<p-sortIcon field="fecha_contabilizacion" /></th>
+        <th colspan="2">{{'doc_ant' | translate}}</th>
+        <th colspan="3">status</th>
+        <!--<th colspan="3">{{'ter_cero' | translate}}</th>-->
+        <!--<th colspan="3">financeado a</th>-->
+
+        <th rowspan="2" pResizableColumn pSortableColumn="medio_pago_vinculado">{{'f_pago' |
+          translate}}&nbsp;<p-sortIcon field="medio_pago_vinculado" /></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="forma_metodo_pago_cfdi">{{'f_m_pago_cfdi' |
+          translate}}&nbsp;<p-sortIcon field="forma_metodo_pago_cfdi" /></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="forma_metodo_pago_anticipos">medio de pago por
+          anticipos&nbsp;<p-sortIcon field="forma_metodo_pago_anticipos" /></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="observacionesPago">{{'observ' | translate}}&nbsp;<p-sortIcon
+            field="observacionesPago" /></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="p_moneda">{{'currency' | translate}}&nbsp;<p-sortIcon
+            field="p_moneda" /></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="monto_pago_format">{{'total_import' |
+          translate}}&nbsp;<p-sortIcon field="monto_pago_format" /></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="tipo_cambio_format">{{'mon_tipo_cambio' |
+          translate}}&nbsp;<p-sortIcon field="tipo_cambio_format" /></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="monto_pago_resultant">{{'total_import_resultant' |
+          translate}}&nbsp;<p-sortIcon field="monto_pago_resultant" /></th>
+      </tr>
+      <tr>
+        <th pResizableColumn pSortableColumn="doc_anterior_folio">folio&nbsp;<p-sortIcon field="doc_anterior_folio" />
+        </th>
+        <th pResizableColumn pSortableColumn="doc_anterior_fecha_contabilizacion">{{'fecha_cont' |
+          translate}}&nbsp;<p-sortIcon field="doc_anterior_fecha_contabilizacion" /></th>
+
+        <th pResizableColumn pSortableColumn="pago_cancelado">status&nbsp;<p-sortIcon field="pago_cancelado" /></th>
+        <th pResizableColumn pSortableColumn="pago_folio_cancelacion">folio&nbsp;<p-sortIcon
+            field="pago_folio_cancelacion" /></th>
+        <th pResizableColumn pSortableColumn="pago_fecha_contabilizacion_cancelacion">{{'fecha_cont' |
+          translate}}&nbsp;<p-sortIcon field="pago_fecha_contabilizacion_cancelacion" /></th>
+
+        <!--<th pResizableColumn pSortableColumn="tercero_folio">folio&nbsp;<p-sortIcon field="tercero_folio"/></th>-->
+        <!--<th pResizableColumn pSortableColumn="tercero_name">{{'name' | translate}}&nbsp;<p-sortIcon field="tercero_name"/></th>-->
+        <!--<th pResizableColumn pSortableColumn="tercero_comercial_name">{{'comercial_name' | translate}}&nbsp;<p-sortIcon field="tercero_comercial_name"/></th>-->
+
+        <!--<th pResizableColumn pSortableColumn="financeadoa_folio">folio&nbsp;<p-sortIcon field="financeadoa_folio"/></th>-->
+        <!--<th pResizableColumn pSortableColumn="financeadoa_name">{{'name' | translate}}&nbsp;<p-sortIcon field="financeadoa_name"/></th>-->
+        <!--<th pResizableColumn pSortableColumn="financeadoa_comercial_name">{{'comercial_name' | translate}}&nbsp;<p-sortIcon field="financeadoa_comercial_name"/></th>-->
+      </tr>
+    </ng-template>
+    <ng-template #body let-payDone let-i="rowIndex">
+      <tr>
+        <td class="ultimo">
+          <!-- (click)="payDone.status_pago && pagos_realizados_desglose(payDone.token_pagos);"-->
+          <a class="btn text-bg-success rounded-3" [ngClass]="!payDone.status_pago ? 'disabled' : ''"
+            [attr.data-bs-toggle]="payDone.status_pago ? 'modal' : ''"
+            [attr.data-bs-target]="payDone.status_pago ? '#modalDesglosePagos' : ''">
+            <i class="fa-solid fa-file-invoice-dollar"></i>
+          </a>
+        </td>
+        <td>{{payDone.folio_pagos}}</td>
+        <td>{{payDone.fecha_contabilizacion}}</td>
+
+        <td class="name">{{payDone.doc_anterior_folio}}</td>
+        <td>{{payDone.doc_anterior_fecha_contabilizacion}}</td>
+
+        <td class="name">{{(payDone.pago_cancelado ? 'canceled_reg' : 'approved_reg') | translate}}</td>
+        <td class="name">{{payDone.pago_folio_cancelacion}}</td>
+        <td>{{payDone.pago_fecha_contabilizacion_cancelacion}}</td>
+
+        <!--<td class="name">{{payDone.tercero_folio}}</td>-->
+        <!--<td class="name">{{payDone.tercero_name}}</td>-->
+        <!--<td class="name">{{payDone.tercero_comercial_name}}</td>-->
+
+        <!--<td [ngClass]="payDone.orden_factura_relacionada_typo == 'anticipos' ? 'name' : ''">{{payDone.orden_factura_relacionada_typo == 'anticipos' ? payDone.financeadoa_folio : ''}}</td>-->
+        <!--<td [ngClass]="payDone.orden_factura_relacionada_typo == 'anticipos' ? 'name' : ''">{{payDone.orden_factura_relacionada_typo == 'anticipos' ? payDone.financeadoa_name : ''}}</td>-->
+        <!--<td [ngClass]="payDone.orden_factura_relacionada_typo == 'anticipos' ? 'name' : ''">{{payDone.orden_factura_relacionada_typo == 'anticipos' ? payDone.financeadoa_comercial_name : ''}}</td>-->
+
+        <td>{{payDone.medio_pago_vinculado}}</td>
+        <td class="name">{{payDone.forma_metodo_pago_cfdi}}</td>
+        <td [ngClass]="payDone.orden_factura_relacionada_typo == 'anticipos' ? 'name' : ''">
+          {{payDone.orden_factura_relacionada_typo == 'anticipos' ? payDone.forma_pago_pago : ''}}</td>
+        <td class="name">{{payDone.observacionesPago}}</td>
+        <td>{{payDone.p_moneda}}</td>
+        <td class="td_importes">{{payDone.monto_pago_format}}</td>
+        <td class="td_importes">{{payDone.tipo_cambio_format}}</td>
+        <td class="td_importes">{{payDone.monto_pago_resultant}}</td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="16" class="text-center py-4">
+          <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+          <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+            {{'no_rows' | translate}}
+          </p>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</p-dialog>
+
+<p-dialog header="Informaci&oacute;n de n&oacute;mina en especie {{nomina_detalle_folio}}"
+  [(visible)]="ver_nomina_especie_seguimiento_pagos" [modal]="true" [style]="{ width: '50rem' }"
+  [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+</p-dialog>
+
+<p-dialog header="Desglose de n&oacute;mina {{nomina_detalle_folio}}" [(visible)]="ver_nomina_desglose" [modal]="true"
+  [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  <p-table #listNewReporteTrabs [value]="nomina_desglose_dispersion" dataKey="id" [paginator]="true" [rows]="10"
+    [rowsPerPageOptions]="[10,20,30,50,100]" [globalFilterFields]="nomina_busqueda_filtro">
+    <ng-template #caption>
+      <div class="flex"
+        style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;">
+        <!-- (click)="descarga_establecimientos();"-->
+        <a class="btn btn_extend bg-blue-600" style="margin-right:5px!important;">
+          <i class="fa-solid fa-rotate"></i>&nbsp;{{'list_updt' | translate}}
+        </a>
+        <p-iconfield iconPosition="left" class="ml-auto" style="margin:0!important;">
+          <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+          <input pInputText type="text" (input)="listNewReporteTrabs.filterGlobal($event.target.value, 'contains')"
+            placeholder="{{'bus_car' | translate}}" />
+        </p-iconfield>
+      </div>
+    </ng-template>
+    <ng-template #header>
+      <tr>
+        <th pSortableColumn="nomina_clave">CLAVE&nbsp;<p-sortIcon field="nomina_clave" /></th>
+        <th pSortableColumn="centrotrab_registro_patronal_imss">REGISTRO PATRONAL DEL IMSS&nbsp;<p-sortIcon
+            field="centrotrab_registro_patronal_imss" /></th>
+        <th pSortableColumn="nomina_empleado_nombre">NOMBRE DEL TRABAJADOR&nbsp;<p-sortIcon
+            field="nomina_empleado_nombre" /></th>
+        <th pSortableColumn="nomina_periodicidad">PERIODICIDAD&nbsp;<p-sortIcon field="nomina_periodicidad" /></th>
+        <th pSortableColumn="nomina_periodo_pago">PERIODO DE PAGO&nbsp;<p-sortIcon field="nomina_periodo_pago" /></th>
+        <th pSortableColumn="nomina_moneda">{{'mon_name' | translate}}&nbsp;<p-sortIcon field="nomina_moneda" /></th>
+        <th pSortableColumn="nomina_empleado_cbankBancoNombre">No. de cuenta&nbsp;<p-sortIcon
+            field="nomina_empleado_cbankBancoNombre" /></th>
+        <th pSortableColumn="nomina_empleado_nss">NSS&nbsp;<p-sortIcon field="nomina_empleado_nss" /></th>
+        <th pSortableColumn="nomina_empleado_rfc">RFC&nbsp;<p-sortIcon field="nomina_empleado_rfc" /></th>
+        <th pSortableColumn="nomina_empleado_curp">CURP&nbsp;<p-sortIcon field="nomina_empleado_curp" /></th>
+        <th pSortableColumn="nomina_empleado_fecha_alta">FECHA DE ALTA&nbsp;<p-sortIcon
+            field="nomina_empleado_fecha_alta" /></th>
+        <th pSortableColumn="nomina_empleado_departamento">DEPARTAMENTO&nbsp;<p-sortIcon
+            field="nomina_empleado_departamento" /></th>
+        <th pSortableColumn="nomina_empleado_puesto">PUESTO&nbsp;<p-sortIcon field="nomina_empleado_puesto" /></th>
+        <th pSortableColumn="nomina_empleado_tipo_salario">TIPO DE SALARIO&nbsp;<p-sortIcon
+            field="nomina_empleado_tipo_salario" /></th>
+        <th pSortableColumn="nomina_salario_diario_format">SALARIO DIARIO&nbsp;<p-sortIcon
+            field="nomina_salario_diario_format" /></th>
+        <th pSortableColumn="nomina_salario_integrado_format">SDI&nbsp;<p-sortIcon
+            field="nomina_salario_integrado_format" /></th>
+        <th pSortableColumn="nomina_dias_trabajados">DÍAS TRABAJADOS&nbsp;<p-sortIcon field="nomina_dias_trabajados" />
+        </th>
+        <th pSortableColumn="nomina_faltas">FALTAS&nbsp;<p-sortIcon field="nomina_faltas" /></th>
+        <th pSortableColumn="nomina_sueldo_format">SUELDO&nbsp;<p-sortIcon field="nomina_sueldo_format" /></th>
+        <th pSortableColumn="nomina_horas_extras_dobles_format">HORAS EXTRAS DOBLES&nbsp;<p-sortIcon
+            field="nomina_horas_extras_dobles_format" /></th>
+        <th pSortableColumn="nomina_aguinaldo_format">AGUINALDO&nbsp;<p-sortIcon field="nomina_aguinaldo_format" /></th>
+        <th pSortableColumn="nomina_horas_extras_triples_format">HORAS EXTRAS TRIPLES&nbsp;<p-sortIcon
+            field="nomina_horas_extras_triples_format" /></th>
+        <th pSortableColumn="nomina_vacaciones_format">VACACIONES&nbsp;<p-sortIcon field="nomina_vacaciones_format" />
+        </th>
+        <th pSortableColumn="nomina_prima_vacacional_format">PRIMA VACACIONAL&nbsp;<p-sortIcon
+            field="nomina_prima_vacacional_format" /></th>
+        <th pSortableColumn="nomina_reparto_de_utilidades_format">REPARTO DE UTILIDADES&nbsp;<p-sortIcon
+            field="nomina_reparto_de_utilidades_format" /></th>
+        <th pSortableColumn="nomina_despensa_format">DESPENSA*&nbsp;<p-sortIcon field="nomina_despensa_format" /></th>
+        <th pSortableColumn="nomina_premios_de_asistencia_format">PREMIOS DE ASISTENCIA&nbsp;<p-sortIcon
+            field="nomina_premios_de_asistencia_format" /></th>
+        <th pSortableColumn="nomina_premios_de_puntualidad_format">PREMIOS DE PUNTUALIDAD&nbsp;<p-sortIcon
+            field="nomina_premios_de_puntualidad_format" /></th>
+        <th pSortableColumn="nomina_prima_dominical_format">PRIMA DOMINICAL&nbsp;<p-sortIcon
+            field="nomina_prima_dominical_format" /></th>
+        <th pSortableColumn="nomina_bno_extra_x_comision_otro_edo_format">BNO EXTRA X COMISION OTRO EDO&nbsp;<p-sortIcon
+            field="nomina_bno_extra_x_comision_otro_edo_format" /></th>
+        <th pSortableColumn="nomina_indemnizacion_format">INDEMNIZACION&nbsp;<p-sortIcon
+            field="nomina_indemnizacion_format" /></th>
+        <th pSortableColumn="nomina_prima_de_antiguedad_format">PRIMA DE ANTIGUEDAD&nbsp;<p-sortIcon
+            field="nomina_prima_de_antiguedad_format" /></th>
+        <th pSortableColumn="nomina_otras_percepciones_format">OTRAS PERCEPCIONES&nbsp;<p-sortIcon
+            field="nomina_otras_percepciones_format" /></th>
+        <th pSortableColumn="nomina_otros_pagos_format">OTROS PAGOS&nbsp;<p-sortIcon
+            field="nomina_otros_pagos_format" /></th>
+        <th pSortableColumn="nomina_total_percepciones_format">TOTAL PERCEPCIONES&nbsp;<p-sortIcon
+            field="nomina_total_percepciones_format" /></th>
+        <th pSortableColumn="nomina_isr_ajustado_por_subsidio_format">ISR AJUSTADO POR SUBSIDIO&nbsp;<p-sortIcon
+            field="nomina_isr_ajustado_por_subsidio_format" /></th>
+        <th pSortableColumn="nomina_total_isr_format">ISR&nbsp;<p-sortIcon field="nomina_total_isr_format" /></th>
+        <th pSortableColumn="nomina_total_imss_format">IMSS&nbsp;<p-sortIcon field="nomina_total_imss_format" /></th>
+        <th pSortableColumn="nomina_credito_fonacot_format">CREDITO FONACOT&nbsp;<p-sortIcon
+            field="nomina_credito_fonacot_format" /></th>
+        <th pSortableColumn="nomina_credito_infonavit_format">CREDITO INFONAVIT&nbsp;<p-sortIcon
+            field="nomina_credito_infonavit_format" /></th>
+        <th pSortableColumn="nomina_subsidio_empleo_format">SUBSIDIO PARA EL EMPLEO&nbsp;<p-sortIcon
+            field="nomina_subsidio_empleo_format" /></th>
+        <th pSortableColumn="nomina_otras_deducciones_format">OTRAS DEDUCCIONES&nbsp;<p-sortIcon
+            field="nomina_otras_deducciones_format" /></th>
+        <th pSortableColumn="nomina_total_deducciones_format">TOTAL DEDUCCIONES&nbsp;<p-sortIcon
+            field="nomina_total_deducciones_format" /></th>
+        <th pSortableColumn="nomina_total_efectivo_format">TOTAL EFECTIVO&nbsp;<p-sortIcon
+            field="nomina_total_efectivo_format" /></th>
+        <th pSortableColumn="nomina_total_en_especie_format">TOTAL EN ESPECIE&nbsp;<p-sortIcon
+            field="nomina_total_en_especie_format" /></th>
+        <th pSortableColumn="nomina_neto_pagado_format">NETO PAGADO&nbsp;<p-sortIcon
+            field="nomina_neto_pagado_format" /></th>
+        <th pSortableColumn="nomina_horas_por_dia">HORAS POR DIA&nbsp;<p-sortIcon field="nomina_horas_por_dia" /></th>
+        <th pSortableColumn="nomina_salario_por_hora_format">SALARIO POR HORA&nbsp;<p-sortIcon
+            field="nomina_salario_por_hora_format" /></th>
+        <th pSortableColumn="nomina_dias_jornada">JORNADA&nbsp;<p-sortIcon field="nomina_dias_jornada" /></th>
+        <th><i class="fa-solid fa-file-code"></i>&nbsp;{{'cfdi_xml_import' | translate}}</th>
+        <th><i class="fa-solid fa-file-pdf"></i>&nbsp;{{'cfdi_pdf_import' | translate}}</th>
+        <th class="ultimo"></th>
+      </tr>
+    </ng-template>
+    <ng-template #body let-nom_list>
+      <tr>
+        <td>{{nom_list.nomina_clave}}</td>
+        <td class="name">{{nom_list.centrotrab_registro_patronal_imss}}</td>
+        <td class="name">{{nom_list.nomina_empleado_nombre}}</td>
+        <td class="name">{{nom_list.nomina_periodicidad}}</td>
+        <td class="name">{{nom_list.nomina_periodo_pago}}</td>
+        <td class="name">{{nom_list.nomina_moneda}}</td>
+        <td class="name">{{nom_list.nomina_empleado_cbankBancoNombre+" "+nom_list.nomina_empleado_cbankCuenta}}</td>
+        <td class="name">{{nom_list.nomina_empleado_nss}}</td>
+        <td class="name">{{nom_list.nomina_empleado_rfc}}</td>
+        <td class="name">{{nom_list.nomina_empleado_curp}}</td>
+        <td class="name">{{nom_list.nomina_empleado_fecha_alta}}</td>
+        <td class="name">{{nom_list.nomina_empleado_departamento}}</td>
+        <td class="name">{{nom_list.nomina_empleado_puesto}}</td>
+        <td class="name">{{nom_list.nomina_empleado_tipo_salario}}</td>
+        <td class="td_importes">{{nom_list.nomina_salario_diario_format}}</td>
+        <td class="td_importes">{{nom_list.nomina_salario_integrado_format}}</td>
+        <td class="td_importes">{{nom_list.nomina_dias_trabajados}}</td>
+        <td class="td_importes">{{nom_list.nomina_faltas}}</td>
+        <td class="td_importes">{{nom_list.nomina_sueldo_format}}</td>
+        <td class="td_importes">{{nom_list.nomina_horas_extras_dobles_format}}</td>
+        <td class="td_importes">{{nom_list.nomina_aguinaldo_format}}</td>
+        <td class="td_importes">{{nom_list.nomina_horas_extras_triples_format}}</td>
+        <td class="td_importes">{{nom_list.nomina_vacaciones_format}}</td>
+        <td class="td_importes">{{nom_list.nomina_prima_vacacional_format}}</td>
+        <td class="td_importes">{{nom_list.nomina_reparto_de_utilidades_format}}</td>
+        <td class="td_importes">{{nom_list.nomina_despensa_format}}</td>
+        <td class="td_importes">{{nom_list.nomina_premios_de_asistencia_format}}</td>
+        <td class="td_importes">{{nom_list.nomina_premios_de_puntualidad_format}}</td>
+        <td class="td_importes">{{nom_list.nomina_prima_dominical_format}}</td>
+        <td class="td_importes">{{nom_list.nomina_bno_extra_x_comision_otro_edo_format}}</td>
+        <td class="td_importes">{{nom_list.nomina_indemnizacion_format}}</td>
+        <td class="td_importes">{{nom_list.nomina_prima_de_antiguedad_format}}</td>
+        <td class="td_importes">{{nom_list.nomina_otras_percepciones_format}}</td>
+        <td class="td_importes">{{nom_list.nomina_otros_pagos_format}}</td>
+        <td class="td_importes">{{nom_list.nomina_total_percepciones_format}}</td>
+        <td class="td_importes">{{nom_list.nomina_isr_ajustado_por_subsidio_format}}</td>
+        <td class="td_importes">{{nom_list.nomina_total_isr_format}}</td>
+        <td class="td_importes">{{nom_list.nomina_total_imss_format}}</td>
+        <td class="td_importes">{{nom_list.nomina_credito_fonacot_format}}</td>
+        <td class="td_importes">{{nom_list.nomina_credito_infonavit_format}}</td>
+        <td class="td_importes">{{nom_list.nomina_subsidio_empleo_format}}</td>
+        <!--<td class="td_importes">{{nom_list.nomina_subsidio_empleo_aplicado_format}}</td>-->
+        <td class="td_importes">{{nom_list.nomina_otras_deducciones_format}}</td>
+        <td class="td_importes">{{nom_list.nomina_total_deducciones_format}}</td>
+        <td class="td_importes">{{nom_list.nomina_total_efectivo_format}}</td>
+        <td class="td_importes">{{nom_list.nomina_total_en_especie_format}}</td>
+        <td class="td_importes">{{nom_list.nomina_neto_pagado_format}}</td>
+        <td class="td_importes">{{nom_list.nomina_horas_por_dia}}</td>
+        <td class="td_importes">{{nom_list.nomina_salario_por_hora_format}}</td>
+        <td class="name">{{nom_list.nomina_dias_jornada}}</td>
+        <td>
+          @if (nom_list.nomina_factura_doc_xml != null) {
+          <a class="btn btn_extend text-bg-primary rounded-4" target="_blank"
+            [ngClass]="nom_list.nomina_factura_doc_xml == '' ? 'disabled' : ''"
+            [attr.disabled]="nom_list.nomina_factura_doc_xml == '' ? true : null"
+            [attr.aria-disabled]="nom_list.nomina_factura_doc_xml == '' ? true : null" [href]="nom_list.urlFactXml">
+            <i class="fa-solid fa-code"></i>&nbsp;{{nom_list.nomina_factura_doc_xml}}
+          </a>
+          } @else {
+          <div class="mb-3" style="margin: 0!important;">
+            <input class="form-control" [ngClass]="!nom_list.nomina_habilita_carga_docs ? 'disabled' : ''"
+              [attr.disabled]="!nom_list.nomina_habilita_carga_docs ? true : null"
+              [attr.aria-disabled]="!nom_list.nomina_habilita_carga_docs ? true : null" type="file" id="facturaxml"
+              placeholder="XML" accept=".xml" style="padding: 0;line-height: 30px;width: 100%!important;"
+              (change)="cargaXmlDispersion(nom_list.token_nomina_recibo,$event,$event.target);">
+          </div>
+          }
+        </td>
+        <td>
+          @if (nom_list.nomina_factura_doc_pdf != null) {
+          <a class="btn btn_extend text-bg-danger rounded-3" target="_blank"
+            [ngClass]="nom_list.nomina_factura_doc_pdf == '' ? 'disabled' : ''"
+            [attr.disabled]="nom_list.nomina_factura_doc_pdf == '' ? true : null"
+            [attr.aria-disabled]="nom_list.nomina_factura_doc_pdf == '' ? true : null" [href]="nom_list.urlFactPdf">
+            <i class="fa-solid fa-file-pdf"></i>&nbsp;{{nom_list.nomina_factura_doc_pdf}}
+          </a>
+          } @else {
+          <div class="mb-3" style="margin: 0!important;">
+            <input class="form-control" type="file" name="facturaCompraPdf" id="facturapdf" accept=".pdf"
+              placeholder="PDF" style="padding: 0;line-height: 30px;width: 100%!important;"
+              [ngClass]="!nom_list.nomina_habilita_carga_docs || nom_list.nomina_valida_xml != 'validoXml' ? 'disabled' : ''"
+              [attr.disabled]="!nom_list.nomina_habilita_carga_docs || nom_list.nomina_valida_xml != 'validoXml' ? true : null"
+              [attr.aria-disabled]="!nom_list.nomina_habilita_carga_docs || nom_list.nomina_valida_xml != 'validoXml' ? true : null"
+              (change)="nom_list.nomina_valida_xml == 'validoXml' && escanPdfDispersion(nom_list.token_nomina_recibo,$event,$event.target);">
+          </div>
+          }
+        </td>
+        <td class="ultimo"></td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="52" class="text-center py-4">
+          <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+          <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+            {{'no_rows' | translate}}
+          </p>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="footer">
+      <tr>
+        <td class="td_importes" colspan="14"><strong>Totales</strong></td>
+        <td class="td_importes"><strong>{{nomina_totales.salario_diario}}</strong></td>
+        <td class="td_importes"><strong>{{nomina_totales.salario_integrado}}</strong></td>
+        <td class="td_importes"><strong>{{nomina_totales.dias_trabajados}}</strong></td>
+        <td class="td_importes"><strong>{{nomina_totales.faltas}}</strong></td>
+        <td class="td_importes"><strong>{{nomina_totales.sueldo}}</strong></td>
+        <td class="td_importes"><strong>{{nomina_totales.horas_extras_dobles}}</strong></td>
+        <td class="td_importes"><strong>{{nomina_totales.aguinaldo}}</strong></td>
+        <td class="td_importes"><strong>{{nomina_totales.horas_extras_triples}}</strong></td>
+        <td class="td_importes"><strong>{{nomina_totales.vacaciones}}</strong></td>
+        <td class="td_importes"><strong>{{nomina_totales.prima_vacacional}}</strong></td>
+        <td class="td_importes"><strong>{{nomina_totales.reparto_de_utilidades}}</strong></td>
+        <td class="td_importes"><strong>{{nomina_totales.despensa}}</strong></td>
+        <td class="td_importes"><strong>{{nomina_totales.premios_de_asistencia}}</strong></td>
+        <td class="td_importes"><strong>{{nomina_totales.premios_de_puntualidad}}</strong></td>
+        <td class="td_importes"><strong>{{nomina_totales.prima_dominical}}</strong></td>
+        <td class="td_importes"><strong>{{nomina_totales.bno_extra_x_comision_otro_edo}}</strong></td>
+        <td class="td_importes"><strong>{{nomina_totales.indemnizacion}}</strong></td>
+        <td class="td_importes"><strong>{{nomina_totales.prima_de_antiguedad}}</strong></td>
+        <td class="td_importes"><strong>{{nomina_totales.otras_percepciones}}</strong></td>
+        <td class="td_importes"><strong>{{nomina_totales.otros_pagos}}</strong></td>
+        <td class="td_importes"><strong>{{nomina_totales.total_percepciones}}</strong></td>
+        <td class="td_importes"><strong>{{nomina_totales.isr_ajustado_por_subsidio}}</strong></td>
+        <td class="td_importes"><strong>{{nomina_totales.total_isr}}</strong></td>
+        <td class="td_importes"><strong>{{nomina_totales.total_imss}}</strong></td>
+        <td class="td_importes"><strong>{{nomina_totales.credito_fonacot}}</strong></td>
+        <td class="td_importes"><strong>{{nomina_totales.credito_infonavit}}</strong></td>
+        <td class="td_importes"><strong>{{nomina_totales.subsidio_empleo}}</strong></td>
+        <!--<td class="td_importes"><strong>{{nomina_totales.subsidio_empleo_aplicado}}</strong></td>-->
+        <td class="td_importes"><strong>{{nomina_totales.otras_deducciones}}</strong></td>
+        <td class="td_importes"><strong>{{nomina_totales.total_deducciones}}</strong></td>
+        <td class="td_importes"><strong>{{nomina_totales.total_efectivo}}</strong></td>
+        <td class="td_importes"><strong>{{nomina_totales.total_en_especie}}</strong></td>
+        <td class="td_importes"><strong>{{nomina_totales.neto_pagado}}</strong></td>
+        <td class="td_importes"><strong>{{nomina_totales.horas_por_dia}}</strong></td>
+        <td class="td_importes"><strong>{{nomina_totales.salario_por_hora}}</strong></td>
+        <!--<td class="td_importes"><strong>{{nomina_totales.u_t_laboradas}}</strong></td>-->
+        <td class="td_importes" colspan="5"></td>
+      </tr>
+    </ng-template>
+  </p-table>
+  <p-divider />
+  <div class="col-12 row" style="display: flex;justify-content: end;">
+    <a class="btn btn_extend text-bg-success rounded-3" [ngClass]="!validaTrabCFDILoaded ? 'disabled' : ''"
+      [attr.disabled]="!validaTrabCFDILoaded ? true : null" [attr.aria-disabled]="!validaTrabCFDILoaded ? true : null"
+      (click)="validaTrabCFDILoaded && cargaNominaCFDIS(nomina_detalle_token);">
+      <i class="fa-solid fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+    </a>
+  </div>
+</p-dialog>

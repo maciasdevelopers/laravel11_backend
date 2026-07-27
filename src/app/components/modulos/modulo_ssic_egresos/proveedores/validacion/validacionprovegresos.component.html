@@ -1,0 +1,45 @@
+<div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+<div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+	<a style="color: white;font-family: roboto_cr;border-radius: 25px;width: 100%!important;"
+		 (click)="listaProveedores();" class="btn btnGuardar btnRow btnBlueHead bg-blue-600">&nbsp;{{'list_updt' | translate}} 
+		<i class="fa-solid fa-rotate" style="margin-left: 5px;"></i>
+	</a>
+</div>
+<div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+<div class="col-12" *ngIf="prov_view == true">
+	<table id="table_egr_prov_out" class="display nowrap mdl-data-table white centered" style="width:100%!important;margin:0!important;">
+		<thead>
+			<tr>
+				<th>folio</th>
+				<th>{{'country' | translate}}</th>
+				<th>rfc generico</th>
+				<th>rfc</th>
+				<th>idTax</th>
+				<th>{{'name' | translate}}</th>
+				<th class="ultimo"></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr *ngFor="let row_prov of list_proveedores_out">
+				<td>{{row_prov.folio}}</td>
+				<td>{{row_prov.pais}}</td>
+
+				<td *ngIf="row_prov.rfc_generico != '---'" class="td_names_rfc">{{row_prov.rfc_generico}}</td>
+				<td *ngIf="row_prov.rfc_generico == '---'">{{row_prov.rfc_generico}}</td>
+				
+				<td *ngIf="row_prov.rfc_prov != '---'" class="td_names_rfc">{{row_prov.rfc_prov}}</td>
+				<td *ngIf="row_prov.rfc_prov == '---'">{{row_prov.rfc_prov}}</td>
+
+				<td *ngIf="row_prov.tax_id_prov != '---'" class="td_names_rfc">{{row_prov.tax_id_prov}}</td>
+				<td *ngIf="row_prov.tax_id_prov == '---'">{{row_prov.tax_id_prov}}</td>
+
+				<td class="name">{{row_prov.nombre}}</td>
+				<td class="ultimo">
+					<a class="btn btn_extend btn_extend_red text-bg-danger rounded-3" (click)="validarProveedor(row_prov.token_cat_proveedores);">
+						{{row_prov.solicitudes}} <i class="fa-regular fa-circle-check"></i> {{'prov_validate' | translate}}
+					</a>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</div>

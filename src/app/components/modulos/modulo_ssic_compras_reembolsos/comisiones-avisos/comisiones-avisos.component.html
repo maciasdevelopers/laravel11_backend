@@ -1,0 +1,37 @@
+<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco" #vContent>
+  <div class="contenido">
+    <app-loader></app-loader>
+    <nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+    <main class="contenidoPagina">
+      <div class="listas_ps revanecer">
+        <div class="lista-div lista-divNoFlex row">
+          <h4>{{'comi' | translate}}</h4>
+
+          <article>
+            <div class="col-12 row">
+              <div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+              <div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                <div class="card card-panel light-green darken-4" *ngIf="peticion_status == 'success'">
+                  <div class="col-12" style="height: 150px;display: flex;justify-content: center;align-items: center;">
+                    <i class="fa-solid fa-circle-check" style="font-size: 100px;color: white;"></i>
+                  </div>
+                  <span class="white-text">{{peticion_mensaje}}</span>
+                </div>
+
+                <div class="card card-panel red darken-4" *ngIf="peticion_status == 'error'">
+                  <div class="col-12" style="height: 150px;display: flex;justify-content: center;align-items: center;">
+                    <i class="fa-solid fa-circle-xmark" style="font-size: 100px;color: white;"></i>
+                  </div>
+                  <span class="white-text">{{peticion_mensaje}}</span>
+                </div>
+              </div>
+              <div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </main>
+    <app-footer-inside></app-footer-inside>
+  </div>
+</div>

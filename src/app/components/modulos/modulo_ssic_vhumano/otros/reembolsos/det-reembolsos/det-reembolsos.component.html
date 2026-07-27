@@ -1,0 +1,192 @@
+<!--<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco" #vContent>
+  <div class="contenido">
+    <app-loader></app-loader>
+    <nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+    <main class="contenidoPagina">
+      <div class="listas_ps revanecer">
+        <div class="lista-div lista-divNoFlex row">
+					<nav class="nav-bread">
+            <div class="nav-wrapper">
+              <div class="col-12">
+                <a routerLink="/sos_inside/valor_humano/reembolsos" class="breadcrumb">{{'reem_list' | translate}}</a>
+              </div>
+            </div>
+          </nav>
+
+					<h4 *ngFor="let detfolio of arrayReembolsosDetalle;index as posReem">{{'reem_soli' | translate}} FOLIO: {{detfolio.folio_reem}}</h4>
+
+          <article *ngFor="let detreem of arrayReembolsosDetalle;index as posReem">
+            <div class="cabecera col-12">
+              <div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                <h6 class="title">FOLIO</h6>
+                <h6 class="content contentMayus">{{detreem.folio_reem}}</h6>
+              </div>
+              <div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                <h6 class="title">{{'fecha_reg' | translate}}</h6>
+                <h6 class="content">{{detreem.fecha_solicitud}}</h6>
+              </div>
+
+              <div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                <h6 class="title">REEMBOLSADO</h6>
+                <h6 class="content contentMayus">{{detreem.total_reembolsado}}</h6>
+                <h6 class="content contentMayus">{{detreem.total_reembolsado_conversion}}</h6>
+              </div>
+              <div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                <h6 class="title">RESTANTE</h6>
+                <h6 class="content contentMayus">{{detreem.total_restante}}</h6>
+                <h6 class="content contentMayus">{{detreem.total_restante_conversion}}</h6>
+              </div>
+              <div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                <h6 class="title">Total</h6>
+                <h6 class="content contentMayus">{{detreem.total_importe}}</h6>
+                <h6 class="content contentMayus">{{detreem.total_importe_conversion}}</h6>
+              </div>
+
+              <div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                <h6 class="title">emisor</h6>
+                <h6 class="content contentName">{{detreem.nombreEmiPers+" "+detreem.emisor_company}}</h6>
+              </div>
+              <div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                <h6 class="title">Receptor</h6>
+                <h6 class="content contentName">{{detreem.nombreReceptorPers+" "+detreem.receptor_company}}</h6>
+              </div>
+
+              <div class="col-12">
+                <h6 class="title">{{'comi' | translate}}</h6>
+                <h6 class="content contentName">{{detreem.comision_folio+" "+detreem.comision_proyecto}}</h6>
+              </div>
+            </div>
+            <div class="card card_main col-12 row">
+              <h6 class="header-black">{{'reem' | translate}}</h6>
+              <div class="buscador row" style="margin-top: 10px!important">
+                <div class="content content_light">
+                  <div class="col-12 col-sm-6 col-md-3 col-lg-2"></div>
+                  <div class="col-12 col-sm-6 col-md-3 col-lg-2 row_buscador">
+                    <input class="datasearch" type="text" [(ngModel)]="searchReem" autocomplete="on" placeholder="{{'bus_car' | translate}}">
+                  </div>
+                </div>
+              </div>
+              <p-table #dt [value]="detreem.soliReem | filter:searchReem" dataKey="id" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]" [globalFilterFields]="['nombre']">
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th>No.</th>
+                    <th pSortableColumn="folio_solicitud">folio / fecha solicitud&nbsp;<p-sortIcon field="folio_solicitud"/></th>
+                    <th pSortableColumn="fecha_gasto_html">{{'date_gasto' | translate}}&nbsp;<p-sortIcon field="fecha_gasto_html"/></th>
+                    <th pSortableColumn="ticket_gasto">{{'ticket_gasto' | translate}}&nbsp;<p-sortIcon field="ticket_gasto"/></th>
+                    <th pSortableColumn="pagado_a">{{'pay_to' | translate}}&nbsp;<p-sortIcon field="pagado_a"/></th>
+                    <th pSortableColumn="fpago_forma">{{'f_pago' | translate}}&nbsp;<p-sortIcon field="fpago_forma"/></th>
+                    <th style="padding-left: 5px;padding-right: 5px;" pSortableColumn="importe_requ_info_entr">{{'total_refund' | translate}}&nbsp;<p-sortIcon field="importe_requ_info_entr"/></th>
+                    <th style="padding-left: 5px;padding-right: 5px;" pSortableColumn="importe_requ_info_sali">{{'total_refund_converse' | translate}}&nbsp;<p-sortIcon field="importe_requ_info_sali"/></th>
+                    <th pSortableColumn="observaciones">{{'observ' | translate}}&nbsp;<p-sortIcon field="observaciones"/></th>
+                    <th class="ultimo"> 
+                      <p style="margin: 0!important;width: auto;border-radius: 25px;padding-left: 5px;padding-right: 5px;text-transform: math-auto;" class="btn waves-effect btn_extend waves-light indigo darken-4">
+                        <i class="fa-solid fa-file" style="width: 25px !important;height: 25px !important;line-height: 25px !important;font-size: 15px;text-align: center;"></i> {{'files_uploaded' | translate}}
+                      </p> 
+                    </th>
+                    <th colspan="4">{{'auth' | translate}}</th>
+                    <th class="ultimo"></th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-rSoli>
+                  <tr>
+                    <td>{{rSoli.posicion+1}}</td>
+                    <td>{{rSoli.folio_solicitud+" "+rSoli.fecha_solicitud}}</td>
+                    <td>{{rSoli.fecha_gasto_html}}</td>
+                    <td>{{rSoli.ticket_gasto}}</td>
+
+                    <td>{{rSoli.pagado_a == 'prov' ? ['prov' | translate]+" : "+rSoli.rfc_prov+" "+rSoli.proveedor : ['gen_pub' | translate]}}</td>
+
+                    <td>{{rSoli.fpago_clave+" "+rSoli.fpago_forma}}</td>
+                    <td class="td_importes">{{rSoli.importe_requ_info_entr}}</td>
+                    <td class="td_importes">{{rSoli.importe_requ_info_sali}}</td>
+                    <td>{{rSoli.observaciones}}</td>
+
+                    <td class="ultimo">
+                      <a class="btn btn_extend bg-indigo-600" [ngClass]="rSoli.anexos.length == 0 ? 'disabled' : ''" [attr.disabled]="rSoli.anexos.length == 0 ? true : null" 
+                        [attr.aria-disabled]="rSoli.anexos.length == 0 ? true : null" (click)="rSoli.anexos.length > 0 && verDocumentos(rSoli);">
+                        <i class="fa-solid fa-angle-down" style="width: 25px !important;height: 25px !important;line-height: 25px !important;font-size: 15px;text-align: center;"></i> {{'file_list_open' | translate}}
+                      </a>
+                    </td>
+
+                    <td *ngIf="rSoli.terminado == true" colspan="4">{{'payed' | translate}}</td>
+                    <td *ngIf="rSoli.terminado == false && rSoli.autorizacion_vh == true && rSoli.autorizacion_egr == true" colspan="3">{{'auth_by' | translate}} {{'ssic_menu_egr' | translate}} {{"("+rSoli.fecha_registro_auth_egr+")"}} orden de pago generada</td>
+
+                    <td *ngIf="rSoli.terminado == false && rSoli.autorizacion_egr != true" style="vertical-align:middle;display:flex;">
+                      <datalist id="dataListSolicitud">
+                        <option value="revisado">
+                      </datalist>
+                      <textarea name="large_descript" style="width: 300px!important;height: 40px!important;"
+                        class="validate" (keyup)="keyupObservaReem($event.target,rSoli.posicion);"></textarea>
+                    </td>
+                    <td *ngIf="rSoli.terminado == false && rSoli.autorizacion_egr != true" class="ultimo">
+                      <a class="btn waves-effect waves-light green darken-4 disabled" *ngIf="rSoli.comments_auth_vh_write == ''"><i class="fa-solid fa-check-double"></i></a>
+                      <a class="btn waves-effect waves-light green darken-4 disabled" *ngIf="rSoli.comments_auth_vh_write != '' && rSoli.autorizacion_vh == true"><i class="fa-solid fa-check-double"></i></a>
+                      <a class="btn waves-effect waves-light green darken-4" (click)="authorizarReem(rSoli.token_solicitud_reem,true,rSoli.comments_auth_vh_write);"
+                        *ngIf="rSoli.comments_auth_vh_write != '' && rSoli.autorizacion_vh != true"><i class="fa-solid fa-check-double"></i></a>
+                    </td>
+                    <td *ngIf="rSoli.terminado == false && rSoli.autorizacion_egr != true" class="ultimo">
+                      <a class="btn text-bg-danger rounded-3 disabled" *ngIf="rSoli.comments_auth_vh_write == ''"><i class="fa-solid fa-xmark"></i></a>
+                      <a class="btn text-bg-danger rounded-3 disabled" *ngIf="rSoli.comments_auth_vh_write != '' && rSoli.autorizacion_vh == false"><i class="fa-solid fa-xmark"></i></a>
+                      <a class="btn text-bg-danger rounded-3" (click)="authorizarReem(rSoli.token_solicitud_reem,false,rSoli.comments_auth_vh_write);"
+                        *ngIf="rSoli.comments_auth_vh_write != '' && rSoli.autorizacion_vh != false"><i class="fa-solid fa-xmark"></i></a>
+                    </td>
+                    <td *ngIf="rSoli.terminado == false && rSoli.autorizacion_egr != true && rSoli.autorizacion_vh == null">---</td>
+                    <td *ngIf="rSoli.terminado == false && rSoli.autorizacion_egr != true && rSoli.autorizacion_vh == true">{{'yes_auth' | translate}} {{rSoli.fecha_registro_auth_vh+" - "+rSoli.hora_registro_auth_vh}} {{'observ' | translate}}: {{rSoli.comments_auth_vh}}</td>
+                    <td *ngIf="rSoli.terminado == false && rSoli.autorizacion_egr != true && rSoli.autorizacion_vh == false">{{'not_auth' | translate}} {{rSoli.fecha_registro_auth_vh+" - "+rSoli.hora_registro_auth_vh}} {{'observ' | translate}}: {{rSoli.comments_auth_vh}}</td>
+                    <td class="ultimo">
+                      <a class="btn btn_extend bg-yellow-500" [ngClass]="rSoli.auth_vh_list_array.length == 0 ? 'disabled' : ''" [attr.disabled]="rSoli.auth_vh_list_array.length == 0 ? true : null" 
+                        [attr.aria-disabled]="rSoli.auth_vh_list_array.length == 0 ? true : null" (click)="rSoli.auth_vh_list_array.length > 0 && verHistorial(rSoli);">
+                        <i class="fa-solid fa-list-check" [attr.style]="rSoli.auth_vh_list_array.length > 0 ? 'color: #353535!important;' : ''"></i> {{'file_list_open' | translate}} Listado de autorizaciones
+                      </a>
+                    </td>
+                  </tr>
+                  <tr *ngIf="rSoli === solicitudSeleccionadaDocs">
+                    <td colspan="12">
+                      <p-table [value]="rSoli.anexos">
+                        <ng-template pTemplate="header">
+                          <tr>
+                            <th style="text-align: right;">Nombre del Documento</th>
+                            <th class="ultimo"></th>
+                          </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-doc>
+                          <tr>
+                            <td style="text-align: right;">{{ doc.name_documento }}</td>
+                            <td class="ultimo"><a class="btn btn_extend text-bg-primary rounded-4" (click)="viewDocumento(detreem.token_reem,rSoli.token_solicitud_reem,doc.token_docs);"><i class="fa-solid fa-globe"></i></a></td>
+                          </tr>
+                        </ng-template>
+                      </p-table>
+                    </td>
+                  </tr>
+                  <tr *ngIf="rSoli === solicitudSeleccionadaHistorial">
+                    <td colspan="12">
+                      <p-table [value]="rSoli.auth_vh_list_array">
+                        <ng-template pTemplate="header">
+                          <tr>
+                            <th>No.</th>
+                            <th pSortableColumn="autorizacion_vh">{{'auth' | translate}}&nbsp;<p-sortIcon field="autorizacion_vh"/></th>
+                            <th pSortableColumn="registro_auth_vh">{{'fecha_reg' | translate}}&nbsp;<p-sortIcon field="registro_auth_vh"/></th>
+                          </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-pAuth let-i="index">
+                          <tr>
+                            <td>{{i+1}}</td>
+                            <td>{{(pAuth.autorizacion_vh == 'A' ? 'yes_auth' : 'not_auth') | translate}}</td>
+                            <td>{{pAuth.registro_auth_vh}}</td>
+                            <td>{{pAuth.comentarios}}</td>
+                          </tr>
+                        </ng-template>
+                      </p-table>
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>   
+            </div>
+          </article>
+        </div>
+      </div>
+    </main>
+    <app-footer-inside></app-footer-inside>
+  </div>
+</div>-->

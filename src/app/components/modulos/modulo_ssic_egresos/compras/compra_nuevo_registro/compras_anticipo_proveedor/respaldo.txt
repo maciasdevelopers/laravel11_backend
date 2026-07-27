@@ -1,0 +1,255 @@
+<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco" #vContent>
+	<div class="contenido"><app-loader></app-loader>
+		<nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+		<main class="contenidoPagina">
+			<div class="listas_ps revanecer">
+				<div id="listaProveedores" class="lista-div lista-divNoFlex">			
+					<h4 class="col-12">Anticipo para proveedores</h4>
+					<div class="col-12">
+						<div class="btn-group lista_botones col" role="group" aria-label="ejemplo">
+							<a class="btn btn_extend bg-indigo-600" (click)="lista_Prov();">
+								<i class="fa-solid fa-rotate" style="margin-left: 5px;"></i>&nbsp;{{'list_updt' | translate}}
+							</a>
+						</div>
+					</div>
+					<div class="col-12">
+						<div class="buscador row" style="margin-top: 10px!important;">
+							<div class="content content_light">
+								<div class="col-12 col-sm-6 col-md-3 col-lg-2"></div>
+								<div class="col-12 col-sm-6 col-md-3 col-lg-2 row_buscador">
+									<input class="datasearch" type="text" [(ngModel)]="searchProvList" autocomplete="on" placeholder="{{'bus_car' | translate}}">
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-12">
+						<p-ta-ble [value]="lista_proveedores" dataKey="id" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30]" responsiveLayout="stack">
+							<ng-template #header>
+								<tr>
+									<th>folio</th>
+									<th>pais</th>
+									<th>rfc generico</th>
+									<th>rfc</th>
+									<th>idTax</th>
+									<th>Proveedor</th>
+									<th class="ultimo"></th>
+								</tr>
+							</ng-template>
+							<ng-template #body let-row_prov>
+								<tr>
+									<td>{{row_prov.folio}}</td>
+									<td>{{row_prov.pais}}</td>
+									<td>{{row_prov.rfc_generico}}</td>
+									<td>{{row_prov.rfc_prov}}</td>
+									<td>{{row_prov.tax_id_prov}}</td>
+									<td>{{row_prov.nombre}}</td>
+									<td class="ultimo">
+										<a class="btn bg-blue-600" (click)="verProveedor(row_prov);"><!-- ,row_prov.token_cat_proveedores-->
+											<i class="fa-solid fa-info"></i>
+										</a>
+									</td>
+								</tr>
+								<tr *ngIf="row_prov === proveedorSeleccionado">
+									<td colspan="7">
+										<div class="col-12 row">
+											<div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+												<label for="exampleFormControlInput1" class="activeInput">{{'mon_name' | translate}}</label>
+												<datalist id="dlmonedas">
+													<option *ngFor="let rowMon of catalogo_monedas_api" [value]="rowMon.langEN">{{"código "+rowMon.code+", "+rowMon.decimales+" decimales"}}</option>
+												</datalist>
+												<input type="text" class="validate" id="exampleFormControlInput1" list="dlmonedas" (keyup)="valMoned($event.target);">
+											</div>
+											<div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+												<label class="activeInput">{{'mon_tipo_cambio' | translate}}</label>
+												<input class="validate" [ngClass]="activaTipoCambio() ? 'disabled' : ''" 
+													[attr.disabled]="activaTipoCambio() ? true : null" [attr.aria-disabled]="activaTipoCambio() ? true : null" 
+													type="number" min="1" max="100000000000000" [value]="activaTipoCambio() ? tipo_cambio : null"
+													(keyup)="!activaTipoCambio() && editTipoCambio($event.target);">
+											</div>
+											<div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-3 col-xxl-3 input-group">
+												<label for="fechaAltaProd" class="activeInput">{{'total_import' | translate}}</label>
+													<input id="ventaNumberPrecioBase" class="validate" type="number" (keyup)="keyupImporteAnticipo($event.target);">
+											</div>
+										</div>
+										<div class="input-group col">
+											<label for="exampleFormControlTextarea1" class="activeInput">Example textarea</label>
+											<textarea class="validate" id="exampleFormControlTextarea1" rows="3"></textarea>
+										</div>
+										<div class="col-12">
+											<div class="col-12 col-sm-12 col-md-6 col-lg-8 col-xl-8 col-xxl-9"></div>
+											<div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3"></div>
+										</div>
+									</td>
+								</tr>
+							</ng-template>
+						</p-table>
+					</div>
+				</div>
+			</div>
+		</main>
+		<app-footer-inside></app-footer-inside>
+	</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import { Component, OnInit } from '@angular/core';
+import { ProveedoresService } from '../../../../../servicios/proveedores.service';
+import { MonedasService } from '../../../../../servicios/monedas.service';
+import { subscribe } from 'diagnostics_channel';
+import { ValidatorServService } from '../../../../../servicios/validator-serv.service';
+
+@Component({
+  selector: 'app_compras_proveedores_anticipo',
+  standalone: false,
+  
+  templateUrl: './proveedores-anticipo.component.html',
+  styleUrls: [
+    '../../../../../styles/datatable.css',
+    '../../../../../styles/input_group.css',
+    '../../../../../styles/buttons.css',
+    '../../../../../styles/modals.css',
+    '../../../../../styles/proveedores.css',
+    '../../../../../styles/collapsible.css',
+    '../../../../../styles/row.css',
+    '../../../../../styles/cards.css',
+    '../../../../../styles/encabezados.css',
+    '../../../../../styles/div_busqueda.css',
+    '../../../../../styles/radioButtons.css',
+    '../../../../../styles/paginador.css',
+    '../../../../../styles/tabs.css',
+    '../../../../../styles/loading.css',
+    '../../../../../styles/listas_ps.css',
+    '../../../../../styles/landing.css',
+    '../../../../../styles/colores.css',
+    '../../../../../styles/explain.css',
+    '../../../../../styles/switches.css',
+    '../../../../../styles/ubicaciones.css',
+    '../../egresos.css',
+    './proveedores-anticipo.component.css'
+  ]
+})
+export class ProveedoresAnticipoComponent implements OnInit{
+  searchProvList:any;
+  lista_proveedores:any = [];
+  public proveedorSeleccionado:string = "";
+  catalogo_monedas_api:any = [];
+  public moneda_codigo:string = "MXN";
+  public moneda_decimales:string = "2";
+  public moneda_codigo_selected:string = "MXN";
+  public moneda_decimales_selected:string = "";
+  public tipo_cambio:string = "1.00";
+  public cantidad_anticipo:number = 0;
+
+  constructor(
+    private provSer:ProveedoresService,
+    private provMon:MonedasService,
+    private validator:ValidatorServService
+  ){
+  }
+
+  ngOnInit():void{
+    this.lista_Prov();
+    this.monedasCatalogoApi();
+  }
+
+
+  lista_Prov(){
+    this.provSer.catalogoProveedores_General().subscribe(
+      response => {
+        if(response.status == 'success'){
+          this.lista_proveedores = response.proveedores;
+          console.log(this.lista_proveedores);
+        }
+      },
+      error => {
+        console.log(error);
+      }
+    );
+  }
+
+  verProveedor(row:any){
+    this.proveedorSeleccionado = this.proveedorSeleccionado === row ? null : row; 
+  }
+
+  monedasCatalogoApi(){
+    this.provMon.getApiMonedasCatalogo().subscribe(
+      response => {
+        if(response.status == 'success'){
+          this.catalogo_monedas_api = response.monedas;
+          console.log(this.catalogo_monedas_api);
+        }
+      }
+    )
+  }
+
+  valMoned(object:any){
+    console.log(object.value)
+    if (object.value != '' && this.validator.filtroAlfaNumerico(object.value) == true) {
+      for (let val = 0; val < this.catalogo_monedas_api.length ; val++) {
+        const esval = this.catalogo_monedas_api[val];
+        if (esval['langEN'] == object.value) {
+          this.validator.correctoInputRow(object);
+          this.moneda_codigo_selected = esval['code'];
+          this.moneda_decimales_selected = esval['decimales'];
+          return;
+        } else {
+          this.validator.errorInputRow(object);
+          this.moneda_codigo_selected = "";
+          this.moneda_decimales_selected = "";
+        }
+      }
+    } else { 
+      this.validator.errorInputRow(object);
+      this.moneda_codigo_selected = "";
+      this.moneda_decimales_selected = "";
+    }
+  }
+
+  activaTipoCambio(){
+    return (this.moneda_codigo_selected == this.moneda_codigo);
+  }
+
+  editTipoCambio(event:any){
+    if(event.value != '' && this.validator.filtroNum(event.value) == true){
+      this.tipo_cambio = event.value;
+      this.validator.correctoInputRow(event);
+    } else {
+      this.tipo_cambio = "1.00";
+      this.validator.errorInputRow(event);
+    }
+  }
+
+  keyupImporteAnticipo(object:any){
+    if(object.value != '' && this.validator.filtroNum(object.value) == true){
+      this.cantidad_anticipo = object.value;
+      this.validator.correctoInputRow(object);
+    } else {
+      this.cantidad_anticipo = 0;
+      this.validator.errorInputRow(object);
+    }
+  }
+
+  valida_registro(){
+    return (this.moneda_codigo_selected == this.moneda_codigo);
+  }
+
+}
+

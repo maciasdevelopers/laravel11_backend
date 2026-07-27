@@ -1,0 +1,105 @@
+.login-container {
+  display: flex;
+  height: 100vh;
+  background: #f4f6fb;
+}
+
+/* PANEL IZQUIERDO */
+.animation-panel {
+  flex: 1;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+/* 📊 BARRAS */
+.chart {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+}
+
+.bar {
+  width: 20px;
+  background: #4f46e5;
+  border-radius: 6px 6px 0 0;
+  animation: grow 2s ease-in-out infinite;
+}
+
+.b1 { height: 40px; animation-delay: 0s; }
+.b2 { height: 70px; animation-delay: .2s; }
+.b3 { height: 55px; animation-delay: .4s; }
+.b4 { height: 90px; animation-delay: .6s; }
+
+@keyframes grow {
+  0%, 100% { transform: scaleY(.4); }
+  50% { transform: scaleY(1); }
+}
+
+/* 📈 LINEA */
+.line-chart {
+  position: absolute;
+  width: 200px;
+  height: 2px;
+  background: linear-gradient(to right, transparent, #22c55e);
+  top: 45%;
+  animation: moveLine 3s linear infinite;
+}
+
+@keyframes moveLine {
+  from { transform: translateX(-220px); }
+  to { transform: translateX(220px); }
+}
+
+/* 💰 MONEDAS */
+.coin {
+  position: absolute;
+  font-weight: bold;
+  color: #eab308;
+  animation: float 4s ease-in-out infinite;
+}
+
+.c1 { top: 20%; left: 30%; }
+.c2 { top: 60%; left: 60%; animation-delay: 1s; }
+
+@keyframes float {
+  0%,100% { transform: translateY(0); opacity: .6; }
+  50% { transform: translateY(-20px); opacity: 1; }
+}
+
+/* 🧾 FACTURA */
+.invoice {
+  position: absolute;
+  bottom: 20%;
+  width: 140px;
+  padding: 10px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 10px 20px rgba(0,0,0,.1);
+  animation: fadeIn 3s ease-in-out infinite;
+}
+
+.invoice-header {
+  height: 10px;
+  background: #4f46e5;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+
+.invoice-line {
+  height: 6px;
+  background: #e5e7eb;
+  margin-bottom: 6px;
+  border-radius: 4px;
+}
+
+.invoice-line.short {
+  width: 60%;
+}
+
+@keyframes fadeIn {
+  0%,100% { opacity: .6; }
+  50% { opacity: 1; }
+}

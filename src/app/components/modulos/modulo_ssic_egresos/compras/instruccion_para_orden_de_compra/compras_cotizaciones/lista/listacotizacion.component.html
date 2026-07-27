@@ -1,0 +1,808 @@
+<div class="col-12" *ngIf="url_activa == '/plataformas/ssic/egresos/ordenes_de_compra'">
+  <h6 *ngIf="!permiso_consulta" class="access_denied">{{'perm_denied' | translate}}</h6>
+  <div class="col-12" *ngIf="permiso_consulta">
+    <div class="col-12">
+      <div class="btn-group lista_botones col" role="group" aria-label="Basic example">
+        <a class="btn btn_extend bg-indigo-600" routerLink="../altadeproveedores">
+          <i class="fa-solid fa-plus"></i>&nbsp;Solicitudes de cotizaci&oacute;n</a>
+
+        <a class="btn btn_extend bg-indigo-600" (click)="cotizaciones_lista();">
+          <i class="fa-solid fa-rotate"></i>&nbsp;{{'list_updt' | translate}}</a>
+      </div>
+    </div>
+
+    <div class="col-12" *ngIf="view_lista_cotizaciones == true">
+      <div class="col-12">
+        <div class="col-12">
+          <div class="modal fade bd-example-modal-lg" id="windowCotizacion" tabindex="-1" role="dialog" aria-labelledby="windowCotizacionLabel" aria-hidden="true">
+            <div class="modal-dialog modal-fullscreen" style="margin: 1%;width: 98%!important;">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="windowCotizacionLabel">Informaci&oacute;n de solicitud de cotizaci&oacute;n</h1>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: transparent !important;"></button>
+                </div>
+                <div class="modal-body" *ngFor="let inside of cotizacion_content" style="height: 100%!important;padding:10px!important;">
+                  <div class="col-12 card card_cotizacion_main" style="height: auto!important;">
+                    <div class="col-12 row card-content card_content_inside">
+                      <div class="col-12 data_project">
+                        <h6 class="data_request">{{inside.folio_registro}} <strong>{{'cot_request' | translate}} folio</strong></h6>
+                        <h6 class="data_request">{{inside.fecha_registro}} <strong>{{'fecha_reg' | translate}}</strong></h6>
+                        <h6 class="data_request">{{inside.requisicion_proyecto}} <strong>Requisici&oacute;n</strong></h6>
+                        <h6 class="data_request">{{inside.usuario_expide}} <strong>{{'aplicante' | translate}}</strong></h6>
+                      </div>
+                      <div class="col-12">
+                        <select class="browser-default btn btn_extend" (change)="viewDocumento($event.target);" 
+                          style="margin-right: 3px!important;line-height: 20px;height: 20px !important;padding: 0 !important;background-color: #353535 !important;color: white !important;font-family: roboto_cr, fontAwesome !important;">
+                          <option value="" disabled selected><p>&#xf15b;</p> {{'doc_an' | translate}}</option>
+                          <option *ngFor="let doc of inside.archivosPartida" [value]="doc.url">{{doc.nombre_documento}}</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-12 card card_cotizacion_main" style="padding: 0!important;height:auto!important;">
+                    <div class="col-12 row">
+                      <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain">
+                        <h6 class="title" style="width: 100%;margin: 3px;height: auto;text-transform: uppercase;font-family: 'roboto_bold';font-size: 13px;text-align: left;color: #353535;">Cotizaciones</h6>
+                      </div>
+                      <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                        <label class="form-check-label" for="flexSwitchCheckReverse">Ver mejor opci&oacute;n</label>
+                        <input class="form-check-input" type="checkbox" (click)="cotizacion_verMejorOpcion(inside.token_solicitud_cotizacion,$event.target);">
+                      </div>
+                    </div>
+
+                    <div class="col-12 explain" style="display: flex;justify-content: space-between;" *ngFor="let rowHead of inside.cotizacionesHeaders">
+                      <a class="btn btn_extend text-bg-danger rounded-3" target="_blank" [href]="rowHead.url_pdf" style="width: 50px;height: 20px;">
+                        <i class="fa-solid fa-file-pdf" style="font-size: 15px;"></i>
+                      </a>
+                      <h6 class="title" class="coti_list"><strong>{{'cot_row' | translate}}</strong>{{" "+rowHead.folio_cotizacion+" "+rowHead.fecha_cotizacion+" "}}<strong>{{'observ' | translate}}</strong>{{" "+rowHead.comentarios_finales}}</h6>
+                    </div>
+
+                    <div [class]="class_lista_cotizaciones">
+                      <div id="seccionCotizacionDetalle{{inside.modal_cotizacion}}" class="col-12" style="height: auto!important;padding: 20px;">
+                        <table id="tableCotizacionDetalle{{inside.modal_cotizacion}}" class="display nowrap mdl-data-table white centered" style="width:max-content!important;margin:0!important;">
+                          <thead>
+                            <tr>
+                              <th class="ultimo"></th>
+                              <th class="ultimo"></th>
+                              <th class="ultimo"></th>
+                              <th class="th_bold">{{'concept' | translate}}</th>
+                              <th class="th_bold">{{'cot_row' | translate}}</th>
+                              <th class="th_bold">{{'prov' | translate}}</th>
+                              <th class="ultimo"></th>
+                              <th class="th_bold">{{'observ' | translate}}</th>
+                              <th class="th_bold">Especificaciones</th>
+                              <th class="th_bold">Cantidad</th>
+                              <th class="th_bold">Precio</th>
+                              <th class="th_bold">Calidad</th>
+                              <th class="th_bold">Servicio</th>
+                              <th class="th_bold">Tipo y tiempo de entrega</th>
+                              <th class="th_bold">Descuento</th>
+                              <th class="th_bold">Retenciones</th>
+                              <th class="th_bold">Traslados</th>
+                              <th class="th_bold">Cr&eacute;dito</th>
+                              <th class="th_bold">Garant&iacute;a</th>
+                              <th class="th_bold">{{'uni_med' | translate}}</th>
+                              <th class="th_bold">Forma de pago</th>
+                              <th class="th_bold">Valoraci&oacute;n</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr class="especificaciones" *ngFor="let rowCot of inside.cotizacionesDetalle">
+                              <td class="ultimo">
+                                <div class="form-check form-switch form-check-reverse switch_primario" style="padding-right: 0!important;">
+                                  <input class="form-check-input" type="checkbox" [checked]="rowCot.select_to_auth == true || rowCot.coti_desc_autorizacion == true" 
+                                    [disabled]="rowCot.coti_desc_autorizacion == true" (click)="cotiAuthSelect(inside.token_solicitud_cotizacion,rowCot.token_cotizacion,rowCot.token_detalle_cotizacion,rowCot.token_desc_detalle_cotiza,$event.target);"/>
+                                </div>
+                              </td>
+                              <td class="ultimo">
+                                <a class="btn bg-blue-600" *ngIf="rowCot.adicionales.length == 0" disabled><i class="fa-solid fa-eye"></i></a>
+                                <a class="btn bg-blue-600" *ngIf="rowCot.adicionales.length > 0"
+                                  (click)="cotiShowAdicionales(inside.token_solicitud_cotizacion,rowCot.token_cotizacion,rowCot.token_detalle_cotizacion,rowCot.token_desc_detalle_cotiza);">
+                                  <i class="fa-solid fa-eye" *ngIf="rowCot.coti_desc_open == false"></i>
+                                  <i class="fa-solid fa-eye-slash" *ngIf="rowCot.coti_desc_open == true"></i>
+                                </a>
+                              </td>
+                              <td class="ultimo">
+                                <a class="btn bg-blue-600"
+                                  (click)="cotiShowEspecificaciones(inside.token_solicitud_cotizacion,rowCot.token_cotizacion,rowCot.token_detalle_cotizacion,rowCot.token_desc_detalle_cotiza);">
+                                  <i class="fa-solid fa-eye" *ngIf="rowCot.coti_especificaciones_open == false"></i>
+                                  <i class="fa-solid fa-eye-slash" *ngIf="rowCot.coti_especificaciones_open == true"></i>
+                                </a>
+                              </td>
+                              <td class="td_roboto name">{{rowCot.requi_necesidad+" "}}<strong>{{'uni_med' | translate}}</strong>{{" "+rowCot.requi_unidad_medida_name}}</td>
+                              <td class="td_roboto name">{{rowCot.coti_folio+" "+rowCot.coti_fecha}}</td>
+                              <td class="td_roboto name">{{rowCot.coti_proveedor_name+" "+rowCot.coti_proveedor_rfc}}</td>
+                              <td class="td_roboto name">{{rowCot.valoracion_posicion+" "}} <i *ngFor="let star of rowCot.valoracion_estrellas" [class]="star.xclase" style="color: #FFD43B;"></i></td>
+                              <td class="td_roboto name">{{rowCot.valoracion_comentarios}}</td>
+                              <td class="td_roboto">{{rowCot.coti_especificaciones}}</td>
+                              <td class="td_roboto">{{rowCot.coti_cantidad}}</td>
+                              <td class="td_roboto td_importes">{{rowCot.coti_precio+" / "+rowCot.coti_conversion}}</td>
+                              <td class="td_roboto">{{rowCot.coti_calidad}}</td>
+                              <td class="td_roboto">{{rowCot.coti_servicio}}</td>
+                              <td class="td_roboto">{{rowCot.coti_entrega_tipo_extend+" Tiempo de entrega "+rowCot.coti_entrega_tiempo}}</td>
+                              <td class="td_roboto">{{rowCot.coti_descuento}}</td>
+                              <td class="td_roboto">{{rowCot.coti_retenciones}}</td>
+                              <td class="td_roboto">{{rowCot.coti_traslados}}</td>
+                              <td class="td_roboto">
+                                <h6 *ngIf="rowCot.coti_credito_otorga == false" style="width: 100%;margin: 3px;height: auto;text-transform: uppercase;font-family: 'roboto_cr';font-size: 13px;text-align: center;color: #353535;">No</h6>
+                                <h6 *ngIf="rowCot.coti_credito_otorga == true" style="width: 100%;margin: 3px;height: auto;text-transform: uppercase;font-family: 'roboto_cr';font-size: 13px;text-align: center;color: #353535;">{{'yes' | translate}}{{" "+rowCot.coti_credito_time}}</h6>
+                              </td>
+                              <td class="td_roboto">{{rowCot.coti_garantia}}</td>
+                              <td class="td_roboto">{{rowCot.coti_umed_name+", Clave: "+rowCot.coti_umed_sat_clave}}</td>
+                              <td class="td_roboto">{{rowCot.coti_fpay_clave+" "+rowCot.coti_fpay_forma}}</td>
+                              <td class="td_roboto">{{rowCot.coti_valoracion}}</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                        <div class="col-12 row">
+                          <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9"></div>
+                          <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3">
+                            <a class="btn btn_extend text-bg-success rounded-3" style="width: 100%!important;" [ngClass]="!inside.cotizacionesvalidate ? 'disabled' : ''" 
+                              [attr.disabled]="!inside.cotizacionesvalidate ? true : null" [attr.aria-disabled]="!inside.cotizacionesvalidate ? true : null"
+                              (click)="inside.cotizacionesvalidate && cotiAuthToComprarAll(inside.token_solicitud_cotizacion,inside.cotizacionesDetalle);">
+                              <i class="fa-solid fa-floppy-disk" style="margin-left: 5px;"></i>&nbsp;{{'sav_cam' | translate}}
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div id="seccionCotizacionDetalleMOpcion{{inside.modal_cotizacion}}" class="col-12 noneView" style="height: auto!important;padding: 20px;">
+                        <table id="tableCotizacionDetalleMOpcion{{inside.modal_cotizacion}}" class="display nowrap mdl-data-table white centered" style="width:max-content!important;margin:0!important;">
+                          <thead>
+                            <tr>
+                              <th class="ultimo">
+                                <div class="form-check form-switch form-check-reverse switch_primario" style="padding-right: 0!important;">
+                                  <input class="form-check-input" type="checkbox" (click)="cotiAuthMejorOpcionSelectToAuthAll(inside.token_solicitud_cotizacion,$event.target);"/>
+                                </div>
+                              </th>
+                              <th class="ultimo"></th>
+                              <th class="ultimo"></th>
+                              <th class="th_bold">{{'concept' | translate}}</th>
+                              <th class="th_bold">{{'cot_row' | translate}}</th>
+                              <th class="th_bold">{{'prov' | translate}}</th>
+                              <th class="ultimo"></th>
+                              <th class="th_bold">{{'observ' | translate}}</th>
+                              <th class="th_bold">Especificaciones</th>
+                              <th class="th_bold">Cantidad</th>
+                              <th class="th_bold">Precio</th>
+                              <th class="th_bold">Calidad</th>
+                              <th class="th_bold">Servicio</th>
+                              <th class="th_bold">Tipo y tiempo de entrega</th>
+                              <th class="th_bold">Descuento</th>
+                              <th class="th_bold">Retenciones</th>
+                              <th class="th_bold">Traslados</th>
+                              <th class="th_bold">Cr&eacute;dito</th>
+                              <th class="th_bold">Garant&iacute;a</th>
+                              <th class="th_bold">{{'uni_med' | translate}}</th>
+                              <th class="th_bold">Forma de pago</th>
+                              <th class="th_bold">Valoraci&oacute;n</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr class="especificaciones" *ngFor="let rowCotMop of inside.cotizacionesDetalleMejorOpcion">
+                              <td class="ultimo">
+                                <div class="form-check form-switch form-check-reverse switch_primario" style="padding-right: 0!important;">
+                                  <input class="form-check-input" type="checkbox" [checked]="rowCotMop.select_to_auth == true || rowCotMop.coti_desc_autorizacion == true" 
+                                    [disabled]="rowCotMop.coti_desc_autorizacion == true" (click)="cotiAuthMejorOpcionSelectToAuth(inside.token_solicitud_cotizacion,rowCotMop.token_cotizacion,rowCotMop.token_detalle_cotizacion,rowCotMop.token_desc_detalle_cotiza,$event.target);"/>
+                                </div>
+                              </td>
+                              <td class="ultimo">
+                                <a class="btn bg-blue-600" *ngIf="rowCotMop.adicionales.length == 0" disabled><i class="fa-solid fa-eye"></i></a>
+                                <a class="btn bg-blue-600" *ngIf="rowCotMop.adicionales.length > 0"
+                                  (click)="cotiShowMejorOpcionAdicionales(inside.token_solicitud_cotizacion,rowCotMop.token_cotizacion,rowCotMop.token_detalle_cotizacion,rowCotMop.token_desc_detalle_cotiza);">
+                                  <i class="fa-solid fa-eye" *ngIf="rowCotMop.coti_desc_open == false"></i>
+                                  <i class="fa-solid fa-eye-slash" *ngIf="rowCotMop.coti_desc_open == true"></i>
+                                </a>
+                              </td>
+                              <td class="ultimo">
+                                <a class="btn bg-blue-600"
+                                  (click)="cotiShowMejorOpcionEspecificaciones(inside.token_solicitud_cotizacion,rowCotMop.token_cotizacion,rowCotMop.token_detalle_cotizacion,rowCotMop.token_desc_detalle_cotiza);">
+                                  <i class="fa-solid fa-eye" *ngIf="rowCotMop.coti_especificaciones_open == false"></i>
+                                  <i class="fa-solid fa-eye-slash" *ngIf="rowCotMop.coti_especificaciones_open == true"></i>
+                                </a>
+                              </td>
+                              <td class="td_roboto name">{{rowCotMop.requi_necesidad+" "}}<strong>{{'uni_med' | translate}}</strong>{{" "+rowCotMop.requi_unidad_medida_name}}</td>
+                              <td class="td_roboto name">{{rowCotMop.coti_folio+" "+rowCotMop.coti_fecha}}</td>
+                              <td class="td_roboto name">{{rowCotMop.coti_proveedor_name+" "+rowCotMop.coti_proveedor_rfc}}</td>
+                              <td class="td_roboto name">{{rowCotMop.valoracion_posicion+" "}} <i *ngFor="let star of rowCotMop.valoracion_estrellas" [class]="star.xclase" style="color: #FFD43B;"></i></td>
+                              <td class="td_roboto name">{{rowCotMop.valoracion_comentarios}}</td>
+                              <td class="td_roboto">{{rowCotMop.coti_especificaciones}}</td>
+                              <td class="td_roboto">{{rowCotMop.coti_cantidad}}</td>
+                              <td class="td_roboto td_importes">{{rowCotMop.coti_precio+" / "+rowCotMop.coti_conversion}}</td>
+                              <td class="td_roboto">{{rowCotMop.coti_calidad}}</td>
+                              <td class="td_roboto">{{rowCotMop.coti_servicio}}</td>
+                              <td class="td_roboto">{{rowCotMop.coti_entrega_tipo_extend+" Tiempo de entrega "+rowCotMop.coti_entrega_tiempo}}</td>
+                              <td class="td_roboto">{{rowCotMop.coti_descuento}}</td>
+                              <td class="td_roboto">{{rowCotMop.coti_retenciones}}</td>
+                              <td class="td_roboto">{{rowCotMop.coti_traslados}}</td>
+                              <td class="td_roboto">
+                                <h6 *ngIf="rowCotMop.coti_credito_otorga == false" style="width: 100%;margin: 3px;height: auto;text-transform: uppercase;font-family: 'roboto_cr';font-size: 13px;text-align: center;color: #353535;">No</h6>
+                                <h6 *ngIf="rowCotMop.coti_credito_otorga == true" style="width: 100%;margin: 3px;height: auto;text-transform: uppercase;font-family: 'roboto_cr';font-size: 13px;text-align: center;color: #353535;">{{'yes' | translate}}{{" "+rowCotMop.coti_credito_time}}</h6>
+                              </td>
+                              <td class="td_roboto">{{rowCotMop.coti_garantia}}</td>
+                              <td class="td_roboto">{{rowCotMop.coti_umed_name+", Clave: "+rowCotMop.coti_umed_sat_clave}}</td>
+                              <td class="td_roboto">{{rowCotMop.coti_fpay_clave+" "+rowCotMop.coti_fpay_forma}}</td>
+                              <td class="td_roboto">{{rowCotMop.coti_valoracion}}</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                        <div class="col-12 row">
+                          <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9"></div>
+                          <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3">
+                            <a class="btn btn_extend text-bg-success rounded-3" [ngClass]="!inside.cotizacionesvalidateMejorOpcion ? 'disabled' : ''" style="width: 100%!important;" 
+                              [attr.disabled]="!inside.cotizacionesvalidateMejorOpcion ? true : null" [attr.aria-disabled]="!inside.cotizacionesvalidateMejorOpcion ? true : null"
+                              (click)="inside.cotizacionesvalidateMejorOpcion && cotiAuthToComprarAll(inside.token_solicitud_cotizacion,inside.cotizacionesDetalleMejorOpcion);">
+                              <i class="fa-solid fa-floppy-disk" style="margin-left: 5px;"></i>&nbsp;{{'sav_cam' | translate}}
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div [class]="class_moore_cotizaciones">
+                      <div class="col-12" *ngIf="adicionales_content.length > 0">
+                        <table id="tableCotizacionAdicionales{{inside.modal_cotizacion}}" class="display nowrap mdl-data-table white centered" style="width:max-content!important;margin:0!important;">
+                          <thead>
+                            <tr>
+                              <th class="th_bold">clave</th>
+                              <th class="th_bold">valor</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr class="especificaciones" *ngFor="let moore of adicionales_content">
+                              <td class="td_roboto">{{moore.clave}}</td>
+                              <td class="td_roboto">{{moore.valor}}</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+
+                      <div class="col-12 card card_cotizacion_main" *ngIf="requi_tipo_front != ''" style="margin-top: 130px;">
+                        <div class="col-12 row card-content card_content_inside">
+                          <div class="col-12 data_project">
+                            <h6 class="data_request">{{requi_tipo_front}} <strong>tipo de requisici&oacute;n</strong></h6>
+                            <h6 class="data_request" *ngIf="requi_caracteristicas_list.length > 0">
+                              <select name="tipoReq" class="browser-default">
+                                <option value="">{{'opt_select' | translate}}</option>
+                                <option *ngFor="let carval of requi_caracteristicas_list">{{carval.clave+" "+carval.valorFront}}</option>
+                              </select>
+                              <strong>caracter&iacute;sticas</strong></h6>
+                            <h6 class="data_request" *ngIf="requi_caracteristicas_other != ''">{{requi_caracteristicas_other}} <strong>caracter&iacute;sticas adicionales</strong></h6>
+                            <h6 class="data_request">{{requi_cantidad_autorizada}} <strong><i class="fas fa-sort-numeric-down-alt"></i> cantidad autorizada</strong></h6>
+                            <h6 class="data_request">{{requi_unidad_medida_name}} <strong><i class="fas fa-balance-scale-right"></i> unidad de medida</strong></h6>
+                            <h6 class="data_request">{{requi_marca}} <strong>marca sugerida</strong></h6>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-12">
+          <div class="modal fade bd-example-modal-lg" id="windowRequisicionDetalle" tabindex="-1" role="dialog" aria-labelledby="windowRequisicionDetalleLabel" aria-hidden="true">
+            <div class="modal-dialog modal-fullscreen" style="margin: 1%;width: 98%!important;">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="windowRequisicionDetalleLabel">Informaci&oacute;n de requisici&oacute;n</h1>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: transparent !important;"></button>
+                </div>
+                <div class="modal-body">
+                  <table id="tableRequisicionDetalle" class="display nowrap mdl-data-table white centered" style="width:100%!important;margin:0!important;">
+                    <thead>
+                      <tr>
+                        <th>tipo de requisici&oacute;n</th>
+                        <th class="concepto">concepto</th>
+                        <th class="ultimo"><i class="fa-solid fa-list-check"></i> caracter&iacute;sticas</th>
+                        <th><i class="fas fa-sort-numeric-down-alt"></i> cantidad</th>
+                        <th><i class="fas fa-sort-numeric-down-alt"></i> cantidad autorizada</th>
+                        <th><i class="fas fa-balance-scale-right"></i> unidad de medida</th>
+                        <th>marca sugerida</th>
+                        <th class="ultimo"><i class="fa-solid fa-file"></i> {{'doc_an' | translate}}</th>
+                        <th class="ultimo"></th>
+                        <th class="ultimo"></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let reqrow of reqDetalle">
+                        <td>{{reqrow.requi_tipo_front}}</td>
+                        <td>{{reqrow.requi_necesidad}}</td>
+                        <td class="ultimo">
+                          <select name="tipoReq" class="browser-default" [disabled]="reqrow.requi_caracteristicas_list.length == 0 && reqrow.requi_caracteristicas_other == null">
+                            <option value="">{{'opt_select' | translate}}</option>
+                            <option *ngFor="let carval of reqrow.requi_caracteristicas_list">{{carval.clave+" "+carval.valorFront}}</option>
+                            <option *ngIf="reqrow.requi_caracteristicas_other != null">{{"Otras características "+reqrow.requi_caracteristicas_other}}</option>
+                          </select>
+                        </td>
+                        <td>{{reqrow.requi_cantidad}}</td>
+                        <td>{{reqrow.requi_cantidad_autorizada}}</td>
+                        <td>{{reqrow.requi_unidad_medida_name_extend}}</td>
+                        <td>{{reqrow.requi_marca}}</td>
+                        <td class="ultimo">
+                          <select name="tipoReq" class="browser-default" (change)="viewDocumento($event.target);" [disabled]="reqrow.archivosPartida.length == 0">
+                            <option value="">{{'opt_select' | translate}}</option>
+                            <option *ngFor="let doc of reqrow.archivosPartida" [value]="doc.url">{{doc.nombre_documento}}</option>
+                          </select>
+                        </td>
+
+                        <td *ngIf="reqrow.char_requi_autorizacion == 'N'">---</td>
+                        <td *ngIf="reqrow.char_requi_autorizacion == 'D'">No</td>
+                        <td *ngIf="reqrow.char_requi_autorizacion == 'A'">{{'yes' | translate}}</td>
+
+                        <td *ngIf="reqrow.char_requi_autorizacion == 'A' && reqrow.bool_requi_autorizacion == true && reqrow.cotizacion_rows == true">
+                          <div class="col-12" style="display: flex!important;justify-content: flex-start;align-content: flex-start;align-items: flex-start;">
+                            <p style="width:fit-content!important;">{{'auth_by' | translate}}</p>
+                            <p style="width:fit-content!important;margin-left: 3px!important;">{{" "+reqrow.requi_persona_autoriza+" ("+reqrow.date_requi_autorizacion+") "}}</p>
+                            <p style="width:fit-content!important;margin-left: 3px!important;">"En proceso de cotización</p>
+                            <p style="width:fit-content!important;margin-left: 3px!important;" *ngIf="reqrow.requi_autorizacion_coments_done != ''">{{'observ' | translate}}{{" "+reqrow.requi_autorizacion_coments_done}}</p>
+                          </div>
+                        </td>
+                        <td *ngIf="reqrow.char_requi_autorizacion == 'A' && reqrow.bool_requi_autorizacion == true && reqrow.cotizacion_rows == false">
+                          <div class="col-12" style="display: flex!important;justify-content: flex-start;align-content: flex-start;align-items: flex-start;">
+                            <p style="width:fit-content!important;">{{'auth_by' | translate}}</p>
+                            <p style="width:fit-content!important;margin-left: 3px!important;">{{" "+reqrow.requi_persona_autoriza+" ("+reqrow.date_requi_autorizacion+") "}}</p>
+                            <p style="width:fit-content!important;margin-left: 3px!important;" *ngIf="reqrow.requi_autorizacion_coments_done != ''">{{'observ' | translate}}{{" "+reqrow.requi_autorizacion_coments_done}}</p>
+                          </div>
+                        </td>
+                        <td *ngIf="reqrow.char_requi_autorizacion == 'D'">
+                          <div class="col-12" style="display: flex!important;justify-content: flex-start;align-content: flex-start;align-items: flex-start;">
+                            <p style="width:fit-content!important;">{{'rechas_by' | translate}}</p>
+                            <p style="width:fit-content!important;margin-left: 3px!important;">{{" "+reqrow.requi_persona_autoriza+" ("+reqrow.date_requi_autorizacion+") "}}</p>
+                            <p style="width:fit-content!important;margin-left: 3px!important;" *ngIf="reqrow.requi_autorizacion_coments_done != ''">{{'observ' | translate}}{{" "+reqrow.requi_autorizacion_coments_done}}</p>
+                          </div>
+                        </td>
+                        <td *ngIf="reqrow.char_requi_autorizacion == 'N'">---</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <table id="buy_table_cotizaciones" class="display nowrap mdl-data-table white centered" style="width:100%!important;margin:0!important;">
+        <thead>
+          <tr>
+            <th class="ultimo"></th>
+            <th>folio</th>
+            <th>{{'fecha_reg' | translate}}</th>
+            <th>requisici&oacute;n</th>
+            <th>{{'aplicante' | translate}}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let lCot of lista_cotizaciones">
+            <td class="ultimo">
+              <a class="btn bg-blue-600" data-bs-toggle="modal" data-bs-target="#windowCotizacion" (click)="cotizacion_detalle(lCot.token_solicitud_cotizacion);"><i class="fa-solid fa-info"></i></a>
+            </td>
+            <td>{{lCot.folio_registro}}</td>
+            <td>{{lCot.fecha_registro}}</td>
+            <td class="ultimo">
+              <a class="btn btn_extend bg-blue-600" data-bs-toggle="modal" data-bs-target="#windowRequisicionDetalle" (click)="openRequiDetail(lCot.requisicion_tkn);"><i class="fa-solid fa-info"></i>{{" "+lCot.requisicion_proyecto}}</a>
+            </td>
+            <td>{{lCot.usuario_expide}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="col-12" *ngIf="permiso_consulta && lista_cotizaciones.length == 0">
+    <h6 class="content access_denied" style="width: 100%;text-align: center;">{{'no_rows' | translate}}</h6>
+  </div>
+</div>
+
+<bienvenido-component *ngIf="url_activa == '/plataformas/ssic/egresos/compras/cotizaciones/lista'"></bienvenido-component>
+<div id="vContent" class="marco" #vContent *ngIf="url_activa == '/plataformas/ssic/egresos/compras/cotizaciones/lista'">
+	<div class="contenido"><app-loader></app-loader>
+		<nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+		<div class="contenidoPagina">
+			<div class="listas_ps revanecer">
+				<div id="formCot" class="lista-div lista-divNoFlex">
+					<h4>Catalogo de cotizaciones</h4>
+					<h6 *ngIf="!permiso_consulta" class="access_denied">{{'perm_denied' | translate}}</h6>
+					<div class="col-12" *ngIf="permiso_consulta">
+						<div class="col-12">
+							<div class="btn-group lista_botones col" role="group" aria-label="Basic example">
+								<a class="btn btn_extend bg-indigo-600" routerLink="../altadeproveedores">
+									<i class="fa-solid fa-plus"></i>&nbsp;Solicitudes de cotizaci&oacute;n</a>
+	
+								<a class="btn btn_extend bg-indigo-600" (click)="cotizaciones_lista();">
+									<i class="fa-solid fa-rotate"></i>&nbsp;{{'list_updt' | translate}}</a>
+							</div>
+						</div>
+
+						<div class="col-12" *ngIf="view_lista_cotizaciones == true">
+							<div class="col-12">
+								<div class="col-12">
+									<div class="modal fade bd-example-modal-lg" id="windowCotizacion" tabindex="-1" role="dialog" aria-labelledby="windowCotizacionLabel" aria-hidden="true">
+										<div class="modal-dialog modal-fullscreen" style="margin: 1%;width: 98%!important;">
+											<div class="modal-content">
+												<div class="modal-header">
+													<h1 class="modal-title fs-5 bg-blue-ModalTitle" id="windowCotizacionLabel">Informaci&oacute;n de solicitud de cotizaci&oacute;n</h1>
+													<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: transparent !important;"></button>
+												</div>
+												<div class="modal-body" *ngFor="let inside of cotizacion_content" style="height: 100%!important;padding:10px!important;">
+													<div class="col-12 card card_cotizacion_main" style="height: auto!important;">
+														<div class="col-12 row card-content card_content_inside">
+															<div class="col-12 data_project">
+																<h6 class="data_request">{{inside.folio_registro}} <strong>{{'cot_request' | translate}} folio</strong></h6>
+																<h6 class="data_request">{{inside.fecha_registro}} <strong>{{'fecha_reg' | translate}}</strong></h6>
+																<h6 class="data_request">{{inside.requisicion_proyecto}} <strong>Requisici&oacute;n</strong></h6>
+																<h6 class="data_request">{{inside.usuario_expide}} <strong>{{'aplicante' | translate}}</strong></h6>
+															</div>
+															<div class="col-12">
+																<select class="browser-default btn btn_extend" (change)="viewDocumento($event.target);" 
+																	style="margin-right: 3px!important;line-height: 20px;height: 20px !important;padding: 0 !important;background-color: #353535 !important;color: white !important;font-family: roboto_cr, fontAwesome !important;">
+																	<option value="" disabled selected><p>&#xf15b;</p> {{'doc_an' | translate}}</option>
+																	<option *ngFor="let doc of inside.archivosPartida" [value]="doc.url">{{doc.nombre_documento}}</option>
+																</select>
+															</div>
+														</div>
+													</div>
+	
+													<div class="col-12 card card_cotizacion_main" style="padding: 0!important;height:auto!important;">
+														<div class="col-12 row">
+															<div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain">
+																<h6 class="title" style="width: 100%;margin: 3px;height: auto;text-transform: uppercase;font-family: 'roboto_bold';font-size: 13px;text-align: left;color: #353535;">Cotizaciones</h6>
+															</div>
+															<div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                <label class="form-check-label" for="flexSwitchCheckReverse">Ver mejor opci&oacute;n</label>
+                                <input class="form-check-input" type="checkbox" (click)="cotizacion_verMejorOpcion(inside.token_solicitud_cotizacion,$event.target);">
+                              </div>
+														</div>
+	
+														<div class="col-12 explain" style="display: flex;justify-content: space-between;" *ngFor="let rowHead of inside.cotizacionesHeaders">
+															<a class="btn btn_extend text-bg-danger rounded-3" target="_blank" [href]="rowHead.url_pdf" style="width: 50px;height: 20px;">
+																<i class="fa-solid fa-file-pdf" style="font-size: 15px;"></i>
+															</a>
+															<h6 class="title" class="coti_list"><strong>{{'cot_row' | translate}}</strong>{{" "+rowHead.folio_cotizacion+" "+rowHead.fecha_cotizacion+" "}}<strong>{{'observ' | translate}}</strong>{{" "+rowHead.comentarios_finales}}</h6>
+														</div>
+		
+														<div [class]="class_lista_cotizaciones">
+															<div id="seccionCotizacionDetalle{{inside.modal_cotizacion}}" class="col-12" style="height: auto!important;padding: 20px;">
+																<table id="tableCotizacionDetalle{{inside.modal_cotizacion}}" class="display nowrap mdl-data-table white centered" style="width:max-content!important;margin:0!important;">
+																	<thead>
+																		<tr>
+																			<th class="ultimo"></th>
+																			<th class="ultimo"></th>
+																			<th class="ultimo"></th>
+																			<th class="th_bold">{{'concept' | translate}}</th>
+																			<th class="th_bold">{{'cot_row' | translate}}</th>
+																			<th class="th_bold">{{'prov' | translate}}</th>
+																			<th class="ultimo"></th>
+																			<th class="th_bold">{{'observ' | translate}}</th>
+																			<th class="th_bold">Especificaciones</th>
+																			<th class="th_bold">Cantidad</th>
+																			<th class="th_bold">Precio</th>
+																			<th class="th_bold">Calidad</th>
+																			<th class="th_bold">Servicio</th>
+																			<th class="th_bold">Tipo y tiempo de entrega</th>
+																			<th class="th_bold">Descuento</th>
+																			<th class="th_bold">Retenciones</th>
+																			<th class="th_bold">Traslados</th>
+																			<th class="th_bold">Cr&eacute;dito</th>
+																			<th class="th_bold">Garant&iacute;a</th>
+																			<th class="th_bold">{{'uni_med' | translate}}</th>
+																			<th class="th_bold">Forma de pago</th>
+																			<th class="th_bold">Valoraci&oacute;n</th>
+																		</tr>
+																	</thead>
+																	<tbody>
+																		<tr class="especificaciones" *ngFor="let rowCot of inside.cotizacionesDetalle">
+																			<td class="ultimo">
+                                        <div class="form-check form-switch form-check-reverse switch_primario" style="padding-right: 0!important;">
+                                          <input class="form-check-input" type="checkbox" [checked]="rowCot.select_to_auth == true || rowCot.coti_desc_autorizacion == true" 
+                                            [disabled]="rowCot.coti_desc_autorizacion == true" (click)="cotiAuthSelect(inside.token_solicitud_cotizacion,rowCot.token_cotizacion,rowCot.token_detalle_cotizacion,rowCot.token_desc_detalle_cotiza,$event.target);"/>
+                                        </div>
+                                      </td>
+																			<td class="ultimo">
+																				<a class="btn bg-blue-600" *ngIf="rowCot.adicionales.length == 0" disabled><i class="fa-solid fa-eye"></i></a>
+																				<a class="btn bg-blue-600" *ngIf="rowCot.adicionales.length > 0"
+																					(click)="cotiShowAdicionales(inside.token_solicitud_cotizacion,rowCot.token_cotizacion,rowCot.token_detalle_cotizacion,rowCot.token_desc_detalle_cotiza);">
+																					<i class="fa-solid fa-eye" *ngIf="rowCot.coti_desc_open == false"></i>
+																					<i class="fa-solid fa-eye-slash" *ngIf="rowCot.coti_desc_open == true"></i>
+																				</a>
+																			</td>
+																			<td class="ultimo">
+																				<a class="btn bg-blue-600"
+																					(click)="cotiShowEspecificaciones(inside.token_solicitud_cotizacion,rowCot.token_cotizacion,rowCot.token_detalle_cotizacion,rowCot.token_desc_detalle_cotiza);">
+																					<i class="fa-solid fa-eye" *ngIf="rowCot.coti_especificaciones_open == false"></i>
+																					<i class="fa-solid fa-eye-slash" *ngIf="rowCot.coti_especificaciones_open == true"></i>
+																				</a>
+																			</td>
+																			<td class="td_roboto name">{{rowCot.requi_necesidad+" "}}<strong>{{'uni_med' | translate}}</strong>{{" "+rowCot.requi_unidad_medida_name}}</td>
+																			<td class="td_roboto name">{{rowCot.coti_folio+" "+rowCot.coti_fecha}}</td>
+																			<td class="td_roboto name">{{rowCot.coti_proveedor_name+" "+rowCot.coti_proveedor_rfc}}</td>
+																			<td class="td_roboto name">{{rowCot.valoracion_posicion+" "}} <i *ngFor="let star of rowCot.valoracion_estrellas" [class]="star.xclase" style="color: #FFD43B;"></i></td>
+																			<td class="td_roboto name">{{rowCot.valoracion_comentarios}}</td>
+																			<td class="td_roboto">{{rowCot.coti_especificaciones}}</td>
+																			<td class="td_roboto">{{rowCot.coti_cantidad}}</td>
+																			<td class="td_roboto td_importes">{{rowCot.coti_precio+" / "+rowCot.coti_conversion}}</td>
+																			<td class="td_roboto">{{rowCot.coti_calidad}}</td>
+																			<td class="td_roboto">{{rowCot.coti_servicio}}</td>
+																			<td class="td_roboto">{{rowCot.coti_entrega_tipo_extend+" Tiempo de entrega "+rowCot.coti_entrega_tiempo}}</td>
+																			<td class="td_roboto">{{rowCot.coti_descuento}}</td>
+																			<td class="td_roboto">{{rowCot.coti_retenciones}}</td>
+																			<td class="td_roboto">{{rowCot.coti_traslados}}</td>
+																			<td class="td_roboto">
+																				<h6 *ngIf="rowCot.coti_credito_otorga == false" style="width: 100%;margin: 3px;height: auto;text-transform: uppercase;font-family: 'roboto_cr';font-size: 13px;text-align: center;color: #353535;">No</h6>
+																				<h6 *ngIf="rowCot.coti_credito_otorga == true" style="width: 100%;margin: 3px;height: auto;text-transform: uppercase;font-family: 'roboto_cr';font-size: 13px;text-align: center;color: #353535;">{{'yes' | translate}}{{" "+rowCot.coti_credito_time}}</h6>
+																			</td>
+																			<td class="td_roboto">{{rowCot.coti_garantia}}</td>
+																			<td class="td_roboto">{{rowCot.coti_umed_name+", Clave: "+rowCot.coti_umed_sat_clave}}</td>
+																			<td class="td_roboto">{{rowCot.coti_fpay_clave+" "+rowCot.coti_fpay_forma}}</td>
+																			<td class="td_roboto">{{rowCot.coti_valoracion}}</td>
+																		</tr>
+																	</tbody>
+																</table>
+																<div class="col-12 row">
+																	<div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9"></div>
+																	<div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3">
+																		<a class="btn btn_extend text-bg-success rounded-3" style="width: 100%!important;" [ngClass]="!inside.cotizacionesvalidate ? 'disabled' : ''" 
+																			[attr.disabled]="!inside.cotizacionesvalidate ? true : null" [attr.aria-disabled]="!inside.cotizacionesvalidate ? true : null"
+																			(click)="inside.cotizacionesvalidate && cotiAuthToComprarAll(inside.token_solicitud_cotizacion,inside.cotizacionesDetalle);">
+																			<i class="fa-solid fa-floppy-disk" style="margin-left: 5px;"></i>&nbsp;{{'sav_cam' | translate}}
+																		</a>
+																	</div>
+																</div>
+															</div>
+		
+															<div id="seccionCotizacionDetalleMOpcion{{inside.modal_cotizacion}}" class="col-12 noneView" style="height: auto!important;padding: 20px;">
+																<table id="tableCotizacionDetalleMOpcion{{inside.modal_cotizacion}}" class="display nowrap mdl-data-table white centered" style="width:max-content!important;margin:0!important;">
+																	<thead>
+																		<tr>
+																			<th class="ultimo">
+																				<div class="form-check form-switch form-check-reverse switch_primario" style="padding-right: 0!important;">
+                                          <input class="form-check-input" type="checkbox" (click)="cotiAuthMejorOpcionSelectToAuthAll(inside.token_solicitud_cotizacion,$event.target);"/>
+                                        </div>
+																			</th>
+																			<th class="ultimo"></th>
+																			<th class="ultimo"></th>
+																			<th class="th_bold">{{'concept' | translate}}</th>
+																			<th class="th_bold">{{'cot_row' | translate}}</th>
+																			<th class="th_bold">{{'prov' | translate}}</th>
+																			<th class="ultimo"></th>
+																			<th class="th_bold">{{'observ' | translate}}</th>
+																			<th class="th_bold">Especificaciones</th>
+																			<th class="th_bold">Cantidad</th>
+																			<th class="th_bold">Precio</th>
+																			<th class="th_bold">Calidad</th>
+																			<th class="th_bold">Servicio</th>
+																			<th class="th_bold">Tipo y tiempo de entrega</th>
+																			<th class="th_bold">Descuento</th>
+																			<th class="th_bold">Retenciones</th>
+																			<th class="th_bold">Traslados</th>
+																			<th class="th_bold">Cr&eacute;dito</th>
+																			<th class="th_bold">Garant&iacute;a</th>
+																			<th class="th_bold">{{'uni_med' | translate}}</th>
+																			<th class="th_bold">Forma de pago</th>
+																			<th class="th_bold">Valoraci&oacute;n</th>
+																		</tr>
+																	</thead>
+																	<tbody>
+																		<tr class="especificaciones" *ngFor="let rowCotMop of inside.cotizacionesDetalleMejorOpcion">
+																			<td class="ultimo">
+																				<div class="form-check form-switch form-check-reverse switch_primario" style="padding-right: 0!important;">
+                                          <input class="form-check-input" type="checkbox" [checked]="rowCotMop.select_to_auth == true || rowCotMop.coti_desc_autorizacion == true" 
+                                            [disabled]="rowCotMop.coti_desc_autorizacion == true" (click)="cotiAuthMejorOpcionSelectToAuth(inside.token_solicitud_cotizacion,rowCotMop.token_cotizacion,rowCotMop.token_detalle_cotizacion,rowCotMop.token_desc_detalle_cotiza,$event.target);"/>
+                                        </div>
+																			</td>
+																			<td class="ultimo">
+																				<a class="btn bg-blue-600" *ngIf="rowCotMop.adicionales.length == 0" disabled><i class="fa-solid fa-eye"></i></a>
+																				<a class="btn bg-blue-600" *ngIf="rowCotMop.adicionales.length > 0"
+																					(click)="cotiShowMejorOpcionAdicionales(inside.token_solicitud_cotizacion,rowCotMop.token_cotizacion,rowCotMop.token_detalle_cotizacion,rowCotMop.token_desc_detalle_cotiza);">
+																					<i class="fa-solid fa-eye" *ngIf="rowCotMop.coti_desc_open == false"></i>
+																					<i class="fa-solid fa-eye-slash" *ngIf="rowCotMop.coti_desc_open == true"></i>
+																				</a>
+																			</td>
+																			<td class="ultimo">
+																				<a class="btn bg-blue-600"
+																					(click)="cotiShowMejorOpcionEspecificaciones(inside.token_solicitud_cotizacion,rowCotMop.token_cotizacion,rowCotMop.token_detalle_cotizacion,rowCotMop.token_desc_detalle_cotiza);">
+																					<i class="fa-solid fa-eye" *ngIf="rowCotMop.coti_especificaciones_open == false"></i>
+																					<i class="fa-solid fa-eye-slash" *ngIf="rowCotMop.coti_especificaciones_open == true"></i>
+																				</a>
+																			</td>
+																			<td class="td_roboto name">{{rowCotMop.requi_necesidad+" "}}<strong>{{'uni_med' | translate}}</strong>{{" "+rowCotMop.requi_unidad_medida_name}}</td>
+																			<td class="td_roboto name">{{rowCotMop.coti_folio+" "+rowCotMop.coti_fecha}}</td>
+																			<td class="td_roboto name">{{rowCotMop.coti_proveedor_name+" "+rowCotMop.coti_proveedor_rfc}}</td>
+																			<td class="td_roboto name">{{rowCotMop.valoracion_posicion+" "}} <i *ngFor="let star of rowCotMop.valoracion_estrellas" [class]="star.xclase" style="color: #FFD43B;"></i></td>
+																			<td class="td_roboto name">{{rowCotMop.valoracion_comentarios}}</td>
+																			<td class="td_roboto">{{rowCotMop.coti_especificaciones}}</td>
+																			<td class="td_roboto">{{rowCotMop.coti_cantidad}}</td>
+																			<td class="td_roboto td_importes">{{rowCotMop.coti_precio+" / "+rowCotMop.coti_conversion}}</td>
+																			<td class="td_roboto">{{rowCotMop.coti_calidad}}</td>
+																			<td class="td_roboto">{{rowCotMop.coti_servicio}}</td>
+																			<td class="td_roboto">{{rowCotMop.coti_entrega_tipo_extend+" Tiempo de entrega "+rowCotMop.coti_entrega_tiempo}}</td>
+																			<td class="td_roboto">{{rowCotMop.coti_descuento}}</td>
+																			<td class="td_roboto">{{rowCotMop.coti_retenciones}}</td>
+																			<td class="td_roboto">{{rowCotMop.coti_traslados}}</td>
+																			<td class="td_roboto">
+																				<h6 *ngIf="rowCotMop.coti_credito_otorga == false" style="width: 100%;margin: 3px;height: auto;text-transform: uppercase;font-family: 'roboto_cr';font-size: 13px;text-align: center;color: #353535;">No</h6>
+																				<h6 *ngIf="rowCotMop.coti_credito_otorga == true" style="width: 100%;margin: 3px;height: auto;text-transform: uppercase;font-family: 'roboto_cr';font-size: 13px;text-align: center;color: #353535;">{{'yes' | translate}}{{" "+rowCotMop.coti_credito_time}}</h6>
+																			</td>
+																			<td class="td_roboto">{{rowCotMop.coti_garantia}}</td>
+																			<td class="td_roboto">{{rowCotMop.coti_umed_name+", Clave: "+rowCotMop.coti_umed_sat_clave}}</td>
+																			<td class="td_roboto">{{rowCotMop.coti_fpay_clave+" "+rowCotMop.coti_fpay_forma}}</td>
+																			<td class="td_roboto">{{rowCotMop.coti_valoracion}}</td>
+																		</tr>
+																	</tbody>
+																</table>
+																<div class="col-12 row">
+																	<div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9"></div>
+																	<div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3">
+																		<a class="btn btn_extend text-bg-success rounded-3" [ngClass]="!inside.cotizacionesvalidateMejorOpcion ? 'disabled' : ''" style="width: 100%!important;" 
+																			[attr.disabled]="!inside.cotizacionesvalidateMejorOpcion ? true : null" [attr.aria-disabled]="!inside.cotizacionesvalidateMejorOpcion ? true : null"
+																			(click)="inside.cotizacionesvalidateMejorOpcion && cotiAuthToComprarAll(inside.token_solicitud_cotizacion,inside.cotizacionesDetalleMejorOpcion);">
+																			<i class="fa-solid fa-floppy-disk" style="margin-left: 5px;"></i>&nbsp;{{'sav_cam' | translate}}
+																		</a>
+																	</div>
+																</div>
+															</div>
+														</div>
+														<div [class]="class_moore_cotizaciones">
+															<div class="col-12" *ngIf="adicionales_content.length > 0">
+																<table id="tableCotizacionAdicionales{{inside.modal_cotizacion}}" class="display nowrap mdl-data-table white centered" style="width:max-content!important;margin:0!important;">
+																	<thead>
+																		<tr>
+																			<th class="th_bold">clave</th>
+																			<th class="th_bold">valor</th>
+																		</tr>
+																	</thead>
+																	<tbody>
+																		<tr class="especificaciones" *ngFor="let moore of adicionales_content">
+																			<td class="td_roboto">{{moore.clave}}</td>
+																			<td class="td_roboto">{{moore.valor}}</td>
+																		</tr>
+																	</tbody>
+																</table>
+															</div>
+		
+															<div class="col-12 card card_cotizacion_main" *ngIf="requi_tipo_front != ''" style="margin-top: 130px;">
+																<div class="col-12 row card-content card_content_inside">
+																	<div class="col-12 data_project">
+																		<h6 class="data_request">{{requi_tipo_front}} <strong>tipo de requisici&oacute;n</strong></h6>
+																		<h6 class="data_request" *ngIf="requi_caracteristicas_list.length > 0">
+																			<select name="tipoReq" class="browser-default">
+																				<option value="">{{'opt_select' | translate}}</option>
+																				<option *ngFor="let carval of requi_caracteristicas_list">{{carval.clave+" "+carval.valorFront}}</option>
+																			</select>
+																			<strong>caracter&iacute;sticas</strong></h6>
+																		<h6 class="data_request" *ngIf="requi_caracteristicas_other != ''">{{requi_caracteristicas_other}} <strong>caracter&iacute;sticas adicionales</strong></h6>
+																		<h6 class="data_request">{{requi_cantidad_autorizada}} <strong><i class="fas fa-sort-numeric-down-alt"></i> cantidad autorizada</strong></h6>
+																		<h6 class="data_request">{{requi_unidad_medida_name}} <strong><i class="fas fa-balance-scale-right"></i> unidad de medida</strong></h6>
+																		<h6 class="data_request">{{requi_marca}} <strong>marca sugerida</strong></h6>
+																	</div>
+																</div>
+															</div>
+														</div>
+													</div>
+												</div>
+												<div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="col-12">
+									<div class="modal fade bd-example-modal-lg" id="windowRequisicionDetalle" tabindex="-1" role="dialog" aria-labelledby="windowRequisicionDetalleLabel" aria-hidden="true">
+										<div class="modal-dialog modal-fullscreen" style="margin: 1%;width: 98%!important;">
+											<div class="modal-content">
+												<div class="modal-header">
+													<h1 class="modal-title fs-5 bg-blue-ModalTitle" id="windowRequisicionDetalleLabel">Informaci&oacute;n de requisici&oacute;n</h1>
+													<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: transparent !important;"></button>
+												</div>
+												<div class="modal-body">
+													<table id="tableRequisicionDetalle" class="display nowrap mdl-data-table white centered" style="width:100%!important;margin:0!important;">
+														<thead>
+															<tr>
+																<th>tipo de requisici&oacute;n</th>
+																<th class="concepto">concepto</th>
+																<th class="ultimo"><i class="fa-solid fa-list-check"></i> caracter&iacute;sticas</th>
+																<th><i class="fas fa-sort-numeric-down-alt"></i> cantidad</th>
+																<th><i class="fas fa-sort-numeric-down-alt"></i> cantidad autorizada</th>
+																<th><i class="fas fa-balance-scale-right"></i> unidad de medida</th>
+																<th>marca sugerida</th>
+																<th class="ultimo"><i class="fa-solid fa-file"></i> {{'doc_an' | translate}}</th>
+																<th class="ultimo"></th>
+																<th class="ultimo"></th>
+															</tr>
+														</thead>
+														<tbody>
+															<tr *ngFor="let reqrow of reqDetalle">
+																<td>{{reqrow.requi_tipo_front}}</td>
+																<td>{{reqrow.requi_necesidad}}</td>
+																<td class="ultimo">
+																	<select name="tipoReq" class="browser-default" [disabled]="reqrow.requi_caracteristicas_list.length == 0 && reqrow.requi_caracteristicas_other == null">
+																		<option value="">{{'opt_select' | translate}}</option>
+																		<option *ngFor="let carval of reqrow.requi_caracteristicas_list">{{carval.clave+" "+carval.valorFront}}</option>
+																		<option *ngIf="reqrow.requi_caracteristicas_other != null">{{"Otras características "+reqrow.requi_caracteristicas_other}}</option>
+																	</select>
+																</td>
+																<td>{{reqrow.requi_cantidad}}</td>
+																<td>{{reqrow.requi_cantidad_autorizada}}</td>
+																<td>{{reqrow.requi_unidad_medida_name_extend}}</td>
+																<td>{{reqrow.requi_marca}}</td>
+																<td class="ultimo">
+																	<select name="tipoReq" class="browser-default" (change)="viewDocumento($event.target);" [disabled]="reqrow.archivosPartida.length == 0">
+																		<option value="">{{'opt_select' | translate}}</option>
+																		<option *ngFor="let doc of reqrow.archivosPartida" [value]="doc.url">{{doc.nombre_documento}}</option>
+																	</select>
+																</td>
+		
+																<td *ngIf="reqrow.char_requi_autorizacion == 'N'">---</td>
+																<td *ngIf="reqrow.char_requi_autorizacion == 'D'">No</td>
+																<td *ngIf="reqrow.char_requi_autorizacion == 'A'">{{'yes' | translate}}</td>
+		
+																<td *ngIf="reqrow.char_requi_autorizacion == 'A' && reqrow.bool_requi_autorizacion == true && reqrow.cotizacion_rows == true">
+																	<div class="col-12" style="display: flex!important;justify-content: flex-start;align-content: flex-start;align-items: flex-start;">
+																		<p style="width:fit-content!important;">{{'auth_by' | translate}}</p>
+																		<p style="width:fit-content!important;margin-left: 3px!important;">{{" "+reqrow.requi_persona_autoriza+" ("+reqrow.date_requi_autorizacion+") "}}</p>
+																		<p style="width:fit-content!important;margin-left: 3px!important;">"En proceso de cotización</p>
+																		<p style="width:fit-content!important;margin-left: 3px!important;" *ngIf="reqrow.requi_autorizacion_coments_done != ''">{{'observ' | translate}}{{" "+reqrow.requi_autorizacion_coments_done}}</p>
+																	</div>
+																</td>
+																<td *ngIf="reqrow.char_requi_autorizacion == 'A' && reqrow.bool_requi_autorizacion == true && reqrow.cotizacion_rows == false">
+																	<div class="col-12" style="display: flex!important;justify-content: flex-start;align-content: flex-start;align-items: flex-start;">
+																		<p style="width:fit-content!important;">{{'auth_by' | translate}}</p>
+																		<p style="width:fit-content!important;margin-left: 3px!important;">{{" "+reqrow.requi_persona_autoriza+" ("+reqrow.date_requi_autorizacion+") "}}</p>
+																		<p style="width:fit-content!important;margin-left: 3px!important;" *ngIf="reqrow.requi_autorizacion_coments_done != ''">{{'observ' | translate}}{{" "+reqrow.requi_autorizacion_coments_done}}</p>
+																	</div>
+																</td>
+																<td *ngIf="reqrow.char_requi_autorizacion == 'D'">
+																	<div class="col-12" style="display: flex!important;justify-content: flex-start;align-content: flex-start;align-items: flex-start;">
+																		<p style="width:fit-content!important;">{{'rechas_by' | translate}}</p>
+																		<p style="width:fit-content!important;margin-left: 3px!important;">{{" "+reqrow.requi_persona_autoriza+" ("+reqrow.date_requi_autorizacion+") "}}</p>
+																		<p style="width:fit-content!important;margin-left: 3px!important;" *ngIf="reqrow.requi_autorizacion_coments_done != ''">{{'observ' | translate}}{{" "+reqrow.requi_autorizacion_coments_done}}</p>
+																	</div>
+																</td>
+																<td *ngIf="reqrow.char_requi_autorizacion == 'N'">---</td>
+															</tr>
+														</tbody>
+													</table>
+												</div>
+												<div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+	
+							<table id="buy_table_cotizaciones" class="display nowrap mdl-data-table white centered" style="width:100%!important;margin:0!important;">
+								<thead>
+									<tr>
+										<th class="ultimo"></th>
+										<th>folio</th>
+										<th>{{'fecha_reg' | translate}}</th>
+										<th>requisici&oacute;n</th>
+										<th>{{'aplicante' | translate}}</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr *ngFor="let lCot of lista_cotizaciones">
+										<td class="ultimo">
+											<a class="btn bg-blue-600" data-bs-toggle="modal" data-bs-target="#windowCotizacion" (click)="cotizacion_detalle(lCot.token_solicitud_cotizacion);"><i class="fa-solid fa-info"></i></a>
+										</td>
+										<td>{{lCot.folio_registro}}</td>
+										<td>{{lCot.fecha_registro}}</td>
+										<td class="ultimo">
+											<a class="btn btn_extend bg-blue-600" data-bs-toggle="modal" data-bs-target="#windowRequisicionDetalle" (click)="openRequiDetail(lCot.requisicion_tkn);"><i class="fa-solid fa-info"></i>{{" "+lCot.requisicion_proyecto}}</a>
+										</td>
+										<td>{{lCot.usuario_expide}}</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+					<div class="col-12" *ngIf="permiso_consulta && lista_cotizaciones.length == 0">
+						<h6 class="content access_denied" style="width: 100%;text-align: center;">{{'no_rows' | translate}}</h6>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

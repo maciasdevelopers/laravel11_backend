@@ -1,0 +1,212 @@
+<nav id="navbarPageLanding" class="navbar navbar-expand-lg bg-body-tertiary index_navbar sticky-top">
+  <div class="container-fluid">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"
+      (click)="collapseNavegador.toggle();" style="color: white;">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+    <div #collapseNavegador="ngbCollapse" [(ngbCollapse)]="isCollapsedNavegador" class="collapse navbar-collapse"
+      id="navbarSupportedContent">
+      <ul class="navbar-nav mx-auto">
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="#news">{{'noticias' | translate}}</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Tooltip on right"
+            href="#soluciones">{{'solu' | translate}}</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#registrossic">{{'contact_us' | translate}}</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#portalterceros">{{'pter' | translate}}</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#indicadoresEconomicos">{{'fnzs_ind_eco' | translate}}</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#helptools">{{'her_easy' | translate}}</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" (click)="verLoginWindow();">{{'log_in_ssic_abrev' | translate}}</a>
+        </li>
+        <li class="nav-item dropdown" ngbDropdown>
+          <a class="nav-link" id="menuDropMain" ngbDropdownToggle>{{'lang' | translate}} ({{'espa' | translate}} - {{'engl' | translate}})</a>
+          <div ngbDropdownMenu="menuDropMain" style="padding: 0!important;margin: 0!important;">
+            <a ngbDropdownItem (click)="cambiaIdioma($event.target,'es');">{{'espa' | translate}}</a>
+            <a ngbDropdownItem (click)="cambiaIdioma($event.target,'en');">{{'engl' | translate}}</a>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+<main class="business-layout">
+  <section class="hero-section">
+    <div class="container">
+      <div class="hero-flex">
+        <div class="hero-content">
+          <div class="brand-header">
+            <img class="main-logo" src="./assets/images/logotypo.png" alt="SOS México" />
+            <div class="gold-line"></div>
+            <div class="ssic-tag">{{'title_site' | translate}}</div>
+          </div>
+          <h1 class="hero-title">SOS <span class="gold-text">M&eacute;xico</span></h1>
+          <p class="hero-description">
+            Bienvenido al portal de <strong>SOS-M&Eacute;XICO</strong>. Agradecemos su confianza.
+            Nuestra plataforma SSIC es la herramienta definitiva para la
+            <strong>Administraci&oacute;n, Contabilidad y Normatividad Fiscal</strong> de su empresa,
+            generando resultados en tiempo real con precisi&oacute;n absoluta.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="news" class="section-padding bg-light" style="display: flex;justify-content: center;">
+    <div class="col-12 row">
+      <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-3 col-xxl-3">
+        <h2 class="section-title-left">{{'noticias' | translate}}</h2>
+        <div class="title-underline" style="margin: 0;"></div>
+      </div>
+      <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-9 col-xxl-9">
+        @for (post of publicaciones_lista; track $index) {
+          <div class="card card_main" style="box-shadow: 0 4px 12px rgba(0,0,0,0.05)!important;padding: 10px;border-left: 10px solid #1a2a3a !important;">
+            <div class="card-content">
+              <span class="card-title news-category">{{post.encabezado}}</span>
+              <div class="inside">
+                <p style="color: dimgray;">{{post.resena}}</p>
+                <a class="btn btn_extend bg-white" (click)="ver_desglose_pub_completa(post);"><i class="fa-solid fa-eye"></i>&nbsp;Ver publicaci&oacute;n completa</a>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <section id="soluciones" class="section-padding bg-white" style="display: flex;justify-content: center;">
+    <app_nuestras_soluciones style="display: flex;justify-content: center;"></app_nuestras_soluciones>
+  </section>
+
+  <section id="registrossic" class="split-layout" style="display: flex;justify-content: center;">
+    <div class="split-left">
+      <div class="split-content">
+        <div class="col-12">
+          <h2 class="section-title-left">{{'contact_us' | translate}}</h2>
+          <div class="title-underline" style="margin: 0;"></div>
+        </div>
+        <app_registrate_ssic></app_registrate_ssic>
+      </div>
+    </div>
+    <div id="portalterceros" class="split-right">
+      <div class="split-content">
+        <div class="col-12">
+          <h2 class="section-title-left">{{'pter' | translate}}</h2>
+          <div class="title-underline" style="margin: 0;"></div>
+        </div>
+        <app_portal_para_terceros></app_portal_para_terceros>
+      </div>
+    </div>
+  </section>
+
+  <section id="indicadoresEconomicos" class="section-padding bg-white" style="display: flex;flex-wrap: wrap;justify-content: center;">
+    <div class="col-12">
+      <h2 class="section-title-left"><i class="fa-solid fa-gauge-high"></i>&nbsp;{{'fnzs_ind_eco' | translate}}</h2>
+      <div class="title-underline" style="margin: 0;"></div>
+    </div>
+
+    <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-3 col-xxl-3">
+      <p class="intro_indicadores">A continuaci&oacute;n, se muestran diversos indicadores de referencia recopilados a trav&eacute;s de nuestro equipo para su f&aacute;cil consulta.</p>
+      <div class="title-underline" style="margin: 0;"></div>
+    </div>
+    <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-9 col-xxl-9 row" style="display: flex;justify-content: center;">
+      <p-card class="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-3 p-2" [style]="{overflow: 'hidden'}">
+        <ng-template #header>
+          <img alt="Card" class="w-full optimizedPImage optimizedcardImage" fill ngSrc="./assets/images/indicadores/inpc.jpg" style="border-radius: 8px;">
+        </ng-template>
+        <ng-template #title>INPC</ng-template>
+        <ng-template #subtitle>{{inpc}}</ng-template>
+      </p-card>
+      <p-card class="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-3 p-2" [style]="{overflow:'hidden'}">
+        <ng-template #header>
+          <img alt="Card" class="w-full optimizedPImage optimizedcardImage" fill ngSrc="./assets/images/indicadores/tasa_recargos.jpg" style="border-radius: 8px;">
+        </ng-template>
+        <ng-template #title>Tasa de recargos</ng-template>
+
+        <ng-template #subtitle>{{tasa_recargos}}</ng-template>
+      </p-card>
+      <p-card class="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-3 p-2" [style]="{padding:0,overflow:'hidden'}">
+        <ng-template #header>
+          <img alt="Card" class="w-full optimizedPImage optimizedcardImage" fill ngSrc="./assets/images/indicadores/salario_minimo_general.png" style="border-radius: 8px;">
+        </ng-template>
+        <ng-template #title>Salario m&iacute;nimo general</ng-template>
+        <ng-template #subtitle>{{salario_minimo}}</ng-template>
+      </p-card>
+      <p-card class="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-3 p-2" [style]="{padding:0,overflow:'hidden'}">
+        <ng-template #header>
+          <img alt="Card" class="w-full optimizedPImage optimizedcardImage" fill ngSrc="./assets/images/indicadores/salario_minimo_fronterizo.png" style="border-radius: 8px;">
+        </ng-template>
+        <ng-template #title>Salario m&iacute;nimo fronterizo</ng-template>
+        <ng-template #subtitle>{{salario_min_fronterizo}}</ng-template>
+      </p-card>
+      <p-card class="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-3 p-2" [style]="{padding:0,overflow:'hidden'}">
+        <ng-template #header>
+          <img alt="Card" class="w-full optimizedPImage optimizedcardImage" fill ngSrc="./assets/images/indicadores/uma.jpg" style="border-radius: 8px;">
+        </ng-template>
+        <ng-template #title>UMA</ng-template>
+        <ng-template #subtitle>{{uma}}</ng-template>
+      </p-card>
+      <p-card class="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-3 p-2" [style]="{padding:0,overflow:'hidden'}">
+        <ng-template #header>
+          <img alt="Card" class="w-full optimizedPImage optimizedcardImage" fill ngSrc="./assets/images/indicadores/udi_.png" style="border-radius: 8px;">
+        </ng-template>
+        <ng-template #title>UDI</ng-template>
+        <ng-template #subtitle>{{udi}}</ng-template>
+      </p-card>
+      <p-card class="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-3 p-2" [style]="{padding:0,overflow:'hidden'}">
+        <ng-template #header>
+          <img alt="Card" class="w-full optimizedPImage optimizedcardImage" fill ngSrc="./assets/images/indicadores/tipo_de_cambio.png" style="border-radius: 8px;">
+        </ng-template>
+        <ng-template #title style="font-size: small!important;">Tipo de cambio peso mexicano / dolar estadounidense (pagos)</ng-template>
+        <ng-template #subtitle>{{tipo_cmb_pdp}}</ng-template>
+      </p-card>
+      <p-card class="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-3 p-2" [style]="{padding:0,overflow:'hidden'}">
+        <ng-template #header>
+          <img alt="Card" class="w-full optimizedPImage optimizedcardImage" fill ngSrc="./assets/images/indicadores/tiie_.png" style="border-radius: 8px;">
+        </ng-template>
+        <ng-template #title>TIIE (Banco de M&eacute;xico)</ng-template>
+        <ng-template #subtitle>{{tiie}}</ng-template>
+      </p-card>
+    </div>
+  </section>
+
+  <section id="helptools" class="section-padding bg-light" style="display: flex;justify-content: center;">
+    <app_herramientas_ayuda style="display: flex;justify-content: center;"></app_herramientas_ayuda>
+  </section>
+</main>
+
+<app-footer-inside></app-footer-inside>
+
+<p-dialog [header]="publicacion_encabezado" class="publicacion_complete" [(visible)]="view_publicacion_window" [modal]="true" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }">
+  @for (pubDesg of publicacion_completa_desglose; track $index) {
+    <!--<p class="pub_titulo">{{pubDesg.encabezado}}</p>-->
+    <p class="pub_resena">{{pubDesg.resena}}</p>
+    <div class="col-12 desglose">
+      @for (content of pubDesg.contenido; track $index) {
+        <p class="pub_subtitulo">{{content.subtitulo}}</p>
+        <p class="pub_content_desglose">{{content.parrafo}}</p>
+      }
+    </div>
+    <div class="col-12 fuentes_de_consulta">
+      <p class="fuentes_de_consulta_title"><b>Fuentes de consulta</b></p>
+      @for (fuent of pubDesg.bibliografia; track $index) {
+        <p class="pub_fuente_title"><b>{{fuent.fuente}}:</b> {{fuent.detalle_fuente}}</p>
+      }
+    </div>
+  }
+</p-dialog>
+
+<p-dialog header="{{header_login_window | translate}}" class="window_login" [(visible)]="view_login_window" [modal]="true" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }">
+  <sos_mexico_login_window></sos_mexico_login_window>
+</p-dialog>

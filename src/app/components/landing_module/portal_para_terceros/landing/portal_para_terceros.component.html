@@ -1,0 +1,241 @@
+<div class="col landing_seccion">
+  <div class="col" style="margin-top: 10px;">
+    <p class="grey-text text-darken-3 lighten-3" style="margin: 0;margin-left: 5px;">Si eres cliente, proveedor o
+      empleado de alguno de nuestros asociados, en este portal encontrar&aacute;s una serie de soluciones para ti. Por
+      favor,
+      lee las siguientes indicaciones y s&iacute;guelas seg&uacute;n sea tu caso.</p>
+  </div>
+  <div class="col row" style="margin: 0;margin-top: 20px;">
+    <p-card class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-6 col-xxl-6 tercero_card"
+      [style]="{overflow: 'hidden',color:'white'}" routerLink="./asociados">
+      <ng-template #header>
+        <img class="optimizedPImage" fill ngSrc="./assets/images/terceros/asociados.png" style="border-radius: 8px;">
+      </ng-template>
+      <ng-template #title style="color: white !important;">Asociados</ng-template>
+      <ng-template #subtitle>Si eres uno de nuestros asociados y deseas solicitar apoyo para la emisi&oacute;n de una
+        factura por favor selecciona el icono de “asociados”.</ng-template>
+    </p-card>
+    <p-card class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-6 col-xxl-6 tercero_card" [style]="{overflow: 'hidden'}">
+      <ng-template #header>
+        <img class="optimizedPImage" fill ngSrc="./assets/images/terceros/clientes.png" style="border-radius: 8px;">
+      </ng-template>
+      <ng-template #title>Clientes</ng-template>
+      <ng-template #subtitle>Si compraste alg&uacute;n producto o servicio a alguno de nuestros asociados y deseas
+        obtener factura por favor selecciona el icono de “clientes”.</ng-template>
+    </p-card>
+    <p-card class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-6 col-xxl-6 tercero_card" [style]="{overflow: 'hidden'}">
+      <ng-template #header>
+        <img class="optimizedPImage" fill ngSrc="./assets/images/terceros/proveedores.png" style="border-radius: 8px;">
+      </ng-template>
+      <ng-template #title>Proveedores</ng-template>
+      <ng-template #subtitle>Si te dar&aacute;s de alta como proveedor de alguno de nuestros asociados o bien enviaras
+        la documentaci&oacute;n y/o factura relaciona con tus productos o
+        servicios por favor selecciona el icono de “proveedores”.</ng-template>
+    </p-card>
+    <p-card class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-6 col-xxl-6 tercero_card" [style]="{overflow: 'hidden'}"
+      data-bs-toggle="modal" data-bs-target="#emergente_sol_dhd">
+      <ng-template #header>
+        <img class="optimizedPImage" fill ngSrc="./assets/images/terceros/empleados.png" style="border-radius: 8px;">
+      </ng-template>
+      <ng-template #title>Empleados</ng-template>
+      <ng-template #subtitle>{{['pter_empl_conten_uno' | translate]+" "+['pter_empl_conten_dos' | translate]+"
+        "+['pter_empl_conten_tres' | translate]}}</ng-template>
+    </p-card>
+
+    <div class="modal fade" id="emergenteAssociates" tabindex="-1" aria-labelledby="emergenteAssociatesLabel"
+      aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="emergenteAssociatesLabel">{{'sol_adm' | translate}}</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body card" style="border-radius: 0 !important;padding: 5px!important;">
+            <img class="optimizedImage" fill ngSrc="./assets/images/soluciones/sol_adm.png" style="border-radius: 8px">
+            <div class="card-body" style="padding: 10px;">
+              <p class="card-text" style="margin:0;">Con esta soluci&oacute;n, creamos sinergia en tiempo real con las
+                &aacute;reas del negocio de nuestros clientes,
+                con la finalidad de maximizar los recursos humanos y materiales, logrando que sus actividades sean lo
+                m&aacute;s eficaces y eficientes durante el desarrollo de las etapas de
+                Planeaci&oacute;n, Organizaci&oacute;n, Direcci&oacute;n y Control.</p>
+              <p class="card-text" style="margin:0;">Coadyuvamos principalmente con las &aacute;reas administrativas, de
+                las cuales emerge de la administraci&oacute;n de un negocio y son las siguientes:</p>
+              <ol type="1">
+                <li>Ventas</li>
+                <li>Cuentas por Cobrar</li>
+                <li>Compras</li>
+                <li>Cuentas por Pagar</li>
+                <li>Finanzas</li>
+                <li>Tesorer&iacute;a</li>
+                <li>Valor Humano</li>
+                <li>Contabilidad</li>
+              </ol>
+              <p class="grey-text text-darken-3 lighten-3" style="margin:0;">Contamos con la experiencia profesional
+                para ayudar a nuestros clientes a coordinar y dar soluciones en estas
+                &aacute;reas, y que todas estas actividades sean reflejadas en el sistema que tengan implementado o
+                est&eacute;n implementando. Tambi&eacute;n es de mencionarse que tenemos
+                la opci&oacute;n de ofrecer nuestra gran herramienta denominada <strong>"Sistema de Sinergia Integral
+                  Corporativa"</strong> tambi&eacute;n conocida como <strong>"SSIC"</strong>
+                y que est&aacute; diseñada especialmente para atender oportunamente estas &aacute;reas y con ello ayudar
+                a tomar las mejores decisiones de una forma simple.
+                Si deseas conocer m&aacute;s sobre esta gran herramienta, dirigete al menu principal y selecciona la
+                opci&oacute;n <strong>"{{'contact_us' | translate}}"</strong>.</p>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+              style="padding: 0;padding-left: 3px;padding-right: 3px;">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="emergenteCustomers" tabindex="-1" aria-labelledby="emergenteCustomersLabel"
+      aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="emergenteCustomersLabel">{{'sol_con' | translate}}</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body card" style="border-radius: 0 !important;padding: 5px!important;">
+            <img class="optimizedImage" fill ngSrc="./assets/images/soluciones/sol_con.png" style="border-radius: 8px;">
+            <div class="card-body" style="padding: 10px;">
+              <p class="card-text" style="margin:0;">Recordemos que la contabilidad es una t&eacute;cnica de registros
+                sistem&aacute;ticos y ordenados que buscan reflejar
+                en cifras monetarias la vida (reflejo de la administraci&oacute;n) de un negocio. Esto es que, cada
+                situaci&oacute;n que acontece y afecta a la entidad econ&oacute;mica
+                (negocio) deber&aacute; ser registrada y reconocida en la contabilidad, ya que con esto permitir&aacute;
+                a los usuarios de la informaci&oacute;n (socios, clientes, proveedores,
+                inversionistas) tomar decisiones de manera oportuna a trav&eacute;s del an&aacute;lisis y
+                comparaci&oacute;n.</p>
+              <p class="card-text" style="margin:0;">Es por ello, que con esta soluci&oacute;n ofrecemos a nuestros
+                clientes un registro bajo la t&eacute;cnica contable
+                Nacional e Internacional de las operaciones econ&oacute;micas que tiene el negocio durante su marcha,
+                ayud&aacute;ndole a generar los Estados Financieros b&aacute;sicos
+                para la toma de decisiones y lograr con ello un adecuado an&aacute;lisis y comparaci&oacute;n de
+                periodos, con el efecto de conocer el resultado de sus decisiones pasadas y
+                proyectar sus decisiones futuras.</p>
+              <p class="card-text" style="margin:0;">La contabilidad es como el tablero de un veh&iacute;culo, este
+                refleja sus condiciones y es sumamente necesario
+                para saber qu&eacute; le hace falta al negocio para que pueda continuar su marcha, adem&aacute;s de
+                conocer la velocidad que est&aacute; alcanzando para llegar a su o sus
+                objetivos.</p>
+              <p class="card-text" style="margin:0;">Entre los reportes m&aacute;s comunes relacionados con esta
+                soluci&oacute;n, son los siguientes:</p>
+              <ol type="1">
+                <li>Registro diario</li>
+                <li>Libro mayor</li>
+                <li>Balanzas</li>
+                <li>Estado de Resultados</li>
+                <li>Estado de Situaci&oacute;n Financiera</li>
+                <li>Estado de Flujo de Efectivo</li>
+                <li>Estado de Cambios al Capital</li>
+              </ol>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+              style="padding: 0;padding-left: 3px;padding-right: 3px;">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="emergenteSuppliers" tabindex="-1" aria-labelledby="emergenteSuppliersLabel"
+      aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="emergenteSuppliersLabel">{{'sol_fis' | translate}}</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body card" style="border-radius: 0 !important;padding: 5px!important;">
+            <img class="optimizedImage" fill ngSrc="./assets/images/soluciones/sol_fis.png" style="border-radius: 8px;">
+            <div class="card-body" style="padding: 10px;">
+              <p class="card-text" style="margin:0;">Soluci&oacute;n desarrollada en atenci&oacute;n al art&iacute;culo
+                31 fracci&oacute;n IV de la
+                Constituci&oacute;n Pol&iacute;tica de los Estados Unidos Mexicanos (fundamento constitucional de las
+                contribuciones en M&eacute;xico) señala que:</p>
+              <p class="card-text italico">
+                <i>“Art&iacute;culo 31. Son obligaciones de los mexicanos:</i>
+                <i>…</i>
+                <i>IV. Contribuir para los gastos p&uacute;blicos, as&iacute; de la Federación, como de los Estados, de
+                  la Ciudad de M&eacute;xico y del Municipio en que residan,
+                  de la manera proporcional y equitativa que dispongan las leyes.”</i>
+              </p>
+              <p class="card-text" style="margin:0;">Principalmente ofrecemos a nuestros clientes atención y asesoría
+                especializada en materia fiscal
+                regulada por el Gobierno de México y sus tratados internacionales. Asistiéndolos para que todas sus
+                manifestaciones y declaraciones que emerjan durante su negocio
+                en marcha se apeguen a derecho fiscal y no sean contrarias. Cumpliendo oportunamente con las
+                obligaciones fiscales que le correspondan según su actividad económica.</p>
+              <p class="card-text" style="margin:0;">Entre las obligaciones más comunes de esta solución, están las
+                siguientes:</p>
+              <ol type="1">
+                <li>Inscripción ante el Registro Federal de Contribuyentes (RFC).</li>
+                <li>Aviso de cambio de domicilio fiscal.</li>
+                <li>Aviso de actualización de actividad económica.</li>
+                <li>Declaraciones provisionales y definitivas mensuales.</li>
+                <li>Declaración de Impuesto del ejercicio fiscal (anuales).</li>
+                <li>Declaraciones Informativas de Operaciones con Terceros (DIOT).</li>
+                <li>Solicitud de devoluciones.</li>
+                <li>Regulación fiscal.</li>
+                <li>Atención a cartas invitación.</li>
+                <li>Orientación y asesoría para tramitar la Firma Electrónica Avanzada (e.firma).</li>
+                <li>Orientación y asesoría para tramitar y registrar el buzón tributario.</li>
+                <li>Atención y asesoría en temas fiscales.</li>
+                <li>Registro de Prestadores de Servicios Especializados u Obras Especializadas (REPSE).</li>
+                <li>Avisos filiatorios.</li>
+                <li>Declaraciones de Aportaciones de Seguridad Social.</li>
+                <li>Declaración de Impuestos Estatales.</li>
+              </ol>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+              style="padding: 0;padding-left: 3px;padding-right: 3px;">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="emergenteEmployees" tabindex="-1" aria-labelledby="emergenteEmployeesLabel"
+      aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="emergenteEmployeesLabel">{{'sol_leg' | translate}}</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body card" style="border-radius: 0 !important;padding: 5px!important;">
+            <img class="optimizedImage" fill ngSrc="./assets/images/soluciones/sol_leg.png" style="border-radius: 8px;">
+            <div class="card-body" style="padding: 10px;">
+              <p class="card-text" style="margin:0;">Toda vez que vivimos en un Estado de Derecho, todo negocio debe
+                cumplir con cierta normativa desde su creación,
+                durante su negocio en marcha hasta alcanzar plenamente su objeto. Es por ello que dentro de nuestra gama
+                de soluciones tenemos las legales, consistentes en apoyar a nuestros
+                clientes desde un enfoque jurídico. </p>
+              <p class="card-text" style="margin:0;">Entre los servicios se encuentran los siguientes:</p>
+              <ol type="1">
+                <li>Asesoría y atención a auditorías fiscales y/o administrativas.</li>
+                <li>Asesoría, atención y defensa en Recursos Administrativos (Revocación, Inconformidad, etc.).</li>
+                <li>Asesoría, atención y defensa en Juicios Contencioso Administrativos, especialmente los de tema
+                  Fiscal.</li>
+                <li>Asesoría, atención y defensa en Juicios de Amparo.</li>
+                <li>Asesoría jurídica a víctimas relacionada con delitos patrimoniales.</li>
+                <li>Asesoría, atención y defensa en procedimientos administrativos seguidos en forma de juicio
+                  especialmente en materia de verificación y responsabilidad patrimonial.</li>
+                <li>Asesoría y atención en juicios laborales.</li>
+              </ol>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+              style="padding: 0;padding-left: 3px;padding-right: 3px;">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

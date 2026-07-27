@@ -1,0 +1,88 @@
+.modalNotificaciones div.contenido div.modal-content div.form div.card .card-content .pNotif{
+    width: 100%;
+    height: 20px;
+    line-height: 20px;
+    background-color: rgba(0,0,0,0.7);
+    border-radius: 8px;
+    text-align: center;
+    color: #fff;
+    font-weight: bolder;
+}
+
+.modalNotificaciones div.contenido div.modal-content div.form div.circleNofif div.card{
+    width: 49%;
+    height: 30%;
+    border-radius: 8px;
+}
+
+.modalNotificaciones div.contenido div.modal-content div.form div.dataNofif{
+    background-color: #e7e7ea;
+    width: 64%;
+    height: calc(100% - 50px);
+    border-radius: 4px 4px 8px 4px;
+}
+
+.modalNotificaciones div.contenido div.modal-content div.form div.dataNofif .contentListNotif{
+    width: 100%!important;
+    overflow: overlay;
+    display: flex;
+    flex-wrap: wrap;
+    display: flex;
+    justify-content: center;
+}
+
+.modalNotificaciones div.contenido div.modal-content div.form div.dataNofif .contentListNotif h6.noNotifH6{
+    display: flex;
+    height: 300px;
+    background-color: #D32F2F!important;
+    width: 300px;
+    border-radius: 8px;
+    margin-top: 10px;
+    color: #fff;
+    box-shadow: 1px 1px 5px #353535;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+}
+
+.modalNotificaciones div.contenido div.modal-content div.form div.dataNofif .contentListNotif div.card{
+    width: 95%;
+    height: 100px;
+    border-radius: 8px;
+}
+
+.modalNotificaciones div.contenido div.modal-content div.form div.dataNofif .contentListNotif div.card .row{
+    width: 100%;
+    margin: 0!important;
+    padding: 0!important;
+}
+
+.modalNotificaciones div.contenido div.modal-content div.form div.dataNofif .contentListNotif div.card .row .col{
+    height: 20px;
+    display: flex;
+}
+
+.modalNotificaciones div.contenido div.modal-content div.form div.dataNofif .contentListNotif div.card .row .col h6{
+    width: auto;
+    margin: 0;
+    color: #353535!important;
+    height: 20px;
+    line-height: 20px;
+}
+
+.modalNotificaciones div.contenido div.modal-content div.form div.dataNofif .contentListNotif div.card .row .col h6.info{
+    background: #e7e7ea!important;
+    border-radius: 4px;
+    color: #353535!important;
+    font-weight: bold;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.modalNotificaciones div.contenido div.modal-content div.form div.dataNofif .contentListNotif div.card .row .col a.btnRow{
+    height: 25px!important;
+    line-height: 25px;
+    width: 100%!important;
+    border-radius: 8px!important;
+    font-family: ubuntu, FontAwesome;
+}

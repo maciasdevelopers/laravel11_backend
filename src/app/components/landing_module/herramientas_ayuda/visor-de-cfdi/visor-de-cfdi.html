@@ -1,0 +1,440 @@
+<div class="col-12 col-sm-12 col-md-12 col-lg-4 col-xl-4 col-xxl-4 input-group">
+  <label class="activeInput"><i class="fa-solid fa-file-code"></i>&nbsp;{{'cfdi_xml_import' | translate}}</label>
+  <input id="facturaxml" class="validate" type="file" placeholder="XML" accept=".xml" (change)="cargaXmlCompra($event,$event.target);">
+</div>
+
+<div class="col-12 explain">
+  <h6 class="title">Informaci&oacute;n del CFDI</h6>
+</div>
+
+<div class="col-12 tarjetaCFD row">
+  @switch (resultXml) {
+    @case ('validoXml') {
+      <div class="col-12" style="padding: 5px!important;">
+        <!--COMPROBANTE-->
+        <div class="col-12 explain">
+          <h6 class="title">Comprobante</h6>
+        </div>
+        <div class="col-12">
+          @for (comp of dataCFDI_comprobante_obj | keyvalue: keepOrder; track $index) {
+            <div [ngClass]="comp.key === 'sello' || comp.key === 'certificado' ? 'explain explain_column' : 'col-12 explain'">
+              <h6 class="title">{{ formatLabel($any(comp.key)) }}</h6>
+              <h6 class="content" [ngClass]="comp.key === 'sello' || comp.key === 'certificado' ? 'content_text_large' : ''"> {{ comp.value }}</h6>
+            </div>
+          }
+        </div>
+        <!--EMISOR-->
+        <div class="col-12 explain">
+          <h6 class="title">Emisor</h6>
+        </div>
+        <div class="col-12">
+          @for (emi of dataCFDIEmisor_obj | keyvalue: keepOrder; track $index) {
+            <div class="explain">
+              <ng-container>
+                <h6 class="title">{{ formatLabel($any(emi.key)) }}</h6>
+                <h6 class="content">{{ emi.value }}</h6>
+              </ng-container>
+            </div>
+          }
+        </div>
+        <!--RECEPTOR-->
+        <div class="col-12 explain">
+          <h6 class="title">Receptor</h6>
+        </div>
+        <div class="col-12">
+          @for (rec of dataCFDIReceptor_obj | keyvalue: keepOrder; track $index) {
+            <div class="explain">
+              <ng-container>
+                <h6 class="title">{{ formatLabel($any(rec.key)) }}</h6>
+                <h6 class="content">{{ rec.value }}</h6>
+              </ng-container>
+            </div>
+          }
+        </div>
+        <!--LISTA Y SERVICIOS-->
+        <div class="col-12 explain">
+          <h6 class="title">Listado de productos / servicios del CFDI</h6>
+        </div>
+        <div class="col-12">
+          <div class="col-12">
+            <p-table #conceptCFDIList [value]="dataCFDI_conceptos" [globalFilterFields]="dataCFDIBuscarConcepto" dataKey="id" [resizableColumns]="true" responsiveLayout="stack">
+              <ng-template #caption>
+                <div class="flex">
+                  <p-iconfield iconPosition="left" class="ml-auto">
+                    <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                    <input pInputText type="text" (input)="conceptCFDIList.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+                  </p-iconfield>
+                </div>
+              </ng-template>
+              <ng-template #header>
+                <tr>
+                  <th class="ultimo" pSortableColumn="num_lista">&nbsp;<p-sortIcon field="num_lista" /></th>
+                  <th pSortableColumn="Descripcion">Concepto / Descripci&oacute;n&nbsp;<p-sortIcon field="Descripcion" /></th>
+                  <th pSortableColumn="Unidad">Unidad de Medida-SAT&nbsp;<p-sortIcon field="Unidad" /></th>
+                  <th pSortableColumn="ClaveProdServ">Cat&aacute;logo SAT&nbsp;<p-sortIcon field="ClaveProdServ" /></th>
+                  <th pSortableColumn="ValorUnitario">Valor unitario&nbsp;<p-sortIcon field="ValorUnitario" /></th>
+                  <th pSortableColumn="Cantidad">cantidad&nbsp;<p-sortIcon field="Cantidad" /></th>
+                  <th pSortableColumn="Descuento">descuento&nbsp;<p-sortIcon field="Descuento" /></th>
+                  <th pSortableColumn="Importe">subtotal&nbsp;<p-sortIcon field="Importe" /></th>
+                  <th colspan="2" pSortableColumn="TotalRetenciones"><i class="fas fa-hand-holding-usd"></i>&nbsp;retenciones&nbsp;<p-sortIcon field="TotalRetenciones" /></th>
+                  <th colspan="2" pSortableColumn="TotalTraslados"><i class="fa-solid fa-right-left"></i>&nbsp;traslados&nbsp;<p-sortIcon field="TotalTraslados" /></th>
+                  <th pSortableColumn="Subtotal">Total&nbsp;<p-sortIcon field="Subtotal" /></th>
+                </tr>
+              </ng-template>
+              <ng-template #body let-conceptList>
+                <tr>
+                  <td>{{conceptList.num_lista}}</td>
+                  <td class="text_large">
+                    <p class="large_text">{{conceptList.Descripcion}}</p>
+                  </td>
+                  <td style="padding: 5px!important;height: 30px;">{{conceptList.Unidad}}</td>
+                  <td style="padding: 5px!important;height: 30px;">{{conceptList.ClaveProdServ}}</td>
+                  <td style="padding: 5px!important;height: 30px;">${{conceptList.ValorUnitario}}</td>
+                  <td style="padding: 5px!important;height: 30px;">{{conceptList.Cantidad}}</td>
+                  <td style="padding: 5px!important;height: 30px;">${{conceptList.Descuento}}</td>
+                  <td style="padding: 5px!important;height: 30px;">${{conceptList.Importe}}</td>
+                  <!--Retenciones-->
+                  <td style="padding: 5px!important;height: 30px;">${{conceptList.TotalRetenciones}}</td>
+                  <td class="ultimo">
+                    <a class="btn" [ngClass]="activaBotonRetencionesClass(conceptList)"
+                      [attr.disabled]="!activaBotonRetencionesEnabled(conceptList) ? true : null"
+                      [attr.aria-disabled]="!activaBotonRetencionesEnabled(conceptList) ? true : null"
+                      (click)="activaBotonRetencionesEnabled(conceptList) && verConceptoXMLRetenciones(conceptList);">
+                      <i class="fa-solid" style="color: white!important;" [ngClass]="activaBotonRetencionesIcono(conceptList)"></i>
+                    </a>
+                    <p-dialog header="Retenciones" [(visible)]="conceptList.articulo_retenciones_modal" [attr.position]="'bottom'" [modal]="true" [style]="{ width: '50rem' }" 
+                      [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+                      <div class="col-12 row">
+                        <div class="col-12">
+                          <p-table #impRetListOne [value]="conceptList.retenciones" dataKey="id" [resizableColumns]="true" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]" responsiveLayout="stack"
+                            [globalFilterFields]="['Base','Impuesto','TipoFactor','TasaOCuota','Importe','impuesto_relacion_nombre']">
+                            <ng-template #caption>
+                              <div class="flex">
+                                <p-iconfield iconPosition="left" class="ml-auto">
+                                  <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                                  <input pInputText type="text" (input)="impRetListOne.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+                                </p-iconfield>
+                              </div>
+                            </ng-template>
+                            <ng-template #header>
+                              <tr>
+                                <th style="width: 50px" class="ultimo"></th>
+                                <th style="width: 100px" pSortableColumn="Base">Base&nbsp;<p-sortIcon field="Base" /></th>
+                                <th style="width: 100px" pSortableColumn="Impuesto">Impuesto&nbsp;<p-sortIcon field="Impuesto" /></th>
+                                <th style="width: 120px" pSortableColumn="TipoFactor">TipoFactor&nbsp;<p-sortIcon field="TipoFactor" /></th>
+                                <th style="width: 120px" pSortableColumn="TasaOCuota">TasaOCuota&nbsp;<p-sortIcon field="TasaOCuota" /></th>
+                                <th style="width: 100px" pSortableColumn="Importe">Importe&nbsp;<p-sortIcon field="Importe" /></th>
+                                <th style="width: 200px" pSortableColumn="impuesto_relacion_nombre">Impuesto relacionado&nbsp;<p-sortIcon field="impuesto_relacion_nombre" /></th>
+                              </tr>
+                            </ng-template>
+                            <ng-template #body let-ret let-i="rowIndex" let-expandReten="expanded">
+                              <tr>
+                                <td class="ultimo">
+                                  <a class="btn bg-blue-600" [pRowToggler]="ret">
+                                    <i class="fa-solid" [ngClass]="expandReten ? 'fa-angle-up' : 'fa-angle-down'"></i>
+                                  </a>
+                                </td>
+                                <td>{{ret.Base}}</td>
+                                <td>{{ret.Impuesto}}</td>
+                                <td>{{ret.TipoFactor}}</td>
+                                <td>{{ret.TasaOCuota}}</td>
+                                <td>{{ret.Importe}}</td>
+                                <td>{{ret.impuesto_relacion_nombre}}</td>
+                              </tr>
+                            </ng-template>
+                            <ng-template pTemplate="emptymessage">
+                              <tr>
+                                <td colspan="7" class="text-center py-4">
+                                  <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                                  <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                    {{'no_rows' | translate}}
+                                  </p>
+                                </td>
+                              </tr>
+                            </ng-template>
+                          </p-table>
+  
+                        </div>
+                      </div>
+                    </p-dialog>
+                  </td>
+                  <!--Traslados-->
+                  <td style="padding: 5px!important;height: 30px;">${{conceptList.TotalTraslados}}</td>
+                  <td class="ultimo">
+                    <a class="btn" [ngClass]="activaBotonTrasladosClass(conceptList)"
+                      [attr.disabled]="!activaBotonTrasladosEnabled(conceptList) ? true : null"
+                      [attr.aria-disabled]="!activaBotonTrasladosEnabled(conceptList) ? true : null"
+                      (click)="activaBotonTrasladosEnabled(conceptList) && verConceptoXMLTraslados(conceptList);">
+                      <i class="fa-solid" style="color: white!important;" [ngClass]="activaBotonTrasladosIcono(conceptList)"></i>
+                    </a>
+                  </td>
+                  <td style="padding: 5px!important;height: 30px;">${{conceptList.Subtotal}}</td>
+                </tr>
+                <tr *ngIf="conceptList === dataCFDI_concepto_traslados">
+                  <td colspan="13">
+                    <p-table #impTrasList [value]="conceptList.traslados" dataKey="id" [resizableColumns]="true" [paginator]="true"
+                      [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]" responsiveLayout="stack"
+                      [globalFilterFields]="['Base','Impuesto','TipoFactor','TasaOCuota','Importe','impuesto_relacion_nombre']">
+                      <ng-template #caption>
+                        <div class="flex">
+                          <p-iconfield iconPosition="left" class="ml-auto">
+                            <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                            <input pInputText type="text" (input)="impTrasList.filterGlobal($event.target.value, 'contains')"
+                              placeholder="{{'bus_car' | translate}}" />
+                          </p-iconfield>
+                        </div>
+                      </ng-template>
+                      <ng-template #header>
+                        <tr>
+                          <th style="width: 100px" pSortableColumn="Base">Base&nbsp;<p-sortIcon field="Base" /></th>
+                          <th style="width: 100px" pSortableColumn="Impuesto">Impuesto&nbsp;<p-sortIcon field="Impuesto" /></th>
+                          <th style="width: 120px" pSortableColumn="TipoFactor">TipoFactor&nbsp;<p-sortIcon field="TipoFactor" /></th>
+                          <th style="width: 120px" pSortableColumn="TasaOCuota">TasaOCuota&nbsp;<p-sortIcon field="TasaOCuota" /></th>
+                          <th style="width: 100px" pSortableColumn="Importe">Importe&nbsp;<p-sortIcon field="Importe" /></th>
+                        </tr>
+                      </ng-template>
+                      <ng-template #body let-tras let-i="rowIndex" let-expandedTras="expanded">
+                        <tr>
+                          <td>{{tras.Base}}</td>
+                          <td>{{tras.Impuesto}}</td>
+                          <td>{{tras.TipoFactor}}</td>
+                          <td>{{tras.TasaOCuota}}</td>
+                          <td>{{tras.Importe}}</td>
+                        </tr>
+                      </ng-template>
+                      <ng-template pTemplate="emptymessage">
+                        <tr>
+                          <td colspan="5" class="text-center py-4">
+                            <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                            <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                              {{'no_rows' | translate}}
+                            </p>
+                          </td>
+                        </tr>
+                      </ng-template>
+                    </p-table>
+                  </td>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td colspan="13" class="text-center py-4">
+                    <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                    <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                      {{'no_rows' | translate}}
+                    </p>
+                  </td>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="footer">
+                <tr>
+                  <td class="td_importes" colspan="12">Subtotal:</td>
+                  <td class="td_importes">{{compra_subtotal | currency: dataCFDI_comprobante_Moneda}}</td>
+                </tr>
+                <tr>
+                  <td class="td_importes" colspan="12">Descuentos:</td>
+                  <td class="td_importes">{{compra_descuento | currency: dataCFDI_comprobante_Moneda}}</td>
+                </tr>
+                <tr>
+                  <td class="td_importes" colspan="12">Retenciones:</td>
+                  <td class="td_importes">{{compra_retenciones | currency: dataCFDI_comprobante_Moneda}}</td>
+                </tr>
+                <tr>
+                  <td class="td_importes" colspan="12">Traslados:</td>
+                  <td class="td_importes">{{compra_traslados | currency: dataCFDI_comprobante_Moneda}}</td>
+                </tr>
+                <tr>
+                  <td class="td_importes" colspan="12">Total:</td>
+                  <td class="td_importes">{{compra_total | currency: dataCFDI_comprobante_Moneda}}</td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+        </div>
+        <!--IMPUESTOS-->
+        <div class="col-12 explain">
+          <h6 class="title">Impuestos</h6>
+        </div>
+        <div class="col-12">
+          <div class="col-12 row">
+            <div class="col-12 explain">
+              <h6 class="title">Retenciones</h6>
+              <h6 class="content">Total&nbsp;{{dataCFDI_impuestos_retenidos_total | currency: dataCFDI_comprobante_Moneda}}</h6>
+            </div>
+            <p-table #retenLista [value]="dataCFDI_impuestos_retenidos_lista" [globalFilterFields]="['Base','Impuesto','TipoFactor','TasaOCuota','Importe']" datakey="id" [paginator]="true"
+              [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]">
+              <ng-template #caption>
+                <div class="flex">
+                  <p-iconfield iconPosition="left" class="ml-auto">
+                    <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                    <input pInputText type="text" (input)="retenLista.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+                  </p-iconfield>
+                </div>
+              </ng-template>
+              <ng-template #header>
+                <tr>
+                  <th style="width: 100px" pSortableColumn="Base">Base&nbsp;<p-sortIcon field="Base" /></th>
+                  <th style="width: 100px" pSortableColumn="Impuesto">Impuesto&nbsp;<p-sortIcon field="Impuesto" /></th>
+                  <th style="width: 120px" pSortableColumn="TipoFactor">TipoFactor&nbsp;<p-sortIcon field="TipoFactor" /></th>
+                  <th style="width: 120px" pSortableColumn="TasaOCuota">TasaOCuota&nbsp;<p-sortIcon field="TasaOCuota" /></th>
+                  <th style="width: 100px" pSortableColumn="Importe">Importe&nbsp;<p-sortIcon field="Importe" /></th>
+                </tr>
+              </ng-template>
+              <ng-template #body let-ret>
+                <tr>
+                  <td>{{ret.Base}}</td>
+                  <td>{{ret.Impuesto}}</td>
+                  <td>{{ret.TipoFactor}}</td>
+                  <td>{{ret.TasaOCuota}}</td>
+                  <td>{{ret.Importe}}</td>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td colspan="5" class="text-center py-4">
+                    <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                    <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                      {{'no_rows' | translate}}
+                    </p>
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+          <div class="col-12 row">
+            <div class="col-12 explain">
+              <h6 class="title">Traslados</h6>
+              <h6 class="content">Total&nbsp;{{dataCFDI_impuestos_trasladados_total | currency: dataCFDI_comprobante_Moneda}}</h6>
+            </div>
+            <p-table #trasKLista [value]="dataCFDI_impuestos_trasladados_lista" [globalFilterFields]="['Base','Impuesto','TipoFactor','TasaOCuota','Importe']" datakey="id" [paginator]="true"
+              [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]">
+              <ng-template #caption>
+                <div class="flex">
+                  <p-iconfield iconPosition="left" class="ml-auto">
+                    <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                    <input pInputText type="text" (input)="trasKLista.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+                  </p-iconfield>
+                </div>
+              </ng-template>
+              <ng-template #header>
+                <tr>
+                  <th style="width: 100px" pSortableColumn="Base">Base&nbsp;<p-sortIcon field="Base" /></th>
+                  <th style="width: 100px" pSortableColumn="Impuesto">Impuesto&nbsp;<p-sortIcon field="Impuesto" /></th>
+                  <th style="width: 120px" pSortableColumn="TipoFactor">TipoFactor&nbsp;<p-sortIcon field="TipoFactor" /></th>
+                  <th style="width: 120px" pSortableColumn="TasaOCuota">TasaOCuota&nbsp;<p-sortIcon field="TasaOCuota" /></th>
+                  <th style="width: 100px" pSortableColumn="Importe">Importe&nbsp;<p-sortIcon field="Importe" /></th>
+                </tr>
+              </ng-template>
+              <ng-template #body let-tras>
+                <tr>
+                  <td>{{tras.Base}}</td>
+                  <td>{{tras.Impuesto}}</td>
+                  <td>{{tras.TipoFactor}}</td>
+                  <td>{{tras.TasaOCuota}}</td>
+                  <td>{{tras.Importe}}</td>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td colspan="5" class="text-center py-4">
+                    <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                    <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                      {{'no_rows' | translate}}
+                    </p>
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+        </div>
+        <!--COMPLEMENTO-->
+        <div class="col-12 explain">
+          <h6 class="title">Complemento</h6>
+        </div>
+        <div class="col-12">
+          <div class="col-12 row">
+            @for (last of dataCFDIComplemento_obj | keyvalue: keepOrder; track $index) {
+              <div [ngClass]="last.key === 'SelloCFD' || last.key === 'SelloSAT' ? 'explain explain_column' : 'col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-3 explain'">
+                <h6 class="title">{{ formatLabel($any(last.key)) }}</h6>
+                <h6 class="content" [ngClass]="last.key === 'SelloCFD' || last.key === 'SelloSAT' ? 'content_text_large' : ''">{{ last.value }}</h6>
+              </div>
+            }
+          </div>
+          <div class="col-12 row">
+            @for (cporte of dataCFDIComplemento_carta_porte_obj | keyvalue: keepOrder; track $index) {
+              <div class="explain">
+                <h6 class="title">{{ formatLabel($any(cporte.key)) }}</h6>
+                <h6 class="content">{{ cporte.value }}</h6>
+              </div>
+            }
+          </div>
+        </div>
+        @if (dataCFDIRelacionados_obj.uuids?.length > 0) {
+          <!--CFDI RELACIONADOS-->
+          <div class="col-12 explain">
+            <h6 class="title">Cfdi relacionados</h6>
+          </div>
+          <div class="col-12">
+            @for (rel of dataCFDIRelacionados_obj | keyvalue: keepOrder; track $index) {
+              <div class="col-12">
+                <div class="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-2 col-xxl-2 explain">
+                  <h6 class="title">{{ formatLabel($any(rel.key)) }}</h6>
+                  <h6 class="content">{{ rel.value }}</h6>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    }
+    @case ('errorXml') {
+      <p>CFDI Invalido.</p>
+    }
+    @default {
+      <p>Registre CFDI.</p>
+    }
+  }
+</div>
+
+<!-- INF.Complemento carta aporte.
+1.-Version
+-use: required
+-fixed: 3.1
+
+2.-IdCCP
+-type: xs:string
+-use: required
+
+3.-TranspInternac
+-type: xs:string
+-use: required
+
+4.-EntradaSalidaMerc
+-type: xs:string
+-use: optional
+
+5.-PaisOrigenDestino
+-type: catCFDI:c_pais
+-use: optional
+
+6.-ViaEntradaSalida
+-type: catCartaPorte:c_CveTransporte
+-use: optional
+
+7.-TotalDistRec
+-type: xs:decimal
+-use: optional
+
+8.-RegistroISTMO
+-type: xs:string
+-use: optional
+
+9.-UbicacionPoloOrigen
+-type: catCartaPorte:c_RegistroISTMO
+-use: optional
+
+10.-UbicacionPoloDestino
+-type: catCartaPorte:c_RegistroISTMO
+-use: optional
+
+-->

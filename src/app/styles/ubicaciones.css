@@ -1,0 +1,7 @@
+
+ul.collection_postales{border-radius: 8px;padding: 0;}
+ul.collection_postales li.list-group-item{padding: 5px;color: #353535;font-family: 'roboto_medium';}
+ul.collection_postales li.list-group-item div.busqueda h6{padding: 0;margin: 0;height: 30px;line-height: 30px;font-family: 'roboto_bold';}
+ul.collection_postales li.list-group-item div.busqueda div.field_buscar{padding: 0;margin: 0;}
+ul.collection_postales li.itemFor p{background-color: #1e88e5;margin-bottom: 3px;color: white;padding-left: 3px;border-radius: 25px;cursor: pointer;}
+ul.collection_postales li.itemColoniaSeleted{background-color: #353535;color: white;}

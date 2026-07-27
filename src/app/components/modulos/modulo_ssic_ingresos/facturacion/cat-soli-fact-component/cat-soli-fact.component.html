@@ -1,0 +1,41 @@
+<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco" #vContent>
+  <div class="contenido">
+    <app-loader></app-loader>
+    <nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+    <main class="contenidoPagina">
+      <div class="listas_ps revanecer">
+        <div id="listaClientes" class="lista-div lista-divNoFlex row">
+          <h4>SOLICITUDES DE CFDI</h4>
+
+          <table class="responsive-table centered">
+            <thead>
+              <tr>
+                <th>folio</th>
+                <th>fecha</th>
+                <th>{{'kliente' | translate}}</th>
+                <th>importe total</th>
+                <th class="ultimo"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="trlink" routerLink="/sos_inside/ingresos/solicitud_facturacion_detalle/{{listSoli.token_cfdi}}" *ngFor="let listSoli of listSoliFact">
+                <td>{{listSoli.folio_cfdi}}</td>
+                <td>{{listSoli.fecha_solicitud}}</td>
+                <td>{{listSoli.name_emp_fact}}</td>
+                <td>{{listSoli.importe_total}}</td>
+                <td class="ultimo">
+                  <p style="border-radius:50%!important;" *ngIf="listSoli.pendientes > 0" class="btn spanButton waves-effect waves-light blue darken-2"><span>{{listSoli.pendientes}}</span></p>
+                </td>
+              </tr>
+            </tbody>
+            <tbody *ngIf="listSoliFact.length == 0">
+              <tr><td colspan="5">{{'no_rows' | translate}}</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+    <app-footer-inside></app-footer-inside>
+  </div>
+</div>

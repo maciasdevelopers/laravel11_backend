@@ -1,0 +1,169 @@
+<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco" #vContent>
+  <div class="contenido"><app-loader></app-loader>
+    <nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+    <div class="contenidoPagina">
+      <div class="listas_ps">
+        <div class="lista-div lista-divNoFlex">
+          <h4>CATALOGO DE PUNTOS DE VENTA</h4>
+          <div class="btn-group lista_botones" role="group" aria-label="Basic example">
+            <a class="btn btn_extend bg-indigo-600" data-bs-toggle="modal" data-bs-target="#modalPVentaRegistro">
+              <i class="fa-solid fa-plus"></i>&nbsp;Registrar nuevo punto de venta
+            </a>
+            <a class="btn btn_extend bg-indigo-600" (click)="catalogo_puntos_de_venta_true();">
+              <i class="fa-solid fa-rotate" style="margin-left: 5px;"></i>&nbsp;{{'list_updt' | translate}}
+            </a>
+            <a class="btn btn_extend bg-indigo-600" data-bs-toggle="modal" data-bs-target="#modalPVentaEliminados">
+              <i class="fa-solid fa-trash" style="margin-left: 5px;"></i>&nbsp;puntos de venta eliminados
+            </a>
+            <a class="btn btn_extend bg-green-600 descarga_lista_excel"
+              [ngClass]="puntoVentaListaTrue.length == 0 ? 'disabled' : ''"
+              [attr.disabled]="puntoVentaListaTrue.length == 0 ? true : null"
+              [attr.aria-disabled]="puntoVentaListaTrue.length == 0 ? true : null"
+              (click)="puntoVentaListaTrue.length > 0 && descarga_excel_pventa();">
+              <i class="fa-solid fa-file-excel" style="margin-left: 5px;"></i>&nbsp;descargar
+            </a>
+          </div>
+
+          <p-table id="list_table_pventa" #listpVentaTable [value]="puntoVentaListaTrue"
+            [globalFilterFields]="['token_caja','caja_folio','caja_alias','establecimiento']" dataKey="id"
+            [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]">
+            <ng-template #caption>
+              <div class="flex">
+                <p-iconfield iconPosition="left" class="ml-auto">
+                  <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                  <input pInputText type="text" (input)="listpVentaTable.filterGlobal($event.target.value, 'contains')"
+                    placeholder="{{'bus_car' | translate}}" />
+                </p-iconfield>
+              </div>
+            </ng-template>
+            <ng-template #header>
+              <tr>
+                <th>folio</th>
+                <th class="name">alias</th>
+                <th>Establecimiento</th>
+                <th>Responsable</th>
+                <th>{{'observ' | translate}}</th>
+                <th class="ultimo"></th>
+              </tr>
+            </ng-template>
+            <ng-template #body let-pv>
+              <tr>
+                <td>{{pv.folio_puntodeventa}}</td>
+                <td class="name">{{pv.fecha_registro+" "+pv.pv_alias}}</td>
+                <td>{{pv.pv_direccion}}</td>
+                <td>{{pv.pv_responsable}}</td>
+                <td>{{pv.pv_observaciones}}</td>
+                <td class="ultimo">
+                  <a class="btn btn_extend text-bg-danger rounded-3" [ngClass]="pv.pv_autorizado ? 'disabled' : ''"
+                    [attr.disabled]="pv.pv_autorizado ? true : null"
+                    [attr.aria-disabled]="pv.pv_autorizado ? true : null"
+                    (click)="!pv.pv_autorizado && eliminaPuntoVenta(pv.token_puntodeventa);"><i
+                      class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}</a>
+                </td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="6" class="text-center py-4">
+                  <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                  <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                    {{'no_rows' | translate}}
+                  </p>
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade bd-example-modal-lg" id="modalPVentaRegistro" tabindex="-1" role="dialog"
+  aria-labelledby="modalPVentaRegistroLabel" aria-hidden="true">
+  <div class="modal-dialog modal-fullscreen" style="margin: 1%;width: 98%!important;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="modalPVentaRegistroLabel">REGISTRO DE PUNTOS DE VENTA</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+          style="background-color: transparent !important;"></button>
+      </div>
+      <div class="modal-body"><app-nuevo-punto-venta-finanzas></app-nuevo-punto-venta-finanzas></div>
+      <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade bd-example-modal-lg" id="modalPVentaEliminados" tabindex="-1" role="dialog"
+  aria-labelledby="modalPVentaEliminadosLabel" aria-hidden="true">
+  <div class="modal-dialog modal-fullscreen" style="margin: 1%;width: 98%!important;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="modalPVentaEliminadosLabel">INFORMACI&Oacute;N DE PUNTOS DE
+          VENTA ELIMINADOS</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+          style="background-color: transparent !important;"></button>
+      </div>
+      <div class="modal-body">
+        <p-table id="list_table_deleted_pventa" #listpDeletedVentaTable [value]="puntoVentaListaFalse"
+          [globalFilterFields]="['token_caja','caja_folio','caja_alias','establecimiento']" dataKey="id"
+          [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]">
+          <ng-template #caption>
+            <div class="flex">
+              <p-iconfield iconPosition="left" class="ml-auto">
+                <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                <input pInputText type="text"
+                  (input)="listpDeletedVentaTable.filterGlobal($event.target.value, 'contains')"
+                  placeholder="{{'bus_car' | translate}}" />
+              </p-iconfield>
+            </div>
+          </ng-template>
+          <ng-template #header>
+            <tr>
+              <th>folio</th>
+              <th class="name">alias</th>
+              <th>Establecimiento</th>
+              <th>Responsable</th>
+              <th>{{'observ' | translate}}</th>
+              <th class="ultimo"></th>
+              <th class="ultimo"></th>
+            </tr>
+          </ng-template>
+          <ng-template #body let-pvdel>
+            <tr>
+              <td>{{pvdel.folio_puntodeventa}}</td>
+              <td class="name">{{pvdel.fecha_registro+" "+pvdel.pv_alias}}</td>
+              <td>{{pvdel.pv_direccion}}</td>
+              <td>{{pvdel.pv_responsable}}</td>
+              <td>{{pvdel.pv_observaciones}}</td>
+              <td class="ultimo">
+                <a class="btn btn_extend bg-teal-700" (click)="restauraPuntoVenta(pvdel.token_puntodeventa);"><i
+                    class="fa-solid fa-trash-arrow-up"></i>&nbsp;{{'restore_row' | translate}}</a>
+              </td>
+              <td class="ultimo">
+                <a class="btn btn_extend text-bg-danger rounded-3"
+                  (click)="eliminaPermPuntoVenta(pvdel.token_puntodeventa);"><i
+                    class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}</a>
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="7" class="text-center py-4">
+                <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                  {{'no_rows' | translate}}
+                </p>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+      <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,238 @@
+<div class="form data-reg row" style="margin-top:30px!important;">
+  @if (!validateFoundEmp) {
+    <div class="col-12 row" style="padding: 0;margin-bottom: 20px !important;">
+      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6 fase_uno_nac">
+        <div class="card card_fase_uno row">
+          <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 seccion_logo_tipo" style="padding: 0;">
+            <img src="../assets/images/mx_logo.png">
+          </div>
+          <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 seccion_form" style="display: flex;flex-wrap: wrap;flex-direction: column;justify-content: space-between;">
+            <div class="col-12">
+              <h6 class="header_text">empresa nacional</h6>
+              <ul class="list-group list_opciones">
+                <li id="nacFisBtn" class="list-group-item" (click)="selectTipoNacionalidadEmp('nacional','empresaFisica','nacFisBtn');especificacionesInputRfcEmp();"><i class="fa-solid fa-person"></i>Persona f&iacute;sica</li>
+                <li id="nacMorBtn" class="list-group-item" (click)="selectTipoNacionalidadEmp('nacional','empresaMoral','nacMorBtn');especificacionesInputRfcEmp();"><i class="fa-solid fa-people-group"></i>Persona moral</li>
+              </ul>
+            </div>
+            <div class="col-12 formulario_verificacion">
+              <div class="col-12" style="padding:0!important;">
+                <div class="input-group rfcMayus" *ngIf="v_clasificacion_emp == '' || v_clasificacion_emp == 'extranjero' || v_subclasificacion_emp == ''">
+                  <label for="first_name" class="activeInput">Escriba su rfc con Homoclave</label>
+                  <input id="verif_rfcEmpMx" class="validate" name="verif_rfcEmpMx" type="text" placeholder="Ej. ABCD000000XXX" disabled>
+                </div>
+                <div class="input-group rfcMayus" *ngIf="v_clasificacion_emp != '' && v_clasificacion_emp == 'nacional' && v_subclasificacion_emp != '' && v_subclasificacion_emp == 'empresaFisica'">
+                  <label for="first_name" class="activeInput">Escriba su rfc con Homoclave (13 caracteres)</label>
+                  <input id="verif_rfcEmpMx" class="verif_rfc validate inputWthPass" name="verif_rfcEmpMx" type="text" autocomplete="off" data-length="13" placeholder="Ej. ABCD000000XXX" maxlength="13" (keyup)="keyupVerifRfcEmp($event.target);">
+                </div>
+                <div class="input-group rfcMayus" *ngIf="v_clasificacion_emp != '' && v_clasificacion_emp == 'nacional' && v_subclasificacion_emp != '' && v_subclasificacion_emp == 'empresaMoral'">
+                  <label for="first_name" class="activeInput">Escriba su rfc con Homoclave (12 caracteres)</label>
+                  <input id="verif_rfcEmpMx" class="verif_rfc validate inputWthPass" name="verif_rfcEmpMx" type="text" autocomplete="off" data-length="12" placeholder="Ej. ABC000000XXX" maxlength="12" (keyup)="keyupVerifRfcEmp($event.target);">
+                </div>
+              </div>
+              <div class="col-12" style="padding:0!important;">
+                <div class="input-group rfcMayus">
+                  <label for="verifNameCompanyNac_reg"class="activeInput">Nombre completo / raz&oacute;n social de la empresa</label>
+                  <input id="verifNameCompanyNac_reg" class="validate" name="verifNameCompanyNac_reg" type="text" autocomplete="off" [disabled]="v_clasificacion_emp == '' || v_clasificacion_emp == 'extranjero' || v_subclasificacion_emp == '' || emp_rfc == ''"
+                    (keyup)="checkNombreEmp($event.target);">
+                </div>
+              </div>
+              <div class="col-12 row" style="padding:0!important;">
+                <div class="col-12 col-sm-12 col-md-6 col-lg-8 col-xl-8 col-xxl-8"></div>
+                <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-4" style="display: flex !important;justify-content: end!important;margin-top: 5px!important;padding: 0!important;margin-bottom: 5px !important;">
+                  <a class="btn btn_extend bg-blue-300" id="btnBuscaProvDB"
+                    [ngClass]="v_clasificacion_emp == '' || v_clasificacion_emp == 'extranjero' || v_subclasificacion_emp == '' || emp_rfc == '' || emp_name_razon_social == '' ? 'disabled' : ''"
+                    [attr.disabled]="v_clasificacion_emp == '' || v_clasificacion_emp == 'extranjero' || v_subclasificacion_emp == '' || emp_rfc == '' || emp_name_razon_social == '' ? true : null"
+                    [attr.aria-disabled]="v_clasificacion_emp == '' || v_clasificacion_emp == 'extranjero' || v_subclasificacion_emp == '' || emp_rfc == '' || emp_name_razon_social == '' ? true : null"
+                    (click)="v_clasificacion_emp != '' && v_clasificacion_emp == 'nacional' && v_subclasificacion_emp != '' && emp_rfc != '' && emp_name_razon_social != '' ? functionBuscaEmpNacDB() : null;">
+                    Verificar RFC
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6 fase_uno_ext">
+        <div class="card card_fase_uno row">
+          <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 seccion_logo_tipo" style="padding: 0;">
+            <i class="fa-solid fa-globe"></i>
+          </div>
+          <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 seccion_form" style="display: flex;flex-wrap: wrap;flex-direction: row;">
+            <div class="col-12">
+              <h6 class="header_text">empresa extranjera</h6>
+              <ul class="list-group list_opciones">
+                <li id="extFisBtn" class="list-group-item" (click)="selectTipoNacionalidadEmp('extranjero','empresaFisica','extFisBtn');especificacionesInputRfcEmp();"><i class="fa-solid fa-person"></i>Persona f&iacute;sica</li>
+                <li id="extMorBtn" class="list-group-item" (click)="selectTipoNacionalidadEmp('extranjero','empresaMoral','extMorBtn');especificacionesInputRfcEmp();"><i class="fa-solid fa-people-group"></i>Persona moral</li>
+              </ul>
+            </div>
+            <div class="col-12 formulario_verificacion">
+              <div class="col-12" style="padding:0!important;">
+                <div class="input-group rfcMayus" *ngIf="v_clasificacion_emp == '' || v_clasificacion_emp == 'nacional' || v_subclasificacion_emp == ''">
+                  <label for="first_name" class="activeInput">Escriba su rfc</label>
+                  <input id="verif_rfcEmpExt" class="validate" name="verif_rfcEmpExt" type="text" placeholder="Ej. ABCD000000XXX" disabled>
+                </div>
+                <div class="input-group rfcMayus" *ngIf="v_clasificacion_emp != '' && v_clasificacion_emp == 'extranjero' && v_subclasificacion_emp != ''">
+                  <datalist id="listaRfcModelo">
+                    <option value="xaxx010101000"></option>
+                    <option value="xax010101000"></option>
+                    <option value="xexx010101000"></option>
+                  </datalist>
+                  <label for="first_name" class="activeInput">Escriba su rfc</label>
+                  <input id="verif_rfcEmpExt" list="#listaRfcModelo" class="verif_rfc validate" name="verif_rfcEmpExt" autocomplete="off" type="text" placeholder="Ej. ABC000000XXX" (keyup)="keyupverif_rfcExtEmp($event.target);">
+                </div>
+                <div class="input-group rfcMayus">
+                  <label for="first_name" class="activeInput">Escriba Tax ID de la empresa</label>
+                  <input id="verif_idTaxEmp" class="verif_rfc validate" name="verif_idTaxEmp" type="text" [disabled]="v_clasificacion_emp == '' || v_clasificacion_emp == 'nacional' || v_subclasificacion_emp == ''" minlength="9" maxlength="40" autocomplete="off" (keyup)="keyupverif_TaxIdEmp($event.target);">
+                </div>
+              </div>
+              <div class="col-12" style="padding:0!important;">
+                <div class="input-group rfcMayus">
+                  <label for="verifNameCompanyExt_reg" class="activeInput">Nombre completo / raz&oacute;n social de la empresa</label>
+                  <input id="verifNameCompanyExt_reg" class="validate" name="verifNameCompanyExt_reg" type="text" autocomplete="off" [disabled]="v_clasificacion_emp == '' || v_clasificacion_emp == 'nacional' || v_subclasificacion_emp == '' || emp_rfc == ''"
+                    (keyup)="checkNombreEmp($event.target);">
+                </div>
+              </div>
+              <div class="col-12 row" style="padding:0!important;">
+                <div class="col-12 col-sm-12 col-md-6 col-lg-8 col-xl-8 col-xxl-8"></div>
+                <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-4" style="display: flex !important;justify-content: end!important;margin-top: 5px!important;padding: 0!important;margin-bottom: 5px !important;">
+                  <a class="btn btn_extend bg-blue-300" id="btnBuscaProvDB"
+                    [ngClass]="v_clasificacion_emp == '' || v_clasificacion_emp == 'nacional' || v_subclasificacion_emp == '' || emp_rfc == '' || emp_name_razon_social == '' ? 'disabled' : ''"
+                    [attr.disabled]="v_clasificacion_emp == '' || v_clasificacion_emp == 'nacional' || v_subclasificacion_emp == '' || emp_rfc == '' || emp_name_razon_social == '' ? true : null"
+                    [attr.aria-disabled]="v_clasificacion_emp == '' || v_clasificacion_emp == 'nacional' || v_subclasificacion_emp == '' || emp_rfc == '' || emp_name_razon_social == '' ? true : null"
+                    (click)="v_clasificacion_emp != '' && v_clasificacion_emp == 'extranjero' && v_subclasificacion_emp != '' && emp_rfc != '' && emp_name_razon_social != '' ? funtcBuscaEmpExtDB() : null;">
+                    Verificar RFC
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  } @else {
+    <div class="col-12" style="border-top: solid 1px lightgray!important;padding: 0 !important;">
+      <form method="post" #frmAddEmp="ngForm" class="frmAddEmp" id="frmAddEmp" name="frmAddEmp" enctype="multipart/form-data" (ngSubmit)="validatePersonales && solicitaRegistroEmpresa(frmAddEmp);">
+        <div class="data-reg row">
+          <div class="col-12 row" style="padding: 0;">
+            <div class="col-12 col-sm-4 col-md-4 col-lg-4 col-xl-4 col-xxl-4 explain">
+              <h6 class="title">Clasificaci&oacute;n de la empresa</h6>
+              <h6 class="content">{{v_subclasificacion_emp == 'empresaFisica' ? 'Persona física' : 'Persona moral'}}</h6>
+            </div>
+            <div class="col-12 col-sm-4 col-md-4 col-lg-4 col-xl-4 col-xxl-4 explain">
+              <h6 class="title">Rfc</h6>
+              <h6 class="content">{{emp_rfc != '' ? emp_rfc : '---'}}</h6>
+            </div>
+            <div class="col-12 col-sm-4 col-md-4 col-lg-4 col-xl-4 col-xxl-4 explain">
+              <h6 class="title">idTax</h6>
+              <h6 class="content">{{emp_id_tax != '' ? emp_id_tax : '---'}}</h6>
+            </div>
+            <div class="col-12 explain">
+              <h6 class="title">Nombre completo / raz&oacute;n social de la empresa</h6>
+              <h6 class="content" (click)="decideEditarDataEmpresa();">{{emp_name_razon_social+" "}}
+                <i class="fa-solid" [ngClass]="!decisionEditNombre ? 'fa-pen-to-square fa-beat' : 'fa-solid fa-caret-up'"></i>
+              </h6>
+            </div>
+            <div class="col-12 row" style="padding:0!important;" *ngIf="decisionEditNombre">
+              <div class="input-group rfcMayus col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6" style="padding-left: 0;">
+                <label for="txtMaternoPF_reg"class="activeInput" id="lblMaterno">Nombre completo / raz&oacute;n social de la empresa</label>
+                <input id="verifNameProvidder_reg" class="validate" name="verifRfcMaterno" type="text" autocomplete="off" (keyup)="validaNewNombreEmp($event.target);">
+              </div>
+              <div class="col-12 col-sm-12 col-md-11 col-lg-11 col-xl-11 col-xxl-11 row" style="padding: 0;" *ngIf="v_clasificacion_emp == 'nacional'">
+                <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6" style="padding-left: 0;">
+                  <div class="input-group rfcMayus" *ngIf="v_subclasificacion_emp == 'empresaFisica'">
+                    <label class="activeInput">Escriba su rfc con Homoclave (13 caracteres)</label>
+                    <input class="verif_rfc validate inputWthPass" type="text" autocomplete="off" data-length="13" placeholder="Ej. ABCD000000XXX" maxlength="13" (keyup)="validaNewRfcEmp($event.target);">
+                  </div>
+                  <div class="input-group rfcMayus" *ngIf="v_subclasificacion_emp == 'empresaMoral'">
+                    <label class="activeInput">Escriba su rfc con Homoclave (12 caracteres)</label>
+                    <input class="verif_rfc validate inputWthPass" type="text" autocomplete="off" data-length="12" placeholder="Ej. ABC000000XXX" maxlength="12" (keyup)="validaNewRfcEmp($event.target);">
+                  </div>
+                </div>
+              </div>
+  
+              <div class="col-12 col-sm-12 col-md-11 col-lg-11 col-xl-11 col-xxl-11 row" style="padding: 0;" *ngIf="v_clasificacion_emp == 'extranjero'">
+                <div class="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-4 col-xxl-4" style="padding-left: 0;">
+                  <div class="input-group rfcMayus" *ngIf="v_subclasificacion_emp == 'empresaFisica'">
+                    <label class="activeInput">Escriba su rfc con Homoclave (13 caracteres)</label>
+                    <input class="verif_rfc validate inputWthPass" type="text" autocomplete="off" data-length="13" placeholder="Ej. ABCD000000XXX" maxlength="13" (keyup)="validaNewRfcEmp($event.target);">
+                  </div>
+                  <div class="input-group rfcMayus" *ngIf="v_subclasificacion_emp == 'empresaMoral'">
+                    <label class="activeInput">Escriba su rfc con Homoclave (12 caracteres)</label>
+                    <input class="verif_rfc validate inputWthPass" type="text" autocomplete="off" data-length="12" placeholder="Ej. ABC000000XXX" maxlength="12" (keyup)="validaNewRfcEmp($event.target);">
+                  </div>
+                </div>
+                <div class="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-4 col-xxl-4 input-group rfcMayus">
+                  <label for="first_name" class="activeInput">Escriba Tax ID de la empresa</label>
+                  <input id="verif_idTaxProv" class="verif_rfc validate" name="verif_rfcProvMx" type="text" minlength="9" maxlength="40" autocomplete="off" (keyup)="validaNewTaxIdProv($event.target);">
+                </div>
+              </div>
+  
+              <div class="col-12 col-sm-12 col-md-1 col-lg-1 col-xl-1 col-xxl-1" style="padding: 0;margin-left: -10px;">
+                <a class="btn btn_extend text-bg-success rounded-3 disabled" *ngIf="(empModelo.name_emp_back == '' || empModelo.name_emp_back == empModelo.name_emp) && (empModelo.rfc_back == '' || empModelo.rfc == empModelo.rfc_back) && (empModelo.id_tax_back == '' || empModelo.id_tax == empModelo.id_tax_back)" disabled aria-disabled="true">
+                  <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}</a>
+                <a class="btn btn_extend text-bg-success rounded-3" (click)="guardaNew_DataEmpresa();"
+                  *ngIf="(empModelo.name_emp_back != '' && empModelo.name_emp != empModelo.name_emp_back) || (empModelo.rfc_back != '' && empModelo.rfc != empModelo.rfc_back) || (empModelo.id_tax_back != '' && empModelo.id_tax != empModelo.id_tax_back)">
+                  <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}</a>
+              </div>
+            </div>
+            <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-6 col-xxl-6" style="margin: 0;padding: 0;">
+              <span class="error" style="font-family: 'roboto_cr' !important;font-size: smaller;">* Campos obligatorios</span>
+            </div>
+            <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-6 col-xxl-6" style="margin: 0;padding: 0;">
+              <a class="btn btnGuardar btnRow bg-red-700" 
+                style="font-family:'roboto_cr'!important;font-size: smaller;height: 20px;line-height: 20px;"
+                (click)="comeBackPrincipalMenu();"><i class="fa-solid fa-chevron-left"></i>&nbsp;Regresar al menu principal</a>
+            </div>
+          </div>
+          <p-divider/>
+          <div class="col-12 row" style="padding:0!important;">
+            <div class="col-12 explain"><h6 class="title">DATOS GENERALES</h6></div>
+            <div class="input-group col-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-4">
+              <label for="txtnomCom_regPF" class="activeInput" id="lblNomComercial">Nombre comercial</label>
+              <input class="validate" name="txtNomComercialPF" type="text" (keyup)="keyupComercialName($event.target);" id="txtnomCom_regPF">
+            </div>
+            <div class="input-group col-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-4">
+              <label for="txtempresa_reg" class="activeInput"><span class="obligatorio">Abrev.</span></label>
+              <input class="validate" name="txtempresa" type="text" (keyup)="keyupAbrev($event.target);" id="txt_abrev" required>
+            </div>
+            
+            <div class="input-group col-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-4">
+              @if (v_clasificacion_emp == 'nacional') {
+                <label for="txtcurpPF_reg" class="activeInput">CURP</label>
+                <input class="validate" name="txtcurpPF" type="text" (keyup)="keyupCurp($event.target);" id="txtcurpPF_reg">
+              } @else {
+                <label for="selPaisExtPF_reg" class="activeInput" id="lblselPaisExtPF_reg"><span class="obligatorio">País</span></label>
+                <select id="selPaisExtPF_reg" class="browser-default" name="paisPF" (change)="changePais($event.target);">
+                  <option value="" disabled selected>{{'opt_select' | translate}}</option>
+                  <option *ngFor="let ltpais of lista_paises" value="{{ltpais.token_pais}}">{{ltpais.pais}}</option>
+                </select>
+              }
+            </div>
+            
+            <div class="input-group col-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-4">
+              <label for="txtsitWeb_reg"class="activeInput"id="lblSitioWeb">Sitio web</label>
+              <input class="validate" name="txtSitioWebPF" type="text" (change)="changeSitioWeb($event.target);" id="txtsitWebPF_reg">
+            </div>
+            <div class="input-group col-12">
+              <label class="activeInput"><span class="obligatorio">{{'reg_fis' | translate}}</span></label>
+              <select *ngIf="v_subclasificacion_emp == 'empresaFisica'" id="selRegimenFiscal" class="browser-default" name="selRegimenFiscal" (change)="changeRegimenFiscal($event.target);">
+                <option value="" disabled selected>{{'opt_select' | translate}}</option>
+                <option *ngFor="let ltrfis of PfAllRegFisArray" value="{{ltrfis.token_regimen_fiscal}}">{{ltrfis.regimen}}</option>
+              </select>
+              <select *ngIf="v_subclasificacion_emp == 'empresaMoral'" id="selRegimenFiscal" class="browser-default" name="selRegimenFiscal" (change)="changeRegimenFiscal($event.target);">
+                <option value="" disabled selected>{{'opt_select' | translate}}</option>
+                <option *ngFor="let ltrfis of PmAllRegFisArray" value="{{ltrfis.token_regimen_fiscal}}">{{ltrfis.regimen}}</option>
+              </select>
+            </div>
+          </div>
+          <p-divider/>
+          <div class="col-12 row" style="display: flex;justify-content: end;">
+            <button class="btn btn_extend text-bg-success rounded-3" type="submit" [ngClass]="!validatePersonales ? 'disabled' : ''" [attr.disabled]="!validatePersonales ? true : null" [attr.aria-disabled]="!validatePersonales ? true : null">
+              <i class="fa-solid fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  }
+</div>

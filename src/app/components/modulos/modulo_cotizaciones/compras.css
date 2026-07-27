@@ -1,0 +1,7 @@
+.input-field-concepto{display: flex;justify-content: center;}
+.input-field-concepto input{width: calc(100% - 40px) !important;}
+.input-field-concepto a{margin-left: 10px!important;border-radius: 8px!important;height: 30px!important;width: 30px!important;}
+
+div.file-field div.btn,p.btn{width: 25px!important;height: 25px!important;}
+div.file-field div.btn span{color: white!important;}
+div.file-field div.btn span i,p.btn i{font-size: 15px!important;}

@@ -1,0 +1,552 @@
+<div id="loadingSeccion" class="progress loadingpage loadingBlue" #loadingBlue>
+	<div class="preloader"></div>
+	<h6 class="h6loadingSeccion" #h6loadingSeccion>usuario verificado, ¡Bienvenido!</h6>
+</div>
+<!--<header><h1>Encabezado</h1></header>-->
+<div id="vContent" class="marco noneView" #vContent>
+	<div class="contenido">
+    <header class="sticky-top">
+			<nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+		</header>
+		<main id="mainContenidoModCompras" class="contenidoPagina contenidoModCompras">
+			<article class="listas_ps revanecer">
+        <div class="fmAlta lista-divNoFlex row">
+          <div class="col-12">
+            <div class="col-12 card card_main">
+              <div class="card-content">
+                <span class="card-title">{{'prov_cat' | translate}}</span>
+                <div class="inside">
+                  <h6 *ngIf="!privilegio_consulta" class="access_denied">{{'perm_denied' | translate}}</h6>
+                  <div class="col-12" *ngIf="privilegio_consulta">
+                    <div class="col-12" style="padding: 0;">
+                      <div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                        <a (click)="lista_proveedores(indicador_proveedores_general);lista_proveedores_mx(indicador_proveedores_mx);lista_proveedores_ext(indicador_proveedores_ext);" class="btn btnGuardar btnRow btnBlueHead btn_color_brown"><i class="fa-solid fa-rotate" style="margin-left: 5px;"></i>&nbsp;{{'list_updt' | translate}}</a>
+                      </div>
+                      <div class="col-12 col-sm-9 col-md-9 col-lg-10 col-xl-10 col-xxl-10"></div>
+                    </div>
+            
+                    <div class="modal fade bd-example-modal-lg" id="windowProveedorData" tabindex="-1" role="dialog" aria-labelledby="windowProveedorDataLabel" aria-hidden="true">
+                      <div class="modal-dialog modal-fullscreen" style="margin: 1%;width: 98%!important;">
+                        <div class="modal-content" *ngFor="let prv of proveedor_detalle">
+                          <div class="modal-header">
+                            <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="windowProveedorDataLabel">Informaci&oacute;n del proveedor</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: transparent !important;"></button>
+                          </div>
+                          <div class="modal-body">
+                            <div class="card-content col-12 row" style="align-items: start!important;align-items: start!important;flex-direction: row;height:auto!important;">
+                              <div class="col-12">
+                                <span class="card-title">{{prv.proveedor_name_head}}</span>
+                              </div>
+                              <div class="col-12 inside">
+                                <div class="col-12" style="border-top: solid 1px lightgray!important;padding: 0 !important;">
+                                  <div class="col-12 row" style="padding: 0;">
+                                    <div class="col-12 col-sm-4 col-md-4 col-lg-4 col-xl-4 col-xxl-4 explain">
+                                      <h6 class="title">Clasificaci&oacute;n del proveedor</h6>
+                                      <h6 class="content">{{prv.subClasificacion}}</h6>
+                                    </div>
+                                    <div class="col-12 col-sm-4 col-md-4 col-lg-4 col-xl-4 col-xxl-4 explain">
+                                      <h6 class="title">Rfc/idTax</h6>
+                                      <h6 class="content">{{prv.identificador}}</h6>
+                                    </div>
+                                    <div class="col-12 col-sm-4 col-md-4 col-lg-4 col-xl-4 col-xxl-4 explain" *ngIf="prv.nombre_comercial != ''">
+                                      <h6 class="title">nombre comercial</h6>
+                                      <h6 class="content">{{prv.nombre_comercial}}</h6>
+                                    </div>
+                                    <div class="col-12 col-sm-4 col-md-4 col-lg-4 col-xl-4 col-xxl-4 explain" *ngIf="prv.sitio_web != ''">
+                                      <h6 class="title">sitio web</h6>
+                                      <h6 class="content">{{prv.sitio_web}}</h6>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div class="col-12" *ngIf="prv.personal.length > 0" style="border-top: solid 1px lightgray!important;padding: 0 !important;">
+                                  <div class="col-12 explain"><h6 class="title">Informaci&oacute;n de contacto</h6></div>
+                                  <div class="col-12 row" style="padding: 0;" *ngFor="let cont of prv.personal">
+                                    <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-4 card card_main" style="padding: 0;margin: 0!important;height: 100%;background-color: cornsilk;">
+                                      <div class="card-content" style="flex-direction: column!important;align-items: start!important;padding: 2px;">
+                                        <div class="inside">
+                                          <div class="col-12" style="padding: 0 !important;">
+                                            <div class="col-12 row" style="padding: 0;">
+                                              <div class="col-12 explain">
+                                                <h6 class="title">Nombre</h6>
+                                                <h6 class="content">{{cont.paterno+" "+cont.materno+" "+cont.nombre}}</h6>
+                                              </div>
+                                              <div class="col-12 explain">
+                                                <h6 class="title">Area</h6>
+                                                <h6 class="content">{{cont.areaemp}}</h6>
+                                              </div>
+                                              <div class="col-12 explain">
+                                                <h6 class="title">Cargo</h6>
+                                                <h6 class="content">{{cont.cargo}}</h6>
+                                              </div>
+                                              <div class="col-12 explain explain_column">
+                                                <h6 class="title">Correos</h6>
+                                                <h6 class="content" style="text-transform: lowercase!important;" *ngFor="let mail of cont.correo">{{mail.correo}}</h6>
+                                              </div>
+                                              <div class="col-12 explain explain_column">
+                                                <h6 class="title">Telefonos</h6>
+                                                <h6 class="content" style="text-transform: lowercase!important;" *ngFor="let tel of cont.telefono">{{tel.telefono+" Extensión "+tel.extension}}</h6>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div class="col-12" *ngIf="prv.tiene_docs_fiscales == true" style="border-top: solid 1px lightgray!important;padding: 0 !important;">
+                                  <div class="col-12 explain">
+                                    <h6 class="title">Documentaci&oacute;n fiscal</h6>
+                                  </div>
+                                  <div class="col-12 row" style="padding: 0;">
+                                    <table class="centered white">
+                                      <thead>
+                                        <tr>
+                                          <th style="width: 400px!important;"></th>
+                                          <th>{{'file_name' | translate}}</th>
+                                          <th class="ultimo"></th>
+                                        </tr>
+                                      </thead>
+                                      <tbody>
+                                        <tr id="trDocSitFiscal" *ngFor="let fis_doc of prv.docs_sit_fiscal">
+                                          <td>Constancia de situaci&oacute;n fiscal</td>
+                                          <td>{{fis_doc.doc_name_}}</td>
+                                          <td class="ultimo">
+                                            <a class="btn btn_extend text-bg-primary rounded-4"  (click)="viewDocumentoLink(fis_doc.doc_url_);"><i class="fa-solid fa-globe"></i></a>
+                                          </td>
+                                        </tr>
+                                        <tr id="trDocCumplimientoObFiscales" *ngFor="let fis_obl of prv.docs_obl_fiscal">
+                                          <td>Constancia de cumplimiento de obligaciones fiscales</td>
+                                          <td>{{fis_obl.doc_name_}}</td>
+                                          <td class="ultimo">
+                                            <a class="btn btn_extend text-bg-primary rounded-4"  (click)="viewDocumentoLink(fis_obl.doc_url_);"><i class="fa-solid fa-globe"></i></a>
+                                          </td>
+                                        </tr>
+                                        <tr id="trDocContratos" *ngFor="let fis_cont of prv.docs_contratos">
+                                          <td>Contratos</td>
+                                          <td>{{fis_cont.doc_name_}}</td>
+                                          <td class="ultimo">
+                                            <a class="btn btn_extend text-bg-primary rounded-4"  (click)="viewDocumentoLink(fis_cont.doc_url_);"><i class="fa-solid fa-globe"></i></a>
+                                          </td>
+                                        </tr>
+                                        <tr id="trDocContratos" *ngFor="let fis_anex of prv.docs_anexos">
+                                          <td>Anexos</td>
+                                          <td>{{fis_anex.doc_name_}}</td>
+                                          <td class="ultimo">
+                                            <a class="btn btn_extend text-bg-primary rounded-4"  (click)="viewDocumentoLink(fis_anex.doc_url_);"><i class="fa-solid fa-globe"></i></a>
+                                          </td>
+                                        </tr>
+                                      </tbody>
+                                    </table>
+                                  </div>
+                                </div>
+                                <div class="col-12" *ngIf="prv.creditos.length > 0" style="border-top: solid 1px lightgray!important;padding:0!important;">
+                                  <div class="col-12 explain">
+                                    <h6 class="title">Cr&eacute;ditos</h6>
+                                  </div>
+                                  <div class="col-12 row" style="padding: 0;" *ngFor="let cred of prv.creditos">
+                                    <div class="col-12 explain">
+                                      <h6 class="title">Acepta cr&eacute;dito</h6>
+                                      <h6 class="content" *ngIf="cred.acepta == true">{{'yes' | translate}}</h6><h6 class="content" *ngIf="cred.acepta == false">no</h6>
+                                    </div>
+                                    <div class="col-12 sm-4 lg-2 xl-2 explain {{cred.class_disabled}}">
+                                      <h6 class="title">Moneda</h6>
+                                      <h6 class="content">{{cred.codigo_moneda+" "+cred.moneda}}</h6>
+                                    </div>
+                                    <div class="col-12 sm-4 lg-2 xl-2 explain {{cred.class_disabled}}">
+                                      <h6 class="title">L&iacute;mite de credito</h6>
+                                      <h6 class="content">{{cred.limite}}</h6>
+                                    </div>
+                                    <div class="col-12 sm-4 lg-2 xl-2 explain {{cred.class_disabled}}">
+                                      <h6 class="title">D&iacute;as de pago</h6>
+                                      <h6 class="content">{{cred.dias}}</h6>
+                                    </div>
+                                    <div class="col-12 sm-12 lg-6 xl-6 explain {{cred.class_disabled}}">
+                                      <h6 class="title">Comienzo del computo de d&iacute;as de cr&eacute;dito</h6>
+                                      <h6 class="content">{{cred.comienza_credito_text}}</h6>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div class="col-12" *ngIf="prv.forma_pago.length > 0" style="border-top: solid 1px lightgray!important;padding:0!important;">
+                                  <div class="col-12 row" style="padding: 0;" *ngFor="let form of prv.forma_pago">
+                                    <div class="col-12 explain">
+                                      <h6 class="title">Forma de pago</h6>
+                                      <h6 class="content">{{form.forma_pago_concept}}</h6>
+                                    </div>
+                                    <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-4 explain" *ngIf="form.tipo_referencia_pago != ''">
+                                      <h6 class="title">Referencia de pago</h6>
+                                      <h6 class="content" *ngIf="form.tipo_referencia_pago == 'clabeInterbancaria'">Por clabe interbancaria</h6>
+                                      <h6 class="content" *ngIf="form.tipo_referencia_pago == 'convenio'">Por convenio</h6>
+                                      <h6 class="content" *ngIf="form.tipo_referencia_pago == 'lineaCaptura'">Por linea de captura</h6>
+                                    </div>
+                                    <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-4 explain" *ngIf="form.tipo_referencia_pago == 'clabeInterbancaria'">
+                                      <h6 class="title">Clabe interbancaria</h6>
+                                      <h6 class="content">{{form.clabe_interbancaria}}</h6>
+                                    </div>
+                                    <div class="col-12 explain" *ngIf="form.docs_est_cuenta.length > 0">
+                                      <h6 class="title">Estado de cuenta reciente</h6>
+                                      <table class="centered white">
+                                        <thead>
+                                          <tr>
+                                            <th colspan="2">Estado de cuenta reciente</th>
+                                          </tr>
+                                        </thead>
+                                        <tbody>
+                                          <tr *ngFor="let est of form.docs_est_cuenta">
+                                            <td>{{est.doc_name_}}</td>
+                                            <td class="ultimo">
+                                              <a class="btn btn_extend text-bg-primary rounded-4"  (click)="viewDocumentoLink(est.doc_url_);"><i class="fa-solid fa-globe"></i></a>
+                                            </td>
+                                          </tr>
+                                        </tbody>
+                                      </table>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div class="col-12" style="border-top: solid 1px lightgray!important;padding:0!important;">
+                                  <div class="col-12 explain">
+                                    <h6 class="title">¿Recibe factura antes o despues del pago?</h6>
+                                    <h6 class="content">{{prv.receptFactura}}</h6>
+                                  </div>
+                                </div>
+                                <div class="col-12" style="border-top: solid 1px lightgray!important;padding:0!important;">
+                                  <div class="col-12 explain">
+                                    <h6 class="title">¿Recibes el producto o servicio antes o despues del pago?</h6>
+                                    <h6 class="content">{{prv.classRecibeArtPago}}</h6>
+                                  </div>
+                                </div>
+                                <div class="col-12" style="border-top: solid 1px lightgray!important;padding:0!important;">
+                                  <div class="col-12 explain"><h6 class="title">DIRECCIONES (UBICACI&Oacute;N)</h6></div>
+                                  <div class="col-12 row" style="padding: 0;" *ngFor="let dir of prv.arrayUbicacion">
+                                    <div class="col-12 card card_main" style="padding: 0;margin: 0!important;height: 100%;background-color: cornsilk;">
+                                      <div class="card-content" style="flex-direction: column!important;align-items: start!important;padding: 2px;">
+                                        <div class="inside">
+                                          <div class="col-12" style="padding: 0 !important;" *ngIf="dir.pais == '118'">
+                                            <div class="col-12 row" style="padding: 0;">
+                                              <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-6 col-xxl-6 explain">
+                                                <h6 class="title">Pa&iacute;s</h6>
+                                                <h6 class="content">M&eacute;xico</h6>
+                                              </div>
+                                              <div class="col-12 sm-3 lg-3 lx-3 explain">
+                                                <h6 class="title">Clase</h6>
+                                                <h6 class="content">{{dir.clase}}</h6>
+                                              </div>
+                                              <div class="col-12 sm-3 lg-3 lx-3 explain">
+                                                <h6 class="title">Tipo</h6>
+                                                <h6 class="content">{{dir.tipo_direccion}}</h6>
+                                              </div>
+                                              <div class="col-12 sm-6 lg-3 lx-3 explain">
+                                                <h6 class="title">Estado</h6>
+                                                <h6 class="content">{{dir.estado_edit}}</h6>
+                                              </div>
+                                              <div class="col-12 sm-6 lg-3 lx-3 explain">
+                                                <h6 class="title">Municipio</h6>
+                                                <h6 class="content">{{dir.municipio_edit}}</h6>
+                                              </div>
+                                              <div class="col-12 sm-6 lg-3 lx-3 explain">
+                                                <h6 class="title">C&oacute;digo postal</h6>
+                                                <h6 class="content">{{dir.c_postal_edit}}</h6>
+                                              </div>
+                                              <div class="col-12 sm-6 lg-3 lx-3 explain">
+                                                <h6 class="title">Colonia</h6>
+                                                <h6 class="content">{{dir.colonia_edit}}</h6>
+                                              </div>
+                                            </div>
+                                          </div>
+                                          <div class="col-12" style="padding: 0 !important;" *ngIf="dir.pais != '118'">
+                                            <div class="col-12 row" style="padding: 0;">
+                                              <div class="col-12 sm-6 lg-3 lx-3 explain">
+                                                <h6 class="title">Pa&iacute;s</h6>
+                                                <h6 class="content">{{dir.pais}}</h6>
+                                              </div>
+                                              <div class="col-12 sm-6 lg-3 lx-3 explain">
+                                                <h6 class="title">Clase</h6>
+                                                <h6 class="content">{{dir.clase}}</h6>
+                                              </div>
+                                              <div class="col-12 sm-6 lg-3 lx-3 explain">
+                                                <h6 class="title">Tipo</h6>
+                                                <h6 class="content">{{dir.tipo_direccion}}</h6>
+                                              </div>
+                                              <div class="col-12 sm-6 lg-3 lx-3 explain">
+                                                <h6 class="title">C&oacute;digo postal</h6>
+                                                <h6 class="content">{{dir.cod_postalext}}</h6>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div>
+                        </div>
+                      </div>
+                    </div>
+        
+                    <p-tabs value="0">
+                      <p-tablist>
+                        <p-tab value="0" (click)="lista_proveedores(indicador_proveedores_general);">Catálogo general de proveedores</p-tab>
+                        <p-tab value="1" (click)="lista_proveedores_mx(indicador_proveedores_mx);">Catálogo de proveedores nacionales</p-tab>
+                        <p-tab value="2" (click)="lista_proveedores_ext(indicador_proveedores_ext);">Catálogo de proveedores extranjeros</p-tab>
+                      </p-tablist>
+                      <p-tabpanels>
+                        <p-tabpanel value="0">
+                          <p-table #prvGralList [value]="proveedores_catalogo_general" showGridlines [resizableColumns]="true"
+                            columnResizeMode="expand" [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]"
+                            [globalFilterFields]="['folio','rfc_prov','nombre','pais','autorizado']">
+                            <ng-template #caption>
+                              <div class="flex" style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;" ngbDropdown>
+                                <a class="btn btn_extend" [ngClass]="indicador_proveedores_general == 'hoy' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="lista_proveedores('hoy');">
+                                  <i class="fa-solid fa-calendar-days"></i>&nbsp;Hoy
+                                </a>
+                                <a class="btn btn_extend" [ngClass]="indicador_proveedores_general == 'esta_semana' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="lista_proveedores('esta_semana');">
+                                  <i class="fa-solid fa-calendar-days"></i>&nbsp;Esta semana
+                                </a>
+                                <a class="btn btn_extend" [ngClass]="indicador_proveedores_general == 'este_mes' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="lista_proveedores('este_mes');">
+                                  <i class="fa-solid fa-calendar-days"></i>&nbsp;Este mes
+                                </a>
+                                <a class="btn btn_extend" [ngClass]="indicador_proveedores_general == 'mes_anterior' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="lista_proveedores('mes_anterior');">
+                                  <i class="fa-solid fa-arrow-left"></i>&nbsp;mes anterior
+                                </a>
+                                <a id="menuDropProvGralRangos" class="btn btn_extend" [ngClass]="indicador_proveedores_general == 'otras_fechas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" ngbDropdownToggle>
+                                  <i class="fa-solid fa-list-ul"></i>&nbsp;otras fechas
+                                </a>
+                                <div class="dropdown-menu-end menu-despegable" ngbDropdownMenu="menuDropProvGralRangos" style="padding: 0!important; margin: 0!important; width: max-content!important; max-height: 400px; overflow-y: auto;">
+                                  <div class="col-12 input-group">
+                                    <label for="prov_gral_otras_fechas" class="activeInput">Periodo de fechas</label>
+                                    <p-datepicker id="prov_gral_otras_fechas" name="prov_gral_otras_fechas" [(ngModel)]="rangoPeriodoProveedoresGeneral" appendTo="body" dateFormat="dd/mm/yy" 
+                                      placeholder="dd/mm/aaaa" selectionMode="range" (onSelect)="lista_proveedores('otras_fechas');" />
+                                  </div>
+                                </div>
+                                <a class="btn btn_extend" [ngClass]="indicador_proveedores_general == 'all_partidas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="lista_proveedores('all_partidas');">
+                                  <i class="fa-solid fa-list-ul"></i>&nbsp;todos los registros
+                                </a>
+                                <p-iconfield iconPosition="left" class="ml-auto">
+                                  <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                                  <input pInputText type="text" (input)="prvGralList.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+                                </p-iconfield>
+                              </div>
+                            </ng-template>
+                            <ng-template #header>
+                              <tr>
+                                <th class="ultimo"></th>
+                                <th pResizableColumn pSortableColumn="folio">folio&nbsp;<p-sortIcon field="folio" /></th>
+                                <th pResizableColumn pSortableColumn="rfc_prov">rfc&nbsp;<p-sortIcon field="rfc_prov" /></th>
+                                <th pResizableColumn pSortableColumn="nombre">{{'prov' | translate}} &nbsp;<p-sortIcon field="nombre" /></th>
+                                <th pResizableColumn pSortableColumn="pais">{{'country' | translate}}&nbsp;<p-sortIcon field="pais" /></th>
+                                <th pResizableColumn pSortableColumn="autorizado">{{'yes_auth' | translate}} &nbsp;<p-sortIcon field="autorizado" /></th>
+                              </tr>
+                            </ng-template>
+                            <ng-template #body let-prvGral>
+                              <tr>
+                                <td class="ultimo">
+                                  <a class="btn btn_color_brown" (click)="ver_prov_info(prvGral.token_cat_proveedores);" data-bs-toggle="modal" data-bs-target="#windowProveedorData">
+                                    <i class="fa-solid fa-info"></i>
+                                  </a>
+                                </td>
+                                <td>{{prvGral.folio}}</td>
+
+                                @if (prvGral.rfc_prov != '---') {
+                                  <td class="td_names_rfc">{{prvGral.rfc_prov}}</td>
+                                } @else {
+                                  <td></td>
+                                }
+                                <td class="name">{{prvGral.nombre}}</td>
+                                <td>{{prvGral.pais}}</td>
+                                <td class="ultimo">
+                                  <a class="btn btn_extend rounded-3" [ngClass]="prvGral.autorizado ? 'text-bg-success' : 'text-bg-primary'"
+                                    [attr.disabled]="prvGral.autorizado ? true : null" [attr.aria-disabled]="prvGral.autorizado ? true : null"
+                                    (click)="!prvGral.autorizado && solicita_auth_prov(prvGral.token_cat_proveedores);">
+                                    <i class="fa-solid" [ngClass]="prvGral.autorizado ? 'fa-check' : 'fa-check-double'"></i>
+                                    {{prvGral.autorizado ? prvGral.auth_fecha : ('auth_solicita' | translate)}}
+                                  </a>
+                                </td>
+                              </tr>
+                            </ng-template>
+                            <ng-template pTemplate="emptymessage">
+                              <tr>
+                                <td colspan="6" class="text-center py-4">
+                                  <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                                  <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                    {{'no_rows' | translate}}
+                                  </p>
+                                </td>
+                              </tr>
+                            </ng-template>
+                          </p-table>
+                        </p-tabpanel>
+                        <p-tabpanel value="1">
+                          <p-table #mxListProvs [value]="proveedores_catalogo_mx" [globalFilterFields]="['folio','rfc_prov','nombre','autorizado']" [paginator]="true"
+                            [rows]="10" [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]">
+                            <ng-template #caption>
+                              <div class="flex" style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;" ngbDropdown>
+                                <a class="btn btn_extend" [ngClass]="indicador_proveedores_mx == 'hoy' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="lista_proveedores_mx('hoy');">
+                                  <i class="fa-solid fa-calendar-days"></i>&nbsp;Hoy
+                                </a>
+                                <a class="btn btn_extend" [ngClass]="indicador_proveedores_mx == 'esta_semana' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="lista_proveedores_mx('esta_semana');">
+                                  <i class="fa-solid fa-calendar-days"></i>&nbsp;Esta semana
+                                </a>
+                                <a class="btn btn_extend" [ngClass]="indicador_proveedores_mx == 'este_mes' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="lista_proveedores_mx('este_mes');">
+                                  <i class="fa-solid fa-calendar-days"></i>&nbsp;Este mes
+                                </a>
+                                <a class="btn btn_extend" [ngClass]="indicador_proveedores_mx == 'mes_anterior' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="lista_proveedores_mx('mes_anterior');">
+                                  <i class="fa-solid fa-arrow-left"></i>&nbsp;mes anterior
+                                </a>
+                                <a id="menuDropMXProvRangos" class="btn btn_extend" [ngClass]="indicador_proveedores_mx == 'otras_fechas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" ngbDropdownToggle>
+                                  <i class="fa-solid fa-list-ul"></i>&nbsp;otras fechas
+                                </a>
+                                <div class="dropdown-menu-end menu-despegable" ngbDropdownMenu="menuDropMXProvRangos" style="padding: 0!important; margin: 0!important; width: max-content!important; max-height: 400px; overflow-y: auto;">
+                                  <div class="col-12 input-group">
+                                    <label for="mx_prov_otras_fechas" class="activeInput">Periodo de fechas</label>
+                                    <p-datepicker id="mx_prov_otras_fechas" name="mx_prov_otras_fechas" [(ngModel)]="rangoPeriodoProveedoresMX" appendTo="body" dateFormat="dd/mm/yy" 
+                                      placeholder="dd/mm/aaaa" selectionMode="range" (onSelect)="lista_proveedores_mx('otras_fechas');" />
+                                  </div>
+                                </div>
+                                <a class="btn btn_extend" [ngClass]="indicador_proveedores_mx == 'all_partidas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="lista_proveedores_mx('all_partidas');">
+                                  <i class="fa-solid fa-list-ul"></i>&nbsp;todos los registros
+                                </a>
+                                <p-iconfield iconPosition="left" class="ml-auto">
+                                  <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                                  <input pInputText type="text" (input)="mxListProvs.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+                                </p-iconfield>
+                              </div>
+                            </ng-template>
+                            <ng-template #header>
+                              <tr>
+                                <th class="ultimo"></th>
+                                <th pSortableColumn="folio">folio&nbsp;<p-sortIcon field="folio" /></th>
+                                <th pSortableColumn="rfc_prov">rfc&nbsp;<p-sortIcon field="rfc_prov" /></th>
+                                <th pSortableColumn="nombre">{{'name' | translate}}&nbsp;<p-sortIcon field="nombre" /></th>
+                                <th>{{'yes_auth' | translate}}</th>
+                              </tr>
+                            </ng-template>
+                            <ng-template #body let-prvMx>
+                              <tr>
+                                <td class="ultimo">
+                                  <a class="btn btn_color_brown" (click)="ver_prov_info(prvMx.token_cat_proveedores);" data-bs-toggle="modal" data-bs-target="#windowProveedorData"><i class="fa-solid fa-info"></i></a>
+                                </td>
+                                <td>{{prvMx.folio}}</td>
+
+                                @if (prvMx.rfc_prov != '---') {
+                                  <td class="td_names_rfc">{{prvMx.rfc_prov}}</td>
+                                } @else {
+                                  <td></td>
+                                }
+                                <td class="name">{{prvMx.nombre}}</td>
+                                <td class="ultimo">
+                                  <a class="btn btn_extend rounded-3" [ngClass]="prvMx.autorizado ? 'text-bg-success' : 'text-bg-primary'"
+                                    [attr.disabled]="prvMx.autorizado ? true : null" [attr.aria-disabled]="prvMx.autorizado ? true : null"
+                                    (click)="!prvMx.autorizado && solicita_auth_prov(prvMx.token_cat_proveedores);">
+                                    <i class="fa-solid" [ngClass]="prvMx.autorizado ? 'fa-check' : 'fa-check-double'"></i>
+                                    {{prvMx.autorizado ? prvMx.auth_fecha : ('auth_solicita' | translate)}}
+                                  </a>
+                                </td>
+                              </tr>
+                            </ng-template>
+                            <ng-template pTemplate="emptymessage">
+                              <tr>
+                                <td colspan="5" class="text-center py-4">
+                                  <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                                  <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                    {{'no_rows' | translate}}
+                                  </p>
+                                </td>
+                              </tr>
+                            </ng-template>
+                          </p-table>
+                        </p-tabpanel>
+                        <p-tabpanel value="2">
+                          <p-table #extListProvs [value]="proveedores_catalogo_ext" [globalFilterFields]="['folio','rfc_prov','nombre','pais','autorizado']" [paginator]="true"
+                            [rows]="10" [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]">
+                            <ng-template #caption>
+                              <div class="flex" style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;" ngbDropdown>
+                                <a class="btn btn_extend" [ngClass]="indicador_proveedores_ext == 'hoy' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="lista_proveedores_ext('hoy');">
+                                  <i class="fa-solid fa-calendar-days"></i>&nbsp;Hoy
+                                </a>
+                                <a class="btn btn_extend" [ngClass]="indicador_proveedores_ext == 'esta_semana' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="lista_proveedores_ext('esta_semana');">
+                                  <i class="fa-solid fa-calendar-days"></i>&nbsp;Esta semana
+                                </a>
+                                <a class="btn btn_extend" [ngClass]="indicador_proveedores_ext == 'este_mes' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="lista_proveedores_ext('este_mes');">
+                                  <i class="fa-solid fa-calendar-days"></i>&nbsp;Este mes
+                                </a>
+                                <a class="btn btn_extend" [ngClass]="indicador_proveedores_ext == 'mes_anterior' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="lista_proveedores_ext('mes_anterior');">
+                                  <i class="fa-solid fa-arrow-left"></i>&nbsp;mes anterior
+                                </a>
+                                <a id="menuDropEXTPRVRangos" class="btn btn_extend" [ngClass]="indicador_proveedores_ext == 'otras_fechas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" ngbDropdownToggle>
+                                  <i class="fa-solid fa-list-ul"></i>&nbsp;otras fechas
+                                </a>
+                                <div class="dropdown-menu-end menu-despegable" ngbDropdownMenu="menuDropEXTPRVRangos" style="padding: 0!important; margin: 0!important; width: max-content!important; max-height: 400px; overflow-y: auto;">
+                                  <div class="col-12 input-group">
+                                    <label for="ext_prv_otras_fechas" class="activeInput">Periodo de fechas</label>
+                                    <p-datepicker id="ext_prv_otras_fechas" name="ext_prv_otras_fechas" [(ngModel)]="rangoPeriodoProveedoresEXT" appendTo="body" dateFormat="dd/mm/yy" 
+                                      placeholder="dd/mm/aaaa" selectionMode="range" (onSelect)="lista_proveedores_ext('otras_fechas');" />
+                                  </div>
+                                </div>
+                                <a class="btn btn_extend" [ngClass]="indicador_proveedores_ext == 'all_partidas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="lista_proveedores_ext('all_partidas');">
+                                  <i class="fa-solid fa-list-ul"></i>&nbsp;todos los registros
+                                </a>
+                                <p-iconfield iconPosition="left" class="ml-auto">
+                                  <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                                  <input pInputText type="text" (input)="extListProvs.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+                                </p-iconfield>
+                              </div>
+                            </ng-template>
+                            <ng-template #header>
+                              <tr>
+                                <th class="ultimo"></th>
+                                <th pSortableColumn="folio">folio&nbsp;<p-sortIcon field="folio" /></th>
+                                <th pSortableColumn="rfc_prov">rfc&nbsp;<p-sortIcon field="rfc_prov" /></th>
+                                <th pResizableColumn pSortableColumn="nombre">{{'prov' | translate}} &nbsp;<p-sortIcon field="nombre" /></th>
+                                <th pResizableColumn pSortableColumn="pais">{{'country' | translate}}&nbsp;<p-sortIcon field="pais" /></th>
+                                <th pResizableColumn pSortableColumn="autorizado">{{'yes_auth' | translate}} &nbsp;<p-sortIcon field="autorizado" /></th>
+                              </tr>
+                            </ng-template>
+                            <ng-template #body let-prvExt>
+                              <tr class="trlink">
+                                <td class="ultimo">
+                                  <a class="btn btn_color_brown" (click)="ver_prov_info(prvExt.token_cat_proveedores);" data-bs-toggle="modal" data-bs-target="#windowProveedorData"><i class="fa-solid fa-info"></i></a>
+                                </td>
+                                <td>{{prvExt.folio}}</td>
+                                @if (prvExt.rfc_prov != '---') {
+                                  <td class="td_names_rfc">{{prvExt.rfc_prov}}</td>
+                                } @else {
+                                  <td></td>
+                                }
+                                <td class="name">{{prvExt.nombre}}</td>
+                                <td>{{prvExt.pais}}</td>
+                                <td class="ultimo">
+                                  <a class="btn btn_extend rounded-3" [ngClass]="prvExt.autorizado ? 'text-bg-success' : 'text-bg-primary'"
+                                    [attr.disabled]="prvExt.autorizado ? true : null" [attr.aria-disabled]="prvExt.autorizado ? true : null"
+                                    (click)="!prvExt.autorizado && solicita_auth_prov(prvExt.token_cat_proveedores);">
+                                    <i class="fa-solid" [ngClass]="prvExt.autorizado ? 'fa-check' : 'fa-check-double'"></i>
+                                    {{prvExt.autorizado ? prvExt.auth_fecha : ('auth_solicita' | translate)}}
+                                  </a>
+                                </td>
+                              </tr>
+                            </ng-template>
+                            <ng-template pTemplate="emptymessage">
+                              <tr>
+                                <td colspan="6" class="text-center py-4">
+                                  <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                                  <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                    {{'no_rows' | translate}}
+                                  </p>
+                                </td>
+                              </tr>
+                            </ng-template>
+                          </p-table>
+                        </p-tabpanel>
+                      </p-tabpanels>
+                    </p-tabs>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+		</main>
+	</div>
+</div>

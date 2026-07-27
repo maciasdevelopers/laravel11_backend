@@ -1,0 +1,74 @@
+<p-table #descList [value]="listaComprasDescuentos"
+  [globalFilterFields]="['folio','articulo','fecha_recep','folio_recep','lo_pedido','llegoTiempo','buenEstado','calidadRecepcion','observaciones']"
+  [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]">
+  <ng-template #caption>
+    <div class="flex" style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;" ngbDropdown>
+      <a class="btn btn_extend" [ngClass]="indicadorComprasDescuentos == 'hoy' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="verDescuentosCompras('hoy');">
+        <i class="fa-solid fa-calendar-days"></i>&nbsp;Hoy
+      </a>
+      <a class="btn btn_extend" [ngClass]="indicadorComprasDescuentos == 'esta_semana' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="verDescuentosCompras('esta_semana');">
+        <i class="fa-solid fa-calendar-days"></i>&nbsp;Esta semana
+      </a>
+      <a class="btn btn_extend" [ngClass]="indicadorComprasDescuentos == 'este_mes' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="verDescuentosCompras('este_mes');">
+        <i class="fa-solid fa-calendar-days"></i>&nbsp;Este mes
+      </a>
+      <a class="btn btn_extend" [ngClass]="indicadorComprasDescuentos == 'mes_anterior' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="verDescuentosCompras('mes_anterior');">
+        <i class="fa-solid fa-arrow-left"></i>&nbsp;mes anterior
+      </a>
+      <a id="menuDropBuyRangos" class="btn btn_extend" [ngClass]="indicadorComprasDescuentos == 'otras_fechas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" ngbDropdownToggle>
+        <i class="fa-solid fa-list-ul"></i>&nbsp;otras fechas
+      </a>
+      <div class="dropdown-menu-end menu-despegable" ngbDropdownMenu="menuDropBuyRangos" style="padding: 0!important; margin: 0!important; width: max-content!important; max-height: 400px; overflow-y: auto;">
+        <div class="col-12 input-group">
+          <label for="buy_otras_fechas" class="activeInput">Periodo de fechas</label>
+          <p-datepicker id="buy_otras_fechas" name="buy_otras_fechas" [(ngModel)]="rangoPeriodoComprasDescuentos" appendTo="body" dateFormat="dd/mm/yy" 
+            placeholder="dd/mm/aaaa" selectionMode="range" (onSelect)="verDescuentosCompras('otras_fechas');" />
+        </div>
+      </div>
+      <a class="btn btn_extend" [ngClass]="indicadorComprasDescuentos == 'all_partidas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="verDescuentosCompras('all_partidas');">
+        <i class="fa-solid fa-list-ul"></i>&nbsp;todos los registros
+      </a>
+      <p-iconfield iconPosition="left" class="ml-auto">
+        <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+        <input pInputText type="text" (input)="descList.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+      </p-iconfield>
+    </div>
+  </ng-template>
+  <ng-template #header>
+    <tr>
+      <th pSortableColumn="folio">folio de compra&nbsp;<p-sortIcon field="folio" /></th>
+      <th pSortableColumn="articulo">articulo&nbsp;<p-sortIcon field="articulo" /></th>
+      <th pSortableColumn="fecha_recep"><i class="fa-solid fa-calendar"></i>&nbsp;fecha de recepci&oacute;n&nbsp;<p-sortIcon field="fecha_recep" /></th>
+      <th pSortableColumn="folio_recep">folio de devoluci&oacute;n&nbsp;<p-sortIcon field="folio_recep" /></th>
+      <th pSortableColumn="lo_pedido">Es lo que se ha pedido&nbsp;<p-sortIcon field="lo_pedido" /></th>
+      <th pSortableColumn="llegoTiempo">Lleg&oacute; a tiempo&nbsp;<p-sortIcon field="llegoTiempo" /></th>
+      <th pSortableColumn="buenEstado">Lleg&oacute; en buen estado&nbsp;<p-sortIcon field="buenEstado" /></th>
+      <th pSortableColumn="calidadRecepcion">Es de la calidad que esperaba&nbsp;<p-sortIcon field="calidadRecepcion" /></th>
+      <th pSortableColumn="observaciones">{{'observ' | translate}}&nbsp;<p-sortIcon field="folio_compra" /></th>
+    </tr>
+  </ng-template>
+  <ng-template #body let-dev>
+    <tr>
+      <td>{{dev.folio}}</td>
+      <td>{{dev.articulo}}</td>
+      <td>{{dev.fecha_recep}}</td>
+      <td>{{dev.folio_recep}}</td>
+      <td class="tdSymbol"><i class="fa-solid" [ngClass]="dev.lo_pedido ? 'fa-check' : 'fa-xmark'"></i></td>
+      <td class="tdSymbol"><i class="fa-solid" [ngClass]="dev.llegoTiempo ? 'fa-check' : 'fa-xmark'"></i></td>
+      <td class="tdSymbol"><i class="fa-solid" [ngClass]="dev.buenEstado ? 'fa-check' : 'fa-xmark'"></i></td>
+      <td class="tdSymbol"><i class="fa-solid" [ngClass]="dev.calidadRecepcion ? 'fa-check' : 'fa-xmark'"></i>
+      </td>
+      <td>{{dev.observaciones}}</td>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td colspan="9" class="text-center py-4">
+        <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+        <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+          {{'no_rows' | translate}}
+        </p>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>

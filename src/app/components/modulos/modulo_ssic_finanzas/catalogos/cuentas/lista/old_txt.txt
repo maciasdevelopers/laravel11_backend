@@ -1,0 +1,1457 @@
+					<div class="col-12 row">
+						<div class="col-12 col-sm-3 col-md-3 col-lg-2"></div>
+						<div class="col-12 col-sm-6 col-md-3 col-lg-2">
+
+							<a href="#infoCuentaRegQRCode" class="btn btnGuardar btnRow waves-light modal-trigger" style="width:100%!important;" (click)="clickEscannerQrCuenta();">&#xf029; Buscar por QR</a>
+
+							<div id="infoCuentaRegQRCode" class="modal modaloDialog">
+								<div class="contenido"><app-loader></app-loader>
+									<div class="header" style="height: auto;">
+										<div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+											<div class="chip chipPermisoEdit" id="chipServ">
+												<div class="col s6">
+													<h5 id="disabledServCont">Habilitar edici&oacute;n</h5>
+												</div>
+												<div class="col s5">
+													<div class="input-field" id="divEnablePassCheckedServ">
+														<input type="password" name="passImp" id="txtEnablePassCheckedServ" class="">
+														<label  for="txtEnablePassCheckedServ" class="activeInput " id="lbltxtEnablePassCheckedServ">Password</label>
+													</div>
+												</div>
+												<div class="col s1">
+													<a class="btn " id="btnVerificaPassServ" disabled><i class="fas fa-user-shield"></i></a>
+												</div>
+											</div>
+										</div>
+										<div class="col s11 m3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"><h4>INFORMACI&Oacute;N DE CUENTA BANCARIA REGISTRADA</h4></div>
+										<div class="col s1 m3 col-md-3 col-lg-2 col-xl-2 col-xxl-2" style="display: flex;align-items: center;">
+											<a id="cierraModalListaServPromo" class="modal-close btn text-bg-danger rounded-3"><i class="fa-solid fa-window-minimize"></i></a>
+										</div>
+									</div>
+
+									<div id="dataModalProv" class="modal-content" *ngIf="arrayDetListCuenta.length == 0 && validateQRcodeCuentaBanc == false">
+										<div class="col-12">
+											<div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+											<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+												<div id="camerarqCuentasBank"
+													style="
+														height: 400px;
+														width: 100%;
+														margin-top: 100px;
+														background-color: #353535;
+														border-radius: 8px;"></div>
+											</div>
+											<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+										</div>
+									</div>
+
+									<div id="dataModalProv" class="modal-content" *ngIf="arrayDetListCuenta.length != 0 && validateQRcodeCuentaBanc == true">
+										<div class="form" *ngFor="let divDetCuenta of arrayDetListCuenta">
+											<div class="col-12 row cabecera">
+												<div class="col-12">
+													<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+														<div class="info">
+															<p class="titulo tituloFolio">Folio registrado</p>
+															<p class="registro">{{divDetCuenta.folio}}</p>
+														</div>
+													</div>
+												</div>
+												<div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+													<h6 class="errorTh">* Banco</h6>
+													<div class="info">
+														<p class="registro pContent">{{divDetCuenta.clave+" - "+divDetCuenta.nombre_comercial}}</p>
+													</div>
+												</div>
+												<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+													<h6 class="errorTh">* No. contrato</h6>
+													<div class="info divInfoCuenta">
+														<p class="registro pContentCuenta">{{contratoDetalle}}</p>
+														<a class="btn btnView waves-effect waves-light" (click)="verNoContrato($event.target);"><i class="fa-solid fa-info"></i></a>
+													</div>
+												</div>
+												<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+													<h6 class="errorTh">* No. cuenta</h6>
+													<div class="info divInfoCuenta">
+														<p class="registro pContentCuenta" *ngFor="let pCuent of divDetCuenta.cuenta">{{cuentaDetalle}}</p>
+														<a class="btn btnView waves-effect waves-light" (click)="verNoCuenta($event.target);"><i class="fa-solid fa-info"></i></a>
+													</div>
+												</div>
+												<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+													<h6 class="errorTh">* Clabe interbancaria</h6>
+													<div class="info divInfoCuenta">
+														<p class="registro pContentCuenta" *ngFor="let pClabInt of divDetCuenta.clabe_inter">{{clabeInterDetalle}}</p>
+														<a class="btn btnView waves-effect waves-light" (click)="verNoClabeInter($event.target);"><i class="fa-solid fa-info"></i></a>
+													</div>
+												</div>
+												<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+													<h6 class="errorTh">* Sucursal</h6>
+													<div class="info">
+														<p class="registro pContent">{{sucursalDetalle}}</p>
+													</div>
+												</div>
+												<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+													<h6 class="errorTh">* Titular de está cuenta</h6>
+													<div class="info">
+														<p class="registro pContent">{{titularDetalle}}</p>
+													</div>
+												</div>
+												<div class="col-12 col-sm-12 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+													<table class="centered responsive-table">
+														<thead>
+															<tr>
+																<th>Manejo de:</th>
+																<th>Referencia</th>
+															</tr>
+														</thead>
+														<tbody *ngIf="arrayOpcionesAdcional.length > 0">
+															<tr *ngFor="let trOptionAdic of arrayOpcionesAdcional">
+																<td>{{trOptionAdic.clave}}</td>
+																<td>{{trOptionAdic.valor}}</td>
+															</tr>
+														</tbody>
+														<tbody *ngIf="arrayOpcionesAdcional.length == 0">
+															<tr>
+																<td colspan="2">{{'no_rows' | translate}}</td>
+															</tr>
+														</tbody>
+													</table>
+												</div>
+												<div class="col-12 col-sm-12 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+													<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+														<h6 class="errorTh">* Moneda</h6>
+														<h6>{{divDetCuenta.moneda}}</h6>
+													</div>
+													<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+														<h6 class="errorTh">* Área de utilidad</h6>
+														<div class="info divbtnArea">
+															<a *ngIf="divDetCuenta.egresos == true" class="btn text-bg-success rounded-3 tooltipped"
+																data-position="top" data-tooltip="Egresos y cuentas por pagar"><i class="fa-solid fa-arrow-up-short-wide"></i></a>
+															<a *ngIf="divDetCuenta.egresos == false" class="btn text-bg-danger rounded-3 tooltipped"
+																data-position="top" data-tooltip="Egresos y cuentas por pagar"><i class="fa-solid fa-arrow-up-short-wide"></i></a>
+															<a *ngIf="divDetCuenta.ingresos == true" class="btn text-bg-success rounded-3 tooltipped"
+																data-position="top" data-tooltip="Ingresos y cuentas por cobrar"><i class="fa-solid fa-arrow-down-short-wide"></i></a>
+															<a *ngIf="divDetCuenta.ingresos == false" class="btn text-bg-danger rounded-3 tooltipped"
+																data-position="top" data-tooltip="Ingresos y cuentas por cobrar"><i class="fa-solid fa-arrow-down-short-wide"></i></a>
+															<a *ngIf="divDetCuenta.v_humano == true" class="btn text-bg-success rounded-3 tooltipped"
+																data-position="top" data-tooltip="Valor humano">&#xf007;</a>
+															<a *ngIf="divDetCuenta.v_humano == false" class="btn text-bg-danger rounded-3 tooltipped"
+																data-position="top" data-tooltip="Valor humano">&#xf007;</a>
+														</div>
+													</div>
+													<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+													<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+														<button class="btn btnGuardar btnRow waves-light green darken-2" (click)="editDataCuentaBanc($event.target);">Editar</button>
+													</div>
+													<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+												</div>
+											</div>
+											<form class="row formUpdateCuenta"><!--#formUpdateCuenta="ngForm" autocomplete="off" (ngSubmit)="updateCuenta(formUpdateCuenta);"-->
+													<div class="col-12 row divUpdateCuentaBanc contenido-modal">
+															<div class="col-12 col-sm-12 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+																	<div class="busqueda row">
+																			<div class="col s2 m3 col-md-3 col-lg-2">
+																				<a class="btn  tooltipped" data-position="top" data-tooltip="Buscar por clave"><i class="fa-solid fa-cart-shopping"></i></a>
+																			</div>
+																			<div class="col s2 m3 col-md-3 col-lg-2">
+																				<a class="btn  tooltipped" data-position="top" data-tooltip="Buscar por nombre comercial"><i class="fa-solid fa-cart-shopping"></i></a>
+																			</div>
+																			<div class="col s8 m6 col-md-3 col-lg-2">
+																				<input class="datasearch" type="text" id="buscaprod" disabled placeholder="{{'bus_car' | translate}}">
+																			</div>
+																	</div>
+																	<div class="table_Corp">
+																			<table id="tableDetListabanco" class="centered responsive-table" cellspacing="0" cellpadding="1">
+																					<thead>
+																							 <tr>
+																									<th>Clave</th>
+																									<th>Nombre comercial</th>
+																									<th class="ultimo"></th>
+																							 </tr>
+																					</thead>
+																			</table>
+																			<div class="bodyTable">
+																					<table class="centered responsive-table" cellspacing="0" cellpadding="1" border="1">
+																							<tbody *ngIf="divDetCuenta.listBanco.length > 0">
+																									<tr *ngFor="let trlistBancNew of divDetCuenta.listBanco">
+																											<td>{{trlistBancNew.clave}}</td>
+																											<td>{{trlistBancNew.nombre_comercial}}</td>
+																											<td>
+																													<p>
+																															<label>
+																																	<input class="selectBanco select with-gap" value="{{trlistBancNew.token_bancos}}"
+																																			name="selectBanco" type="radio" (click)="selectListNewBanco($event.target,trlistBancNew.token_bancos);" disabled/>
+																															</label>
+																													</p>
+																											</td>
+																									</tr>
+																							</tbody>
+																							<tbody *ngIf="divDetCuenta.listBanco.length == 0">
+																									<tr>
+																											<td colspan="3">{{'no_rows' | translate}}</td>
+																									</tr>
+																							</tbody>
+																					</table>
+																			</div>
+																	</div>
+															</div>
+															<div class="col-12 col-sm-12 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+																	<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+																			<div class="input-field divWthibtnView">
+																					<input #txtPasssContrato class="txtPasssContrato validate inputWthPass" name="contratDetCuenta"
+																							type="password" (keyup)="validaNoContrato($event.target,perfCuentBanc);" disabled>
+																					<label class="activeInput">No. de contrato</label>
+																					<a #btnViewContrato class="btn btnView waves-effect waves-light" (click)="verContrato($event.target);" disabled><i class="fa-solid fa-info"></i></a>
+																			</div>
+																	</div>
+
+																	<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+																			<div class="input-field divWthibtnView">
+																					<input #txtPassCuenta class="txtPassCuenta validate inputWthPass" name="noDetCuenta" type="password"
+																							(keyup)="validaNoCuenta($event.target,perfCuentBanc);" disabled>
+																					<label class="activeInput">No. de cuenta</label>
+																					<a #btnViewCuenta class="btn btnView waves-effect waves-light" (click)="verCuenta($event.target);" disabled><i class="fa-solid fa-info"></i></a>
+																			</div>
+																	</div>
+																	<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+																			<div class="input-field divWthibtnView">
+																					<input #txtPassClabeInter class="txtPassClabeInter validate inputWthPass" name="detClabeInter"
+																							type="password" maxlength="18" (keyup)="validaClabeInter($event.target,perfCuentBanc);" disabled>
+																					<label class="activeInput">Clabe interbancaria</label>
+																					<a #btnViewCable class="btn btnView waves-effect waves-light" (click)="verClabeInter($event.target);" disabled><i class="fa-solid fa-info"></i></a>
+																			</div>
+																	</div>
+																	<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+																			<div class="input-field">
+																					<input #txtTitular class="txtTitular validate" name="titularDetCuenta" type="text"
+																							 (keyup)="validaTitular($event.target,perfCuentBanc);" disabled>
+																					<label class="activeInput">Titular de está cuenta</label>
+																			</div>
+																	</div>
+																	<div class="col-12 col-sm-12 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+																			<div class="input-field">
+																					<input class="txtSucursal validate" name="sucursalDetCuenta" type="text" disabled>
+																					<label class="activeInput">Sucursal</label>
+																			</div>
+																	</div>
+																	<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+																			<div class="input-field">
+																					<select #txtDetMonedaCuenta id="formaPagoCompra" name="formaPago" (change)="monedaChange($event.target);" disabled>
+																							<option value="" disabled selected>{{'opt_select' | translate}}</option>
+																							<option *ngFor="let arraMon of arrayMonedas" value="{{arraMon.c_token}}">{{arraMon.codigo+'-'+arraMon.moneda}}</option>
+																					</select>
+																					<label class="active activeSelect">Moneda</label>
+																			</div>
+																	</div>
+																	<div class="col-12">
+																			<div class="col-12 col-sm-12 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+																					<h6>&Aacute;rea de utilidad:</h6>
+																			</div>
+																			<div class="col s4 m4 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+																					<p class="radio">
+																							<label class="labelRadio">
+																									<input #checkEgresos *ngIf="divDetCuenta.egresos == true" class="checkEgresos validate" name="areaDetEgresos"
+																											type="checkbox" value="egresos" (click)="validaAreaEgresos($event.target,perfCuentBanc);" checked disabled>
+																									<input #checkEgresos *ngIf="divDetCuenta.egresos == false" class="checkEgresos validate" name="areaDetEgresos"
+																											type="checkbox" value="egresos" disabled>
+																									<span class="tooltipped" data-position="top" data-tooltip="Egresos y cuentas por pagar"><i class="fa-solid fa-arrow-up-short-wide"></i></span>
+																							</label>
+																					</p>
+																			</div>
+																			<div class="col s4 m4 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+																					<p class="radio">
+																							<label class="labelRadio">
+																									<input #checkIngresos *ngIf="divDetCuenta.ingresos == true" class="checkIngresos validate" name="areaDetIngresos"
+																											type="checkbox" value="ingresos" (click)="validaAreaIngresos($event.target,perfCuentBanc);" checked disabled>
+																									<input #checkIngresos *ngIf="divDetCuenta.ingresos == false" class="checkIngresos validate" name="areaDetIngresos"
+																											type="checkbox" value="ingresos" disabled>
+																									<span class="tooltipped" data-position="top" data-tooltip="Ingresos y cuentas por cobrar"><i class="fa-solid fa-arrow-down-short-wide"></i></span>
+																							</label>
+																					</p>
+																			</div>
+																			<div class="col s4 m4 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+																					<p class="radio">
+																							<label class="labelRadio">
+																									<input #checkVHumano *ngIf="divDetCuenta.v_humano == true" class="checkVHumano validate" name="areaDetVHumano"
+																											type="checkbox" value="v_humano" (click)="validaAreaVHumano($event.target,perfCuentBanc);" checked disabled>
+																									<input #checkVHumano *ngIf="divDetCuenta.v_humano == false" class="checkVHumano validate" name="areaDetVHumano"
+																											type="checkbox" value="v_humano" disabled>
+																									<span class="tooltipped" data-position="top" data-tooltip="Valor humano">&#xf007;</span>
+																							</label>
+																					</p>
+																			</div>
+																	</div>
+																	<div class="opciones">
+																			<div class="col-12">
+																					<h6>Medios de operaci&oacute;n</h6>
+																			</div>
+																			<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+																					<div class="input-field">
+																							<select #selectManejoAdc id="selectManejoAdc" name="selectManejoAdc" (change)="selectDetManejoCuenta($event.target);"><!---->
+																									<option value="" disabled selected>{{'opt_select' | translate}}</option>
+																									<option value="chequera">Chequera</option>
+																									<option value="Tarjetas de cr&eacute;dito">Tarjetas de cr&eacute;dito</option>
+																									<option value="Tarjetas de d&eacute;bito">Tarjetas de d&eacute;bito</option>
+																							</select>
+																							<label class="active activeSelect" id="lblCheque">Manejo de:</label>
+																					</div>
+																			</div>
+																			<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+																					<div class="col s10 m10 col-md-3 col-lg-20col-xl-2 col-xxl-20">
+																							<div class="input-field">
+																									<input #txtReferencia class="txtReferencia validate" type="text" (keyup)="validaNoReferencia($event.target);" disabled
+																											(keyup)="referenciaDetManCuenta($event.target);">
+																									<label class="activeInput">No. de referencia</label>
+																							</div>
+																					</div>
+																					<div class="col s2 m2 col-md-3 col-lg-2 col-xl-2 col-xxl-2 divMnajo">
+																							<a #btnDetAddManej class="btn btnRow btn text-bg-success rounded-3" disabled><i class="fa-solid fa-plus"></i></a><!--(click)="addDetManejoCuenta();"-->
+																					</div>
+																			</div>
+																			<div class="col-12">
+																					<table class="centered responsive-table">
+																							<thead>
+																									<tr>
+																											<th>Manejo de:</th>
+																											<th>No. de referencia</th>
+																											<th class="ultimo"></th>
+																									</tr>
+																							</thead>
+																							<tbody id="tbodyManejo" *ngIf="arrayDetalleAdicional.length > 0">
+																									<tr *ngFor="let trdetAdicional of arrayDetalleAdicional">
+																											<td>{{trdetAdicional.clave}}</td>
+																											<td>{{trdetAdicional.valor}}</td>
+																											<td><a id="btnDeleteManej" class="btn text-bg-danger rounded-3"><i class="fa-solid fa-trash"></i></a><!--(click)="deleteDetManejoCuenta($event.target);"-->
+																											</td>
+																									</tr>
+																							</tbody>
+																							<tbody id="tbodyManejo" *ngIf="arrayDetalleAdicional.length == 0">
+																									<tr>
+																											<td colspan="3">{{'no_rows' | translate}}</td>
+																									</tr>
+																							</tbody>
+																					</table>
+																			</div>
+																	</div>
+																	<div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+																	<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+																			<button class="btn btnGuardar btnRow waves-light green darken-2" type="submit" name="updateCuentBanc"
+																					(click)="updateCuenta();">Guardar</button>
+																	</div>
+																	<div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+															</div>
+													</div>
+											</form>
+										</div>
+									</div>
+								</div>
+							</div>
+
+						</div>
+						<div class="col-12 col-sm-3 col-md-3 col-lg-2"></div>
+
+						<div class="col-12">
+							<div class="busqueda row">
+								<div class="col s4 m6 col-md-3 col-lg-2" style="display:flex;">
+									<a class="btn tooltipped" data-position="top" data-tooltip="Registrar nueva cuenta"
+										routerLink="/tesoreria_altadecuentasbancarias">
+										<i class="fa-solid fa-plus"></i>
+									</a>
+									<a style="margin-left: 3px;" class="btn tooltipped" data-position="top"
+										data-tooltip="Recargar lista de proveedores" (click)="recargaListaCuentaBancaria();">
+										<i class="fa-solid fa-rotate"></i>
+									</a>
+									<a style="margin-left: 3px;" *ngIf="arrayCuentBankDelet.length != 0" class="btn modal-trigger tooltipped"
+										href="#modalCuentasEliminadas"
+										data-position="top" data-tooltip="Cuentas bancarias eliminadas">
+										<i class="fa-solid fa-trash"></i>
+									</a>
+									<a style="margin-left: 3px;" class="btn modal-trigger tooltipped" href="#modalbitacoraCuentas"
+										data-position="top" data-tooltip="bitacora de actividad">
+										<i class="fa-solid fa-timeline"></i>
+									</a>
+								</div>
+								<div class="col s9 m6 col-md-3 col-lg-2">
+									<input class="datasearch" type="text" id="buscaprod" disabled placeholder="{{'bus_car' | translate}}">
+								</div>
+							</div>
+
+							<div class="col-12 cardError divListaCuenta" *ngIf="arrayCuentBanc.length == 0">
+									No hay registros
+							</div>
+						</div>
+
+						<div id="modalViewCuenta" class="modal modaloDialog">
+							<div class="contenido"><app-loader></app-loader>
+								<div class="header">
+									<h4>PERFIL DE CUENTA BANCARIA</h4>
+									<a class="modal-close btn text-bg-danger rounded-3"><i class="fa-solid fa-window-minimize"></i></a>
+								</div>
+								<div class="modal-content" *ngFor="let divDetCuenta of arrayDetListCuenta">
+									<div class="form">
+										<form class="row formUpdateCuenta">
+											<!--#formUpdateCuenta="ngForm" autocomplete="off" (ngSubmit)="updateCuenta(formUpdateCuenta);"-->
+											<div class="col-12 row divUpdateCuentaBanc contenido-modal" style="margin: 0!important;">
+												<div class="col-12">
+													<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+														<h6 class="errorTh">Folio</h6>
+														<h6 style="color:#fff;text-transform:lowercase;font-weight:bold">{{divDetCuenta.folio}}</h6>
+													</div>
+
+													<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+														<h6 class="errorTh">Banco</h6>
+														<h6 style="color:#fff;text-transform:lowercase;font-weight:bold">{{divDetCuenta.clave+" - "+divDetCuenta.nombre_comercial}}</h6>
+													</div>
+
+													<!--<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+														<h6 class="errorTh">No. contrato</h6>
+														<div class="info divInfoCuenta">
+															<p class="registro pContentCuenta">{{contratoDetalle}}</p>
+															<a class="btn btnView waves-effect waves-light" (click)="verNoContrato($event.target);"><i class="fa-solid fa-info"></i></a>
+														</div>
+													</div>
+
+													<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+														<h6 class="errorTh">No. cuenta</h6>
+														<div class="info divInfoCuenta">
+															<p class="registro pContentCuenta" *ngFor="let pCuent of divDetCuenta.cuenta">{{cuentaDetalle}}</p>
+															<a class="btn btnView waves-effect waves-light" (click)="verNoCuenta($event.target);"><i class="fa-solid fa-info"></i></a>
+														</div>
+													</div>
+
+													<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+														<h6 class="errorTh">Clabe interbancaria</h6>
+														<div class="info divInfoCuenta">
+															<p class="registro pContentCuenta" *ngFor="let pClabInt of divDetCuenta.clabe_inter">{{clabeInterDetalle}}</p>
+															<a class="btn btnView waves-effect waves-light" (click)="verNoClabeInter($event.target);"><i class="fa-solid fa-info"></i></a>
+														</div>
+													</div>-->
+												</div>
+												<div class="col-12 col-sm-12 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+													<div class="busqueda row">
+														<div class="col s2 m3 col-md-3 col-lg-2">
+															<a class="btn  tooltipped" data-position="top" data-tooltip="Buscar por clave"><i class="fa-solid fa-cart-shopping"></i></a>
+														</div>
+														<div class="col s2 m3 col-md-3 col-lg-2">
+															<a class="btn  tooltipped" data-position="top" data-tooltip="Buscar por nombre comercial"><i class="fa-solid fa-cart-shopping"></i></a>
+														</div>
+														<div class="col s8 m6 col-md-3 col-lg-2">
+															<input class="datasearch" type="text" id="buscaprod" disabled placeholder="{{'bus_car' | translate}}">
+														</div>
+													</div>
+													<div class="col-12">
+														<table id="tableDetListabanco" class="centered responsive-table" cellspacing="0" cellpadding="1">
+															<thead>
+																<tr>
+																	<th>Clave</th>
+																	<th>Nombre comercial</th>
+																	<th class="ultimo"></th>
+																</tr>
+															</thead>
+															<tbody *ngIf="divDetCuenta.listBanco.length > 0">
+																<tr *ngFor="let trlistBancNew of divDetCuenta.listBanco | paginate:{id:'bankListPage',itemsPerPage:5,currentPage:bankListPage}">
+																	<td>{{trlistBancNew.clave}}</td>
+																	<td>{{trlistBancNew.nombre_comercial}}</td>
+																	<td>
+																		<p>
+																			<label>
+																				<input class="selectBanco select with-gap" value="{{trlistBancNew.token_bancos}}"
+																					name="selectBanco" type="radio" (click)="selectListNewBanco($event.target,trlistBancNew.token_bancos);"disabled/>
+																			</label>
+																		</p>
+																	</td>
+																</tr>
+															</tbody>
+															<tbody *ngIf="divDetCuenta.listBanco.length == 0">
+																<tr>
+																	<td colspan="3">{{'no_rows' | translate}}</td>
+																</tr>
+															</tbody>
+														</table>
+														<paginado-controles class="paginador"
+															id="bankListPage"
+																(pageChange)="bankListPage = $event"
+																previousLabel="{{'prev' | translate}}"
+																nextLabel="{{'next' | translate}}"></paginado-controles>
+													</div>
+												</div>
+												<div class="col-12 col-sm-12 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+													<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+														<div class="input-field divWthibtnView">
+															<input #txtPasssContrato class="txtPasssContrato validate inputWthPass" name="contratDetCuenta"
+																type="password" value="{{contratoDetalle}}" (keyup)="validaNoContrato($event.target,perfCuentBanc);" disabled>
+															<label class="activeInput">No. de contrato</label>
+															<a #btnViewContrato class="btn btnView waves-effect waves-light"
+																(click)="verContrato($event.target);" disabled><i class="fa-solid fa-info"></i></a>
+														</div>
+													</div>
+													<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+														<div class="input-field divWthibtnView">
+															<input #txtPassCuenta class="txtPassCuenta validate inputWthPass" name="noDetCuenta" type="password"
+																value="{{cuentaDetalle}}" (keyup)="validaNoCuenta($event.target,perfCuentBanc);" disabled>
+															<label class="activeInput">No. de cuenta</label>
+															<a #btnViewCuenta class="btn btnView waves-effect waves-light"
+																(click)="verCuenta($event.target);" disabled><i class="fa-solid fa-info"></i></a>
+														</div>
+													</div>
+													<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+														<div class="input-field divWthibtnView">
+															<input #txtPassClabeInter class="txtPassClabeInter validate inputWthPass" name="detClabeInter"
+																type="password" value="{{clabeInterDetalle}}" maxlength="18"
+																(keyup)="validaClabeInter($event.target,perfCuentBanc);" disabled>
+															<label class="activeInput">Clabe interbancaria</label>
+															<a #btnViewCable class="btn btnView waves-effect waves-light"
+																(click)="verClabeInter($event.target);" disabled><i class="fa-solid fa-info"></i></a>
+														</div>
+													</div>
+													<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+														<div class="input-field">
+															<input #txtTitular class="txtTitular validate" name="titularDetCuenta" type="text" value="{{titularDetalle}}"
+																(keyup)="validaTitular($event.target,perfCuentBanc);" disabled>
+															<label class="activeInput">Titular de está cuenta</label>
+														</div>
+													</div>
+													<div class="col-12 col-sm-12 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+														<div class="input-field">
+															<input class="txtSucursal validate" name="sucursalDetCuenta" type="text" value="{{sucursalDetalle}}" disabled>
+															<label class="activeInput">Sucursal</label>
+														</div>
+													</div>
+													<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+														<div class="input-field">
+															<select #txtDetMonedaCuenta id="formaPagoCompra" name="formaPago" (change)="monedaChange($event.target);" disabled>
+																<option value="" disabled selected>{{'opt_select' | translate}}</option>
+																<option *ngFor="let arraMon of arrayMonedas" value="{{arraMon.c_token}}">{{arraMon.codigo+'-'+arraMon.moneda}}</option>
+															</select>
+															<label class="active activeSelect">Moneda</label>
+														</div>
+													</div>
+													<div class="col-12">
+														<div class="col-12 col-sm-12 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+															<h6>&Aacute;rea de utilidad:</h6>
+														</div>
+														<div class="col s4 m4 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+															<p class="radio">
+																<label class="labelRadio">
+																	<input #checkEgresos *ngIf="divDetCuenta.egresos == true" class="checkEgresos validate" name="areaDetEgresos"
+																		type="checkbox" value="egresos" (click)="validaAreaEgresos($event.target,perfCuentBanc);" checked disabled>
+																	<input #checkEgresos *ngIf="divDetCuenta.egresos == false" class="checkEgresos validate" name="areaDetEgresos"
+																		type="checkbox" value="egresos" disabled>
+																	<span class="tooltipped" data-position="top" data-tooltip="Egresos y cuentas por pagar"><i class="fa-solid fa-arrow-up-short-wide"></i></span>
+																</label>
+															</p>
+														</div>
+														<div class="col s4 m4 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+															<p class="radio">
+																<label class="labelRadio">
+																	<input #checkIngresos *ngIf="divDetCuenta.ingresos == true" class="checkIngresos validate" name="areaDetIngresos"
+																		type="checkbox" value="ingresos" (click)="validaAreaIngresos($event.target,perfCuentBanc);" checked disabled>
+																	<input #checkIngresos *ngIf="divDetCuenta.ingresos == false" class="checkIngresos validate" name="areaDetIngresos"
+																		type="checkbox" value="ingresos" disabled>
+																	<span class="tooltipped" data-position="top" data-tooltip="Ingresos y cuentas por cobrar"><i class="fa-solid fa-arrow-down-short-wide"></i></span>
+																</label>
+															</p>
+														</div>
+														<div class="col s4 m4 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+															<p class="radio">
+																<label class="labelRadio">
+																	<input #checkVHumano *ngIf="divDetCuenta.v_humano == true" class="checkVHumano validate" name="areaDetVHumano"
+																		type="checkbox" value="v_humano" (click)="validaAreaVHumano($event.target,perfCuentBanc);" checked disabled>
+																	<input #checkVHumano *ngIf="divDetCuenta.v_humano == false" class="checkVHumano validate" name="areaDetVHumano"
+																		type="checkbox" value="v_humano" disabled>
+																	<span class="tooltipped" data-position="top" data-tooltip="Valor humano">&#xf007;</span>
+																</label>
+															</p>
+														</div>
+													</div>
+													<div class="opciones">
+														<div class="col-12">
+															<h6>Medios de operaci&oacute;n</h6>
+															<table class="centered responsive-table">
+																<thead>
+																	<tr>
+																		<th>Manejo de:</th>
+																		<th>No. de referencia</th>
+																		<th class="ultimo"></th>
+																	</tr>
+																</thead>
+																<tbody>
+																	<tr>
+																		<td>
+																			<div class="input-field">
+																				<select #selectManejoAdc id="selectManejoAdc" name="selectManejoAdc"
+																					(change)="selectDetManejoCuenta($event.target);"><!---->
+																					<option value="" disabled selected>{{'opt_select' | translate}}</option>
+																					<option value="chequera">Chequera</option>
+																					<option value="Tarjetas de cr&eacute;dito">Tarjetas de cr&eacute;dito</option>
+																					<option value="Tarjetas de d&eacute;bito">Tarjetas de d&eacute;bito</option>
+																				</select>
+																				<label class="active activeSelect" id="lblCheque">Manejo de:</label>
+																			</div>
+																		</td>
+																		<td>
+																			<div class="input-field">
+																				<input #txtReferencia class="txtReferencia validate" type="text"
+																				 	(keyup)="validaNoReferencia($event.target);" disabled
+																					(keyup)="referenciaDetManCuenta($event.target);">
+																				<label class="activeInput">No. de referencia</label>
+																		</div>
+																		</td>
+																		<td>
+																			<a class="btn text-bg-danger rounded-3"
+																				(click)="addDetManejoCuenta($event.target,divDetCuenta.token_cuenta);"><i class="fa-solid fa-trash"></i></a>
+																		</td>
+																	</tr>
+																</tbody>
+																<tbody id="tbodyManejo" *ngIf="arrayOpcionesAdcional.length > 0">
+																	<tr *ngFor="let trOptionAdic of arrayOpcionesAdcional">
+																		<td>{{trOptionAdic.clave}}</td>
+																		<td>{{trOptionAdic.valor}}</td>
+																		<td>
+																			<a class="btn text-bg-danger rounded-3"
+																				(click)="deleteDetManejoCuenta($event.target,divDetCuenta.token_cuenta);"><i class="fa-solid fa-trash"></i></a>
+																		</td>
+																	</tr>
+																</tbody>
+																<tbody id="tbodyManejo" *ngIf="arrayOpcionesAdcional.length == 0">
+																	<tr>
+																		<td colspan="3">{{'no_rows' | translate}}</td>
+																	</tr>
+																</tbody>
+															</table>
+														</div>
+													</div>
+													<div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+													<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+														<button class="btn btnGuardar btnRow waves-light green darken-2" type="submit" name="updateCuentBanc"
+															(click)="updateCuenta();">Guardar</button>
+													</div>
+													<div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+												</div>
+											</div>
+										</form>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div id="modalCuentasEliminadas" class="modal modaloDialog">
+							<div class="contenido"><app-loader></app-loader>
+								<div class="header">
+									<h4>CUENTAS BANCARIA ELIMINADAS</h4>
+									<a class="modal-close btn text-bg-danger rounded-3"><i class="fa-solid fa-window-minimize"></i></a>
+								</div>
+								<div class="modal-content" style="display: block!important;padding: 10px!important;">
+									<div class="busqueda row">
+										<div class="col s2 m4 col-md-3 col-lg-2">
+											<a class="btn  tooltipped" data-position="top" data-tooltip="Buscar por no. cuenta"><i class="fa-solid fa-cart-shopping"></i></a>
+										</div>
+										<div class="col s10 m8 col-md-3 col-lg-2">
+											<input class="datasearch" type="text" id="buscaprod" disabled placeholder="{{'bus_car' | translate}}">
+										</div>
+									</div>
+
+									<table class="tabla_catp striped centered responsive-table" cellspacing="0" cellpadding="0">
+
+									</table>
+									<paginado-controles class="paginador"
+										id="pageCuentaDel"
+										(pageChange)="pageCuentaDel = $event"
+										previousLabel="{{'prev' | translate}}"
+										nextLabel="{{'next' | translate}}">
+									</paginado-controles>
+								</div>
+							</div>
+						</div>
+
+						<div id="modalbitacoraCuentas" class="modal modaloDialog">
+							<div class="contenido"><app-loader></app-loader>
+								<div class="header">
+									<h4>CUENTAS BANCARIA ELIMINADAS</h4>
+									<a class="modal-close btn text-bg-danger rounded-3"><i class="fa-solid fa-window-minimize"></i></a>
+								</div>
+								<div class="modal-content">
+								</div>
+							</div>
+						</div>
+
+					</div>
+
+
+
+
+          import { Component, ElementRef, Input, OnInit, Output, Renderer2, ViewChild } from '@angular/core';
+import { CuentbancService } from '../../../../../../servicios/ssic/cuentbanc.service';
+import { BancosServService } from '../../../../../../servicios/ssic/bancos-serv.service';
+import { cuentasModelo } from '../../../../../../modelos/cuentasModelo';
+import { Usuarios } from '../../../../../../modelos/Usuarios';
+import { ValidatorServService } from '../../../../../../servicios/validator-serv.service';
+import { ServEncryptService } from '../../../../../../servicios/ssic/serv-encrypt.service';
+import Swal from 'sweetalert2';
+import { InterfMonedas } from '../../../../../../interfaces/interf-monedas';
+import { MonedasService } from '../../../../../../servicios/monedas.service';
+import { Html5Qrcode, Html5QrcodeScanner } from 'html5-qrcode';
+//<qrcode [qrdata]="'Tu cadena de datos'" [width]="256" [errorCorrectionLevel]="'M'"></qrcode> imports QRCodeComponent,
+import { global } from '../../../../../../servicios/global_ssic';
+import { TranslateService } from '@ngx-translate/core';
+
+@Component({
+  selector: 'app-interno-tesoreria-catalogos',
+  templateUrl: './tes_listacuentas.component.html',
+  standalone:false,
+  styleUrls: [
+    '../../../../../../styles/listas_ps.css',
+    '../../../../../../styles/datatable.css',
+    '../../../../../../styles/dropdown.css',
+    '../../../../../../styles/tabs.css',
+    '../../../../../../styles/input_group.css',
+    '../../../../../../styles/file_input.css',
+    '../../../../../../styles/buttons.css',
+    '../../../../../../styles/modals.css',
+    '../../../../../../styles/cabecera.css',
+    '../../../../../../styles/cards.css',
+    '../../../../../../styles/clientes.css',
+    '../../../../../../styles/collapsible.css',
+    '../../../../../../styles/row.css',
+    '../../../../../../styles/encabezados.css',
+    '../../../../../../styles/buscador.css',
+    '../../../../../../styles/radioButtons.css',
+    '../../../../../../styles/paginador.css',
+    '../../../../../../styles/landing.css',
+    '../../../finanzas.css',
+  './tes_listacuentas.component.css'
+  ]
+})
+export class ListaCuentasTesoreriaComponent implements OnInit {
+  pageCuentaVig:number = 1;
+  pageCuentaDel:number = 1;
+  bankListPage:number = 1;
+  public usuario:Usuarios;
+  public perfCuentBanc:cuentasModelo;
+  arrayListBancos:any = [];
+  arrayMonedas: InterfMonedas[] = [];
+
+  public validateQRcodeCuentaBanc:boolean;
+
+  arrayCuentBanc:any = [];
+  arrayDetListCuenta:any = [];
+  public tokenNewBanco:string;
+  public claveNewBanco:string;
+  arrayContractAccount:any = [];
+  public contratoDetalle: string;
+  arrayCuentaAccount:any = [];
+  public cuentaDetalle: string;
+  arrayClabeInterAccount:any = [];
+  public clabeInterDetalle: string;
+  public sucursalDetalle: string;
+  public titularDetalle: string;
+  arrayOpcionesAdcional:any = [];
+  public txtMonedaCuenta:string;
+  public selectDetManCuenta: string;
+  public referenceDetManjCuent: string;
+  arrayDetalleAdicional:any = [];
+
+  @ViewChild('txtDetMonedaCuenta') txtDetMonedaCuenta: ElementRef = {} as ElementRef;
+  @ViewChild('checkEgresos') checkEgresos: ElementRef = {} as ElementRef;
+  @ViewChild('checkIngresos') checkIngresos: ElementRef = {} as ElementRef;
+  @ViewChild('checkVHumano') checkVHumano: ElementRef = {} as ElementRef;
+  @ViewChild('selectManejoAdc') selectManejoAdc: ElementRef = {} as ElementRef;
+  @ViewChild('txtReferencia') txtReferencia: ElementRef = {} as ElementRef;
+  @ViewChild('btnDetAddManej') btnDetAddManej: ElementRef = {} as ElementRef;
+
+  arrayCuentBankDelet:any = [];
+
+  constructor(
+    public bancos:BancosServService,
+    public monedasServ:MonedasService,
+    public cuentaBan:CuentbancService,
+    private renderer:Renderer2,
+    public validator:ValidatorServService,
+    private translate:TranslateService,
+    public encryptor:ServEncryptService) {
+      this.usuario = new Usuarios(1,"","","","","","","",1,1,"","","","");
+      this.perfCuentBanc = new cuentasModelo('','','','','','','','','',false,false,false,'');
+      this.validateQRcodeCuentaBanc = false;
+      this.tokenNewBanco = '';
+      this.claveNewBanco = '';
+      this.contratoDetalle = '';
+      this.cuentaDetalle = '';
+      this.clabeInterDetalle = '';
+      this.sucursalDetalle = '';
+      this.titularDetalle = '';
+      this.txtMonedaCuenta = 'bmVUblp5dHpIVkZXWXhKVVJCekJIZz09OjoxMjM0NTY3ODEyMzQ1Njc4';
+      this.selectDetManCuenta = '';
+      this.referenceDetManjCuent = '';
+  }
+
+  ngOnInit(): void {
+    this.monedasServ.getMonedas().subscribe((data:InterfMonedas[]) => {
+      this.arrayMonedas = data;
+    });
+
+    this.bancos.getListaBancos().subscribe(
+      response => {
+        if (response.status == 'success') {
+          this.arrayListBancos = response.banco;
+        }
+      },
+      error => {
+        console.log(error);
+      }
+    );
+    this.recargaListaCuentaBancaria();
+    
+  }
+
+  recargaListaCuentaBancaria(){
+    this.cuentaBan.catCuentasBancarias().subscribe(
+      response =>{
+        if (response.status == 'success') {
+          this.arrayCuentBanc = response.cuentas;
+          console.log(response.cuentas);
+          for (let i = 0; i < response.cuentas.length; i++) {
+            console.log(response.cuentas[i]['cuenta']);
+            var cuuentaCifrado = this.encryptor.esclavo_strong(response.cuentas[i]['cuenta']);
+            console.log(cuuentaCifrado);
+            this.arrayCuentBanc[i]['cuenta'] = cuuentaCifrado.replace(cuuentaCifrado.substring(cuuentaCifrado.length-4,0),'**** **** **** ');
+            //console.log(this.arrayCuentBanc[i]['cuenta']);
+          }
+        }
+      },
+      error => {
+        console.log(error);
+      }
+    )
+
+    this.cuentaBan.cuentasDelete().subscribe(
+      response =>{
+        if (response.status == 'success') {
+          this.arrayCuentBankDelet = response.cuentas
+          console.log(response.cuentas);
+          for (let i = 0; i < response.cuentas.length; i++) {
+            console.log(response.cuentas[i]['cuenta']);
+            var cuuentaCifrado = this.encryptor.esclavo_strong(response.cuentas[i]['cuenta']);
+            console.log(cuuentaCifrado);
+            this.arrayCuentBankDelet[i]['cuenta'] = cuuentaCifrado.replace(cuuentaCifrado.substring(cuuentaCifrado.length-4,0),'**** **** **** ');
+            //console.log(this.arrayCuentBankDelet[i]['cuenta']);
+          }
+        }
+      },
+      error => {
+        console.log(error);
+      }
+    )
+  }
+
+  clickEscannerQrCuenta(){//readerSitFiscalProv
+    var cameraId:any = '';
+    Html5Qrcode.getCameras().then(devices => {
+      if (devices && devices.length) {
+        cameraId = devices[0].id;
+        console.log(cameraId);
+      }
+    }).catch(err => {
+      // handle err
+    });
+    let config:any = {fps:10,qrbox: { width: 250, height: 250 }};
+    let codeQrstdivice:any = new Html5QrcodeScanner("camerarqCuentasBank",config,false);
+    codeQrstdivice.render(this.scanYesDevice,this.onScanError);
+  }
+
+  scanYesDevice(decodedText:any, decodedResult:any) {
+    console.log(`Scan result: ${decodedText}`, decodedResult);
+    this.validateQRcodeCuentaBanc = true;
+    global.imagenUrlQrDispositivoTes = decodedText;
+    Swal.fire({
+      position:'center',
+      icon: 'success',
+      title: 'escaneo completado',
+      showConfirmButton:false,
+      timer: 3000
+    })
+  }
+  onScanError(errorMessage:any) {console.log(`Code scan error = ${errorMessage}`);}
+
+  functViewCuenta(event:any,token_cuenta:any){
+    //alert(tknCuenta);
+    this.cuentaBan.detalleCuentaBancaria(token_cuenta).subscribe(
+      response => {
+        //console.log(response.status);
+        if (response.status == 'success') {
+          console.log(response.cuenta);
+          this.arrayDetListCuenta = response.cuenta;
+          
+
+          this.tokenNewBanco = this.arrayDetListCuenta[0]['tokenBanco'];
+          this.claveNewBanco = this.arrayDetListCuenta[0]['clave'];
+          console.log(this.arrayDetListCuenta[0]['tokenBanco']);
+
+          this.arrayContractAccount = this.arrayDetListCuenta[0]['contrato'];
+          this.contratoDetalle = this.arrayContractAccount[0]['no_contrato'];
+          let contractCifrado = this.encryptor.esclavo(this.contratoDetalle);
+          contractCifrado = contractCifrado.replace(contractCifrado.substring(contractCifrado.length-4,0),'**** **** **** ');
+          this.contratoDetalle = contractCifrado;
+          //console.log(this.contratoDetalle+" "+this.arrayContractAccount[0]['no_contrato']);
+
+          this.arrayCuentaAccount = this.arrayDetListCuenta[0]['cuenta'];
+          this.cuentaDetalle = this.arrayCuentaAccount[0]['no_cuenta'];
+          let cuentaCifrado  = this.encryptor.esclavo(this.cuentaDetalle);
+          cuentaCifrado = cuentaCifrado.replace(cuentaCifrado.substring(cuentaCifrado.length-4,0),'**** **** **** ');
+          this.cuentaDetalle = cuentaCifrado;
+          //console.log(this.cuentaDetalle+" "+this.arrayCuentaAccount[0]['no_cuenta']);
+
+          this.arrayClabeInterAccount = this.arrayDetListCuenta[0]['clabe_inter'];
+          this.clabeInterDetalle = this.arrayClabeInterAccount[0]['clabe_inter'];
+          let clabeInterCifrado = this.encryptor.esclavo(this.clabeInterDetalle);
+          clabeInterCifrado = clabeInterCifrado.replace(clabeInterCifrado.substring(clabeInterCifrado.length-4,0),'**** **** **** ');
+          this.clabeInterDetalle = clabeInterCifrado;
+          //console.log(this.clabeInterDetalle+" "+this.arrayClabeInterAccount[0]['clabe_inter']);
+
+          let sucursalCifrado = this.encryptor.esclavo(this.arrayDetListCuenta[0]['sucursal']);
+          this.sucursalDetalle = sucursalCifrado;
+          //console.log(this.sucursalDetalle);
+
+          let titularCifrado = this.encryptor.esclavo(this.arrayDetListCuenta[0]['titular']);
+          this.titularDetalle = titularCifrado;
+          //console.log(this.titularDetalle);
+
+          if(this.arrayDetListCuenta[0]['opciones_adicionales'].length > 0){
+            this.arrayOpcionesAdcional = this.arrayDetListCuenta[0]['opciones_adicionales'];
+          }
+        }
+      },
+      error =>{
+        console.log(error);
+      }
+    );
+  }
+
+  verNoContrato(event:any){
+    if (this.arrayContractAccount[0]['status'] == false) {
+      this.arrayContractAccount[0]['status'] = true;
+      console.log(this.arrayContractAccount[0]['status']);
+      console.log(this.arrayContractAccount[0]['no_contrato']);
+      this.contratoDetalle = this.arrayContractAccount[0]['no_contrato'];
+      let contractCifrado:any = this.encryptor.esclavo(this.contratoDetalle);
+      this.contratoDetalle = contractCifrado;
+      //console.log(contractCifrado+" "+this.contratoDetalle);
+      event.innerHTML = '&#xf070;';
+    } else {
+      this.arrayContractAccount[0]['status'] = false;
+      this.contratoDetalle = this.arrayContractAccount[0]['no_contrato'];
+      let contractCifrado:any = this.encryptor.esclavo(this.contratoDetalle);
+      let cambioaster = contractCifrado.substring(contractCifrado.length-4,0);
+      contractCifrado = contractCifrado.replace(cambioaster,'**** **** **** ');
+      this.contratoDetalle = contractCifrado;
+      //console.log(this.contratoDetalle+" "+this.arrayContractAccount[0]['no_contrato']);
+      event.innerHTML = '<i class="fa-solid fa-info"></i>';
+    }
+  }
+
+  verNoCuenta(event:any){
+    if (this.arrayCuentaAccount[0]['status'] == false) {
+      this.arrayCuentaAccount[0]['status'] = true;
+      console.log(this.arrayCuentaAccount[0]['status']);
+      console.log(this.arrayCuentaAccount[0]['no_cuenta']);
+      this.cuentaDetalle = this.arrayCuentaAccount[0]['no_cuenta'];
+      let cuentaCifrado:any = this.encryptor.esclavo(this.cuentaDetalle);
+      this.cuentaDetalle = cuentaCifrado;
+      //console.log(cuentaCifrado+" "+this.cuentaDetalle);
+      event.innerHTML = '&#xf070;';
+    } else {
+      this.arrayCuentaAccount[0]['status'] = false;
+      this.cuentaDetalle = this.arrayCuentaAccount[0]['no_cuenta'];
+      let cuentaCifrado:any = this.encryptor.esclavo(this.cuentaDetalle);
+      let cambioaster = cuentaCifrado.substring(cuentaCifrado.length-4,0);
+      cuentaCifrado = cuentaCifrado.replace(cambioaster,'**** **** **** ');
+      this.cuentaDetalle = cuentaCifrado;
+      //console.log(this.cuentaDetalle+" "+this.arrayCuentaAccount[0]['no_cuenta']);
+      event.innerHTML = '<i class="fa-solid fa-info"></i>';
+    }
+  }
+
+  verNoClabeInter(event:any){
+    if (this.arrayClabeInterAccount[0]['status'] == false) {
+      this.arrayClabeInterAccount[0]['status'] = true;
+      console.log(this.arrayClabeInterAccount[0]['status']);
+      console.log(this.arrayClabeInterAccount[0]['clabe_inter']);
+      this.clabeInterDetalle = this.arrayClabeInterAccount[0]['clabe_inter'];
+      let clabeInterCifrado:any = this.encryptor.esclavo(this.clabeInterDetalle);
+      this.clabeInterDetalle = clabeInterCifrado;
+      //console.log(clabeInterCifrado+" "+this.clabeInterDetalle);
+      event.innerHTML = '&#xf070;';
+    } else {
+      this.arrayClabeInterAccount[0]['status'] = false;
+      this.clabeInterDetalle = this.arrayClabeInterAccount[0]['clabe_inter'];
+      let clabeInterCifrado:any = this.encryptor.esclavo(this.clabeInterDetalle);
+      let cambioaster = clabeInterCifrado.substring(clabeInterCifrado.length-4,0);
+      clabeInterCifrado = clabeInterCifrado.replace(cambioaster,'**** **** **** ');
+      this.clabeInterDetalle = clabeInterCifrado;
+      //console.log(this.clabeInterDetalle+" "+this.arrayClabeInterAccount[0]['clabe_inter']);
+      event.innerHTML = '<i class="fa-solid fa-info"></i>';
+    }
+  }
+
+  editDataCuentaBanc(event:any){
+    //alert("funciona");
+    Swal.fire({
+      title: this.translate.instant("swal_attenc"),
+      text: "¿Desea editar la información de cuenta?",
+      icon: 'warning',
+      confirmButtonColor: '#388E3C',
+      confirmButtonText: 'Sí, editar',
+      showCancelButton: true,
+      cancelButtonColor: '#D32F2F',
+        cancelButtonText: this.translate.instant("swal_cancel"),
+    }).then((result) => {
+      if (result.isConfirmed) {
+        /*let contratoAct = this.arrayContractAccount[0]['no_contrato'];
+        let cuentaAct = this.arrayCuentaAccount[0]['no_cuenta'];
+        let clabbeInterAct = this.arrayClabeInterAccount[0]['clabe_inter'];
+
+        let banco = $("#tableDetListabanco").find("input.selectBanco");
+        $(banco).removeAttr("disabled");
+
+        this.renderer.removeAttribute(this.txtPasssContrato.nativeElement,"disabled");
+        let contractEncrypt = this.encryptor.esclavo(contratoAct);
+        this.renderer.setAttribute(this.txtPasssContrato.nativeElement,"value",contractEncrypt);
+        this.renderer.removeAttribute(this.btnViewContrato.nativeElement,"disabled");
+        $("#txtPasssContrato").val(contractEncrypt);
+
+        this.renderer.removeAttribute(this.txtPassCuenta.nativeElement,"disabled");
+        let cuentaEncrypt = this.encryptor.esclavo(cuentaAct);
+        this.renderer.setAttribute(this.txtPassCuenta.nativeElement,"value",cuentaEncrypt);
+        this.renderer.removeAttribute(this.btnViewCuenta.nativeElement,"disabled");
+        $("#txtPassCuenta").val(cuentaEncrypt);
+
+        this.renderer.removeAttribute(this.txtPassClabeInter.nativeElement,"disabled");
+        let clabeInterEncrypt = this.encryptor.esclavo(clabbeInterAct);
+        this.renderer.setAttribute(this.txtPassClabeInter.nativeElement,"value",clabeInterEncrypt);
+        this.renderer.removeAttribute(this.btnViewCable.nativeElement,"disabled");
+        $("#txtPassClabeInter").val(clabeInterEncrypt);
+
+        this.renderer.removeAttribute(this.txtTitular.nativeElement,"disabled");
+        let titularEncrypt = this.encryptor.esclavo(this.arrayDetListCuenta[0]['titular']);
+        this.renderer.setAttribute(this.txtTitular.nativeElement,"value",titularEncrypt);
+        $("#txtTitular").val(titularEncrypt);*/
+
+        this.renderer.removeAttribute(this.txtDetMonedaCuenta.nativeElement,"disabled");
+        this.renderer.removeAttribute(this.checkEgresos.nativeElement,"disabled");
+        this.renderer.removeAttribute(this.checkIngresos.nativeElement,"disabled");
+        this.renderer.removeAttribute(this.checkVHumano.nativeElement,"disabled");
+        this.renderer.removeAttribute(this.selectManejoAdc.nativeElement,"disabled");
+        this.renderer.removeAttribute(this.txtReferencia.nativeElement,"disabled");
+      }
+    });
+  }
+
+  selectListNewBanco(event:any,token_bancos:any){
+    for (let i = 0; i < this.arrayListBancos.length; i++) {
+      const listBancos = this.arrayListBancos[i];
+      if(listBancos['token_bancos'] == token_bancos){
+        this.claveNewBanco = listBancos['token_bancos'];
+        this.tokenNewBanco = listBancos['clave'];
+      }
+    }
+  }
+
+  validaNoContrato(event:any,modelDtCuenta:any){
+    if (event.value == '' || !this.validator.filtroNum(event.value) == true) {
+      this.validator.errorInput(event,"No. de contrato invalido");
+    } else {
+      this.validator.correctoInput(event,"No. de contrato");
+      let validaContrato = event.value;
+      let contratoCrifrad = this.encryptor.emperador(validaContrato);
+      modelDtCuenta.contrato = contratoCrifrad;
+      //console.log(modelDtCuenta.contrato);
+    }
+  }
+
+  verContrato(event:any){
+    var contrato = $(event).parent("div").find("input.txtPasssContrato");
+    //alert(contrato.val());
+    if (contrato.prop("type") == "password") {
+        contrato.attr("type","text");
+        event.innerHTML = '&#xf070;';
+    } else {
+        contrato.prop("type","password");
+        event.innerHTML = '<i class="fa-solid fa-info"></i>';
+    }
+  }
+
+  validaNoCuenta(event:any,modelDtCuenta:any){
+    if (event.value == '' || !this.validator.filtroCuenta(event.value) == true) {
+      this.validator.errorInput(event,"No. de cuenta invalido");
+    } else {
+      this.validator.correctoInput(event,"No. de cuenta");
+      let validaCuenta = event.value;
+      let cuentaCrifrad = this.encryptor.emperador(validaCuenta);
+      modelDtCuenta.cuenta = cuentaCrifrad;
+      //console.log(modelDtCuenta.cuenta);
+    }
+  }
+
+  verCuenta(event:any){
+    var cuenta = $(event).parent("div").find("input.txtPassCuenta");
+    if (cuenta.prop("type") == "password") {
+        cuenta.attr("type","text");
+        event.innerHTML = '&#xf070;';
+    } else {
+        cuenta.prop("type","password");
+        event.innerHTML = '<i class="fa-solid fa-info"></i>';
+    }
+  }
+
+  validaClabeInter(event:any,modelDtCuenta:any){
+    var inputSucursal = $(event).parent("div").parent("div").parent("div").find("input.txtSucursal");
+    if (event.value == '' || !this.validator.filtroCuenta(event.value) == true) {
+      this.validator.errorInput(event,"Clabe interbancaria invalida");
+    } else {
+      this.validator.correctoInput(event,"Clabe interbancaria");
+      let validaClabeInt = event.value;
+      inputSucursal.val(validaClabeInt.substring(3,6));
+
+      let clabIntCrifrad = this.encryptor.emperador(validaClabeInt);
+      modelDtCuenta.clabe_inter = clabIntCrifrad;
+
+      let sucursalCrifrad = this.encryptor.emperador(inputSucursal.val());
+      modelDtCuenta.sucursal = sucursalCrifrad;
+      //console.log(modelDtCuenta.sucursal+" "+this.encryptor.esclavo(sucursalCrifrad));
+    }
+  }
+
+  verClabeInter(event:any){
+    var clabeInterbancaria = $(event).parent("div").find("input.txtPassClabeInter");
+    if (clabeInterbancaria.prop("type") == "password") {
+      //alert(clabeInterbancaria.prop("maxlength"));
+      clabeInterbancaria.attr("type","text");
+      event.innerHTML = '&#xf070;';
+    } else {
+      clabeInterbancaria.prop("type","password");
+      event.innerHTML = '<i class="fa-solid fa-info"></i>';
+    }
+  }
+
+  validaTitular(event:any,modelDtCuenta:any){
+    if (event.value == '' || !this.validator.filtroAlfaNumerico(event.value)) {
+      this.validator.errorInput(event,"Titular de la cuenta invalido");
+    } else {
+      this.validator.correctoInput(event,"Titular de la cuenta");
+      let validaTitular = event.value;
+      let titularCrifrad = this.encryptor.emperador(validaTitular);
+      modelDtCuenta.titularCuenta = titularCrifrad;
+      //console.log(this.cuentaBanc);
+    }
+  }
+
+  monedaChange(event:any){
+    alert("moneda "+event.value);
+    if(event.value != ''){
+      this.txtMonedaCuenta = event.value;
+      console.log(this.txtMonedaCuenta);
+    } else {
+      Swal.fire({
+        position:'center',
+        icon: 'success',
+        title: 'no se puede seleccionar esta opción',
+        showConfirmButton:false,
+        timer: 3000
+      })
+    }
+  }
+
+  validaAreaEgresos(event:any,modelDtCuenta:any){
+    //alert("funciona");
+    if ($(event).prop('checked')) {
+      modelDtCuenta.areaEgresos = true;
+    } else {
+      modelDtCuenta.areaEgresos = false;
+    }
+    //console.log(this.cuentaBanc);
+  }
+
+  validaAreaIngresos(event:any,modelDtCuenta:any){
+    //alert("funciona");
+    if ($(event).prop('checked')) {
+      modelDtCuenta.areaIngresos = true;
+    } else {
+      modelDtCuenta.areaIngresos = false;
+    }
+    //console.log(this.cuentaBanc);
+  }
+
+  validaAreaVHumano(event:any,modelDtCuenta:any){
+    //alert("funciona");
+    if ($(event).prop('checked')) {
+      modelDtCuenta.areaValHumano = true;
+    } else {
+      modelDtCuenta.areaValHumano = false;
+    }
+    //console.log(this.cuentaBanc);
+  }
+
+  selectDetManejoCuenta(event:any){
+    if (event.value != '') {
+      this.selectDetManCuenta = event.value;
+    }
+  }
+
+  validaNoReferencia(event:any){
+    if (event.value == '' || !this.validator.filtroCuenta(event.value) == true) {
+      this.validator.errorInput(event,"No. de referencia invalido");
+    } else {
+      this.validator.correctoInput(event,"No. de referencia");
+    }
+  }
+
+  referenciaDetManCuenta(event:any){
+    if (event.value != '') {
+      this.referenceDetManjCuent = event.value;
+      this.renderer.removeAttribute(this.btnDetAddManej.nativeElement,"disabled");
+    } else {
+      this.renderer.setAttribute(this.btnDetAddManej.nativeElement,"disabled","disabled");
+    }
+  }
+
+  addDetManejoCuenta(event:any,token_cuenta:any){
+    Swal.fire({
+      title: this.translate.instant("swal_attenc"),
+      text: "¿Desea agregar este registro?",
+      icon: 'warning',
+      confirmButtonColor: '#388E3C',
+      confirmButtonText: 'Sí, agregar',
+      showCancelButton: true,
+      cancelButtonColor: '#D32F2F',
+        cancelButtonText: this.translate.instant("swal_cancel"),
+    }).then((result) => {
+      if (result.isConfirmed) {
+        if (this.selectDetManCuenta != '' && this.referenceDetManjCuent != '') {
+          this.arrayDetalleAdicional.push({"clave":this.selectDetManCuenta,"valor":this.referenceDetManjCuent});
+          this.perfCuentBanc.opciones_adicionales = this.arrayDetalleAdicional;
+          console.log(this.perfCuentBanc.opciones_adicionales);
+          $(".txtReferencia").val('');
+        }
+      }
+    });
+  }
+
+  deleteDetManejoCuenta(event:any,token_cuenta:any){
+    Swal.fire({
+      title: this.translate.instant("swal_attenc"),
+      text: "¿Desea eliminar este registro?",
+      icon: 'warning',
+      confirmButtonColor: '#388E3C',
+      confirmButtonText: 'Sí, aliminar',
+      showCancelButton: true,
+      cancelButtonColor: '#D32F2F',
+        cancelButtonText: this.translate.instant("swal_cancel"),
+    }).then((result) => {
+      if (result.isConfirmed) {
+        let trTabManejoCuent = $(event).parent("td").parent("tr");
+        this.arrayDetalleAdicional.splice(trTabManejoCuent.index(),1);
+        if (this.arrayDetalleAdicional.length == 0) {
+          this.perfCuentBanc.opciones_adicionales = '';
+        }
+        Swal.fire(
+          'Eliminado!',
+          'Este registro se ha eliminado correctamente',
+          'success'
+        )
+      }
+    });
+  }
+
+  updateCuenta(){
+    this.perfCuentBanc.moneda = this.txtMonedaCuenta;
+    Swal.fire({
+      title: this.translate.instant("swal_attenc"),
+      text: "¿Desea guardar esta cuenta bancaria?",
+      icon: 'warning',
+      confirmButtonColor: '#388E3C',
+      confirmButtonText: this.translate.instant("swal_yes_insert"),
+      showCancelButton: true,
+      cancelButtonColor: '#D32F2F',
+        cancelButtonText: this.translate.instant("swal_cancel"),
+    }).then((result) => {
+      if (result.isConfirmed) {
+        let valtxtContrato = $(".txtPasssContrato").val();
+        let valtxtCuenta = $(".txtPassCuenta").val();
+        let valtxtClabeInter = $(".txtPassClabeInter").val();
+        let valtxtTitular = $(".txtTitular").val();
+        let valtxtSucursal = $(".txtSucursal").val();
+        let checkEgresos = $(".checkEgresos").prop('checked');
+        let checkIngresos = $(".checkIngresos").prop('checked');
+        let checkVHumano = $(".checkVHumano").prop('checked');
+        this.cuentaBan.updateCuentBanc(this.arrayDetListCuenta[0]['token_cuenta'],this.perfCuentBanc).subscribe(
+          response => {
+            let translate_response = this.translate.instant(response.message);
+            if (response.status == 'success') {
+              Swal.fire({
+                position:'center',
+                icon: 'success',
+                title: translate_response,
+                showConfirmButton:false,
+                timer: 3000
+              })
+            }
+
+            if (response.status == 'error') {
+              Swal.fire({
+                position:'top-end',
+                icon: 'warning',
+                title: translate_response,
+                showConfirmButton:false,
+                timer: 3000
+              })
+            }
+          },
+          error=> {
+            console.log(error);
+          }
+        );
+        Swal.fire(
+          'Guardado!',
+          'Esta cuenta bancaria se ha guardado correctamente',
+          'success'
+        )
+      }
+    });
+  }
+
+  functDeleteCuenta(event:any,token_cuenta:any){
+    //alert("funciona");
+    Swal.fire({
+      title: this.translate.instant("swal_attenc"),
+      text: "¿Desea eliminar esta cuenta bancaria?",
+      icon: 'warning',
+      confirmButtonColor: '#388E3C',
+      confirmButtonText: 'Sí, aliminar',
+      showCancelButton: true,
+      cancelButtonColor: '#D32F2F',
+        cancelButtonText: this.translate.instant("swal_cancel"),
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.cuentaBan.deleteCuentaBancaria(token_cuenta).subscribe(
+          response => {
+            console.log(response.status);
+            let translate_response = this.translate.instant(response.message);
+            if (response.status == 'success') {
+              this.recargaListaCuentaBancaria();
+              Swal.fire({
+                position:'center',
+                icon: 'success',
+                title: translate_response,
+                showConfirmButton:false,
+                timer: 3000
+              });
+            }
+            if (response.status == 'error') {
+              Swal.fire({
+                position:'top-end',
+                icon: 'warning',
+                title: translate_response,
+                showConfirmButton:false,
+                timer: 3000
+              })
+            }
+          },
+          error =>{
+            console.log(error);
+          }
+        );
+      }
+    });
+  }
+
+  functRestauraCuenta(event:any,token_cuenta:any){
+    //alert("funciona");
+    Swal.fire({
+      title: this.translate.instant("swal_attenc"),
+      text: "¿Desea restaurar esta cuenta bancaria?",
+      icon: 'warning',
+      confirmButtonColor: '#388E3C',
+      confirmButtonText: this.translate.instant("swal_yes_restore"),
+      showCancelButton: true,
+      cancelButtonColor: '#D32F2F',
+        cancelButtonText: this.translate.instant("swal_cancel"),
+    }).then((result) => {
+      if (result.isConfirmed) {
+        let tknCuenta = $(event).parent("div.back").find("input.txtCuentaBanc").val();
+        this.cuentaBan.restauraCuentaBancaria(token_cuenta).subscribe(
+          response => {
+            console.log(response.status);
+            let translate_response = this.translate.instant(response.message);
+            if (response.status == 'success') {
+              this.recargaListaCuentaBancaria();
+              Swal.fire({
+                position:'center',
+                icon: 'success',
+                title: translate_response,
+                showConfirmButton:false,
+                timer: 3000
+              })
+            }
+            if (response.status == 'error') {
+              Swal.fire({
+                position:'top-end',
+                icon: 'warning',
+                title: translate_response,
+                showConfirmButton:false,
+                timer: 3000
+              })
+            }
+          },
+          error =>{
+            console.log(error);
+          }
+        );
+      }
+    });
+  }
+
+  functDeletPermCuenta(event:any,token_cuenta:any){
+    //alert("funciona");
+    Swal.fire({
+      title: this.translate.instant("swal_attenc"),
+      text: "¿Desea eliminar permanentemente esta cuenta bancaria?",
+      icon: 'warning',
+      confirmButtonColor: '#388E3C',
+      confirmButtonText: this.translate.instant("swal_yes_delete"),
+      showCancelButton: true,
+      cancelButtonColor: '#D32F2F',
+        cancelButtonText: this.translate.instant("swal_cancel"),
+    }).then((result) => {
+      if (result.isConfirmed) {
+        let tknCuenta = $(event).parent("div.back").find("input.txtCuentaBanc").val();
+        this.cuentaBan.eliminaPermCuentaBancaria(token_cuenta).subscribe(
+          response => {
+            console.log(response.status);
+            let translate_response = this.translate.instant(response.message);
+            if (response.status == 'success') {
+              this.recargaListaCuentaBancaria();
+              Swal.fire({
+                position:'center',
+                icon: 'success',
+                title: translate_response,
+                showConfirmButton:false,
+                timer: 3000
+              })
+
+            }
+            if (response.status == 'error') {
+              Swal.fire({
+                position:'top-end',
+                icon: 'warning',
+                title: translate_response,
+                showConfirmButton:false,
+                timer: 3000
+              })
+            }
+          },
+          error =>{
+            console.log(error);
+          }
+        );
+      }
+    });
+  }
+}

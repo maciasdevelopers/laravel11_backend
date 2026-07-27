@@ -1,0 +1,250 @@
+<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco" #vContent>
+  <div class="contenido">
+    <app-loader></app-loader>
+    <nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+    <main class="contenidoPagina">
+      <div class="listas_ps revanecer">
+        <div class="lista-div lista-divNoFlex row">
+          <h4>{{'ordens_pag' | translate}}</h4>
+					<div class="col-12">
+						<div class="btn-group lista_botones col" role="group" arial-label="Basic example">
+							<a class="btn btn_extend bg-indigo-600" (click)="verRegistroPublocacion();">
+								<i class="fa-solid fa-plus"></i>&nbsp;Registrar publicaci&oacute;n 
+							</a>
+							<!--<a class="btn btn_extend bg-indigo-600" >
+								<i class="fa-solid fa-plus"></i>&nbsp;Registrar declaraci&oacute;n de aportaciones de Seguridad Social
+							</a>-->
+						</div>
+					</div>
+          
+          <p-table #prvGralList [value]="lista_publicaciones" showGridlines [resizableColumns]="true" columnResizeMode="expand" 
+            [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]"
+            [globalFilterFields]="['folio_publicacion','fecha_publicacion','encabezado']">
+            <ng-template #caption>
+              <div class="flex">
+                <p-iconfield iconPosition="left" class="ml-auto">
+                  <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                  <input pInputText type="text"
+                    (input)="prvGralList.filterGlobal($event.target.value, 'contains')"
+                    placeholder="{{'bus_car' | translate}}" />
+                </p-iconfield>
+              </div>
+            </ng-template>
+            <ng-template #header>
+              <tr>
+                <th class="ultimo"></th>
+                <th pResizableColumn pSortableColumn="folio_publicacion">folio&nbsp;<p-sortIcon field="folio_publicacion" /></th>
+                <th pResizableColumn pSortableColumn="fecha_publicacion">Fecha de publicaci&oacute;n&nbsp;<p-sortIcon field="fecha_publicacion" /></th>
+                <th pResizableColumn pSortableColumn="encabezado">T&iacute;tulo&nbsp;<p-sortIcon field="encabezado" /></th>
+                <th class="ultimo"></th>
+              </tr>
+            </ng-template>
+            <ng-template #body let-pub>
+              <tr>
+                <td class="ultimo">
+                  <a class="btn bg-blue-600" (click)="desglosePublicacion(pub);"><!---->
+                    <i class="fa-solid fa-info"></i>
+                  </a>
+                </td>
+                <td>{{pub.folio_publicacion}}</td>
+                <td>{{pub.fecha_publicacion}}</td>
+                <td class="name">{{pub.encabezado}}</td>
+                <td class="ultimo">
+                  <a class="btn btn_extend text-bg-danger rounded-3" [class.disabled]="pub.utilizado"
+                    [attr.disabled]="pub.utilizado ? true : null"
+                    [attr.aria-disabled]="pub.utilizado ? 'true' : null"><!--(click)="!pub.utilizado && matarProveedor(pub.token_publicacion);"-->
+                    <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                  </a>
+                </td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="11" class="text-center py-4">
+                  <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                  <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                    {{'no_rows' | translate}}
+                  </p>
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+
+        </div>
+      </div>
+    </main>
+    <app-footer-inside></app-footer-inside>
+  </div>
+</div>
+
+<p-dialog header="Registrar publicaci&oacute;n" [(visible)]="window_news_publicacion" [modal]="true" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  <control_panel_publicaciones_registro></control_panel_publicaciones_registro>
+</p-dialog>
+
+<p-dialog header="Ver publicaci&oacute;n" [(visible)]="window_ver_publicacion" [modal]="true" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  @for (dPub of publicacion_completa; track $index) {
+    <div class="col-12 row">
+      <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain" style="margin-right: 0!important;">
+        <h6 class="title">Editar</h6>
+      </div>
+      <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+        <label class="form-check-label" for="flexSwitchCheckReverse">No</label>
+        <input class="form-check-input" type="checkbox" (click)="publicacionEditar($event.target);">
+        <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+      </div>
+    </div>
+    @if (!edit_publicacion) {
+      <div class="col-12 publicacion_preview">
+        <p class="pub_titulo" [ngClass]="newsModel.titulo == '' ? 'pub_vacia' : ''">
+          @if (newsModel.titulo != '') {
+            {{newsModel.titulo}}
+          } @else {
+            T&iacute;tulo
+          }
+        </p>
+        <p class="pub_resena" [ngClass]="newsModel.resena == '' ? 'pub_vacia' : ''">
+          @if (newsModel.resena != '') {
+            {{newsModel.resena}}
+          } @else {
+            Reseña
+          }
+        </p>
+        <div class="col-12 desglose">
+          @if (newsModel.desglose.length > 0) {
+            @for (content of newsModel.desglose; track $index) {
+              <p class="pub_subtitulo">{{content.subtitulo}}</p>
+              <p class="pub_content_desglose">{{content.parrafo}}</p>
+            }
+          } @else {
+            <p class="pub_resena pub_vacia">Contenido de la publicaci&oacute;n</p>
+          }
+        </div>
+        <div class="col-12 fuentes_de_consulta">
+          @if (newsModel.fuentes_de_consulta.length > 0) {
+            <p class="fuentes_de_consulta_title"><b>Fuentes de consulta</b></p>
+            @for (fuent of newsModel.fuentes_de_consulta; track $index) {
+              <p class="pub_fuente_title"><b>{{fuent.fuente}}:</b> {{fuent.detalle_fuente}}</p>
+            }
+          } @else {
+            <p class="pub_resena pub_vacia">Fuentes de consulta</p>
+          }
+        </div>
+      </div>
+    } @else {
+      <form class="formDataNews" #formDataNews="ngForm" autocomplete="off" (ngSubmit)="OKRegPublic && registraNews(formDataNews);">
+        <div class="col-12 row">
+          <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-4">
+            <div class=col-12>
+              <label for="tituloNews" class="activeInput">Titulo</label>
+              <input id="tituloNews" name="tituloNews" class="validate " type="text" (keyup)="publicacionTitulo($event.target);">
+            </div>
+            <div class="col-12">
+              <label for="resenaNews" class="activeInput">Reseña</label> 
+              <textarea id="resenaNews" name="resenaNews" class="validate" (keyup)="publicacionResena($event.target)"></textarea>
+            </div>
+            
+            <div class="col-12 explain">
+              <h6 class="title">Contenido</h6>
+            </div>
+            <p-divider />
+            <div class=col-12>
+              <label for="subtituloNews" class="activeInput" >Subtitulo</label>
+              <input id="subtituloNews" name="subtituloNews" class="validate " type="text" (keyup)="publicacionSubtitulo($event.target);">
+            </div>
+            <div class="col-12">
+              <label for="informacionNews" class="activeInput" >Información</label> 
+              <textarea id="informacionNews" name="informacionNews" class="validate" (keyup)="publicacionInformacion($event.target);"></textarea>
+            </div>
+            <div class="col-12" style="display: flex !important;justify-content: end!important;">
+              <a class="btn btn_extend text-bg-success rounded-3" [ngClass]="!valida_contenido_publicacion ? 'disabled' : ''" [attr.disabled]="!valida_contenido_publicacion ? true : null" 
+                [attr.aria-disabled]="!valida_contenido_publicacion ? true : null" (click)="valida_contenido_publicacion && redactaContenido();">
+                <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+              </a>
+            </div>
+            
+            <div class="col-12 explain">
+               <h6 class="title">Fuentes de Consulta</h6>
+            </div>
+            <p-divider />
+            <div class="col-12">
+              <label for="fuenteName" class="activeInput">Fuente (Título/Link)</label>
+              <input id="fuenteName" name="fuenteName" class="validate" type="text" (keyup)="publicacionFuente($event.target);">
+            </div>
+            <div class="col-12">
+              <label for="detalleFuente" class="activeInput">Detalle de la Fuente</label> 
+              <input id="detalleFuente" name="detalleFuente" class="validate" type="text" (keyup)="publicacionFuentDetalle($event.target)">
+            </div>
+            <div class="col-12" style="display: flex !important; justify-content: end !important; margin-top: 5px !important;">
+              <a class="btn btn_extend text-bg-success rounded-3" [ngClass]="!valida_fuente_publicacion ? 'disabled' : ''" [attr.disabled]="!valida_fuente_publicacion ? true : null" 
+                [attr.aria-disabled]="!valida_fuente_publicacion ? true : null" (click)="valida_fuente_publicacion && redactaFuente();">
+                <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+              </a>
+            </div>
+          </div>
+          <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-9 col-xxl-8 publicacion_preview">
+            <p class="pub_titulo" [ngClass]="newsModel.titulo == '' ? 'pub_vacia' : ''">
+              @if (newsModel.titulo != '') {
+                {{newsModel.titulo}}
+              } @else {
+                T&iacute;tulo
+              }
+            </p>
+            <p class="pub_resena" [ngClass]="newsModel.resena == '' ? 'pub_vacia' : ''">
+              @if (newsModel.resena != '') {
+                {{newsModel.resena}}
+              } @else {
+                Reseña
+              }
+            </p>
+            <div class="col-12 desglose">
+              @if (newsModel.desglose.length > 0) {
+                @for (content of newsModel.desglose; track $index) {
+                  <p class="pub_subtitulo">{{content.subtitulo}}</p>
+                  <p class="pub_content_desglose">{{content.parrafo}}</p>
+                }
+              } @else {
+                <p class="pub_resena pub_vacia">Contenido de la publicaci&oacute;n</p>
+              }
+            </div>
+            <div class="col-12 fuentes_de_consulta">
+              @if (newsModel.fuentes_de_consulta.length > 0) {
+                <p class="fuentes_de_consulta_title"><b>Fuentes de consulta</b></p>
+                @for (fuent of newsModel.fuentes_de_consulta; track $index) {
+                  <p class="pub_fuente_title"><b>{{fuent.fuente}}:</b> {{fuent.detalle_fuente}}</p>
+                }
+              } @else {
+                <p class="pub_resena pub_vacia">Fuentes de consulta</p>
+              }
+            </div>
+          </div>
+          <p-divider />
+          <div class="col-12" style="display: flex !important; justify-content: end !important; margin-top: 5px !important;">
+            <button class="btn btn_extend text-bg-success rounded-3" [ngClass]="!OKRegPublic ? 'disabled' : ''" [attr.disabled]="!OKRegPublic ? true : null" 
+              [attr.aria-disabled]="!OKRegPublic ? true : null">
+              <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+            </button>
+          </div>
+        </div>
+      </form>
+    }
+  }
+</p-dialog>
+
+<!--{
+  "titulo":"",
+  "resena":"",
+  "desglose":[
+    {
+      "num_lista":1,
+      "subtitulo": "",
+      "parrafo": ""
+    }
+  ],
+  "fuentes_de_consulta":[
+    {
+      "fuente":"",
+      "detalle_fuente":""
+    }
+  ]
+}-->

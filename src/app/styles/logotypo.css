@@ -1,0 +1,54 @@
+.logotipo{
+    height: 100px;
+    display: flex;
+    justify-content: center;
+}
+
+.logotipo div.input-field{
+    margin-top: 0;
+    width: 100px!important;
+    height: 100px;
+}
+
+.logotipo div.input-field input{
+    width: 100px;
+    height: 100px!important;
+    border-radius: 50%!important;
+    z-index: 999;
+}
+
+.logotipo div.input-field div.btn{
+    width: 100px;
+    height: 100px;
+    background-color: #ffffff; 
+    border-radius: 50%;
+    border: 1px solid dimgray;
+    box-shadow: 1px 1px 10px dimgray;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.logotipo div.input-field div.btnError{
+    background-color: #D32F2F!important; 
+}
+
+.logotipo div.input-field div.btn span{
+    font-family: ubuntu, FontAwesome; 
+    color: #353535; 
+    font-size: 40px;
+}
+
+.logotipo div.input-field div.btnError span{
+    color: #fff!important; 
+}
+
+.logotipo div.input-field div.btn img{
+    width: 100px!important;
+    max-width: 100px;
+    height: 100px!important;
+}
+
+.logotipo div.input-field div.btn:hover{
+    background-color: #cfd8dc!important;
+}

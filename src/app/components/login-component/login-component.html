@@ -1,0 +1,147 @@
+<p-confirmpopup #cp>
+  <ng-template #headless let-message>
+    <div class="rounded p-4">
+      <i class="fa-solid fa-circle-info"></i>&nbsp;
+      <span>{{ message.message }}</span>
+      <div class="flex items-center gap-2 mt-4">
+        <p-button id="popUpAccept" class="accept" (onClick)="cp.onAccept()" [label]="popUpAccept" size="small" />
+        <p-button id="popUpReject" class="reject" (onClick)="cp.onReject()" [label]="popUpReject" [text]="true" size="small" severity="secondary" />
+      </div>
+    </div>
+  </ng-template>
+</p-confirmpopup>
+@if (!show_pass_reset) {
+  <div class="col" style="display: flex;justify-content: center;flex-direction: column;flex-wrap: wrap;">
+    <div class="col-12 row content_login" style="margin: 0!important;padding: 0!important;max-height: 100%;">
+      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-8 col-xxl-8 imagen_fondo_login">
+        <img src="assets/animations/principal/iniciar_sesion.svg" alt="">
+      </div>
+      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 formulario" style="display: flex;justify-content: center;flex-direction: column;flex-wrap: wrap;">
+        <form class="formdata_log" name="formLoginSsicUno" #formLoginSsicUno="ngForm" autocomplete="off" (ngSubmit)="onLoginSSIC(formLoginSsicUno)"style="display: flex;flex-wrap: wrap;justify-content: center;">
+          <div class="col-12 col-sm-10 col-md-9 col-lg-9 col-xl-8 col-xxl-7 input_group" style="padding: 0!important;margin-bottom: 5px!important;">
+            <label for="codeAccessTxt" class="activeInput" style="margin: 0!important;"><i class="fa-solid fa-user"></i>&nbsp;{{'login_username' | translate}}</label>
+            <input type="text" class="form-control validate" id="codeAccessTxt" placeholder="name@example.com" required (keyup)="validateCodAccesoLogin($event.target);" style="background-color: white !important;">
+          </div>
+          <div class="col-12 col-sm-10 col-md-9 col-lg-9 col-xl-8 col-xxl-7 input_group_pass" style="padding: 0!important;">
+            <label for="passwordSsicUno" class="activeInput" style="margin: 0!important;"><i class="fa-solid fa-lock"></i>&nbsp;{{'login_password' | translate}}</label>
+            <input type="password" id="passwordSsicUno" class="form-control validate" aria-describedby="passwordHelpBlock" required (keyup)="validatePasswordLogin($event.target);"
+              zxcvbn="passwordStrength" zx-min-score="2" zx-max-score="8" zx-extras="formLoginSsicUno">
+            <a class="btn waves-light blue darken-2" [ngClass]="!visor_pass_active ? 'disabled' : ''" [attr.disabled]="!visor_pass_active ? true : null" [attr.aria-disabled]="!visor_pass_active ? true : null"
+              (click)="visor_pass_active && viewPassword('passwordSsicUno');"><i class="fa-solid fa-eye"></i></a>  
+          </div>
+          <div id="passwordHelpBlock" class="col-12 col-sm-10 col-md-9 col-lg-9 col-xl-8 col-xxl-7" style="display:flex;justify-content:right;padding: 0!important;">
+            <a class="underlineHover forgot_pass" (click)="openResetPassBool(true);">{{'log_in_pass_reset' | translate}}</a>
+          </div>
+          <div id="passwordHelpBlock" class="col-12 col-sm-10 col-md-9 col-lg-9 col-xl-8 col-xxl-7 form-text" style="padding: 0!important;margin: 0!important;">{{'log_in_password_policies' | translate}}</div>
+          <div class="col-12 spaceButton" style="padding: 0!important;">
+            <button class="btn btn_extend text-bg-primary rounded-3 rounded-3" type="submit" 
+              [disabled]="usuario.codigo_acceso == '' || usuario.password == '' || !mayusLogin || !numberLogin || !symbolLogin"><i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'log_in' | translate}}
+            </button>
+          </div>
+          <div id="progress_bar_main_login" class="col-12 col-sm-10 col-md-9 col-lg-9 col-xl-8 col-xxl-7 row progress" style="margin-top: 5px;padding: 0;background-color: #4B5DB4;">
+            <div id="progress_login" class="progress-bar progress-bar-striped progress-bar-animated noneView" role="progressbar" [style.width.%]="porcentaje_barra" [attr.aria-valuenow]="porcentaje_barra" aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+} @else {
+  <!--<h1 class="modal-title fs-5" id="modalLoginInsideLabel">{{'pass_reset' | translate}}</h1>-->
+  <div class="col" style="display: flex;justify-content: center;flex-direction: column;flex-wrap: wrap;">
+    <div class="col-12 row content_reset_pass" style="margin: 0!important;padding: 0!important;max-height: 100%;">
+      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-8 col-xxl-8 imagen_fondo_reset_pass">
+        <div id="passwordHelpBlock" style="display: flex !important;justify-content: start!important;width: 100%;">
+          <a class="underlineHover forgot_pass" (click)="openResetPassBool(false);">{{'back_login_header' | translate}}</a>
+        </div>
+        <img src="assets/animations/principal/resset_pass.svg" alt="">
+      </div>
+      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 formulario" style="display: flex;justify-content: center;flex-direction: column;flex-wrap: wrap;">
+        <div class="col-12" *ngIf="process_reset_pass == 'zero'">
+          <form class="formdata_log" name="formPassFaseZero_Uno" #formPassFaseZero_Uno="ngForm" autocomplete="off" (ngSubmit)="onSendCodeVerif(formPassFaseZero_Uno)">
+            <div class="mb-3 input-group">
+              <label class="activeInput">&nbsp;{{'email' | translate}}</label>
+              <input class="validate" name="codigo_acceso" type="text" required (keyup)="validateCodAccesoCodePass($event.target);">
+            </div>
+            <div class="col-12 spaceButton" style="padding: 0!important;">
+              <button class="btn btn_extend text-bg-success rounded-3" type="submit" [disabled]="usuario.email == ''"><i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'pass_verif_code' | translate}}</button>
+            </div>
+          </form>
+        </div>
+  
+        <div class="col-12" *ngIf="process_reset_pass == 'one'">
+          <form class="formdata_log" name="formPassFaseUno_Uno" #formPassFaseUno_Uno="ngForm" autocomplete="off" (ngSubmit)="onVerifiyCodeVerif()">
+            <div class="col-12 explain">
+              <h6 class="title">{{'alert_code' | translate}}</h6>
+            </div>
+  
+            <div class="input-group mb-3" style="margin-top: 10px!important;">
+              <label class="activeInput"><i class="fa-solid fa-unlock-keyhole"></i>&nbsp;{{'verif_code_user' | translate}}</label>
+              <input class="validate" name="codigo_verificacion" type="text" required (keyup)="verificarCodAccesoCodePass($event.target);">
+            </div>
+            <div class="col-12 spaceButton" style="padding: 0!important;">
+              <button class="btn btn_extend text-bg-success rounded-3" type="submit" name="lgcodeuser" id="lgcodeuser"
+                [disabled]="code_verif_txt == ''"><i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'check_code_user' | translate}}</button>
+            </div>
+          </form>
+        </div>
+  
+        <div class="col-12" *ngIf="process_reset_pass == 'two'">
+          <form class="formdata_log" id="formActPass" name="formActPass" autocomplete="off">
+            <div class="col-12 input-group">
+              <label class="active activeInput" for="pass_act" id="lblpass_act"><i class="fa-solid fa-lock"></i>&nbsp;{{'login_password' | translate}}</label>
+              <input type="password" id="primerCPassword" required (keyup)="keyupPrimerClave($event.target);">
+              <div [class]="strengthClassPrimera" style="margin: 0;margin-top: 2px;"><span></span></div>
+              <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6 explain" style="margin: 0!important;">
+                <h6><i class="fa-solid" [ngClass]="contras.passPrimera.length >= 8 ? 'fa-check-double' : 'fa-xmark'"></i>&nbsp;Mínimo 8 caracteres</h6>
+              </div>
+              <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6 explain" style="margin: 0!important;">
+                <h6><i class="fa-solid" [ngClass]="mayusPrimera ? 'fa-check-double' : 'fa-xmark'"></i>&nbsp;Una mayúscula</h6>
+              </div>
+              <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6 explain" style="margin: 0!important;">
+                <h6><i class="fa-solid" [ngClass]="minusPrimera ? 'fa-check-double' : 'fa-xmark'"></i>&nbsp;Minúsculas</h6>
+              </div>
+              <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6 explain" style="margin: 0!important;">
+                <h6><i class="fa-solid" [ngClass]="numberPrimera ? 'fa-check-double' : 'fa-xmark'"></i>&nbsp;Un número</h6>
+              </div>
+              <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6 explain" style="margin: 0!important;">
+                <h6><i class="fa-solid" [ngClass]="symbolPrimera ? 'fa-check-double' : 'fa-xmark'"></i>&nbsp;Un carácter especial</h6>
+              </div>
+            </div>
+  
+            <div class="col-12 input-group">
+              <label class="active activeInput" for="pass_conf" id="lblpass_conf"><i class="fa-solid fa-lock"></i>&nbsp;{{'login_password_confirm' | translate}}</label>
+              <input class="validate" type="password" id="secondCPassword" required (keyup)="keyupClaveConfirmacion($event.target);">
+              <div [class]="strengthClassConfirmacion" style="margin: 0;margin-top: 2px;"><span></span></div>
+              <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6 explain" style="margin: 0!important;">
+                <h6><i class="fa-solid" [ngClass]="contras.passSegunda.length >= 8 ? 'fa-check-double' : 'fa-xmark'"></i>&nbsp;Mínimo 8 caracteres</h6>
+              </div>
+              <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6 explain" style="margin: 0!important;">
+                <h6><i class="fa-solid" [ngClass]="mayusConfirmacion ? 'fa-check-double' : 'fa-xmark'"></i>&nbsp;Una mayúscula</h6>
+              </div>
+              <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6 explain" style="margin: 0!important;">
+                <h6><i class="fa-solid" [ngClass]="minusConfirmacion ? 'fa-check-double' : 'fa-xmark'"></i>&nbsp;Minúsculas</h6>
+              </div>
+              <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6 explain" style="margin: 0!important;">
+                <h6><i class="fa-solid" [ngClass]="numberConfirmacion ? 'fa-check-double' : 'fa-xmark'"></i>&nbsp;Un número</h6>
+              </div>
+              <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6 explain" style="margin: 0!important;">
+                <h6><i class="fa-solid" [ngClass]="symbolConfirmacion ? 'fa-check-double' : 'fa-xmark'"></i>&nbsp;Un carácter especial</h6>
+              </div>
+            </div>
+  
+            <p id="eqpassword" class="eqpass">Campos vacios</p>
+            <div id="divCargaActPass" class="progress progressResetPass noneView" role="progressbar" aria-label="Success striped example" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
+              <div class="progress-bar progress-bar-striped bg-success" style="width: 100%"></div>
+            </div>
+            <div class="col-12" style="display: flex !important;justify-content: end!important;margin-top: 5px!important;">
+              <a class="btn btn_extend text-bg-success rounded-3" [ngClass]="!btnModalActPass ? 'disabled' : ''" [attr.disabled]="!btnModalActPass ? true : null" 
+                [attr.aria-disabled]="!btnModalActPass ? true : null" (click)="btnModalActPass && resetPassWordYa($event);">
+                <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+              </a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+}

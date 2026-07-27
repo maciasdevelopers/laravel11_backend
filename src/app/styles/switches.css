@@ -1,0 +1,30 @@
+.switch_primario{
+  height: 20px;
+  line-height: 20px;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  padding: 0 !important;
+  align-items: center;
+}
+
+.switch_primario label{margin-right: 5px;color: #353535;}
+.switch_primario input{height: 15px!important; background-color: #0d6efd!important; position: relative!important;}
+
+.form-switch input{z-index: 0;margin: 0 !important;}
+.form-switch label{z-index: 999;font-family: lato;font-weight: bold;}
+
+.switch_delete input{height: 15px!important; background-color: #dc3545!important; position: relative!important;}
+
+.radio_check label{
+  line-height: 20px;
+  color: #1f2937 !important;
+  justify-content: center;
+  align-items: center;
+  font-family: "roboto_cr", fontAwesome;
+  font-size: smaller;
+  margin-bottom: 0 !important;
+  height: 20px;
+  margin-left:3px!important;
+}

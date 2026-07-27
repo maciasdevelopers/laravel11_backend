@@ -1,0 +1,63 @@
+div.cabecera{
+    background-color: #d3d3d3;
+    border-radius: 8px;
+    color: #353535;
+}
+
+.row{
+    width: 100%;
+    margin: 0!important;
+}
+
+.row .colVacio{
+    height: 30px;
+}
+
+.rowWidth0{
+    width: auto!important;
+}
+
+.rowSat{
+    display: flex;
+    justify-content: space-around;
+}
+
+.rowSat a.sat{
+    margin-top: 15px;
+    background-color: #FF5722!important;
+    padding: 5px;
+}
+
+.row .info{
+    width: 100%!important;
+}
+
+.row h6.sat{
+    width: 100%!important;
+    background-color: #FF5722!important;
+    color: #fff;
+    font-weight: bold;
+    margin: 0;
+    height: 30px;
+    line-height: 30px;
+    border-radius: 8px;
+}
+
+.row a.btnRow{
+    width: 100%;
+}
+
+.row a.btnRow,
+.row button.btnRow{
+    width: 100%!important;
+    border-radius: 8px!important;
+}
+
+.rowForm{
+    background-color: #666666;
+    border-radius: 8px;
+}
+
+.row .col{
+    margin-bottom: 5px;
+}

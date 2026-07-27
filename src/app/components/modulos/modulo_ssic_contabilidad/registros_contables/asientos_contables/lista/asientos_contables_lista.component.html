@@ -1,0 +1,119 @@
+<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco" #vContent>
+  <div class="contenido">
+    <app-loader></app-loader>
+    <header class="sticky-top">
+      <nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+    </header>
+    <main class="contenidoPagina">
+      <div class="listas_ps revanecer">
+        <div class="lista-div lista-divNoFlex row">
+          <h4 class="col-12">Asientos Contables (Pólizas)</h4>
+
+          <div class="col-12 row">
+            <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+              <button pButton type="button" label="Nuevo Asiento Contable" icon="pi pi-plus" class="btn btn_extend text-bg-success rounded-3" (click)="nuevoAsiento()"></button>
+            </div>
+          </div>
+
+          <div class="col-12 row">
+            <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+              <label for="familiaProducto" class="activeInput">Fecha Inicio:</label>
+              <input id="txtFechaSalidafinal" class="datepicker" name="fechaAltaProd" type="date">
+              <!--<p-calendar [(ngModel)]="fecha_inicio" dateFormat="yy-mm-dd" placeholder="YYYY-MM-DD"></p-calendar>-->
+            </div>
+            <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+              <label for="familiaProducto" class="activeInput">Fecha Fin:</label>
+              <input id="txtFechaSalidafinal" class="datepicker" name="fechaAltaProd" type="date">
+              <!--<p-calendar [(ngModel)]="fecha_fin" dateFormat="yy-mm-dd" placeholder="YYYY-MM-DD"></p-calendar>-->
+            </div>
+            <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+              <label for="familiaProducto" class="activeInput">Tipo de Póliza:</label>
+              <!--<p-dropdown [options]="tiposPoliza" [(ngModel)]="tipo_poliza" optionLabel="label" placeholder="Seleccione..." [showClear]="true"></p-dropdown>-->
+              
+              <p-select [options]="tiposPoliza" id="selectedUnidadMedidaSAT" optionLabel="concepto"
+                [filter]="true" filterBy="nombre,simbolo,categoria" [showClear]="true"
+                [placeholder]="'opt_select' | translate" class="w-full md:w-56"><!-- (onChange)="keyupUnidadMedidaSalidaApiServ($event.value);"-->
+                <ng-template #selectedItem let-selectedOption>
+                  <div class="flex items-center gap-2">
+                    <div>{{ selectedOption.nombre }}</div>
+                  </div>
+                </ng-template>
+                <ng-template let-medU #item>
+                  <div class="flex items-center gap-2">
+                    <div>{{medU.nombre+" "+medU.simbolo+" ("+medU.categoria+")"}}</div>
+                  </div>
+                </ng-template>
+              </p-select>
+            </div>
+            <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+              <label for="familiaProducto" class="activeInput">&nbsp;</label>
+              <div class="d-flex gap-2">
+                <button pButton type="button" label="Buscar" icon="pi pi-search" class="btn btn_extend text-bg-success rounded-3" (click)="buscarAsientos()"></button>
+                <button pButton type="button" label="Limpiar" icon="pi pi-times" class="btn btn_extend p-button-secondary" (click)="limpiarFiltros()"></button>
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="loading" class="text-center">
+            <i class="pi pi-spin pi-spinner" style="font-size: 2rem;"></i>
+            <p>Cargando asientos contables...</p>
+          </div>
+          
+          <p-table [value]="listaAsientos" [paginator]="true" [rows]="10" responsiveLayout="scroll">
+            <ng-template pTemplate="header">
+              <tr>
+                <th>Fecha</th>
+                <th>Tipo Póliza</th>
+                <th>Folio</th>
+                <th>Concepto</th>
+                <th>Total Débito</th>
+                <th>Total Crédito</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-asiento>
+              <tr>
+                <td>{{ asiento.fecha }}</td>
+                <td>{{ asiento.tipo_poliza }}</td>
+                <td>{{ asiento.folio }}</td>
+                <td>{{ asiento.concepto }}</td>
+                <td>{{ asiento.total_debito | number:'1.2-2' }}</td>
+                <td>{{ asiento.total_credito | number:'1.2-2' }}</td>
+                <td>
+                  <p-tag [severity]="getSeverityEstado(asiento.estado)" [value]="asiento.estado"></p-tag>
+                </td>
+                <td>
+                  <button pButton type="button" icon="pi pi-eye" class="p-button-rounded p-button-info p-button-sm" (click)="verDetalle(asiento.token_asiento)" pTooltip="Ver Detalle" tooltipPosition="top"></button>
+                  <button *ngIf="asiento.estado === 'BORRADOR'" pButton type="button" icon="pi pi-pencil" class="p-button-rounded p-button-warning p-button-sm" (click)="editarAsiento(asiento.token_asiento)" pTooltip="Editar" tooltipPosition="top"></button>
+                  <button *ngIf="asiento.estado === 'BORRADOR'" pButton type="button" icon="pi pi-trash" class="p-button-rounded p-button-danger p-button-sm" (click)="eliminarAsiento(asiento.token_asiento)" pTooltip="Eliminar" tooltipPosition="top"></button>
+                  <button *ngIf="asiento.estado === 'BORRADOR'" pButton type="button" icon="pi pi-check" class="p-button-rounded p-button-success p-button-sm" (click)="autorizarAsiento(asiento.token_asiento)" pTooltip="Autorizar" tooltipPosition="top"></button>
+                </td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="8" class="text-center">No se encontraron asientos contables</td>
+              </tr>
+            </ng-template>
+          </p-table>
+
+        </div>
+      </div>
+    </main>
+    <app-footer-inside></app-footer-inside>
+  </div>
+</div>
+
+<p-dialog header="Consulta de Asiento Contable" [(visible)]="ver_form_consulta_asiento_contable" [attr.position]="'bottom'" [modal]="true" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  <div class="col-12 row">
+    <app-asientos-contables-consulta></app-asientos-contables-consulta>
+  </div>
+</p-dialog>
+
+<p-dialog header="Nuevo Asiento Contable" [(visible)]="ver_form_registro_asiento_contable" [attr.position]="'bottom'" [modal]="true" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  <div class="col-12 row">
+    <app-asientos-contables-registro></app-asientos-contables-registro>
+  </div>
+</p-dialog>

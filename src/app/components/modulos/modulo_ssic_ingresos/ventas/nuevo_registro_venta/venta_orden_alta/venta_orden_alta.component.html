@@ -1,0 +1,750 @@
+<!-- Botones de acción -->
+<div class="btn-group lista_botones col" role="group" aria-label="Basic example">
+  <button class="btn btn_extend bg-indigo-600" pButton pRipple type="button" icon="pi pi-refresh" (click)="lista_clientes()">Actualizar</button>
+  <button class="btn btn_extend bg-indigo-600" pButton pRipple type="button" icon="pi pi-users" (click)="btnVentaPubGeneral()">P&uacute;blico General</button>
+  <button class="btn btn_extend bg-indigo-600" pButton pRipple type="button" icon="pi pi-address-book" (click)="mostrarModalClientes()">Clientes Registrados</button>
+</div>
+
+<!-- Buscador -->
+<!--<div class="row mb-3">
+  <div class="col-12 col-md-6 offset-md-6">
+    <span class="p-input-icon-left w-100">
+      <i class="pi pi-search"></i>
+      <input pInputText type="text" [(ngModel)]="clientBuscar" (input)="clientUpdatePaginated()" placeholder="Buscar cliente..." class="w-100"/>
+    </span>
+  </div>
+</div>-->
+
+<div class="col-12">
+  <p-table [value]="clientListaPag" [paginator]="true" [rows]="clientRows" [totalRecords]="clientTotalRecords" [rowsPerPageOptions]="[10,20,30,50,100]" styleClass="p-datatable-sm"
+    (onPageChange)="clientPaginador($event)" [showCurrentPageReport]="true" currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros">
+    <ng-template pTemplate="header">
+      <tr>
+        <th class="ultimo"></th>
+        <th>Folio</th>
+        <th>País</th>
+        <th>RFC / ID Tax</th>
+        <th>Cliente</th>
+        <th>Lista de Precios</th>
+        <th>Forma de Pago</th>
+        <th class="ultimo"></th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-cln>
+      <tr>
+        <td class="ultimo">
+          <a class="btn bg-blue-600" (click)="verClienteInfo(cln.token_cat_clientes);">
+            <i class="fa-solid fa-info"></i>
+          </a>
+        </td>
+        <td>{{cln.folio}}</td>
+        <td>{{cln.pais}}</td>
+        <td>{{cln.rfc_generico}}</td>
+        <td>{{cln.nombre}}</td>
+        <td>{{cln.listaPrecios}}</td>
+        <td>{{cln.forma_pago}}</td>
+        <td class="ultimo">
+          <a class="btn bg-green-600" (click)="iniciaProcesoVentaClient(cln.token_cat_clientes);">
+            <i class="fa-solid fa-cart-shopping"></i>
+          </a>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="8" class="text-center">No hay registros disponibles</td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
+
+<!-- Modal de Lista de Clientes -->
+<p-dialog header="Lista de Clientes" [(visible)]="modalClientesVisible" [modal]="true" [style]="{width: '75vw', height: '70vh'}" [maximizable]="true">
+  <p-table [value]="arrayvClientes" [paginator]="true" [rows]="10" [globalFilterFields]="['cancel_soli_cancel_realizada','cancel_soli_cancel_realizada','cancel_soli_folio']" [showCurrentPageReport]="true" styleClass="p-datatable-sm">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Folio</th>
+        <th>País</th>
+        <th>RFC</th>
+        <th>Cliente</th>
+        <th>Lista de Precios</th>
+        <th>Forma de Pago</th>
+        <th style="width: 80px;">Seleccionar</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-listClient>
+      <tr>
+        <td>{{listClient.folio}}</td>
+        <td>{{listClient.pais}}</td>
+        <td>{{listClient.rfc}}</td>
+        <td>{{listClient.nombre}}</td>
+        <td>{{listClient.listaPrecios}}</td>
+        <td>{{listClient.forma_pago}}</td>
+        <td>
+          <div class="form-check radio_check">
+            <!--[checked]="compProd.token_articulo == conceptList.articulo_guardar_tkn ? true : null"-->
+            <input class="form-check-input" type="radio" name="artCatSelect" [value]="listClient.token" [(ngModel)]="clienteSeleccionado" (click)="selectCliente(listClient);">
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="7" class="text-center">No hay clientes registrados</td>
+      </tr>
+    </ng-template>
+  </p-table>
+</p-dialog>
+
+<!-- Formulario de Alta de Venta -->
+<div *ngIf="!divAltaVenta" class="row">
+  <div class="col-12 text-center py-5">
+    <i class="pi pi-shopping-cart" style="font-size: 5rem; color: #ccc;"></i>
+    <p class="text-muted mt-3">Seleccione un cliente para iniciar una venta</p>
+  </div>
+</div>
+
+<div *ngIf="divAltaVenta" class="row">
+  <!-- Datos del Cliente -->
+  <div class="col-12 mb-3">
+    <div class="card">
+      <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Datos Generales del Cliente</h5>
+        <button pButton pRipple type="button" icon="pi pi-times" class="p-button-rounded p-button-danger p-button-sm" (click)="regresarMenu()"></button>
+      </div>
+      <div class="card-body">
+        <div class="row g-3">
+          <div class="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-3 col-xxl-3 explain explain_column">
+            <input type="hidden" [(ngModel)]="txtHiddenclienteToken">
+            <h6 class="title">Folio</h6>
+            <h6 class="content">{{txtFolioClientV}}</h6>
+          </div>
+          <div class="col-12 col-sm-12 col-md-8 col-lg-8 col-xl-9 col-xxl-9 explain explain_column">
+            <h6 class="title">Nombre Completo</h6>
+            <h6 class="content">{{txtNombreClientV}}</h6>
+          </div>
+          <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 explain explain_column">
+            <h6 class="title">RFC</h6>
+            <h6 class="content">{{txtRfcClientV}}</h6>
+          </div>
+          <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 explain explain_column">
+            <h6 class="title">Lista de Precios</h6>
+            <h6 class="content">{{txtListaPrecV}}</h6>
+          </div>
+          <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+            <label class="activeInput">Moneda</label>
+            <p-select [options]="catalogo_monedas_api" id="selectedMonedaCode" [(ngModel)]="txtMonedaClientV" optionLabel="_filtro_busqueda" [filter]="true" filterBy="_filtro_busqueda" [showClear]="true"
+              [placeholder]="'opt_select' | translate" class="w-full md:w-56" (onChange)="selectMonedaVenta($event.value);">
+              <ng-template #selectedItem let-selectedOption>
+                <div class="flex items-center gap-2">
+                  <div>{{selectedOption.code+" "+selectedOption.langEN}}</div>
+                </div>
+              </ng-template>
+              <ng-template let-mon #item>
+                <div class="flex items-center gap-2">
+                  <div>{{mon.code+" "+mon.langEN}}</div>
+                </div>
+              </ng-template>
+            </p-select>
+          </div>
+          <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+            <label class="activeInput">Tipo de Cambio</label>
+            <input pInputText type="text" [(ngModel)]="txtTipoCambioClientV"  (keyup)="changeTipoCambioVenta($event.target)"/>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Catálogo de Productos/Servicios -->
+  <div class="col-12 mb-3">
+    <div class="card">
+      <div class="card-header bg-info text-white">
+        <h5 class="mb-0">Catálogo de Productos y Servicios</h5>
+      </div>
+      <div class="card-body">
+        <!-- Filtros de búsqueda -->
+        <div class="row g-3 mb-3">
+          <div class="col-md-6">
+            <label class="activeInput">Tipo de Búsqueda</label>
+            <p-select [options]="tiposBusqueda" id="selPaisExtPF_reg" name="selPaisExtPF_reg" [(ngModel)]="tipoBusquedaSeleccionado" optionLabel="pais" [filter]="true" filterBy="pais" optionValue="token_pais" 
+              appendTo="body" [showClear]="true" [placeholder]="'opt_select' | translate" class="w-full md:w-56"><!-- (onChange)="changePais($event.value);"-->
+              <ng-template #selectedItem let-selPais>
+                <div class="flex items-center gap-2">
+                  <div>{{selPais.pais}}</div>
+                </div>
+              </ng-template>
+              <ng-template let-ltpais #item>
+                <div class="flex items-center gap-2">
+                  <div>{{ltpais.pais}}</div>
+                </div>
+              </ng-template>
+            </p-select>
+          </div>
+          <div class="col-md-6">
+            <label class="activeInput">Buscar</label>
+            <input pInputText type="text" [(ngModel)]="textoBusquedaProducto" 
+                   placeholder="Buscar producto/servicio..." class="w-100"/>
+          </div>
+        </div>
+
+        <!-- Tabla de Productos -->
+        <p-table [value]="arrayListaPVentas" [paginator]="true" [rows]="10" [globalFilterFields]="['cancel_soli_cancel_realizada','cancel_soli_cancel_realizada','cancel_soli_folio']" [showCurrentPageReport]="true">
+          <ng-template pTemplate="header">
+            <tr>
+              <th></th>
+              <th>Producto/Servicio</th>
+              <th style="width: 100px;">Series/Lotes</th>
+              <th style="width: 120px;">Precio con Imp.</th>
+              <th style="width: 120px;">Precio sin Imp.</th>
+              <th style="width: 100px;">Cantidad</th>
+              <th style="width: 80px;">Desc.</th>
+              <th style="width: 80px;">Promo.</th>
+              <th style="width: 120px;">Importe</th>
+              <th style="width: 80px;">Agregar</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-listaPVentas>
+            <tr>
+              <td class="noneView">{{listaPVentas.token_articulo}}</td>
+              <td>
+                <div class="d-flex align-items-center">
+                  <img [src]="listaPVentas.imagen" alt="Producto" style="width: 40px; height: 40px; object-fit: cover;" class="me-2 rounded">
+                  <span>{{listaPVentas.clasificacion}} {{listaPVentas.sat}} {{listaPVentas.clave}} {{listaPVentas.concepto}}</span>
+                </div>
+              </td>
+              <td>
+                <button *ngIf="listaPVentas.arraySerieLoteImport.length == 0" pButton pRipple type="button" icon="pi pi-tags" class="p-button-rounded p-button-secondary p-button-sm" disabled></button>
+                <button *ngIf="listaPVentas.arraySerieLoteImport.length != 0" pButton pRipple type="button" icon="pi pi-tags" class="p-button-rounded p-button-primary p-button-sm" (click)="mostrarModalSeriesLotes(listaPVentas)">
+                  <span class="badge bg-danger ms-1">{{listaPVentas.arraySerieLoteImport.existKardex}}</span>
+                </button>
+              </td>
+              <td>${{listaPVentas.precioBaseConImp}}</td>
+              <td>${{listaPVentas.precioBase}}</td>
+              <td>
+                <input pInputText type="number" [(ngModel)]="listaPVentas.dataCantidad" (keyup)="cantidadKeyup($event)" class="form-control form-control-sm"/>
+              </td>
+              <td>
+                <button *ngIf="listaPVentas.arrayDescuentos.length == 0" pButton pRipple type="button" icon="pi pi-tags" class="p-button-rounded p-button-secondary p-button-sm" disabled></button>
+                <button *ngIf="listaPVentas.arrayDescuentos.length != 0" pButton pRipple type="button" icon="pi pi-tags" class="p-button-rounded p-button-warning p-button-sm" (click)="mostrarModalDescuentos(listaPVentas)">
+                  <span class="badge bg-danger ms-1">{{listaPVentas.arrayDescuentos.length}}</span>
+                </button>
+              </td>
+              <td>
+                <button *ngIf="listaPVentas.arrayPromociones.length == 0" pButton pRipple type="button" icon="pi pi-award" class="p-button-rounded p-button-secondary p-button-sm" disabled></button>
+                <button *ngIf="listaPVentas.arrayPromociones.length != 0" pButton pRipple type="button" icon="pi pi-award" class="p-button-rounded p-button-warning p-button-sm" (click)="mostrarModalPromociones(listaPVentas)">
+                  <span class="badge bg-danger ms-1">{{listaPVentas.arrayPromociones.length}}</span>
+                </button>
+              </td>
+              <td class="tdImportePartida">${{listaPVentas.importePartida}}</td>
+              <td>
+                <button pButton pRipple type="button" icon="pi pi-shopping-cart" class="p-button-rounded p-button-success p-button-sm" (click)="descargaArticulo($event, listaPVentas)"></button>
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="10" class="text-center">No hay productos disponibles</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Totales -->
+  <div class="col-12 mb-3">
+    <div class="card">
+      <div class="card-body">
+        <div class="row">
+          <div class="col-12 col-md-8 offset-md-4">
+            <div class="table-responsive">
+              <table class="table table-borderless">
+                <tbody>
+                  <tr>
+                    <td class="text-end fw-bold">Subtotal:</td>
+                    <td class="text-end" style="width: 200px;">{{txtsubtotalVenta}}</td>
+                  </tr>
+                  <tr>
+                    <td class="text-end fw-bold">- Descuento Total:</td>
+                    <td class="text-end">{{txttotalDescuentoVenta}}</td>
+                  </tr>
+                  <tr>
+                    <td class="text-end fw-bold">+ IVA:</td>
+                    <td class="text-end">{{txtiva}}</td>
+                  </tr>
+                  <tr>
+                    <td class="text-end fw-bold">- ISR Retenido:</td>
+                    <td class="text-end">{{txtisRetenido}}</td>
+                  </tr>
+                  <tr>
+                    <td class="text-end fw-bold">- IVA Retenido:</td>
+                    <td class="text-end">{{txtivaRetenido}}</td>
+                  </tr>
+                  <tr>
+                    <td class="text-end fw-bold">- IEPS:</td>
+                    <td class="text-end">{{txtieps}}</td>
+                  </tr>
+                  <tr>
+                    <td class="text-end fw-bold">- Otros Impuestos Federales:</td>
+                    <td class="text-end">{{txtotrosImpuFed}}</td>
+                  </tr>
+                  <tr>
+                    <td class="text-end fw-bold">- Otros Impuestos Locales:</td>
+                    <td class="text-end">{{txtotrosImpuLocal}}</td>
+                  </tr>
+                  <tr class="table-active">
+                    <td class="text-end fw-bold fs-5">Total:</td>
+                    <td class="text-end fw-bold fs-5" id="total">{{txttotal}}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Forma de Pago -->
+  <div class="col-12 mb-3" *ngIf="divFormPagoGnral">
+    <div class="card">
+      <div class="card-header bg-success text-white">
+        <h5 class="mb-0">Forma de Pago</h5>
+      </div>
+      <div class="card-body">
+        <!-- Información de Caja -->
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <div class="card bg-light">
+              <div class="card-body">
+                <label class="activeInput fw-bold">Responsable en Turno</label>
+                <div *ngFor="let respFor of datosCaja" class="d-flex align-items-center">
+                  <img [src]="'/assets/images/interno/perfiles/perfil/' + respFor.img_resp" alt="Responsable" class="rounded-circle me-2" style="width: 40px; height: 40px;">
+                  <span>{{respFor.nombre}}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="card bg-light">
+              <div class="card-body">
+                <label class="activeInput fw-bold">No. Caja</label>
+                <div *ngFor="let cajaFor of datosCaja">
+                  <span class="badge bg-primary fs-6">{{cajaFor.caja}}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pestañas de Forma de Pago -->
+        <p-tabs value="0" scrollable>
+          <p-tablist>
+            <p-tab value="0">Contado</p-tab>
+            <p-tab value="1">Registrar nuevo activo</p-tab>
+            <p-tab value="2">Registrar nuevo activo</p-tab>
+          </p-tablist>
+          <p-tabpanels>
+            <p-tabpanel value="0">
+              <div class="card card_main col-12" style="padding: 0!important;">
+                <div class="card-body" style="padding: 10px!important;">
+                  <h5 class="card-title">Pago en Efectivo</h5>
+                  <div class="inside">
+                    <div class="mb-3">
+                      <label class="activeInput">Monto a Pagar</label>
+                      <input pInputText type="number" [(ngModel)]="montoEfectivo" (keyup)="llenaPagoEfect($event)" placeholder="$0.00" class="form-control"/>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <p-divider [attr.style]="'margin-top: 25px!important;'" />
+
+              <div class="card card_main col-12" style="padding: 0!important;">
+                <div class="card-body" style="padding: 10px!important;">
+                  <h5 class="card-title">Pago con Cheque</h5>
+                  <div class="inside">
+                    <button pButton pRipple type="button" icon="pi pi-plus" class="p-button-sm mb-2" (click)="abreFormaPagoChequeFrom($event)"></button>
+                    <div *ngFor="let item of listFpagoCheque; let i = index" class="card mb-2">
+                      <div class="card-header py-1 d-flex justify-content-between">
+                        <span>Cheque No. {{i + 1}}</span>
+                        <button pButton pRipple type="button" icon="pi pi-trash" class="p-button-rounded p-button-danger p-button-sm" (click)="btnDeletePagoCheque($event)"></button>
+                      </div>
+                      <div class="card-body">
+                        <div class="row g-2">
+                          <div class="col-md-6">
+                            <label class="activeInput">Fecha</label>
+                            <input type="date" class="form-control form-control-sm">
+                          </div>
+                          <div class="col-md-6">
+                            <label class="activeInput">No. Cheque</label>
+                            <input pInputText type="text" class="form-control form-control-sm">
+                          </div>
+                          <div class="col-md-6">
+                            <label class="activeInput">Banco</label>
+                            <p-select [options]="listaBancosVent" id="selPaisExtPF_reg" name="selPaisExtPF_reg" [(ngModel)]="bancoSeleccionado" optionLabel="pais" [filter]="true" filterBy="pais" optionValue="token_pais" 
+                              appendTo="body" [showClear]="true" [placeholder]="'opt_select' | translate" class="w-full md:w-56"><!-- (onChange)="changePais($event.value);"-->
+                              <ng-template #selectedItem let-selPais>
+                                <div class="flex items-center gap-2">
+                                  <div>{{selPais.pais}}</div>
+                                </div>
+                              </ng-template>
+                              <ng-template let-ltpais #item>
+                                <div class="flex items-center gap-2">
+                                  <div>{{ltpais.pais}}</div>
+                                </div>
+                              </ng-template>
+                            </p-select>
+                          </div>
+                          <div class="col-md-6">
+                            <label class="activeInput">Titular</label>
+                            <input pInputText type="text" class="form-control form-control-sm">
+                          </div>
+                          <div class="col-12">
+                            <label class="activeInput">Monto</label>
+                            <input pInputText type="number" [(ngModel)]="montoCheque" (keyup)="llenaPagoCheques($event)" placeholder="$0.00" class="form-control form-control-sm"/>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <p-divider [attr.style]="'margin-top: 25px!important;'" />
+              
+              <div class="card card_main col-12" style="padding: 0!important;">
+                <div class="card-body" style="padding: 10px!important;">
+                  <h5 class="card-title">Vales de Despensa</h5>
+                  <div class="inside">
+                    <button pButton pRipple type="button" icon="pi pi-plus" class="p-button-sm mb-2" (click)="btnAddPagoValeDesp($event)"></button>
+                    <div *ngFor="let item of listFpagoValeDesp; let i = index" class="card mb-2">
+                      <div class="card-header py-1 d-flex justify-content-between">
+                        <span>Vale No. {{i + 1}}</span>
+                          <button pButton pRipple type="button" icon="pi pi-trash" class="p-button-rounded p-button-danger p-button-sm" (click)="btnDeletePagoValeDesp($event)"></button>
+                      </div>
+                      <div class="card-body">
+                        <div class="row g-2">
+                          <div class="col-12">
+                            <label class="activeInput">Número de Referencia</label>
+                            <input pInputText type="text" class="form-control form-control-sm">
+                          </div>
+                          <div class="col-12">
+                            <label class="activeInput">Monto</label>
+                            <input pInputText type="text" [(ngModel)]="montoVale" (keyup)="llenaPagoValeDesp($event)" placeholder="$0.00" class="form-control form-control-sm"/>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </p-tabpanel>
+            <p-tabpanel value="1">
+              <div class="col-md-6">
+                <label class="activeInput">Límite de Crédito</label>
+                <input pInputText type="text" [(ngModel)]="limiteCredito" class="form-control"/>
+              </div>
+              <div class="col-md-6">
+                <label class="activeInput">Días de Pago</label>
+                <input pInputText type="text" [(ngModel)]="diasPago" class="form-control"/>
+              </div>
+              <div class="col-12">
+                <label class="activeInput">No. de Contrato</label>
+                <input pInputText type="text" [(ngModel)]="numeroContrato" class="form-control"/>
+              </div>
+              <div class="col-md-6">
+                <label class="activeInput">No. de Cuenta</label>
+                <input pInputText type="text" [(ngModel)]="numeroCuenta" class="form-control"/>
+              </div>
+              <div class="col-md-6">
+                <label class="activeInput">No. de Referencia</label>
+                <input pInputText type="text" [(ngModel)]="numeroReferencia" class="form-control"/>
+              </div>
+              <div class="col-12">
+                <label class="activeInput">CLABE Interbancaria</label>
+                <input pInputText type="password" [(ngModel)]="clabeInterbanc" maxlength="21" class="form-control"/>
+              </div>
+            </p-tabpanel>
+            <p-tabpanel value="2">
+              <div class="alert alert-info">
+                <i class="pi pi-info-circle me-2"></i>
+                El pago mixto combina diferentes formas de pago (efectivo, cheque, tarjeta, etc.)
+              </div>
+            </p-tabpanel>
+          </p-tabpanels>
+        </p-tabs>
+
+        <!-- Resumen de Pagos -->
+        <div class="row mt-3">
+          <div class="col-12">
+            <div class="card bg-light">
+              <div class="card-body">
+                <div class="row text-center">
+                  <div class="col-md-4">
+                    <label class="activeInput fw-bold">Recibido</label>
+                    <h4 class="text-success">{{dinRecibido}}</h4>
+                  </div>
+                  <div class="col-md-4">
+                    <label class="activeInput fw-bold">Resta</label>
+                    <h4 class="text-danger">{{dinResta}}</h4>
+                  </div>
+                  <div class="col-md-4">
+                    <label class="activeInput fw-bold">Cambio</label>
+                    <h4 class="text-warning">{{dinCambio}}</h4>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lugar de Entrega -->
+  <div class="col-12 mb-3" *ngIf="divLugarEntrega">
+    <div class="card">
+      <div class="card-header bg-secondary text-white">
+        <h5 class="mb-0">Lugar de Entrega</h5>
+      </div>
+      <div class="card-body">
+        <div class="row mb-3">
+          <div class="col-12">
+            <p-table [value]="datosCaja" [paginator]="true" [rows]="5" 
+                     styleClass="p-datatable-sm">
+              <ng-template pTemplate="header">
+                <tr>
+                  <th>Dirección</th>
+                  <th style="width: 100px;">Seleccionar</th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-dirCajaFor>
+                <tr>
+                  <td>{{dirCajaFor.dir_completa}}</td>
+                  <td>
+                    <div class="form-check radio_check">
+                      <input class="form-check-input" type="radio" name="artCatSelect" [value]="dirCajaFor.token_direccion" [(ngModel)]="direccionSeleccionada">
+                      <!-- (click)="selectCliente(listClient);"-->
+                    </div>
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12">
+            <button pButton pRipple type="button" icon="pi pi-address-card" class="p-button-primary me-2" label="Formulario de Dirección"></button>
+            <button pButton pRipple type="button" icon="pi pi-book" class="p-button-secondary" label="Dirección Completa"></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Botones de Acción -->
+  <div class="col-12 mb-3">
+    <div class="card">
+      <div class="card-body">
+        <div class="d-flex justify-content-center gap-3">
+          <button pButton pRipple type="button" icon="pi pi-print" class="p-button-success" label="Registrar Venta e Imprimir Ticket"></button>
+          <button pButton pRipple type="button" icon="pi pi-save" class="p-button-primary" (click)="saveVenta()" label="Registrar Venta"></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para Series, Lotes y Pedimentos -->
+<p-dialog header="Series, Lotes y Pedimentos Aduanales" [(visible)]="modalSeriesLotesVisible" [modal]="true" [style]="{width: '60vw', height: '70vh'}" [maximizable]="true">
+  <div class="row mb-3">
+    <div class="col-12">
+      <div class="alert alert-info">
+        <strong>Existencia:</strong> {{productoSeleccionado?.arraySerieLoteImport?.existKardex}}
+      </div>
+    </div>
+  </div>
+
+  <!-- Series -->
+  <div class="mb-3" *ngIf="productoSeleccionado?.arraySerieLoteImport?.serie?.length > 0">
+    <h6>SERIES</h6>
+    <p-table [value]="productoSeleccionado.arraySerieLoteImport.serie" [paginator]="true" [rows]="5" styleClass="p-datatable-sm">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Serie</th>
+          <th>Existencia</th>
+          <th style="width: 80px;">Seleccionar</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-ventSerie>
+        <tr>
+          <td>{{ventSerie.num_serie}}</td>
+          <td>{{ventSerie.existencia}}</td>
+          <td>
+            <div class="form-check radio_check">
+              <input class="form-check-input" type="radio" name="artCatSelect" [value]="ventSerie.token_detalle_almacen" [(ngModel)]="seriesSeleccionadas">
+              <!-- (click)="selectCliente(listClient);"-->
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+
+  <!-- Lotes -->
+  <div class="mb-3" *ngIf="productoSeleccionado?.arraySerieLoteImport?.lote?.length > 0">
+    <h6>LOTES</h6>
+    <p-table [value]="productoSeleccionado.arraySerieLoteImport.lote" [paginator]="true" [rows]="5" styleClass="p-datatable-sm">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Lote</th>
+          <th>Existencia</th>
+          <th style="width: 80px;">Seleccionar</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-ventLote>
+        <tr>
+          <td>{{ventLote.num_lote}}</td>
+          <td>{{ventLote.existencia}}</td>
+          <td>
+            <div class="form-check radio_check">
+              <input class="form-check-input" type="radio" name="artCatSelect" [value]="ventLote.token_lote" [(ngModel)]="lotesSeleccionados">
+              <!-- (click)="selectCliente(listClient);"-->
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+
+  <!-- Pedimentos Aduanales -->
+  <div class="mb-3" *ngIf="productoSeleccionado?.arraySerieLoteImport?.pedimento?.length > 0">
+    <h6>PEDIMENTOS ADUANALES</h6>
+    <p-table [value]="productoSeleccionado.arraySerieLoteImport.pedimento" [paginator]="true" [rows]="5" styleClass="p-datatable-sm">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Número de Pedimento</th>
+          <th>Existencia</th>
+          <th style="width: 80px;">Seleccionar</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-ventAduanal>
+        <tr>
+          <td>{{ventAduanal.numero_pedimento}}</td>
+          <td>{{ventAduanal.existencia}}</td>
+          <td>
+            <div class="form-check radio_check">
+              <input class="form-check-input" type="radio" name="artCatSelect" [value]="ventAduanal.token_pedimento" [(ngModel)]="pedimentosSeleccionados">
+              <!-- (click)="selectCliente(listClient);"-->
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <button pButton pRipple type="button" label="Cancelar" icon="pi pi-times" class="p-button-secondary" (click)="modalSeriesLotesVisible = false"></button>
+    <button pButton pRipple type="button" label="Aceptar" icon="pi pi-check" class="p-button-primary" (click)="confirmarSeriesLotes()"></button>
+  </ng-template>
+</p-dialog>
+
+<!-- Modal de Descuentos -->
+<p-dialog header="Descuentos Vinculados" [(visible)]="modalDescuentosVisible" [modal]="true" [style]="{width: '70vw', height: '70vh'}" [maximizable]="true">
+  <div class="row mb-3">
+    <div class="col-12">
+      <div class="alert alert-info">
+        <strong>Importe de descuento:</strong> {{descuentoSeleccionado?.importeTdescuento}}
+      </div>
+    </div>
+  </div>
+
+  <p-table [value]="descuentoSeleccionado?.arrayDescuentos" [paginator]="true" [rows]="10" styleClass="p-datatable-sm">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Folio</th>
+        <th>Alias</th>
+        <th>Concepto</th>
+        <th>Cuota/Porcentaje</th>
+        <th>Monto</th>
+        <th>Aplicación</th>
+        <th>Fecha Inicio</th>
+        <th>Fecha Término</th>
+        <th>Importe</th>
+        <th style="width: 80px;">Seleccionar</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-ventDesc>
+      <tr>
+        <td>{{ventDesc.folioDesc}}</td>
+        <td>{{ventDesc.aliasDesc}}</td>
+        <td>{{ventDesc.conceptoDesc}}</td>
+        <td>{{ventDesc.cuoPorc}}</td>
+        <td>{{ventDesc.cantidad_base}}</td>
+        <td>{{ventDesc.periodo}}</td>
+        <td>{{ventDesc.resPeriodoInicio}}</td>
+        <td>{{ventDesc.resPeriodoFin}}</td>
+        <td>${{ventDesc.tdImporteDesc}}</td>
+        <td>
+          <p-checkbox *ngIf="ventDesc.rescheck == '1FALSE'" [(ngModel)]="ventDesc.seleccionado" (onChange)="checkDescuentoInp(ventDesc)"></p-checkbox>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <ng-template pTemplate="footer">
+    <button pButton pRipple type="button" label="Cerrar" icon="pi pi-times" class="p-button-secondary" (click)="modalDescuentosVisible = false"></button>
+  </ng-template>
+</p-dialog>
+
+<!-- Modal de Promociones -->
+<p-dialog header="Promociones Vinculadas" [(visible)]="modalPromocionesVisible" [modal]="true" [style]="{width: '70vw', height: '70vh'}" [maximizable]="true">
+  <div class="row mb-3">
+    <div class="col-12">
+      <div class="alert alert-info">
+        <strong>Importe de promoción:</strong> {{promocionSeleccionada?.tdImportePromo}}
+      </div>
+    </div>
+  </div>
+
+  <p-table [value]="promocionSeleccionada?.arrayPromociones" [paginator]="true" [rows]="10" styleClass="p-datatable-sm">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Folio</th>
+        <th>Alias</th>
+        <th>Concepto</th>
+        <th>Cuota/Porcentaje</th>
+        <th>Monto</th>
+        <th>Aplicación</th>
+        <th>Fecha Inicio</th>
+        <th>Fecha Término</th>
+        <th>Importe</th>
+        <th style="width: 80px;">Seleccionar</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-ventPromo>
+      <tr>
+        <td>{{ventPromo.folioPromo}}</td>
+        <td>{{ventPromo.aliasPromo}}</td>
+        <td>{{ventPromo.conceptoPromo}}</td>
+        <td>{{ventPromo.cuoPorc}}</td>
+        <td>{{ventPromo.cantidad_base}}</td>
+        <td>{{ventPromo.periodo}}</td>
+        <td>{{ventPromo.resPeriodoInicio}}</td>
+        <td>{{ventPromo.resPeriodoFin}}</td>
+        <td>${{ventPromo.tdImportePromo}}</td>
+        <td>
+          <div class="form-check radio_check">
+            <input class="form-check-input" type="radio" name="artCatSelect" [value]="ventPromo.token_promocion" [(ngModel)]="promocionSeleccionada">
+            <!-- (click)="selectCliente(listClient);"-->
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <ng-template pTemplate="footer">
+    <button pButton pRipple type="button" label="Cerrar" icon="pi pi-times" class="p-button-secondary" (click)="modalPromocionesVisible = false"></button>
+  </ng-template>
+</p-dialog>

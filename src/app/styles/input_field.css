@@ -1,0 +1,390 @@
+strong{
+  font-weight: bold!important;
+}
+
+input,
+select,
+input.select-dropdown,
+select.browser-default{
+  font-family: ubuntu, FontAwesome;
+  background-color: #F5F5F5!important;
+  background-color: #e7e7ea!important;
+  height: 30px!important;
+  border-radius: 8px!important;
+  color: #303030!important;
+  text-align: justify;
+  margin: 0!important;
+  width: 100%;
+  border-bottom: 1px solid #d3d3d3!important;
+  border-color: lightgrey!important;
+  border-width: 1px!important;
+  border-style: inset!important;
+  border-image: initial!important;
+}
+
+input[type="search"]{width: max-content !important;}
+
+select.select_black_row{
+  background-color: rgba(53, 53, 53, 0.8)!important;
+  color: #e7e7ea!important;
+}
+
+select.select_correcto_black{
+  color:#353535!important;
+  color: #C6FBC3 !important;
+  border-bottom: solid 2px #388E3C !important;
+}
+
+select.select_error_black{
+  color:#353535!important;
+  color: #FBCDC3!important;
+  border-bottom: solid 2px #6d1300!important;
+}
+
+input.transparent_row{
+  background-color: transparent !important;
+  color: #e7e7ea !important;
+  border-bottom: solid 1px #d3d3d3 !important;
+  box-shadow: none!important;
+}
+
+input.black_row{
+  background-color: #353535 !important;
+  background-color: rgba(53, 53, 53, 0.8) !important;
+  color: #e7e7ea !important;
+  border-bottom: solid 1px #d3d3d3 !important;
+  box-shadow: none!important;
+}
+
+select.browser-default{
+  text-transform: uppercase;
+}
+
+input.error,
+select.error{
+  background: #FBCDC3!important;
+}
+
+input.correcto,
+select.correcto{
+  background: #C6FBC3!important;
+}
+
+input:disabled{
+  background-color: #a5a5a5!important;
+  color: #fff!important;
+}
+
+textarea{
+  font-family: ubuntu, FontAwesome;
+  background-color: #F5F5F5!important;
+  background-color: #e7e7ea!important;
+  height: 90px!important;
+  border-radius: 8px!important;
+  color: #303030!important;
+  text-align: justify;
+  margin: 0!important;
+  width: 100%;
+  border-bottom: 1px solid #d3d3d3!important;
+}
+
+.errorTextarea{
+  background-color: #FBCDC3!important;
+}
+
+.correctoTextarea{
+  background-color: #C6FBC3!important;
+}
+
+.row-field{
+  display: flex;
+  /* display: contents; */
+  justify-content: center;
+}
+
+.row-field .input-field,
+.row-field .input-field-lateral{
+  width: 70%;
+  height: 30px;
+  margin-bottom: 10px;
+}
+
+.input-field-lateral label{width: 40%!important;}
+.input-field-lateral input{width: 60%!important;}
+.input-field-lateral-pass input{border-radius: 0!important;width: calc(60% - 30px) !important;}
+.input-field-lateral-pass a{border-radius: 0 8px 8px 0!important;height: 30px!important;width: 30px!important;}
+
+.input-field-pass{display: flex;justify-content: center;}
+.input-field-pass input{border-radius: 8px 0 0 8px !important;width: calc(100% - 30px) !important;}
+.input-field-pass a{border-radius: 0 8px 8px 0!important;height: 30px!important;width: 30px!important;}
+
+div.input-field{
+  height: 30px;
+  width: 100%;
+  z-index: 0;
+  margin-bottom: 3px;
+}
+
+div.input-field-lateral{
+  min-height: 30px;
+  height: auto;
+  width: 100%;
+  z-index: 0;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+}
+
+div.input-field-column{
+  flex-direction: column!important;
+}
+
+div.input-field-lateral label{
+  padding-left: 5px;
+  padding-right: 5px;
+  background-color: #2962ff;
+  min-height: 30px;
+  line-height: 15px;
+  border-radius: 8px 0 0 8px !important;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'roboto_cr',fontAwesome;
+  font-size: smaller;
+  margin-bottom:0!important;
+}
+
+div.input-field-lateral label.textAreaLabel{
+  margin-bottom:0!important;
+}
+
+div.input-field-lateral input,
+div.input-field-lateral select,
+div.input-field-lateral input.select-dropdown,
+div.input-field-lateral select.browser-default{
+  border-radius: 0 8px 8px 0!important;
+}
+
+div.input-field-lateral textarea{
+  min-height: 30px !important;
+  height: 90px!important;
+  width: 100%;
+  border-radius: 0 8px 8px 0!important;
+  border: none;
+  border-bottom: 1px solid #d3d3d3!important;
+}
+
+div.input-field-lateral .switch{
+  width: 100%!important;
+}
+
+div.input-field-lateral .switch label{
+  border-radius: 8px!important;
+}
+
+div.input-field-lateral .radio{
+  background-color: #2962ff;
+  border-radius: 8px!important;
+}
+
+div.input-field-lateral .radio label span{
+  font-family: 'roboto_cr';
+  color: white;
+  font-size: small;
+}
+
+div.input-field-column label{
+  border-radius: 8px 8px 0 0!important;
+}
+
+div.input-field-column input,
+div.input-field-column textarea,
+div.input-field-column select,
+div.input-field-column input.select-dropdown,
+div.input-field-column select.browser-default{
+  border-radius: 0 0 8px 8px !important;
+}
+
+div.text_area_field{
+  height: auto!important;
+}
+
+.input-field-website input{
+  text-transform: lowercase!important;
+}
+
+div.file-field{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+}
+
+.optionSelect:hover{
+  background-color: #1A347C;
+}
+
+.optionSelect_true,
+.optionSelect_true:hover{
+  /*background-color: #1A347C;*/
+  color: #1A347C!important;
+  font-weight: bold;
+}
+
+.optionSelect_false,
+.optionSelect_false:hover{
+  /*background-color: #353535;*/
+  color: #353535!important;
+  font-weight: bold;
+}
+
+div.input-field-select{
+  z-index: 1!important;
+}
+
+div.select-wrapper input{
+  margin: 0!important;
+}
+
+div.input-field input,
+div.input-field label{
+  z-index: 0;
+}
+
+div.select-wrapper .dropdown-content{
+  top: -300px!important;
+  height: 300px!important;
+}
+
+.input-field label{
+  font-family: ubuntu, FontAwesome;
+  height: 30px;
+  line-height: 30px;
+  border-radius: 5px;
+  color: #353535;
+  margin-left: 5px;
+  -webkit-transform: translateY(0px);
+  transform: translateY(0px);
+  font-size: 13px;
+  font-size: 12pt;
+  font-weight: bold;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.input-field label.active,
+.input-field label.activeInput{
+  /*right: 0;
+  height: 20px;
+  line-height: 20px;
+  border-radius: 5px;
+  color: #353535!important;
+  padding-left: 2%;
+  padding-right: 2%;
+  -webkit-transform: translateY(-14px) scale(0.8);
+  transform: translateY(-14px) scale(0.8);
+  -webkit-transform-origin: 0 0;
+  transform-origin: 0 0;*/
+
+  right: 0;
+  height: 20px!important;
+  line-height: 20px!important;
+  border-radius: 5px;
+  background-color: #2962ff;
+  color: #fff!important;
+  padding-left: 2%;
+  padding-right: 2%;
+  -webkit-transform: translateY(-14px) scale(0.8);
+  transform: translateY(-14px) scale(0.8);
+  -webkit-transform-origin: 0 0;
+  transform-origin: 0 0;
+  width: max-content;
+}
+
+.input-field label.correctoLabel,
+div.input-field-lateral label.correctoLabel{
+  background-color: #539E03!important;
+  color: #fff!important;
+}
+
+.input-field label.errorLabel,
+div.input-field-lateral label.errorLabel{
+  background-color: #D32F2F!important;
+  color: #fff!important;
+}
+
+.input-field label.activeSAT,
+div.input-field-lateral label.activeSAT{
+  background-color: #FF5722!important;
+  color: #fff!important;
+}
+
+.input-field label.activeSelect{
+  /*right: 0;
+  height: 20px;
+  line-height: 20px;
+  border-radius: 5px;
+  color: #353535;
+  padding-left: 2%;
+  padding-right: 2%;
+  -webkit-transform: translateY(12px) scale(0.8);
+  transform: translateY(12px) scale(0.8);
+  -webkit-transform-origin: 0 0;
+  transform-origin: 0 0;*/
+
+  right: 0;
+  height: 20px;
+  line-height: 20px;
+  border-radius: 5px;
+  color: #353535;
+  padding-left: 2%;
+  padding-right: 2%;
+  -webkit-transform: translateY(-15px) scale(0.8);
+  transform: translateY(-15px) scale(0.8);
+  -webkit-transform-origin: 0 0;
+  transform-origin: 0 0;
+}
+
+.input-field label.disabled{
+  background-color: #686868!important;
+  color: #fff!important;
+}
+
+.input-field label.obligatorios{
+  display: flex!important;
+  align-items: center!important;
+}
+
+.input-field label.obligatorios h6.errorLabel{
+  margin: 0!important;
+  margin-right: 3px!important;
+  display: flex!important;
+  justify-content: center!important;
+}
+
+div.file-field div.btn{
+  background-color: #2962ff;
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+  border-radius: 50%;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: ubuntu, FontAwesome;
+  z-index: 0;
+}
+
+.divWthibtnView{
+  display: flex;
+}
+
+.divWthibtnView .inputWthPass{
+  width: 90%!important;
+}
+
+.divWthibtnView .btnView{
+  margin-left: 10px;
+}

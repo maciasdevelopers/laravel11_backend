@@ -1,0 +1,693 @@
+<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco" #vContent>
+  <div class="contenido"><app-loader></app-loader>
+    <nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+    <main class="contenidoPagina">
+      <div class="listas_ps revanecer">
+        <div class="lista-div lista-divNoFlex">
+          <h4 class="col-12">{{'reem_list' | translate}}</h4>
+          <h6 *ngIf="!permiso_consulta" class="access_denied">{{'perm_denied' | translate}}</h6>
+          <div class="col-12" *ngIf="permiso_consulta">
+            <p-tabs value="0" (valueChange)="cambioDeSeccion($event)">
+              <p-tablist>
+                <p-tab value="0">{{'reem_list' | translate}}</p-tab>
+                <p-tab value="1">{{'reem_deleted_list' | translate}}</p-tab>
+                <p-tab value="2">{{'reem_soli' | translate}}</p-tab>
+                <p-tab value="3">{{'prov_reg' | translate}}</p-tab>
+              </p-tablist>
+              <p-tabpanels>
+                <p-tabpanel value="0">
+                  <div class="col-12" style="padding: 0;">
+                    <div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                      <a (click)="reembolsosLista_one();" class="btn btnGuardar btnRow btnBlueHead bg-blue-600">
+                        <i class="fa-solid fa-rotate" style="margin-left: 5px;"></i>&nbsp;{{'list_updt' | translate}}
+                      </a>
+                    </div>
+                    <div class="col-12 col-sm-9 col-md-9 col-lg-10 col-xl-10 col-xxl-10"></div>
+                  </div>
+                  <p-table #reemTrueList [value]="listReembolsosTrue" [globalFilterFields]="searchReemTrue"
+                    dataKey="folio_reem" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]"
+                    [scrollable]="true">
+                    <ng-template #caption>
+                      <div class="flex">
+                        <p-iconfield iconPosition="left" class="ml-auto">
+                          <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                          <input pInputText type="text"
+                            (input)="reemTrueList.filterGlobal($event.target.value, 'contains')"
+                            placeholder="{{'bus_car' | translate}}" />
+                        </p-iconfield>
+                      </div>
+                    </ng-template>
+                    <ng-template #header>
+                      <tr>
+                        <th class="ultimo"></th>
+                        <th class="ultimo"></th>
+                        <th style="width: auto!important;">{{'files_uploaded' | translate}}</th>
+                        <th class="ultimo"></th>
+                        <th pSortableColumn="folio_reem">folio&nbsp;<p-sortIcon field="folio_reem" /></th>
+                        <th pSortableColumn="date_solicitud">{{'fecha_reg' | translate}}&nbsp;<p-sortIcon
+                            field="date_solicitud" /></th>
+                        <th pSortableColumn="nombreEmiPers">{{'aplicante' | translate}}&nbsp;<p-sortIcon
+                            field="nombreEmiPers" /></th>
+                        <th pSortableColumn="name_emisor">{{'company_name' | translate}}&nbsp;<p-sortIcon
+                            field="name_emisor" /></th>
+                        <th pSortableColumn="importe_total">{{'total_import' | translate}}&nbsp;<p-sortIcon
+                            field="importe_total" /></th>
+                        <th pSortableColumn="total_tipo_cambio">{{'mon_tipo_cambio' | translate}}&nbsp;<p-sortIcon
+                            field="total_tipo_cambio" /></th>
+                        <th pSortableColumn="total_reem_saliente">{{'reem_result' | translate}}&nbsp;<p-sortIcon
+                            field="total_reem_saliente" /></th>
+                        <th pSortableColumn="nombreRecPersVH">{{'ssic_menu_vhn' | translate}}&nbsp;<p-sortIcon
+                            field="nombreRecPersVH" /></th>
+                        <th pSortableColumn="nombreRecPersEGR">{{'ssic_menu_egr' | translate}}&nbsp;<p-sortIcon
+                            field="nombreRecPersEGR" /></th>
+                        <th pSortableColumn="fecha_respuesta_pago_ord_auth">{{'ord_pay_fauth' |
+                          translate}}&nbsp;<p-sortIcon field="fecha_respuesta_pago_ord_auth" /></th>
+                        <th style="width: 350px!important;" pSortableColumn="fecha_respuesta_pago_tentativa">
+                          {{'ord_pay_ftent' | translate}}&nbsp;<p-sortIcon field="fecha_respuesta_pago_tentativa" />
+                        </th>
+                        <th style="width: 150px!important;" pSortableColumn="respuesta_pago_done_fecha">{{'pag_date' |
+                          translate}}&nbsp;<p-sortIcon field="respuesta_pago_done_fecha" /></th>
+                      </tr>
+                    </ng-template>
+                    <ng-template #body let-lreem>
+                      <tr class="trlink" [style]="lreem.reem_canceled">
+                        <td>
+                          <div class="progress" role="progressbar" aria-label="Example with label" aria-valuenow="25"
+                            aria-valuemin="0" aria-valuemax="100"
+                            style="background-color: #353535;color: white;width: 100px;">
+                            <div class="progress-bar" [style]="'width: '+lreem.progress">{{lreem.progress}}</div>
+                          </div>
+                        </td>
+                        <td class="ultimo">
+                          <a class="btn bg-blue-600" (click)="ver_desglose_reembolso(lreem.token_reem);">
+                            <i class="fa-solid fa-info"></i>
+                          </a>
+                        </td>
+                        <td class="ultimo">
+                          <a class="btn btn_extend bg-blue-600"><i
+                              class="fa-solid fa-file"></i>{{lreem.total_anexos}}</a>
+                        </td>
+                        <td class="ultimo">
+                          <a class="btn btn_extend text-bg-danger rounded-3"
+                            [ngClass]="!lreem.eliminacion_disponbible ? 'disabled' : ''"
+                            [attr.disabled]="!lreem.eliminacion_disponbible ? true : null"
+                            [attr.aria-disabled]="!lreem.eliminacion_disponbible ? true : null"
+                            (click)="lreem.eliminacion_disponbible && deshabilitarReembolso(lreem.token_reem);">
+                            <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                          </a>
+                        </td>
+                        <td>{{lreem.folio_reem}}</td>
+                        <td>{{lreem.date_solicitud}}</td>
+                        <td class="name">{{lreem.nombreEmiPers}}</td>
+                        <td>{{lreem.name_emisor}}</td>
+                        <td class="td_importes">{{lreem.importe_total+" "+lreem.moneda_entrante}}</td>
+                        <td class="td_importes">{{lreem.total_tipo_cambio}}</td>
+                        <td class="td_importes">{{lreem.total_reem_saliente+" "+lreem.moneda_entrante}}</td>
+
+                        <td [style]="lreem.reem_soli_auth_vhm_style">
+                          {{lreem.nombreRecPersVH != null ? lreem.soli_reem_auth_vhm+"/"+lreem.soli_reem_list+"
+                          ("+lreem.nombreRecPersVH+" - "+lreem.name_receptor+")" : 'N/A'}}
+                          <div *ngIf="lreem.nombreRecPersVH != null" class="chip"
+                            style="display: flex;justify-content: start;align-items: center;">
+                            <p [class]="lreem.btnp_horas_auth_vh_color"
+                              style="width: 25px!important;margin-right: 3px;">
+                              <i [class]="lreem.btnp_horas_auth_vh_icon"></i>
+                            </p>{{lreem.fecha_respuesta_auth_vh+" "+lreem.time_respuesta_auth_vh}}
+                          </div>
+                        </td>
+
+                        <td [style]="lreem.reem_soli_auth_egr_style">
+                          {{lreem.nombreRecPersEGR != null ? lreem.soli_reem_auth_egr+"/"+lreem.soli_reem_list+"
+                          ("+lreem.nombreRecPersEGR+" - "+lreem.name_receptor+")" : 'N/A'}}
+                          <div *ngIf="lreem.nombreRecPersEGR != null" class="chip"
+                            style="display: flex;justify-content: start;align-items: center;">
+                            <p [class]="lreem.btnp_horas_auth_egr_color"
+                              style="width: 25px!important;margin-right: 3px;">
+                              <i [class]="lreem.btnp_horas_auth_egr_icon"></i>
+                            </p>{{lreem.fecha_respuesta_auth_egr+" "+lreem.time_respuesta_auth_egr}}
+                          </div>
+                        </td>
+
+                        <td>{{lreem.fecha_respuesta_pago_ord_auth != null ? lreem.fecha_respuesta_pago_ord_auth :
+                          ['undefined' | translate]}}</td>
+
+                        <td
+                          [ngSwitch]="lreem.fecha_respuesta_pago_tentativa == null && lreem.time_respuesta_pago_tentativa == null ? 'sinFechaHora' : (lreem.respuesta_pago_done_fecha != null ? 'conFechaHoraDone' : 'conFechaHoraPendiente')">
+                          <span *ngSwitchCase="'sinFechaHora'">{{ 'undefined' | translate }}</span>
+                          <span *ngSwitchCase="'conFechaHoraDone'">{{ lreem.fecha_respuesta_pago_tentativa }}</span>
+                          <div *ngSwitchCase="'conFechaHoraPendiente'" class="chip"
+                            style="display: flex;justify-content: start;align-items: center;">
+                            <p [class]="lreem.time_respuesta_pago_tent_color"
+                              style="width: 25px!important;margin-right: 3px;">
+                              <i [class]="lreem.time_respuesta_pago_tent_icon"></i>
+                            </p>{{lreem.fecha_respuesta_pago_tentativa+" "+lreem.time_respuesta_pago_tentativa}}
+                          </div>
+                        </td>
+
+                        <td>
+                          <div class="chip" style="display: flex;justify-content: start;align-items: center;"
+                            *ngIf="lreem.respuesta_pago_done_fecha != null">
+                            <p [class]="lreem.respuesta_pago_done_color"
+                              style="width: 25px!important;margin-right: 3px;">
+                              <i [class]="lreem.respuesta_pago_done_icon"></i>
+                            </p>{{lreem.respuesta_pago_done_fecha}}
+                          </div>
+                          {{lreem.respuesta_pago_done_fecha == null ? ['undefined' | translate] : ''}}
+                        </td>
+                      </tr>
+                    </ng-template>
+                    <ng-template pTemplate="emptymessage">
+                      <tr>
+                        <td colspan="16" class="text-center py-4">
+                          <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                          <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                            {{'no_rows' | translate}}
+                          </p>
+                        </td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
+                </p-tabpanel>
+                <p-tabpanel value="1">
+                  <div class="col-12" style="padding: 0;">
+                    <div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                      <a (click)="reembolsosLista_two();" class="btn btnGuardar btnRow btnBlueHead bg-blue-600">
+                        <i class="fa-solid fa-rotate" style="margin-left: 5px;"></i>&nbsp;{{'list_updt' | translate}}
+                      </a>
+                    </div>
+                    <div class="col-12 col-sm-9 col-md-9 col-lg-10 col-xl-10 col-xxl-10"></div>
+                  </div>
+                  <p-table #reemDeletedList [value]="listReembolsosDeleted" [globalFilterFields]="searchReemDeleted"
+                    dataKey="folio_reem" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]"
+                    [scrollable]="true">
+                    <ng-template #caption>
+                      <div class="flex">
+                        <p-iconfield iconPosition="left" class="ml-auto">
+                          <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                          <input pInputText type="text"
+                            (input)="reemDeletedList.filterGlobal($event.target.value, 'contains')"
+                            placeholder="{{'bus_car' | translate}}" />
+                        </p-iconfield>
+                      </div>
+                    </ng-template>
+                    <ng-template #header>
+                      <tr>
+                        <th class="ultimo"></th>
+                        <th class="ultimo"></th>
+                        <th style="width: auto!important;">{{'files_uploaded' | translate}}</th>
+                        <th class="ultimo"></th>
+                        <th pSortableColumn="folio_reem">folio&nbsp;<p-sortIcon field="folio_reem" /></th>
+                        <th pSortableColumn="date_solicitud">{{'fecha_reg' | translate}}&nbsp;<p-sortIcon
+                            field="date_solicitud" /></th>
+                        <th pSortableColumn="nombreEmiPers">{{'aplicante' | translate}}&nbsp;<p-sortIcon
+                            field="nombreEmiPers" /></th>
+                        <th pSortableColumn="name_emisor">{{'company_name' | translate}}&nbsp;<p-sortIcon
+                            field="name_emisor" /></th>
+                        <th pSortableColumn="importe_total">{{'total_import' | translate}}&nbsp;<p-sortIcon
+                            field="importe_total" /></th>
+                        <th pSortableColumn="total_tipo_cambio">{{'mon_tipo_cambio' | translate}}&nbsp;<p-sortIcon
+                            field="total_tipo_cambio" /></th>
+                        <th pSortableColumn="total_reem_saliente">{{'reem_result' | translate}}&nbsp;<p-sortIcon
+                            field="total_reem_saliente" /></th>
+                        <th pSortableColumn="nombreRecPersVH">{{'ssic_menu_vhn' | translate}}&nbsp;<p-sortIcon
+                            field="nombreRecPersVH" /></th>
+                        <th pSortableColumn="nombreRecPersEGR">{{'ssic_menu_egr' | translate}}&nbsp;<p-sortIcon
+                            field="nombreRecPersEGR" /></th>
+                        <th pSortableColumn="fecha_respuesta_autorizacion_vhegr">{{'auth_vhn_egr' |
+                          translate}}&nbsp;<p-sortIcon field="fecha_respuesta_autorizacion_vhegr" /></th>
+                        <th pSortableColumn="fecha_respuesta_pago_ord_auth">{{'ord_pay_fauth' |
+                          translate}}&nbsp;<p-sortIcon field="fecha_respuesta_pago_ord_auth" /></th>
+                        <th style="width: 350px!important;" pSortableColumn="fecha_respuesta_pago_tentativa">
+                          {{'ord_pay_ftent' | translate}}&nbsp;<p-sortIcon field="fecha_respuesta_pago_tentativa" />
+                        </th>
+                        <th style="width: 150px!important;" pSortableColumn="respuesta_pago_done_fecha">{{'pag_date' |
+                          translate}}&nbsp;<p-sortIcon field="respuesta_pago_done_fecha" /></th>
+                        <th pSortableColumn="fecha_delete">{{'f_delete' | translate}}&nbsp;<p-sortIcon
+                            field="fecha_delete" /></th>
+                      </tr>
+                    </ng-template>
+                    <ng-template #body let-lreem>
+                      <tr class="trlink" [style]="lreem.reem_canceled">
+                        <td>
+                          <div class="progress" role="progressbar" aria-label="Example with label" aria-valuenow="25"
+                            aria-valuemin="0" aria-valuemax="100"
+                            style="background-color: #353535;color: white;width: 100px;">
+                            <div class="progress-bar" [style]="'width: '+lreem.progress">{{lreem.progress}}</div>
+                          </div>
+                        </td>
+                        <td class="ultimo">
+                          <a class="btn bg-blue-600" routerLink="../seguimiento/{{lreem.token_reem}}"><i
+                              class="fa-solid fa-info"></i></a>
+                        </td>
+                        <td class="ultimo">
+                          <a class="btn btn_extend bg-blue-600"><i
+                              class="fa-solid fa-file"></i>{{lreem.total_anexos}}</a>
+                        </td>
+                        <td class="ultimo">
+                          <a class="btn btn_extend btn_extend text-bg-success rounded-3"
+                            (click)="rehabilitarReembolso(lreem.token_reem);"><i
+                              class="fa-solid fa-trash-arrow-up"></i>&nbsp;{{'restore_row' | translate}}</a>
+                        </td>
+                        <td>{{lreem.folio_reem}}</td>
+                        <td>{{lreem.date_solicitud}}</td>
+                        <td class="name">{{lreem.nombreEmiPers}}</td>
+                        <td>{{lreem.name_emisor}}</td>
+                        <td class="td_importes">{{lreem.importe_total+" ("+lreem.moneda_entrante+")"}}</td>
+                        <td class="td_importes">{{lreem.total_tipo_cambio}}</td>
+                        <td class="td_importes">{{lreem.total_reem_saliente+" ("+lreem.moneda_saliente+")"}}</td>
+                        <td *ngIf="lreem.nombreRecPersVH == null">N/A</td>
+                        <td *ngIf="lreem.nombreRecPersVH != null" [style]="lreem.reem_soli_auth_vhm_style">{{lreem.soli_reem_auth_vhm+"/"+lreem.soli_reem_list+" ("+lreem.nombreRecPersVH+" - "+lreem.name_receptor+")"}}</td>
+                        <td *ngIf="lreem.nombreRecPersEGR == null">N/A</td>
+                        <td *ngIf="lreem.nombreRecPersEGR != null" [style]="lreem.reem_soli_auth_egr_style">{{lreem.soli_reem_auth_egr+"/"+lreem.soli_reem_list+" ("+lreem.nombreRecPersEGR+" - "+lreem.name_receptor+")"}}</td>
+                        <td *ngIf="lreem.soli_reem_auth_vhm == lreem.soli_reem_list && lreem.soli_reem_auth_egr == lreem.soli_reem_list">{{lreem.fecha_respuesta_autorizacion_vhegr}}</td>
+                        <td *ngIf="lreem.soli_reem_auth_vhm != lreem.soli_reem_list || lreem.soli_reem_auth_egr != lreem.soli_reem_list">{{lreem.fecha_respuesta_autorizacion_vhegr+" "+lreem.time_respuesta_autorizacion_vhegr}}</td>
+                        <td *ngIf="lreem.fecha_respuesta_pago_ord_auth != null">{{lreem.fecha_respuesta_pago_ord_auth}}</td>
+                        <td *ngIf="lreem.fecha_respuesta_pago_ord_auth == null">{{'undefined' | translate}}</td>
+                        <td *ngIf="lreem.fecha_respuesta_pago_tentativa == null && lreem.time_respuesta_pago_tentativa == null">{{'undefined' | translate}}</td>
+                        <td *ngIf="lreem.fecha_respuesta_pago_tentativa != null && lreem.time_respuesta_pago_tentativa != null && lreem.respuesta_pago_done_fecha != null">{{lreem.fecha_respuesta_pago_tentativa}}</td>
+                        <td *ngIf="lreem.fecha_respuesta_pago_tentativa != null && lreem.time_respuesta_pago_tentativa != null && lreem.respuesta_pago_done_fecha == null">{{lreem.fecha_respuesta_pago_tentativa+" "+lreem.time_respuesta_pago_tentativa}}</td>
+                        <td *ngIf="lreem.respuesta_pago_done_fecha != null">{{lreem.respuesta_pago_done_fecha}}</td>
+                        <td *ngIf="lreem.respuesta_pago_done_fecha == null">{{'undefined' | translate}}</td>
+                        <td>{{lreem.fecha_delete}}</td>
+                      </tr>
+                    </ng-template>
+                    <ng-template pTemplate="emptymessage">
+                      <tr>
+                        <td colspan="18" class="text-center py-4">
+                          <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                          <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                            {{'no_rows' | translate}}
+                          </p>
+                        </td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
+                </p-tabpanel>
+                <p-tabpanel value="2">
+                  <terc_reembolso_new_solicitud></terc_reembolso_new_solicitud>
+                </p-tabpanel>
+                <p-tabpanel value="3">
+                  <app_terc_prov_registro></app_terc_prov_registro>
+                </p-tabpanel>
+              </p-tabpanels>
+            </p-tabs>
+          </div>
+          <p-dialog header="Detalle de reembolsos {{folio_reembolso}}" [(visible)]="reem_viewModal" [modal]="true"
+            [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+            <div class="col-12" style="padding: 10px!important;" *ngFor="let detreem of arrayReembolsosDetalle">
+              <div class="cabecera col-12 row">
+                <div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                  <h6 class="title">{{'fecha_reg' | translate}}</h6>
+                  <h6 class="content">{{detreem.fecha_solicitud}}</h6>
+                </div>
+
+                <div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                  <h6 class="title">REEMBOLSADO</h6>
+                  <h6 class="content contentMayus">{{detreem.total_reembolsado}}</h6>
+                  <h6 class="content contentMayus">{{detreem.total_reembolsado_conversion}}</h6>
+                </div>
+                <div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                  <h6 class="title">RESTANTE</h6>
+                  <h6 class="content contentMayus">{{detreem.total_restante}}</h6>
+                  <h6 class="content contentMayus">{{detreem.total_restante_conversion}}</h6>
+                </div>
+                <div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                  <h6 class="title">Total</h6>
+                  <h6 class="content contentMayus">{{detreem.total_importe}}</h6>
+                  <h6 class="content contentMayus">{{detreem.total_importe_conversion}}</h6>
+                </div>
+
+                <div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                  <h6 class="title">emisor</h6>
+                  <h6 class="content contentName">{{detreem.nombreEmiPers+" ("+detreem.emisor_company+")"}}</h6>
+                </div>
+                <div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                  <h6 class="title">Receptor Valor humano</h6>
+                  <h6 class="content contentName">{{detreem.nombreReceptorPers_vh != 'N/A' ?
+                    detreem.nombreReceptorPers_vh+" ("+detreem.receptor_company+")" : 'N/A'}}</h6>
+                </div>
+                <div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                  <h6 class="title">Receptor egresos</h6>
+                  <h6 class="content contentName">{{detreem.nombreReceptorPers_egr != 'N/A' ?
+                    detreem.nombreReceptorPers_egr+" ("+detreem.receptor_company+")" : 'N/A'}}</h6>
+                </div>
+                <div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                  <h6 class="title">{{'comi' | translate}}</h6>
+                  <h6 class="content contentMayus" *ngFor="let vCom of detreem.comisiones">{{vCom.folio_comision+" "+vCom.comision_proyecto}}</h6>
+                </div>
+                <div class="col-12" style="margin: 5px;display: flex;margin-left: 0;">
+                  <a class="btn btn_caract text-bg-danger rounded-3" style="margin-left: 3px; margin-right: 3px;" target="_blank" href="https://downloads.sos-mexico.com.mx/reembolso_pdf/{{detreem.token_reem}}">
+                    <i class="fa-solid fa-file-pdf" style="width: 25px !important;height: 25px !important;line-height: 25px !important;font-size: 15px;text-align: center;"></i>
+                  </a>
+
+                  <a class="btn btn_extend" [ngClass]="detreem.status_reem_bool == 'habilitado' ? 'text-bg-danger rounded-3' : 'text-bg-success rounded-3'"
+                    style="margin-right: 3px;width: auto;border-radius: 25px;padding-left: 5px;padding-right: 5px;text-transform: math-auto;"
+                    (click)="detreem.status_reem_bool == 'habilitado' ? deshabilitarReembolso(detreem.token_reem) : rehabilitarReembolso(detreem.token_reem);">
+                    <i class="fa-solid"
+                      [ngClass]="detreem.status_reem_bool == 'habilitado' ? 'fa-eraser' : 'fa-trash-arrow-up'"
+                      style="width: 25px !important;height: 25px !important;line-height: 25px !important;font-size: 15px;text-align: center;"></i>
+                    {{detreem.status_reem_bool}}
+                  </a>
+
+                  <p *ngIf="detreem.pagado_bool == true" style="margin: 0;margin-right: 3px;width: auto;border-radius: 25px;padding-left: 5px;padding-right: 5px;text-transform: math-auto;" class="btn bg-indigo-600">Pagado</p>
+
+                  <a class="btn btn_extend bg-indigo-600"
+                    [ngClass]="detreem.pagosRegistrados.length == 0 ? 'disabled' : ''"
+                    style="width: auto;border-radius: 25px;padding-left: 5px;padding-right: 5px;text-transform: math-auto;"
+                    [attr.disabled]="detreem.pagosRegistrados.length == 0 ? true : null"
+                    [attr.aria-disabled]="detreem.pagosRegistrados.length == 0 ? true : null"
+                    (click)="detreem.pagosRegistrados.length > 0 && recarga_seccion_pagos();"><!-- data-bs-toggle="modal" data-bs-target="#windowViewPagos"-->
+                    <i class="fa-solid fa-money-bill-1-wave" style="width: 25px !important;height: 25px !important;line-height: 25px !important;font-size: 15px;text-align: center;"></i>
+                    Pagos realizados
+                  </a>
+                </div>
+              </div>
+
+              <div class="card card_main col-12 row">
+                <h6 class="header-black">{{'reem' | translate}}</h6>
+                <p-table #detReemSoli [value]="reembolsoDetallePartidas" [globalFilterFields]="searchReemSoli" dataKey="id" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]">
+                  <ng-template #caption>
+                    <div class="flex">
+                      <p-iconfield iconPosition="left" class="ml-auto">
+                        <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                        <input pInputText type="text"
+                          (input)="detReemSoli.filterGlobal($event.target.value, 'contains')"
+                          placeholder="{{'bus_car' | translate}}" />
+                      </p-iconfield>
+                    </div>
+                  </ng-template>
+                  <ng-template #header>
+                    <tr>
+                      <th pSortableColumn="folio_solicitud">folio de solicitud&nbsp;<p-sortIcon field="folio_solicitud" /></th>
+                      <th pSortableColumn="fecha_solicitud">fecha de solicitud&nbsp;<p-sortIcon field="fecha_solicitud" /></th>
+                      <th pSortableColumn="fecha_gasto">{{'date_gasto' | translate}}&nbsp;<p-sortIcon field="fecha_gasto" /></th>
+                      <th pSortableColumn="ticket_gasto">{{'ticket_gasto' | translate}}&nbsp;<p-sortIcon field="ticket_gasto" /></th>
+                      <th pSortableColumn="pagado_a">{{'pay_to' | translate}}&nbsp;<p-sortIcon field="pagado_a" /></th>
+                      <th pSortableColumn="fpago_forma">{{'f_pago' | translate}}&nbsp;<p-sortIcon field="fpago_forma" /></th>
+                      <th pSortableColumn="importe_requerido_info">{{'total_refund' | translate}}&nbsp;<p-sortIcon field="importe_requerido_info" /></th>
+                      <th pSortableColumn="tipo_cambio_format">{{'mon_tipo_cambio' | translate}}&nbsp;<p-sortIcon field="tipo_cambio_format" /></th>
+                      <th pSortableColumn="reem_importe_resultante">{{'total_refund_converse' | translate}}&nbsp;<p-sortIcon field="reem_importe_resultante" /></th>
+                      <th pSortableColumn="observaciones">{{'observ' | translate}}&nbsp;<p-sortIcon field="observaciones" /></th>
+                      <th pSortableColumn="autorizacion_vh">{{'auth_by' | translate}} {{'ssic_menu_vhn' | translate}}&nbsp;<p-sortIcon field="autorizacion_vh" /></th>
+                      <th pSortableColumn="autorizacion_egr">{{'auth_by' | translate}} {{'ssic_menu_egr' | translate}}&nbsp;<p-sortIcon field="autorizacion_egr" /></th>
+                      <th class="ultimo"></th>
+                      <th colspan="3">{{'files_uploaded' | translate}}</th>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="body" let-rSoli>
+                    <tr>
+                      <td>{{rSoli.folio_solicitud}}</td>
+                      <td>{{rSoli.fecha_solicitud}}</td>
+                      <td>{{rSoli.fecha_gasto}}</td>
+                      <td>{{rSoli.ticket_gasto}}</td>
+                      <td>{{rSoli.pagado_a == 'pubgeneral' ? ['gen_pub' | translate] : ['provs' | translate]+" "+rSoli.rfc_prov+" "+rSoli.proveedor}}</td>
+                      <td>{{rSoli.fpago_clave+" "+rSoli.fpago_forma}}</td>
+                      <td>{{rSoli.importe_requerido_info+" "+rSoli.moneda_origen_codigo}}</td>
+                      <td>{{rSoli.tipo_cambio_format}}</td>
+                      <td>{{rSoli.reem_importe_resultante+" "+rSoli.moneda_origen_codigo}}</td>
+                      <td>{{rSoli.observaciones}}</td>
+                      <td *ngIf="rSoli.autorizacion_vh == 'A'">{{'yes' | translate}} ({{rSoli.fecha_registro_auth_vh+" - "+rSoli.hora_registro_auth_vh}} {{'observ' | translate}}: {{rSoli.comments_auth_vh}})</td>
+                      <td *ngIf="rSoli.autorizacion_vh == 'D'">No {{'observ' | translate}}: {{rSoli.comments_auth_egr}}</td>
+                      <td *ngIf="rSoli.autorizacion_vh == 'N'">N/A</td>
+                      <td *ngIf="rSoli.autorizacion_vh == null">-</td>
+                      <td *ngIf="rSoli.autorizacion_egr == true">{{'yes' | translate}} ({{rSoli.fecha_registro_auth_egr+" - "+rSoli.hora_registro_auth_egr}} {{'observ' | translate}}: {{rSoli.comments_auth_egr}})</td>
+                      <td *ngIf="rSoli.autorizacion_egr == false">No {{'observ' | translate}}: {{rSoli.comments_auth_egr}}</td>
+                      <td *ngIf="rSoli.autorizacion_egr == null">-</td>
+                      <td class="ultimo">
+                        <a class="btn btn_extend bg-green-300" (click)="selectDataCargarDocs(detreem.token_reem,rSoli.token_solicitud_reem,rSoli.num_lista)">
+                          <i class="fa-solid fa-file-arrow-up"></i> {{'load_files' | translate}} / {{'browse_files' | translate}}
+                        </a>
+                        <p-dialog header="{{'doc_an' | translate}} {{rSoli.folio_solicitud}}"
+                          [(visible)]="rSoli.carga_docs_modal" [modal]="true"
+                          [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true" [closable]="true"
+                          [style]="{width: '30vw'}" [baseZIndex]="1100">
+                          @if (rSoli.xmlFacturaContent.length == 0) {
+                          <div class="col-12">
+                            <div class="col-12 input-group" style="margin-bottom: 10px!important;">
+                              <label for="new_nomina_observaciones" class="activeInput"><i
+                                  class="fa-solid fa-file-code"></i>&nbsp;{{'cfdi_xml_import' | translate}}</label>
+                              <input class="form-control" type="file" id="facturaxml" name="facturaxml"
+                                placeholder="XML" accept=".xml" style="width: 100%;"
+                                (change)="cargaXmlReem($event,$event.target,rSoli.tkn_prov,rSoli.rfc_prov,rSoli.moneda_origen_codigo,rSoli.moneda_origen_decimales);">
+                            </div>
+                            <div class="col-12"
+                              style="display: flex !important;justify-content: end!important;margin-top: 5px!important;padding: 0!important;">
+                              <a class="btn btn_extend text-bg-success rounded-3"
+                                [ngClass]="!habilitarCargaCFDI ? 'disabled' : ''"
+                                [attr.disabled]="!habilitarCargaCFDI ? true : null"
+                                [attr.aria-disabled]="!habilitarCargaCFDI ? true : null"
+                                (click)="habilitarCargaCFDI && loadXMLReembolsoSolicitud(detreem.token_reem,rSoli.token_solicitud_reem);">
+                                <i class="fa-regular fa-floppy-disk"></i> {{'sav_cam' | translate}}
+                              </a>
+                            </div>
+                          </div>
+                          }
+
+                          @if (rSoli.pdfFacturaContent.length == 0) {
+                          <div class="col-12">
+                            <div class="col-12 input-group" style="margin-bottom: 10px!important;">
+                              <label for="new_nomina_observaciones" class="activeInput"><i
+                                  class="fa-solid fa-file-pdf"></i>&nbsp;{{'cfdi_pdf_import' | translate}}</label>
+                              <input class="form-control" type="file" id="facturapdf" name="facturapdf"
+                                placeholder="PDF" accept=".pdf" style="width: 100%;"
+                                (change)="cargaPdfReem($event.target);">
+                            </div>
+                            <div class="col-12"
+                              style="display: flex !important;justify-content: end!important;margin-top: 5px!important;padding: 0!important;">
+                              <a class="btn btn_extend text-bg-success rounded-3"
+                                [ngClass]="!imagenEvidenciaPdf ? 'disabled' : ''"
+                                [attr.disabled]="!imagenEvidenciaPdf ? true : null"
+                                [attr.aria-disabled]="!imagenEvidenciaPdf ? true : null"
+                                (click)="imagenEvidenciaPdf && loadPDFReembolsoSolicitud(detreem.token_reem,rSoli.token_solicitud_reem);">
+                                <i class="fa-regular fa-floppy-disk"></i> {{'sav_cam' | translate}}
+                              </a>
+                            </div>
+                          </div>
+                          }
+
+                          <div class="col-12">
+                            <div class="col-12 explain">
+                              <h6 class="title"><i class="fa-solid fa-file"></i>&nbsp;Anexos</h6>
+                            </div>
+                            <ngx-file-drop dropZoneLabel="Drop files here" (onFileDrop)="droppedReem($event,load_docs_num_lista)" (onFileOver)="fileOverReem($event,load_docs_num_lista)" (onFileLeave)="fileLeaveReem($event,load_docs_num_lista)">
+                              <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">                                
+                                <a class="btn btn_load_file" type="button" style="color: #0782d0 !important;" (click)="openFileSelector()">
+                                  {{'load_files' | translate}} / {{'browse_files' | translate}}
+                                </a>
+                              </ng-template>
+                            </ngx-file-drop>
+                            <table class="white centered" style="margin-top:5px!important;width: 100% !important;">
+                              <thead>
+                                <tr>
+                                  <th>{{'file' | translate}}</th>
+                                  <th class="ultimo"></th>
+                                </tr>
+                              </thead>
+                              <tbody class="upload-name-style" *ngIf="reemAnexosNames.length != 0">
+                                <tr *ngFor="let item of reemAnexosNames; index as i">
+                                  <td><strong>{{item.nameFile}}</strong></td>
+                                  <td class="ultimo">
+                                    <a class="btn btn_extend text-bg-danger rounded-3" (click)="deleteAnexosReem(i);">
+                                      <i class="fa-solid fa-xmark"></i>
+                                    </a>
+                                  </td>
+                                </tr>
+                              </tbody>
+                              <tbody *ngIf="reemAnexosNames.length == 0">
+                                <tr>
+                                  <td colspan="2">{{'no_rows' | translate}}</td>
+                                </tr>
+                              </tbody>
+                            </table>
+                            <div class="col-12"
+                              style="display: flex !important;justify-content: end!important;margin-top: 5px!important;padding: 0!important;">
+                              <a class="btn btn_extend text-bg-success rounded-3"
+                                [ngClass]="docsReemAnexos.length == 0 ? 'disabled' : ''"
+                                [attr.disabled]="docsReemAnexos.length == 0 ? true : null"
+                                [attr.aria-disabled]="docsReemAnexos.length == 0 ? true : null"
+                                (click)="docsReemAnexos.length > 0 && loadAnexosReembolsoSolicitud(detreem.token_reem,rSoli.token_solicitud_reem);">
+                                <i class="fa-regular fa-floppy-disk"></i> {{'sav_cam' | translate}}
+                              </a>
+                            </div>
+                          </div>
+                        </p-dialog>
+                      </td>
+                      <td>
+                        <a class="btn btn_extend bg-indigo-600"
+                          [ngClass]="rSoli.xmlFacturaContent.length == 0 ? 'disabled' : ''"
+                          [attr.disabled]="rSoli.xmlFacturaContent.length == 0 ? true : null"
+                          [attr.aria-disabled]="rSoli.xmlFacturaContent.length == 0 ? true : null"
+                          (click)="rSoli.xmlFacturaContent.length > 0 && displayXML($event,rSoli);">
+                          <i class="fa-solid fa-file-code"></i>&nbsp;Factura CFDI (XML)
+                        </a>
+                      </td>
+                      <td>
+                        <!--<button type="button" pButton icon="pi pi-chevron-down" (click)="verDocumentos(rSoli)" [disabled]="rSoli.anexos === 0"></button>-->
+                        <a class="btn btn_extend bg-indigo-600"
+                          [ngClass]="rSoli.pdfFacturaContent.length == 0 ? 'disabled' : ''"
+                          [attr.disabled]="rSoli.pdfFacturaContent.length == 0 ? true : null"
+                          [attr.aria-disabled]="rSoli.pdfFacturaContent.length == 0 ? true : null"
+                          (click)="rSoli.pdfFacturaContent.length > 0 && displayPDF($event,rSoli);">
+                          <i class="fa-solid fa-file-pdf"></i>&nbsp;Factura CFDI (PDF)
+                        </a>
+                      </td>
+                      <td>
+                        <!--<button type="button" pButton icon="pi pi-chevron-down" (click)="verDocumentos(rSoli)" [disabled]="rSoli.anexos === 0"></button>-->
+                        <a class="btn btn_extend bg-indigo-600" [ngClass]="rSoli.anexos.length == 0 ? 'disabled' : ''"
+                          [attr.disabled]="rSoli.anexos.length == 0 ? true : null"
+                          [attr.aria-disabled]="rSoli.anexos.length == 0 ? true : null"
+                          (click)="rSoli.anexos.length > 0 && displayAnexos($event,rSoli);">
+                          <i class="fa-solid fa-file"></i>&nbsp;Anexos
+                        </a>
+                      </td>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="emptymessage">
+                    <tr>
+                      <td colspan="16" class="text-center py-4">
+                        <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                        <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                          {{'no_rows' | translate}}
+                        </p>
+                      </td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+                <p-popover #popMenuXML (onHide)="selectedXML = null">
+                  <ng-template #content>
+                    <div *ngIf="selectedXML" class="rounded flex flex-col">
+                      <ul class="list-group">
+                        <li class="list-group-item" *ngFor="let xml of selectedXML.xmlFacturaContent"
+                          style="display: flex;justify-content: center;align-content: space-between;padding: 5px!important;">
+                          {{xml.name_documento}}
+                          <a class="btn btn_extend text-bg-primary rounded-4" style="margin-left: 5px!important;"
+                            (click)="viewDocumentoLink(xml.url);"><i class="fa-solid fa-globe"></i></a>
+                        </li>
+                      </ul>
+                    </div>
+                  </ng-template>
+                </p-popover>
+                <p-popover #popMenuPDF (onHide)="selectedPDF = null">
+                  <ng-template #content>
+                    <div *ngIf="selectedPDF" class="rounded flex flex-col">
+                      <ul class="list-group">
+                        <li class="list-group-item" *ngFor="let pdf of selectedPDF.pdfFacturaContent"
+                          style="display: flex;justify-content: center;align-content: space-between;padding: 5px!important;">
+                          {{pdf.name_documento}}
+                          <a class="btn btn_extend text-bg-primary rounded-4" style="margin-left: 5px!important;"
+                            (click)="viewDocumentoLink(pdf.url);"><i class="fa-solid fa-globe"></i></a>
+                        </li>
+                      </ul>
+                    </div>
+                  </ng-template>
+                </p-popover>
+                <p-popover #popMenuAnexos (onHide)="selectedAnexos = null">
+                  <ng-template #content>
+                    <div *ngIf="selectedAnexos" class="rounded flex flex-col">
+                      <ul class="list-group">
+                        <li class="list-group-item" *ngFor="let doc of selectedAnexos.anexos"
+                          style="display: flex;justify-content: center;align-content: space-between;padding: 5px!important;">
+                          {{doc.name_documento}}
+                          <a class="btn btn_extend text-bg-primary rounded-4" style="margin-left: 5px!important;"
+                            (click)="viewDocumentoLink(doc.url);"><i class="fa-solid fa-globe"></i></a>
+                        </li>
+                      </ul>
+                    </div>
+                  </ng-template>
+                </p-popover>
+              </div>
+
+              <p-dialog [header]="'pag_list' | translate" [(visible)]="reem_pagos_viewModal" [modal]="true"
+                [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true" [closable]="true"
+                [style]="{width: '30vw'}" [baseZIndex]="1100">
+                <div class="col-12">
+                  <div [class]="distrib_pagos_uno">
+                    <div class="col-12">
+                      <div class="buscador row" style="margin-top: 10px!important">
+                        <div class="content content_light"
+                          style="display: flex!important;flex-wrap: wrap;flex-direction: row;justify-items: center;justify-content: space-between!important;
+                          align-items: center!important;align-content: center;border-radius: 8px;height: 33px!important;overflow: hidden!important;background-color: rgba(0, 0, 0, 0.3)!important;">
+                          <div class="col-12 col-sm-6 col-md-3 col-lg-2"></div>
+                          <div class="col-12 col-sm-6 col-md-3 col-lg-2 row_buscador">
+                            <input class="datasearch" type="text" [(ngModel)]="searchPagosRealizados" autocomplete="on"
+                              placeholder="{{'bus_car' | translate}}">
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-12"
+                      style="overflow:overlay!important;padding:0!important;border-radius:8px!important;">
+                      <table class="white centered" style="min-width:max-content!important;">
+                        <thead>
+                          <tr>
+                            <th class="ultimo"></th>
+                            <th>pago recibido</th>
+                            <th>medio de pago</th>
+                            <th>caja</th>
+                            <th>cuenta</th>
+                            <th>monedero</th>
+                            <th>moneda</th>
+                            <th>tipo de cambio</th>
+                            <th>forma de pago</th>
+                            <th>metodo de pago</th>
+                            <th class="ultimo"></th>
+                          </tr>
+                        </thead>
+                        <tbody *ngIf="detreem.pagosRegistrados.length != 0">
+                          <!--*ngFor="let pago of detreem.pagosRegistradosPag | filter:searchPagosRealizados;index as posicion"-->
+                          <tr *ngFor="let pago of detreem.pagosRegistradosPag;index as posicion">
+                            <td>{{pago.num_lista}}</td>
+                            <td>{{pago.formatMonto}}</td>
+                            <td>{{pago.medio_de_pago}}</td>
+                            <td>{{pago.name_caja}}</td>
+                            <td>{{pago.name_cuenta_banc}}</td>
+                            <td>{{pago.name_cuenta_mone}}</td>
+                            <td>{{pago.moneda_codigo+" - "+pago.moneda}}</td>
+                            <td>{{pago.tipo_cambio}}</td>
+                            <td>{{pago.clave_forma_pago+" "+pago.forma_pago}}</td>
+                            <td>{{pago.abrev_metodo_pago+" "+pago.metodo_pago}}</td>
+                            <td>
+                              <a *ngIf="pago.evidencias.length == 0" class="btn waves-effect waves-light blue darken-1"
+                                disabled><i class="fa-solid fa-file"></i></a>
+                              <a *ngIf="pago.evidencias.length > 0"
+                                class="btn waves-effect waves-light blue darken-1 dropdown-trigger" href='#'
+                                data-target="dropdown2"><i class="fa-solid fa-file"></i></a>
+                              <ul id='dropdown2' class='dropdown-content menu_docs_assoc'>
+                                <li class="docs"><a>Documentos asociados</a></li>
+                                <li class="divider" tabindex="-1"></li>
+                                <li class="docs" *ngFor="let evd of pago.evidencias"><a
+                                    (click)="select_evidencias_pago(evd.name_documento,evd.ext_doc,evd.html);">{{evd.name_documento}}</a>
+                                </li>
+                              </ul>
+                            </td>
+                          </tr>
+                        </tbody>
+                        <tbody *ngIf="detreem.pagosRegistrados.length == 0">
+                          <tr>
+                            <td colspan="11">{{'no_rows' | translate}}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <div class="col-12">
+                    </div>
+                  </div>
+                  <div *ngIf="name_view_evd != ''" [class]="distrib_pagos_dos">
+                    <h6 style="color:#020a5e!important;text-transform:lowercase!important">{{name_view_evd}}</h6>
+                    <div *ngIf="html_type_evd != '' && html_type_evd != 'xml'" [innerHTML]="html_view_evd"
+                      class="col-12 card-content white-text"
+                      style="display: flex;justify-content: center;align-items: center;height: 100% !important;"></div>
+                    <pre *ngIf="html_type_evd != '' && html_type_evd == 'xml'" class="col-12 card-content black-text"
+                      style="height: 100%;text-align: justify;max-width: 100%;overflow: overlay;margin: 0;background-color: white;border-radius: 25px;">{{html_view_evd}}</pre>
+                  </div>
+                </div>
+              </p-dialog>
+            </div>
+          </p-dialog>
+        </div>
+      </div>
+    </main>
+    <app-footer-inside></app-footer-inside>
+  </div>
+</div>

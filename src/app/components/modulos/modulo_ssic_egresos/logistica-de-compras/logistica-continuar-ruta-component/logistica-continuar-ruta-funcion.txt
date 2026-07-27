@@ -1,0 +1,594 @@
+/**
+ * Archivo: logistica-continuar-ruta-funcion.txt
+ * Propósito: Función Laravel para registrar la continuidad de una ruta logística.
+ * Ubicación sugerida: EGRE_LogisticaController.php en el repositorio backend_sos_laravel.
+ */
+
+/**
+ * IDEA DE CORRECCIÓN PARA $queryUnidades EN obtenerUbicacionesSinEntrega:
+ * Agrupar por el destino permite consolidar los artículos que llegaron a un mismo punto
+ * desde diferentes unidades, facilitando la creación de una nueva ruta de salida (continuidad).
+ *
+ * Se recomienda centrarse en la cantidad de artículos disponibles en ese punto ("listos para salir")
+ * más que en las unidades físicas que llegaron, ya que una nueva salida puede usar transportes distintos.
+ */
+/*
+$queryUnidades = DB::table('logistica_seguimiento_unidades as lsu')
+    ->select(
+        'lsu.direccion_destino_especifica',
+        DB::raw('COUNT(lsu.id) as unidades_que_llegaron'),
+        DB::raw('GROUP_CONCAT(lsu.folio_seguimiento_unidad) as folios_anteriores')
+    )
+    ->where('lsu.logistica_seguimiento_token', $logistica_seguimiento_token)
+    ->whereNotNull('lsu.fecha_real_arribo') // Llegada registrada
+    ->whereNotNull('lsu.fecha_autorizacion_arribo') // Llegada autorizada
+    ->where('lsu.estado_unidad', 'arribado') // Estado que confirma la permanencia en ese punto
+    ->groupBy('lsu.direccion_destino_especifica')
+    ->get();
+*/
+
+/**
+ * FUNCIÓN PARA REGISTRAR LA CONTINUIDAD DE LA RUTA:
+ * Registra una nueva salida en tránsito tomando como origen el paradero final del tramo anterior.
+ */
+public function guardarContinuidadRuta(Request $request)
+{
+    $v = Validator::make($request->all(), [
+        'compra_relacionada_token' => 'required',
+        'transportes'              => 'required', // JSON con la nueva configuración de transporte
+    ]);
+
+    if ($v->fails()) {
+        return response()->json(['status' => 'error', 'message' => 'Faltan datos obligatorios para la continuidad']);
+    }
+
+    DB::beginTransaction();
+    try {
+        $logistica_token = $request->input('compra_relacionada_token');
+        $transportes = json_decode($request->input('transportes'), true);
+        $observaciones_globales = $request->input('observaciones');
+
+        foreach ($transportes as $unidad) {
+            // Creamos el nuevo registro de seguimiento para el nuevo tramo (continuidad)
+            $nuevaUnidad = new LogisticaSeguimientoUnidad();
+            $nuevaUnidad->logistica_seguimiento_token = $logistica_token;
+            $nuevaUnidad->token_seguimiento_unidad    = Str::uuid();
+            $nuevaUnidad->folio_seguimiento_unidad    = 'CONT-'.strtoupper(Str::random(6));
+
+            $nuevaUnidad->tipo_transporte             = $unidad['tipo_transporte'];
+            $nuevaUnidad->operador_nombre             = $unidad['operador_nombre'];
+            $nuevaUnidad->operador_telefono           = $unidad['operador_telefono'];
+
+            // LÓGICA CLAVE: El destino de la última unidad ahora es el origen de esta nueva salida.
+            // Esto ya viene procesado desde el frontend en el campo 'direccion_origen'.
+            $nuevaUnidad->direccion_origen            = $unidad['direccion_origen'];
+            $nuevaUnidad->direccion_destino_especifica = $unidad['direccion_destino_especifica'];
+
+            $nuevaUnidad->fecha_tentativa_arribo      = $unidad['tentativa_llegada_destino'];
+            $nuevaUnidad->identificador_principal      = $unidad['identificador_principal'];
+            $nuevaUnidad->identificador_secundario    = $unidad['identificador_secundario'];
+            $nuevaUnidad->permiso_autorizacion        = $unidad['permiso_autorizacion'];
+
+            $nuevaUnidad->estado_unidad               = 'en_transito';
+            $nuevaUnidad->observaciones_salida        = $observaciones_globales;
+            $nuevaUnidad->fecha_real_salida           = now();
+            $nuevaUnidad->save();
+
+            // Registramos los artículos que han sido re-asignados a esta nueva unidad para continuar su ruta
+            if (isset($unidad['articulos_seleccionados']) && is_array($unidad['articulos_seleccionados'])) {
+                foreach ($unidad['articulos_seleccionados'] as $art) {
+                    $partida = new LogisticaSeguimientoPartida();
+                    $partida->token_seguimiento_unidad = $nuevaUnidad->token_seguimiento_unidad;
+                    $partida->compra_partida_token    = $art['compra_partida_token'];
+                    $partida->cantidad_transito       = $art['cantidad_transitar'];
+
+                    // Priorizamos datos nuevos si se capturaron, de lo contrario mantenemos los registros anteriores
+                    $partida->sku_registro            = !empty($art['new_sku']) ? $art['new_sku'] : $art['reg_sku'];
+                    $partida->gs1_tipo_llave          = !empty($art['new_tipo_llave_gs1']) ? $art['new_tipo_llave_gs1'] : $art['reg_tipo_llave_gs1'];
+                    $partida->gs1_codigo              = !empty($art['new_codigo_gs1']) ? $art['new_codigo_gs1'] : $art['reg_codigo_gs1'];
+
+                    $partida->save();
+                }
+            }
+        }
+
+        // Procesamiento de documentos anexos de la nueva salida (Guías, Fotos de carga, etc.)
+        if ($request->hasFile('transito_anexos')) {
+            foreach ($request->file('transito_anexos') as $file) {
+                // Lógica de almacenamiento físico y registro en BD de anexos...
+            }
+        }
+
+        DB::commit();
+        return response()->json([
+            'status' => 'success',
+            'message' => 'La continuidad de la ruta ha sido registrada exitosamente. Los productos están de nuevo en tránsito.'
+        ]);
+
+    } catch (\Exception $e) {
+        DB::rollBack();
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Fallo al registrar la continuidad de ruta: ' . $e->getMessage()
+        ]);
+    }
+}
+
+
+
+
+logistica_transito_compras es la que debe llevar el seguimiento general de la logística
+campos:
+token_seguimiento_transito
+compra_relacionada
+fecha_real_salida
+observaciones_salida
+arribo_final_fecha_tentativa
+arribo_final_fecha_real
+arribo_final_observaciones
+arribo_final_autorizado
+arribo_final_fecha_auth
+empresa_vinculada
+usuario_registra
+created_at
+updated_at
+
+logistica_transito_unidades es la que debe llevar el registro de los puntos que recorren los articulos desde que salen del punto principal hasta llegar a mis almacenes
+campos:
+transito_compra_id
+tipo_transporte
+operador_nombre
+operador_telefono
+identificador_principal
+identificador_secundario
+permiso_autorizacion
+direccion_origen
+direccion_destino_especifica
+cfdi_relacionado
+cfdi_pdf_url
+transito_anterior_id
+estado_consumo  enum('disponible','parcial','consumido') 
+unidad_fecha_salida
+unidad_fecha_tentativa_arribo
+unidad_fecha_real_arribo
+unidad_arribo_autorizado
+unidad_fecha_auth_arribo
+unidad_observaciones_arribo
+created_at
+updated_at
+
+logistica_transito_unidades_union_puntos es la que debe llevar el registro de los puntos de unión de logística
+campos:
+unidad_punto_anterior
+unidad_nuevo_punto
+
+CREATE TABLE logistica_transito_unidades_union_puntos (
+  id bigint(20) UNSIGNED primary key NOT NULL auto_increment,
+  unidad_punto_anterior bigint(20) UNSIGNED NOT NULL,
+  unidad_nuevo_punto bigint(20) UNSIGNED NOT NULL,
+  FOREIGN KEY (unidad_punto_anterior) REFERENCES logistica_transito_unidades (id) ON DELETE CASCADE,
+  FOREIGN KEY (unidad_nuevo_punto) REFERENCES logistica_transito_unidades (id) ON DELETE CASCADE
+);
+
+logistica_transito_articulos es la debe llevar el registro de los articulos contenidos por unidad
+campos:
+transito_unidad_id
+articulo_detcompra
+articulo_descripcion
+cantidad_asignada
+unidad_medida
+created_at
+updated_at
+
+logistica_transito_autorizaciones es la debe llevar el registro de las autorizaciones de llegada por unidad
+campos:
+transito_autorizacion_token
+transito_compra_id
+transito_unidad_id
+tipo_autorizacion
+origen_autorizacion
+autorizador_nombre
+usuario_id
+observaciones
+created_at
+updated_at
+
+logistica_transito_documentos es la debe llevar el registro de los documentos adjuntos a cada punto logístico
+campos:
+token_documento
+fecha_carga
+modulo
+folio_modulo
+tipo_documento
+nombre_documento
+extension_documento
+transito_compra_id
+transito_unidad_id
+status_documento
+fecha_delete_documento
+
+Jagtar Singh
+
+singh_jagtar
+VPO#tar_8ngh$26
+
+usuario: singh_jagtar
+contraseña: VPO#tar_8ngh$26
+servidor groyaso11Vm01.nubeaspel.com.mx
+ip 54.152.22.180 
+
+CREATE TABLE logistica_transito_transbordos (
+  id bigint(20) UNSIGNED primary key NOT NULL AUTO_INCREMENT,
+  token_transito_transbordo text NOT NULL,
+  transito_main bigint(20) UNSIGNED,
+  lugar_transbordo text NOT NULL,
+  arribo_autorizado tinyint(1) NOT NULL DEFAULT 0,
+  fecha_arribo_punto int(10) UNSIGNED DEFAULT NULL,
+  usuario_autoriza int(10) DEFAULT NULL,
+  observaciones_arribo text DEFAULT NULL,
+  created_at timestamp NOT NULL DEFAULT current_timestamp(),
+  updated_at timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  FOREIGN KEY (transito_main) references logistica_transito_main (id),
+  KEY autorizacion_hub_idx (lugar_transbordo(255), arribo_autorizado)
+);
+
+folio_transito_transbordo
+
+CREATE TABLE logistica_transito_transbordo_unidades (
+  id bigint(20) UNSIGNED primary key NOT NULL AUTO_INCREMENT,
+  transbordo_id bigint(20) UNSIGNED NOT NULL,
+  transito_unidad_id bigint(20) UNSIGNED NOT NULL,
+  unidad_llego boolean,
+  unidad_fecha_llegada int(10) UNSIGNED,
+  FOREIGN KEY (transbordo_id) references logistica_transito_transbordos (id),
+  FOREIGN KEY (transito_unidad_id) references logistica_transito_unidades (id)
+);
+
+ALTER TABLE `logistica_transito_transbordo_articulos`
+  ADD CONSTRAINT `fk_transbordo_art_maestro` FOREIGN KEY (`transbordo_id`) 
+    REFERENCES `logistica_transito_transbordos` (`id`) ON DELETE CASCADE,
+    
+  ADD CONSTRAINT `fk_transbordo_art_detcompra` FOREIGN KEY (`articulo_detcompra`) 
+    REFERENCES `eegr_compras_detalle` (`id`) ON DELETE CASCADE,
+    
+  -- Si se borra la unidad física de la bitácora, el artículo NO se borra del Hub, 
+  -- simplemente su procedencia se vuelve NULL (Fondo común automático)
+  ADD CONSTRAINT `fk_transbordo_art_unidad` FOREIGN KEY (`transito_unidad_id`) 
+    REFERENCES `logistica_transito_unidades` (`id`) ON DELETE SET NULL;
+
+
+    Error en el registro: SQLSTATE[22001]: String data, right truncated: 1406 Data too long for column 'id_origen' at row 1 (Connection: mysql, SQL: insert into `carta_porte_mercancia_cantidad_transporta` 
+(`mercancias_totales`, `mercancia_detalle`, `cantidad`, `id_origen`, `id_destino`, `cves_transporte`) values (22, 15, 101, OR009240, DE009239, ))
+
+
+    $idCompra = $listaCompras->pluck('token_compras')->filter()->unique()->toArray();
+    $idProveedor = $listaCompras->pluck('proveedor')->filter()->unique()->toArray();
+    
+    $compraProveedorMap = DB::table("eegr_catalogo_proveedores AS catprov")
+    ->join("sos_personas AS people", "catprov.proveedor", "=", "people.id")
+    ->whereIn("catprov.id",$idProveedor)
+    ->select(
+      'catprov.id AS id_catalogo',
+      'catprov.token_cat_proveedores',
+      'catprov.folio','catprov.post_folio',
+      'people.nombre_extendido',
+      'people.nombre_com'
+    )
+    ->get()->keyBy('id_catalogo');
+    
+    $transitoSinDateLlegadaMap = DB::table("logistica_transito_compras AS l_comp")
+    ->join("eegr_compras AS buy", "l_comp.compra_relacionada", "=", "buy.id")
+    ->whereIn("buy.token_compras", $idCompra)
+    ->whereNull("l_comp.arribo_final_fecha_real") // Filtramos solo los pendientes
+    ->select('buy.token_compras AS id_compras', 'l_comp.id')
+    ->get() // 1. Traemos la lista de pendientes a PHP
+    ->groupBy('id_compras') // 2. Los agrupamos por compra creando el Map
+    ->map(function ($puntos) {
+      return $puntos->count(); // 3. ¡AQUÍ usamos el count() para contar cada grupo!
+    });
+    
+    $transitoLlegadaSinAuthMap = DB::table("logistica_transito_compras AS l_comp")
+    ->join("eegr_compras AS buy", "l_comp.compra_relacionada", "=", "buy.id")
+    ->whereIn("buy.token_compras", $idCompra)
+    ->whereNotNull("l_comp.arribo_final_fecha_real")
+    ->where("l_comp.arribo_final_autorizado",FALSE)
+    ->select('buy.token_compras AS id_compras', 'l_comp.id')
+    ->get() // 1. Traemos la lista de pendientes a PHP
+    ->groupBy('id_compras') // 2. Los agrupamos por compra creando el Map
+    ->map(function ($puntos) {
+      return $puntos->count(); // 3. ¡AQUÍ usamos el count() para contar cada grupo!
+    });
+
+    $detailsProductosMap = DB::table("eegr_compras AS buy")
+    ->join("eegr_compras_detalle AS detBuy", "buy.id", "=", "detBuy.numero_compra")
+    ->whereNull('detBuy.servicio')
+    ->whereNull('detBuy.activo_fijo')
+    ->whereNull('detBuy.activo_intangible')
+    ->whereIn('buy.token_compras',$idCompra)
+    ->select(
+      'buy.token_compras AS id_compras',
+      'detBuy.id AS id_det_compras',
+      'detBuy.*'
+    )
+    ->get()->groupBy('id_compras');
+
+    //$allDetailIds = $detailsProductosMap->collapse()->pluck('id_det_compras')->unique()->toArray();
+    
+    $detailsActivosFijosMap = DB::table("eegr_compras AS buy")
+    ->join("eegr_compras_detalle AS detBuy", "buy.id", "=", "detBuy.numero_compra")
+    ->whereNotNull('detBuy.activo_fijo')
+    ->whereIn('buy.token_compras',$idCompra)
+    ->select(
+      'buy.token_compras AS id_compras',
+      'detBuy.id AS id_det_compras',
+      'detBuy.*'
+    )
+    ->get()->groupBy('id_compras');
+
+    //$allDetailIds = $detailsActivosFijosMap->collapse()->pluck('id_det_compras')->unique()->toArray();
+    $allDetailIds = $detailsProductosMap
+    ->concat($detailsActivosFijosMap)
+    ->collapse()
+    ->pluck('id_det_compras')
+    ->unique()
+    ->toArray();
+
+    $transitoEstadosMap = DB::table("logistica_transito_articulos AS art")
+    ->join("logistica_transito_unidades AS l_uni", "art.transito_unidad_id", "=", "l_uni.id")
+    ->join("logistica_transito_compras AS l_comp", "l_uni.transito_compra_id", "=", "l_comp.id")
+    ->whereIn("art.articulo_detcompra", $allDetailIds)
+    ->select(
+      'art.articulo_detcompra AS id_det_compras',
+      'l_comp.estado_alcanzado',
+      'art.cantidad_asignada'
+    )
+    ->get()
+    ->groupBy('id_det_compras');
+
+    $transitoEntregadosMap = DB::table("logistica_transito_articulos AS art")
+    ->join("logistica_transito_unidades AS l_uni", "art.transito_unidad_id", "=", "l_uni.id")
+    ->join("logistica_transito_compras AS l_comp", "l_uni.transito_compra_id", "=", "l_comp.id")
+    ->where("l_comp.estado_alcanzado", "entregado")
+    ->where("l_comp.arribo_final_autorizado", TRUE)
+    ->whereIn("art.articulo_detcompra", $allDetailIds)
+    ->select(
+      'art.articulo_detcompra AS id_det_compras',
+      'l_comp.estado_alcanzado',
+      'art.cantidad_asignada'
+    )
+    ->get()
+    ->groupBy('id_det_compras');
+
+    $mapDirSalidaProveedor = DB::table("eegr_compras AS buy")
+    ->join("teci_direcciones AS ubica", "buy.direccion_salida_prov", "ubica.id")
+    ->join("eegr_catalogo_proveedores AS catprov", "ubica.proveedor", "catprov.id")
+    ->join("teci_pais AS detpais", "ubica.pais", "detpais.id")
+    ->whereIn("buy.token_compras",$idCompra)
+    ->whereIn("catprov.token_cat_proveedores",$compraProveedorMap->pluck('token_cat_proveedores')->unique())
+    ->select(
+      'buy.token_compras AS id_compras',
+      'ubica.token_direccion','ubica.pais_code','ubica.colonia_edit','ubica.c_postal_edit',
+      'ubica.municipio_edit','ubica.estado_edit','ubica.cod_postalext',
+      'catprov.token_cat_proveedores AS token_catalogo',
+    )
+    ->get()
+    ->groupBy(function ($item) {
+      return $item->id_compras.'_'.$item->token_catalogo;
+    });
+    
+    $mapDirOurEstab = DB::table("in_egr_establecimientos_catalogo AS estab")
+    ->join("eegr_compras AS buy", "estab.id", "buy.recepcion_estab")
+    ->join('teci_direcciones AS dirAlm', 'estab.id', 'dirAlm.establecimiento')
+    ->where("estab.status_establecimiento",TRUE)
+    ->whereIn("buy.token_compras",$idCompra)
+    ->select(
+      'buy.token_compras AS id_compras',
+      'estab.token_establecimiento','estab.folio_establecimiento','estab.post_folio','estab.alias_establecimiento'
+    )
+    ->get()->groupBy('id_compras');
+  
+    foreach ($listaCompras as $vBuy) {
+      //da_te_default_timezone_set('UTC');
+      $queryBuyProv = $compraProveedorMap->get($vBuy->proveedor);
+      $proveedor_token = $queryBuyProv ? $queryBuyProv->token_cat_proveedores : '';
+      $proveedor_folio = $queryBuyProv ? 'PRV-'.$JwtAuth->generarFolio($queryBuyProv->folio).($queryBuyProv->post_folio != NULL ? '-' . $queryBuyProv->post_folio : '') : '';
+      $proveedor_nombre = $queryBuyProv ? $JwtAuth->desencriptar($queryBuyProv->nombre_extendido) : '';
+      $proveedor_nombre_comercial = $queryBuyProv && !is_null($queryBuyProv->nombre_com) ? $JwtAuth->desencriptar($queryBuyProv->nombre_com) : '';
+    
+      $semaforo_espera = 'text-gray-500'; 
+      $semaforo_transito = 'text-gray-500';
+      $semaforo_entregados = 'text-gray-500';
+      $semaforo_recibidos = 'text-gray-500';
+
+      $total_articulos_comprados = 0;
+      $total_articulos_en_espera = 0;
+      $total_articulos_en_transito = 0;
+      $total_articulos_entregados = 0;
+      $total_articulos_recibidos = 0;
+      $avance_entrega = 0;
+      $avance_recepcion = 0;
+
+      $transitos_sin_fecha_llegada = $transitoSinDateLlegadaMap->get($vBuy->token_compras) ?? 0; 
+      $transitos_llegada_sin_auth = $transitoLlegadaSinAuthMap->get($vBuy->token_compras) ?? 0;
+    
+      $queryDetBuyProd = $detailsProductosMap->get($vBuy->token_compras) ?? collect([]);
+      foreach ($queryDetBuyProd as $vDet) {
+        $total_articulos_comprados += $vDet->cantidad;
+        $movimientos = $transitoEstadosMap->get($vDet->id_det_compras) ?? collect([]);
+        // Calculamos salidas vs entregas usando las colecciones en memoria
+        $salieron = $movimientos->where('estado_alcanzado', 'recolectado')->sum('cantidad_asignada');
+        $total_articulos_en_espera = $vDet->cantidad - $salieron;
+
+
+        $mov_entregados = $transitoEntregadosMap->get($vDet->id_det_compras) ?? collect([]);
+        $entregados = $mov_entregados->sum('cantidad_asignada'); // Cambia 'entregado' por tu estado final
+        
+        // Acumulamos para el nodo de la compra
+        $total_articulos_en_transito += ($salieron - $entregados); // Lo que salió pero no ha llegado
+        $total_articulos_entregados += $entregados;
+
+        $queryRecepcionPRD = DB::table("eegr_compras_recepcion AS rec")
+        ->join("eegr_compras_detalle AS detBuy", "rec.detalle_compra","=","detBuy.id")
+        ->where([
+          "detBuy.token_detcompra" => $vDet->token_detcompra,
+          "rec.producto" => $vDet->producto
+        ])
+        ->select(
+          DB::raw("SUM(rec.cantidad_recibida) as cantidad_recibida")
+        )
+        ->groupBy('rec.detalle_compra')
+        ->first();
+        $total_articulos_recibidos += $queryRecepcionPRD ? $queryRecepcionPRD->cantidad_recibida : 0;
+      }
+    
+      $queryDetBuyActFijo = $detailsActivosFijosMap->get($vBuy->token_compras) ?? collect([]);
+      //var_dump($queryDetBuyActFijo);
+      foreach ($queryDetBuyActFijo as $vActDet) {
+        $total_articulos_comprados += $vActDet->cantidad;
+        $movimientos = $transitoEstadosMap->get($vActDet->id_det_compras) ?? collect([]);
+        
+        // Calculamos salidas vs entregas usando las colecciones en memoria
+        $salieron = $movimientos->where('estado_alcanzado', 'recolectado')->sum('cantidad_asignada');
+        $total_articulos_en_espera = $vActDet->cantidad - $salieron;
+        $entregados = $movimientos->where('estado_alcanzado', 'entregado')->sum('cantidad_asignada'); // Cambia 'entregado' por tu estado final
+        
+        // Acumulamos para el nodo de la compra
+        $total_articulos_en_transito += ($salieron - $entregados); // Lo que salió pero no ha llegado
+        $total_articulos_entregados += $entregados;
+
+        $queryRecepcionPRD = DB::table("eegr_compras_recepcion AS rec")
+        ->join("eegr_compras_detalle AS detBuy", "rec.detalle_compra","=","detBuy.id")
+        ->where([
+          "detBuy.token_detcompra" => $vActDet->token_detcompra,
+          "rec.activo_fijo" => $vActDet->activo_fijo
+        ])
+        ->select(
+          DB::raw("SUM(rec.cantidad_recibida) as cantidad_recibida")
+        )
+        ->groupBy('rec.detalle_compra')
+        ->first();
+        $total_articulos_recibidos += $queryRecepcionPRD ? $queryRecepcionPRD->cantidad_recibida : 0;
+      }
+          
+      if ($total_articulos_comprados > 0) {
+        // 1. Semáforo para artículos en ESPERA
+        if ($total_articulos_en_espera == $total_articulos_comprados) {
+          $semaforo_espera = 'bg-red-100 text-red-700 font-bold'; // Rojo: Todos en espera
+        } elseif ($total_articulos_en_espera > 0) {
+          $semaforo_espera = 'bg-yellow-100 text-yellow-700 font-bold'; // Amarillo: Una parte en espera
+        } else {
+          $semaforo_espera = 'bg-green-100 text-green-700'; // Verde: Ya nada está en espera
+        }
+
+        // 2. Semáforo para artículos en TRÁNSITO
+        if ($total_articulos_en_transito > 0) {
+          $semaforo_transito = 'bg-yellow-100 text-yellow-700 font-bold'; // Amarillo: Hay mercancía viajando
+        } else {
+          $semaforo_transito = 'text-gray-400'; // Neutral: No hay nada en ruta activa
+        }
+
+        // 3. Semáforo para artículos ENTREGADOS
+        if ($total_articulos_entregados == $total_articulos_comprados) {
+          $semaforo_entregados = 'bg-green-100 text-green-700 font-bold'; // Verde: Todo completado
+        } elseif ($total_articulos_entregados > 0) {
+          $semaforo_entregados = 'bg-yellow-100 text-yellow-700 font-bold'; // Amarillo: Entregas parciales
+        } else {
+          $semaforo_entregados = 'bg-red-100 text-red-700'; // Rojo: No se ha entregado nada aún
+        }
+
+        // 3. Semáforo para artículos RECIBIDOS
+        if ($total_articulos_recibidos == $total_articulos_comprados) {
+          $semaforo_recibidos = 'bg-green-100 text-green-700 font-bold'; // Verde: Todo completado
+        } elseif ($total_articulos_recibidos > 0) {
+          $semaforo_recibidos = 'bg-yellow-100 text-yellow-700 font-bold'; // Amarillo: Entregas parciales
+        } else {
+          $semaforo_recibidos = 'bg-red-100 text-red-700'; // Rojo: No se ha entregado nada aún
+        }
+      }
+
+      if ($total_articulos_comprados > 0) {
+        $avance_entrega = round(($total_articulos_entregados / $total_articulos_comprados) * 100);
+        if ($avance_entrega > 100) {
+          $avance_entrega = 100;
+        }
+
+        $avance_recepcion = round(($total_articulos_recibidos / $total_articulos_comprados) * 100);
+        if ($avance_recepcion > 100) {
+          $avance_recepcion = 100;
+        }
+      }
+
+      //Punto de entrega o recepción
+      $lugarSalidaTipo = "N/A";
+      $lugar_salida_prov_token = "";
+      $lugar_salida_prov_direccion = "";
+
+      if (!is_null($vBuy->direccion_salida_prov)) {
+        $lugarSalidaTipo = "proveedor";
+        $keyKompraProv = $vBuy->token_compras.'_'.$proveedor_token;
+        $listaDirProvEstab = $mapDirSalidaProveedor->get($keyKompraProv) ?? collect([]);
+        foreach ($listaDirProvEstab as $vUbica) {
+          $lugar_salida_prov_token = $vUbica->token_direccion;
+          $lugar_salida_prov_direccion = $vUbica->pais_code == "MEX" ? "Colonia ".$JwtAuth->desencriptar($vUbica->colonia_edit).", CP: ".$vUbica->c_postal_edit.", ".
+            $JwtAuth->desencriptar($vUbica->municipio_edit).", ".$JwtAuth->desencriptar($vUbica->estado_edit) : $JwtAuth->desencriptar($vUbica->cod_postalext);
+        }
+      }
+      $fecha_tentativa_salida = !is_null($vBuy->fecha_tentativa_salida) ? date('Y-m-d H:i:s', $vBuy->fecha_tentativa_salida) : '';
+      $fecha_real_salida = !is_null($vBuy->fecha_real_salida) ? gmdate('Y-m-d H:i:s', $vBuy->fecha_real_salida) : '';
+      
+      $lugarRecepcionTipo = "N/A";
+      $recepcion_estab_token = "";
+      $recepcion_estab_direccion = "";
+      if (!is_null($vBuy->recepcion_estab)) {
+        $lugarRecepcionTipo = "Establecimiento";
+        $listaDirOurEstab = $mapDirOurEstab->get($vBuy->token_compras) ?? collect([]);
+        foreach ($listaDirOurEstab as $vEstab) {
+          $recepcion_estab_token = $vEstab->token_establecimiento;
+          $recepcion_estab_direccion = 'ESTAB-'.$JwtAuth->generarFolio($vEstab->folio_establecimiento).($vEstab->post_folio != NULL ? '-'.$vEstab->post_folio : '')." ".$JwtAuth->desencriptar($vEstab->alias_establecimiento);
+        }
+      }
+      $fecha_tentativa_recepcion = !is_null($vBuy->fecha_tentativa_recepcion) ? gmdate('Y-m-d H:i:s', $vBuy->fecha_tentativa_recepcion) : '';
+      $fecha_real_recepcion = !is_null($vBuy->fecha_real_recepcion) ? gmdate('Y-m-d H:i:s', $vBuy->fecha_real_recepcion) : '';
+
+      $arrayForeach = array(
+        "token_compras" => $vBuy->token_compras,
+        "folio_compra" => "COMP-".$JwtAuth->generarFolio($vBuy->folio_compra).($vBuy->post_folio != NULL ? '-'.$vBuy->post_folio : ''),
+        "fecha_contabilizacion" => gmdate('Y-m-d H:i:s', $vBuy->fecha_contabilizacion),
+        //proveedor
+        "proveedor_token" => $proveedor_token,
+        "proveedor_folio" => $proveedor_folio,
+        "proveedor_nombre" => $proveedor_nombre,
+        "proveedor_nombre_comercial" => $proveedor_nombre_comercial,
+
+        "aplica_recepcion_facturas" => $vBuy->aplica_recepcion_facturas,
+        "recibeFactura" => $vBuy->recibeFactura ? true : false,
+        "articulos_en_espera" => "$total_articulos_en_espera / $total_articulos_comprados", 
+        "habilita_reg_new_salidas" => (bool)($total_articulos_en_espera > 0),//$total_articulos_entregados < $total_articulos_comprados ? true : false,
+        "articulos_en_transito" => "$total_articulos_en_transito / $total_articulos_comprados", 
+        "habiltar_continua_rutas" => (bool)($total_articulos_entregados < $total_articulos_comprados),//(bool)($total_articulos_en_transito > 0),
+        "articulos_entregados" => "$total_articulos_entregados / $total_articulos_comprados", 
+        "transitos_sin_fecha_llegada" => $transitos_sin_fecha_llegada,
+        "transitos_llegada_sin_auth" => $transitos_llegada_sin_auth,
+        "articulos_recibidos" => "$total_articulos_recibidos / $total_articulos_comprados",
+        
+        "clase_espera" => $semaforo_espera,
+        "clase_transito" => $semaforo_transito,
+        "clase_entregados" => $semaforo_entregados,
+        "avance_entrega" => $avance_entrega,
+        "clase_recibidos" => $semaforo_recibidos,
+        "avance_recepcion" => $avance_recepcion,
+
+        "lugarRecepcionTipo" => $lugarRecepcionTipo,
+        "lugarSalidaTipo" => $lugarSalidaTipo,
+        "lugar_salida_prov_token" => $lugar_salida_prov_token,
+        "lugar_salida_prov_direccion" => $lugar_salida_prov_direccion,
+        "fecha_tentativa_salida" => $fecha_tentativa_salida,
+        "fecha_real_salida" => $fecha_real_salida,
+
+        "recepcion_estab_token" => $recepcion_estab_token,
+        "recepcion_estab_direccion" => $recepcion_estab_direccion,
+        "fecha_tentativa_recepcion" => $fecha_tentativa_recepcion,
+        "fecha_real_recepcion" => $fecha_real_recepcion
+      );
+      $arrayCompras[] = $arrayForeach;
+    }

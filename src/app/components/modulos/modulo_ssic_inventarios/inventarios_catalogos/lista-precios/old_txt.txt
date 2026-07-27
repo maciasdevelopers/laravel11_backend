@@ -1,0 +1,451 @@
+
+					<ul id="tabs-swipe-demo" class="tabs row">
+						<li class="tab col s6"><a class="active" href="#tabListaPreciosProd">Productos</a></li>
+						<li class="tab col s6"><a href="#tabListaPreciosServ">Servicios</a></li>
+					</ul>
+
+					<div id="tabListaPreciosProd" class="divTab divTabProd col-12">
+						<div class="busqueda row" style="margin-bottom:5px!important;">
+							<div class="col s1 m2 col-md-3 col-lg-2">
+								<a class="btn  tooltipped" data-position="top" data-tooltip="Registrar nuevo producto"><i class="fa-solid fa-cart-shopping"></i></a>
+							</div>
+							<div class="col s1 m2 col-md-3 col-lg-2">
+								<a class="btn  tooltipped" data-position="top" data-tooltip="Buscar por clasificación"><i class="fa-solid fa-cart-shopping"></i></a>
+							</div>
+							<div class="col s1 m2 col-md-3 col-lg-2">
+								<a class="btn  tooltipped" data-position="top" data-tooltip="Buscar por nombre de producto"><i class="fa-solid fa-cart-shopping"></i></a>
+							</div>
+							<div class="col s1 m2 col-md-3 col-lg-2">
+								<a class="btn  tooltipped" data-position="top" data-tooltip="Buscar por catalogo de sat"><i class="fa-solid fa-cart-shopping"></i></a>
+							</div>
+							<div class="col s8 m4 col-md-3 col-lg-2">
+								<input class="datasearch" type="text" id="buscaprod" disabled placeholder="{{'bus_car' | translate}}">
+							</div>
+						</div>
+
+						<div class="card-panel">
+							<table class="centered responsive-table table_lista" style="width:max-content;">
+								<thead>
+									<tr>
+										<th colspan="2">PRODUCTO</th>
+										<th>precio kardex</th>
+										<th>impuestos</th>
+										<th *ngFor="let pricelist of arrayListaPrecios" [style]="pricelist.header_color">
+											<div class="thead row">
+												<p class="col-12 titulo">{{pricelist.nombre_lista}}</p>
+												<p class="col s6 dat-first">Precio</p>
+												<p class="col s6 dat-second">impuesto</p>
+												<p class="col s6 dat-third"></p>
+											</div>
+										</th>
+									</tr>
+								</thead>
+								<tbody *ngIf="arrayMercancias.length != 0 && arrayListaPrecios.length != 0">
+									<tr *ngFor="let arrayProdVig of arrayMercancias | paginate:{id:'pageProd',itemsPerPage:10,currentPage:pageProd};index as pos1">
+										<td class="img"><img src="{{arrayProdVig.imagen}}" alt="Contact Person"></td>
+										<td>{{arrayProdVig.clave+" "+arrayProdVig.clasificacion+" "+arrayProdVig.producto}}</td>
+										<td>${{arrayProdVig.selectKardesx}}</td>
+										<td class="ultimo">
+											<a href="#modalImpProd{{pos1}}"
+												class="btn btnRow text-bg-success rounded-3 modal-trigger">
+												<i class="fa-solid fa-info"></i></a>
+											</a>
+
+											<div id="modalImpProd{{pos1}}" class="modal modaloDialog" style="width: 50%!important;">
+												<div class="contenido">
+													<div class="header">
+														<h4>IMPUESTOS VINCULADOS</h4>
+														<a class="modal-close btn text-bg-danger rounded-3"><i class="fa-solid fa-window-minimize"></i></a>
+													</div>
+													<div class="modal-content modalContentImpuestos">
+														<div class="col-12 row" style="margin-top: 10px!important;">
+															<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+																<div class="info">
+																	<p class="titulo">Simulaci&oacute;n:</p>
+																	<p class="registro txtExistenciaKardex">${{arrayProdVig.simulated}}</p>
+																</div>
+															</div>
+
+															<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+
+															<div class="col-12">
+																<table class="tabimpuestosLista centered responsive-table">
+																	<thead>
+																		<tr>
+																			<th>tipo</th>
+																			<th>{{'concept' | translate}}</th>
+																			<th>cuota/porcentaje</th>
+																			<th>aplica como</th>
+																			<th>importe</th>
+																			<th class="ultimo"></th>
+																		</tr>
+																	</thead>
+																	<tbody *ngIf="impuestosVigentesArray.length != 0">
+																		<tr *ngFor="let impVig Of impuestosVigentesArray">
+
+																			<td *ngIf="impVig.tipo == 001">impuestos Federales</td>
+																			<td *ngIf="impVig.tipo == 002">impuestos Estatales</td>
+																			<td *ngIf="impVig.tipo == 003">impuestos Locales</td>
+
+																			<td>{{impVig.concepto}}</td>
+																			<td>{{impVig.por_cuo}}</td>
+																			<td>{{impVig.ret_tras}}</td>
+																			<td *ngIf="impVig.por_cuo == 'cuota'">${{impVig.importe}}</td><td *ngIf="impVig.por_cuo == 'porcentaje'">{{impVig.importe}}%</td>
+																			<td class="ultimo">
+																				<p class="radio">
+																					<label>
+																						<input type="checkbox" class="filled-in checkboxImp"
+																						(click)="vinculaImpuestoproducto($event.target,impVig.c_token,arrayProdVig.c_token);"/>
+																					</label>
+																				</p>
+																			</td>
+																		</tr>
+																	</tbody>
+																	<tbody *ngIf="impuestosVigentesArray.length == 0">
+																		<tr>
+																			<td colspan="4">{{'no_rows' | translate}}</td>
+																		</tr>
+																	</tbody>
+																</table>
+															</div>
+
+															<div class="col-12">
+																<table class="tabExistLoteVenta centered responsive-table">
+																	<thead>
+																		<tr>
+																			<th>tipo</th>
+																			<th>{{'concept' | translate}}</th>
+																			<th>aplica como</th>
+																			<th>importe</th>
+																			<th>simulaci&oacute;n</th>
+																			<th class="ultimo"></th>
+																		</tr>
+																	</thead>
+																	<tbody *ngIf="arrayProdVig.arrayListaPrecios[0].impuestoArray.length != 0">
+																		<tr *ngFor="let impMerc Of arrayProdVig.arrayListaPrecios[0].impuestoArray">
+
+																			<td>{{impMerc.tipo}}</td>
+																			<td>{{impMerc.concepto}}</td>
+																			<td>{{impMerc.ret_tras}}</td>
+																			<td>{{impMerc.importe}}</td>
+																			<td>{{impMerc.formatTotalImp}}</td>
+																			<td>
+																				<a class="btn btn_extend text-bg-danger rounded-3"
+																					(click)="unVincImpuestoproducto($event.target,impMerc.token_cat_impuestos,arrayProdVig.c_token);">
+																					<i class="fa-solid fa-eraser"></i>
+																				</a>
+																			</td>
+																		</tr>
+																	</tbody>
+																	<tbody *ngIf="arrayProdVig.arrayListaPrecios[0].impuestoArray.length == 0">
+																		<tr>
+																			<td colspan="6">{{'no_rows' | translate}}</td>
+																		</tr>
+																	</tbody>
+																</table>
+															</div>
+
+														</div>
+													</div>
+												</div>
+											</div>
+
+										</td>
+
+
+
+
+
+
+										<td class="td_detalle" *ngFor="let preciosprod of arrayProdVig.arrayListaPrecios;index as pos2" [style]="preciosprod.content_color">
+
+											<tr *ngIf="preciosprod.validate_button == true">
+												<td class="dat-first">
+													<input type="number" [value]="preciosprod.precio_detalle" (keyup)="validaPrecioLista($event.target,arrayProdVig.c_token,pos2);">
+												</td>
+												<td class="dat-first">
+													<a id="infoSerieLoteImport" class="btn bg-blue-300 modal-trigger"><i class="fas fa-tags"></i>
+														<span class="notificacion">{{preciosprod.retenciones}}</span>
+													</a>
+
+													${{preciosprod.simulacion}}</td>
+												<td class="dat-third ultimo">
+													<button (click)="actualizaPrecioLista($event.target,preciosprod.token_lista_precios,preciosprod.tkn_detalle_lista,pos1,pos2);"
+														class="btn text-bg-success rounded-3"><i class="fa-solid fa-pen-to-square"></i></button>
+												</td>
+											</tr>
+
+											<tr *ngIf="preciosprod.validate_button == false">
+												<td class="dat-first">
+													<input type="number" (keyup)="validaPrecioLista($event.target,arrayProdVig.c_token,pos2);">
+												</td>
+												<td class="dat-first">${{preciosprod.simulacion}}</td>
+												<!--<td class="dat-second">
+													<a href="#modalImpProd{{pos1+'-'+pos2}}"
+														class="btn btnRow text-bg-success rounded-3 modal-trigger">
+														<i class="fa-solid fa-info"></i></a> ${{preciosprod.simulacion}}
+													</a>
+
+													<div id="modalImpProd{{pos1+'-'+pos2}}" class="modal modaloDialog" style="width: 50%!important;">
+														<div class="contenido">
+															<div class="header">
+																<h4>IMPUESTOS VINCULADOS</h4>
+																<a class="modal-close btn text-bg-danger rounded-3"><i class="fa-solid fa-window-minimize"></i></a>
+															</div>
+															<div class="modal-content modalContentImpuestos">
+																<div class="col-12 row" style="margin-top: 10px!important;">
+																	<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+																		<div class="info">
+																			<p class="titulo">Simulaci&oacute;n:</p>
+																			<p class="registro txtExistenciaKardex">${{preciosprod.simulacion}}</p>
+																		</div>
+																	</div>
+
+																	<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+
+																	<div class="col-12">
+																		<table class="tabimpuestosLista centered responsive-table">
+																			<thead>
+																				<tr>
+																					<th>tipo</th>
+																					<th>{{'concept' | translate}}</th>
+																					<th>cuota/porcentaje</th>
+																					<th>aplica como</th>
+																					<th>importe</th>
+																					<th class="ultimo"></th>
+																				</tr>
+																			</thead>
+																			<tbody *ngIf="impuestosVigentesArray.length != 0">
+																				<tr *ngFor="let impVig Of impuestosVigentesArray">
+
+																					<td *ngIf="impVig.tipo == 001">impuestos Federales</td>
+                                        	<td *ngIf="impVig.tipo == 002">impuestos Estatales</td>
+                                        	<td *ngIf="impVig.tipo == 003">impuestos Locales</td>
+
+																					<td>{{impVig.concepto}}</td>
+																					<td>{{impVig.por_cuo}}</td>
+																					<td>{{impVig.ret_tras}}</td>
+																					<td *ngIf="impVig.por_cuo == 'cuota'">${{impVig.importe}}</td><td *ngIf="impVig.por_cuo == 'porcentaje'">{{impVig.importe}}%</td>
+																					<td class="ultimo">
+																						<p class="radio">
+																							<label>
+																								<input type="checkbox" class="filled-in checkboxImp"
+																								(click)="vinculaImpuestoproducto2($event.target,impVig.c_token,arrayProdVig.c_token,pos2);"/>
+																							</label>
+																						</p>
+																					</td>
+																				</tr>
+																			</tbody>
+																			<tbody *ngIf="impuestosVigentesArray.length == 0">
+																				<tr>
+																					<td colspan="4">{{'no_rows' | translate}}</td>
+																				</tr>
+																			</tbody>
+																		</table>
+																	</div>
+
+																	<div class="col-12">
+																		<table class="tabExistLoteVenta centered responsive-table">
+																			<thead>
+																				<tr>
+																					<th>tipo</th>
+																					<th>{{'concept' | translate}}</th>
+																					<th>aplica como</th>
+																					<th>importe</th>
+																					<th>simulaci&oacute;n</th>
+																					<th class="ultimo"></th>
+																				</tr>
+																			</thead>
+																			<tbody *ngIf="preciosprod.impuestoArray.length != 0">
+																				<tr *ngFor="let impMerc Of preciosprod.impuestoArray">
+
+																					<td>{{impMerc.tipo}}</td>
+																					<td>{{impMerc.concepto}}</td>
+																					<td>{{impMerc.ret_tras}}</td>
+																					<td>{{impMerc.importe}}</td>
+																					<td>{{impMerc.formatTotalImp}}</td>
+																					<td>
+																						<a class="btn btn_extend text-bg-danger rounded-3"
+																							(click)="unVincImpuestoproducto2($event.target,impMerc.token_cat_impuestos,arrayProdVig.c_token,pos2);">
+																							<i class="fa-solid fa-eraser"></i>
+																						</a>
+																					</td>
+																				</tr>
+																			</tbody>
+																			<tbody *ngIf="preciosprod.impuestoArray.length == 0">
+																				<tr>
+																					<td colspan="6">{{'no_rows' | translate}}</td>
+																				</tr>
+																			</tbody>
+																		</table>
+																	</div>
+
+																</div>
+															</div>
+														</div>
+													</div>
+
+												</td>-->
+												<td class="dat-third ultimo">
+													<button (click)="registraPrecioLista($event.target,arrayProdVig.c_token,preciosprod.token_lista_precios,pos2);"
+														class="btn text-bg-success rounded-3"><i class="fa-solid fa-floppy-disk"></i></button>
+												</td>
+											</tr>
+
+										</td>
+									</tr>
+								</tbody>
+								<tbody *ngIf="arrayMercancias.length == 0">
+									<tr>
+										<td colspan="5">{{'no_rows' | translate}}</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+
+						<paginado-controles class="paginador"
+							id="pageProd"
+							(pageChange)="pageProd = $event"
+							previousLabel="{{'prev' | translate}}"
+							nextLabel="{{'next' | translate}}">
+						</paginado-controles>
+					</div>
+
+					<div id="tabListaPreciosServ" class="divTab divTabServ col-12">
+						<div class="busqueda row" style="margin-bottom:5px!important;">
+							<div class="col s1 m2 col-md-3 col-lg-2">
+								<a class="btn  tooltipped" data-position="top" data-tooltip="Registrar nuevo producto"><i class="fa-solid fa-cart-shopping"></i></a>
+							</div>
+							<div class="col s1 m2 col-md-3 col-lg-2">
+								<a class="btn  tooltipped" data-position="top" data-tooltip="Buscar por clasificación"><i class="fa-solid fa-cart-shopping"></i></a>
+							</div>
+							<div class="col s1 m2 col-md-3 col-lg-2">
+								<a class="btn  tooltipped" data-position="top" data-tooltip="Buscar por nombre de producto"><i class="fa-solid fa-cart-shopping"></i></a>
+							</div>
+							<div class="col s1 m2 col-md-3 col-lg-2">
+								<a class="btn  tooltipped" data-position="top" data-tooltip="Buscar por catalogo de sat"><i class="fa-solid fa-cart-shopping"></i></a>
+							</div>
+							<div class="col s8 m4 col-md-3 col-lg-2">
+								<input class="datasearch" type="text" id="buscaprod" disabled placeholder="{{'bus_car' | translate}}">
+							</div>
+						</div>
+
+						<div class="card-panel">
+							<table class="centered responsive-table table_lista" style="width:max-content;">
+								<thead>
+									<tr>
+										<th colspan="2">SERVICIO</th>
+										<th *ngFor="let pricelist of arrayListaPrecios" [style]="pricelist.header_color">
+											<div class="thead row">
+												<p class="col-12 titulo">{{pricelist.nombre_lista}}</p>
+												<p class="col s6 dat-first">Precio</p>
+												<p class="col s6 dat-second">simulacion</p>
+												<p class="col s6 dat-third dat-fourth"></p>
+											</div>
+										</th>
+									</tr>
+								</thead>
+								<tbody *ngIf="arrayServiciosVig.length != 0 && arrayListaPrecios.length != 0">
+									<tr *ngFor="let arraYsrvvig of arrayServiciosVig | paginate:{id:'pageServ',itemsPerPage:10,currentPage:pageServ};index as pos1">
+										<td class="img"><img src="{{arraYsrvvig.imagen}}" alt="Contact Person"></td>
+										<td>{{arraYsrvvig.clave+" "+arraYsrvvig.clasificacion+" "+arraYsrvvig.servicio}}</td>
+										<td class="td_detalle" *ngFor="let preciosserv of arraYsrvvig.arrayListaPrecios;index as pos2" [style]="preciosserv.content_color">
+											<tr *ngIf="preciosserv.validate_button == true">
+												<td class="dat-first">
+													<input type="number" [value]="preciosserv.precio_detalle" (keyup)="validaServicioPrecioLista($event.target,arraYsrvvig.c_token,pos2);">
+												</td>
+
+												<!--<td class="dat-second">${{preciosserv.simulacion}}</td>-->
+												<td class="dat-second" *ngIf="preciosserv.impuestoArray.length > 0">
+													<a  href="#modalImpServ{{pos1+'-'+pos2}}"
+														class="btn btnRow text-bg-success rounded-3 modal-trigger">
+														<i class="fa-solid fa-info"></i></a> ${{preciosserv.simulacion}}
+													</a>
+
+													<div id="modalImpServ{{pos1+'-'+pos2}}" class="modal modaloDialog" style="width: 50%!important;">
+														<div class="contenido">
+															<div class="header">
+																<h4>IMPUESTOS VINCULADOS</h4>
+																<a class="modal-close btn text-bg-danger rounded-3"><i class="fa-solid fa-window-minimize"></i></a>
+															</div>
+															<div class="modal-content">
+																<div class="col-12 row" style="margin-top: 10px!important;">
+																	<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+																		<div class="info">
+																			<p class="titulo">Simulaci&oacute;n:</p>
+																			<p class="registro txtExistenciaKardex">${{preciosserv.simulacion}}</p>
+																		</div>
+																	</div>
+
+																	<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+
+																	<div class="col-12">
+																		<table class="tabExistLoteVenta centered responsive-table">
+																			<thead>
+																				<tr>
+																					<th>tipo</th>
+																					<th>{{'concept' | translate}}</th>
+																					<th>importe</th>
+																					<th>total</th>
+																				</tr>
+																			</thead>
+																			<tbody *ngIf="preciosserv.impuestoArray.length != 0">
+																				<tr *ngFor="let implist of preciosserv.impuestoArray">
+																					<td>{{implist.tipo}}</td>
+																					<td>{{implist.concepto}}</td>
+																					<td>{{implist.importe}}</td>
+																					<td>{{implist.formatTotalImp}}</td>
+																				</tr>
+																			</tbody>
+																			<tbody *ngIf="preciosserv.impuestoArray.length == 0">
+																				<tr>
+																					<td colspan="4">{{'no_rows' | translate}}</td>
+																				</tr>
+																			</tbody>
+																		</table>
+
+																	</div>
+																</div>
+															</div>
+														</div>
+													</div>
+												</td>
+												<td class="dat-second" *ngIf="preciosserv.impuestoArray.length == 0">${{preciosserv.simulacion}}</td>
+
+												<td class="ultimo">
+													<button (click)="actualizaPrecioLista($event.target,arraYsrvvig.c_token,preciosserv.token_lista_precios,preciosserv.tkn_detalle_lista,pos2);"
+														class="btn text-bg-success rounded-3"><i class="fa-solid fa-pen-to-square"></i></button>
+												</td>
+											</tr>
+
+											<tr *ngIf="preciosserv.validate_button == false">
+												<td class="dat-first">
+													<input type="number" (keyup)="validaServicioPrecioLista($event.target,arraYsrvvig.c_token,pos2);">
+												</td>
+												<td class="dat-second">${{preciosserv.simulacion}}</td>
+												<td class="ultimo">
+													<button *ngIf="preciosserv.precio_detalle == ''" disabled
+														class="btn text-bg-success rounded-3"><i class="fa-solid fa-floppy-disk"></i></button>
+
+													<button  class="btn text-bg-success rounded-3" *ngIf="preciosserv.precio_detalle != ''"
+														(click)="registraServicioPrecioLista($event.target,arraYsrvvig.c_token,preciosserv.token_lista_precios,pos1,pos2);"
+														><i class="fa-solid fa-floppy-disk"></i></button>
+												</td>
+											</tr>
+										</td>
+									</tr>
+								</tbody>
+								<tbody *ngIf="arrayServiciosVig.length == 0">
+									<tr>
+										<td colspan="5">{{'no_rows' | translate}}</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+						<paginado-controles class="paginador"
+							id="pageServ"
+							(pageChange)="pageServ = $event"
+							previousLabel="{{'prev' | translate}}"
+							nextLabel="{{'next' | translate}}">
+						</paginado-controles>
+					</div>

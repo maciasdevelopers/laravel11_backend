@@ -1,0 +1,938 @@
+<p-table #imssAportList [value]="catalogo_aportaciones_de_imss" showGridlines [resizableColumns]="true" [paginator]="true"
+  [rows]="10" [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10, 20, 30, 50, 100]" [globalFilterFields]="search_aportaciones_de_imss">
+  <ng-template #caption>
+    <div class="flex" style="display: flex !important;justify-content: start;align-items: center;flex-wrap: wrap;flex-direction: row !important;align-content: center;" ngbDropdown>
+      <a class="btn btn_extend bg-indigo-600" (click)="listando_imss_aportaciones(); listando_imss_deleted_declaraciones()">
+        <i class="fa-solid fa-rotate"></i>&nbsp;{{ 'list_updt' | translate }}
+      </a>
+      <a class="btn btn_extend bg-indigo-600" style="margin-right: 5px !important" [ngClass]="catalogo_deleted_aportaciones_de_imss.length == 0 ? 'disabled' : ''"
+        [attr.disabled]="catalogo_deleted_aportaciones_de_imss.length == 0 ? true : null" [attr.aria-disabled]="catalogo_deleted_aportaciones_de_imss.length == 0 ? true : null"
+        (click)="catalogo_deleted_aportaciones_de_imss.length > 0 && verDeletedImssDeclaraciones()">
+        <i class="fa-solid fa-trash"></i>&nbsp;Reportes de aportaciones de Seguridad Social eliminados
+      </a>
+      <a class="btn btn_extend bg-green-600 descarga_lista_excel" style="height: 25px !important" [ngClass]="catalogo_aportaciones_de_imss.length == 0 ? 'disabled' : ''"
+        [attr.disabled]="catalogo_aportaciones_de_imss.length == 0 ? true : null" [attr.aria-disabled]="catalogo_aportaciones_de_imss.length == 0 ? true : null" 
+        (click)="catalogo_aportaciones_de_imss.length > 0 && descarga_excel_isn()">
+        <i class="fa-solid fa-file-excel" style="margin-left: 5px"></i>&nbsp;descargar
+      </a>
+    </div>
+    <div class="flex" style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;" ngbDropdown>
+      <a class="btn btn_extend" [ngClass]="imss_aport_list_indicador == 'hoy' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_imss_aportaciones('hoy');">
+        <i class="fa-solid fa-calendar-days"></i>&nbsp;Hoy
+      </a>
+      <a class="btn btn_extend" [ngClass]="imss_aport_list_indicador == 'esta_semana' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_imss_aportaciones('esta_semana');">
+        <i class="fa-solid fa-calendar-days"></i>&nbsp;Esta semana
+      </a>
+      <a class="btn btn_extend" [ngClass]="imss_aport_list_indicador == 'este_mes' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_imss_aportaciones('este_mes');">
+        <i class="fa-solid fa-calendar-days"></i>&nbsp;Este mes
+      </a>
+      <a class="btn btn_extend" [ngClass]="imss_aport_list_indicador == 'mes_anterior' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_imss_aportaciones('mes_anterior');">
+        <i class="fa-solid fa-arrow-left"></i>&nbsp;mes anterior
+      </a>
+      <a id="menuDropImssAportRangos" class="btn btn_extend" [ngClass]="imss_aport_list_indicador == 'otras_fechas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" ngbDropdownToggle>
+        <i class="fa-solid fa-list-ul"></i>&nbsp;otras fechas
+      </a>
+      <div class="dropdown-menu-end menu-despegable" ngbDropdownMenu="menuDropImssAportRangos" style="padding: 0!important; margin: 0!important; width: max-content!important; max-height: 400px; overflow-y: auto;">
+        <div class="col-12 input-group">
+          <label for="list_imss_aport_otras_fechas" class="activeInput">Periodo de fechas</label>
+          <p-datepicker id="list_imss_aport_otras_fechas" name="list_imss_aport_otras_fechas" [(ngModel)]="rangoPeriodoImssAport" appendTo="body" dateFormat="dd/mm/yy" 
+            placeholder="dd/mm/aaaa" selectionMode="range" (onSelect)="ver_imss_aportaciones('otras_fechas');" />
+        </div>
+      </div>
+      <a class="btn btn_extend" [ngClass]="imss_aport_list_indicador == 'all_partidas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_imss_aportaciones('all_partidas');">
+        <i class="fa-solid fa-list-ul"></i>&nbsp;todos los registros
+      </a>
+      <p-iconfield iconPosition="left" class="ml-auto">
+        <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+        <input pInputText type="text" (input)="imssAportList.filterGlobal($event.target.value, 'contains')"
+          placeholder="{{'bus_car' | translate}}" />
+      </p-iconfield>
+    </div>
+  </ng-template>
+  <ng-template #header>
+    <tr>
+      <th rowspan="2" class="ultimo"></th>
+      <th rowspan="2" pResizableColumn pSortableColumn="aport_ssocial_folio">folio&nbsp;<p-sortIcon field="aport_ssocial_folio" /></th>
+      <th rowspan="2" pResizableColumn pSortableColumn="aport_ssocial_fecha_contabilizacion">{{ 'fecha_cont' | translate }}&nbsp;<p-sortIcon field="aport_ssocial_fecha_contabilizacion"/></th>
+      <th rowspan="2" pResizableColumn pSortableColumn="aport_ssocial_fecha_presentacion">Fecha de presentaci&oacute;n&nbsp;<p-sortIcon field="aport_ssocial_fecha_presentacion"/></th>
+      <th rowspan="2" pResizableColumn pSortableColumn="aport_ssocial_registro_patronal_serie">Registro Patronal&nbsp;<p-sortIcon field="aport_ssocial_registro_patronal_serie" /></th>
+      <th rowspan="2" pResizableColumn pSortableColumn="periodo_pago_seguros_imss">Per&iacute;odo que comprende el pago de seguros imss (Mes-Año)&nbsp;<p-sortIcon field="periodo_pago_seguros_imss"/></th>
+      <th rowspan="2" pResizableColumn pSortableColumn="pago_rcv_infonavit">Bimestre que comprende el pago rcv e infonavit&nbsp;<p-sortIcon field="pago_rcv_infonavit"/></th>
+      <th rowspan="2" pResizableColumn pSortableColumn="folio_sua">Folio sua&nbsp;<p-sortIcon field="folio_sua" /></th>
+      <th rowspan="2" pResizableColumn pSortableColumn="clave_recepcion_archivo_pago">Clave de recepci&oacute;n de archivo de pago&nbsp;<p-sortIcon field="clave_recepcion_archivo_pago"/></th>
+      <th rowspan="2" pResizableColumn pSortableColumn="propuesta_fecha_limite_pago">Fecha L&iacute;mite de Pago&nbsp;<p-sortIcon field="propuesta_fecha_limite_pago" /></th>
+      <th rowspan="2" pResizableColumn pSortableColumn="linea_captura_sipare">Referencia de pago (L&iacute;nea de Captura SIPARE)&nbsp;<p-sortIcon field="linea_captura_sipare"/></th>
+      <th rowspan="2" pResizableColumn pSortableColumn="propuesta_s_m_g_d_f">S.M.G.D.F&nbsp;<p-sortIcon field="propuesta_s_m_g_d_f" /></th>
+      <th rowspan="2" pResizableColumn pSortableColumn="propuesta_fecha_salario_minimo_pago">Fecha SAL. MIN.&nbsp;<p-sortIcon field="propuesta_fecha_salario_minimo_pago" /></th>
+      <th rowspan="2" pResizableColumn pSortableColumn="propuesta_valor_uma">Valor UMA&nbsp;<p-sortIcon field="propuesta_valor_uma" /></th>
+      <th rowspan="2" pResizableColumn pSortableColumn="propuesta_num_de_cotizantes">No. de cotizantes&nbsp;<p-sortIcon field="propuesta_num_de_cotizantes" /></th>
+      <th rowspan="2" pResizableColumn pSortableColumn="propuesta_num_dias_a_cotizar">No. de d&iacute;as a cotizar&nbsp;<p-sortIcon field="propuesta_num_dias_a_cotizar" /></th>
+      <th rowspan="2" pResizableColumn pSortableColumn="propuesta_num_de_acreditados">No. de acreditados&nbsp;<p-sortIcon field="propuesta_num_de_acreditados" /></th>
+      <th rowspan="2" pResizableColumn pSortableColumn="cuotas_patronales">Cuotas Patronales ($)&nbsp;<p-sortIcon field="cuotas_patronales" /></th>
+      <th rowspan="2" pResizableColumn pSortableColumn="cuotas_obreras">Cuotas Obreras ($)&nbsp;<p-sortIcon field="cuotas_obreras" /></th>
+      <th colspan="5"><i class="fa-solid fa-money-check"></i>&nbsp;Orden de pago</th>
+      <th rowspan="2" pResizableColumn pSortableColumn="observaciones">{{ 'observ' | translate }}&nbsp;<p-sortIcon field="observaciones" /></th>
+      <th colspan="3">IMSS</th>
+      <th colspan="3">INFONAVIT</th>
+      <th rowspan="2" class="ultimo"></th>
+    </tr>
+    <tr>
+      <th pResizableColumn pSortableColumn="cuotas_totales">Suma Total ($)&nbsp;<p-sortIcon field="cuotas_totales" /></th>
+      <th pResizableColumn pSortableColumn="nomi_imp_pago">pagado&nbsp;<p-sortIcon field="nomi_imp_pago" /></th>
+      <th pResizableColumn pSortableColumn="nomi_imp_saldo">Saldo&nbsp;<p-sortIcon field="nomi_imp_saldo" /></th>
+      <th pResizableColumn pSortableColumn="aport_ssocial_ord_pago_folio">Orden de pago&nbsp;<p-sortIcon field="aport_ssocial_ord_pago_folio" /></th>
+      <th class="ultimo"></th>
+      <th rowspan="2"><i class="fa-solid fa-file-code"></i>&nbsp;{{'cfdi_xml_import' | translate}}</th>
+      <th rowspan="2"><i class="fa-solid fa-file-pdf"></i>&nbsp;{{'cfdi_pdf_import' | translate}}</th>
+      <th rowspan="2" class="ultimo"></th>
+      <th rowspan="2"><i class="fa-solid fa-file-code"></i>&nbsp;{{'cfdi_xml_import' | translate}}</th>
+      <th rowspan="2"><i class="fa-solid fa-file-pdf"></i>&nbsp;{{'cfdi_pdf_import' | translate}}</th>
+      <th rowspan="2" class="ultimo"></th>
+    </tr>
+  </ng-template>
+  <ng-template #body let-aport>
+    <tr>
+      <td class="ultimo">
+        <a class="btn bg-blue-600" (click)="verDetalleIMSS(aport.aport_ssocial_token)">
+          <i class="fa-solid fa-info"></i>
+        </a>
+      </td>
+      <td>{{ aport.aport_ssocial_folio }}</td>
+      <td class="name">{{ aport.aport_ssocial_fecha_contabilizacion | date: 'yyyy-MM-dd' }}</td>
+      <td class="name">{{ aport.aport_ssocial_fecha_presentacion | date: 'yyyy-MM-dd' }}</td>
+      <td class="name">{{ aport.aport_ssocial_registro_patronal_serie }}</td>
+      <td class="name">{{ aport.periodo_pago_seguros_imss }}</td>
+      <td class="name">{{ aport.pago_rcv_infonavit }}</td>
+      <td class="name">{{ aport.folio_sua }}</td>
+      <td class="name">{{ aport.clave_recepcion_archivo_pago }}</td>
+      <td class="name">{{ aport.propuesta_fecha_limite_pago | date: 'yyyy-MM-dd' }}</td>
+      <td class="name">{{ aport.linea_captura_sipare }}</td>
+      <td class="td_importes">{{ aport.propuesta_s_m_g_d_f }}</td>
+      <td class="name">{{ aport.propuesta_fecha_salario_minimo_pago | date: 'yyyy-MM-dd' }}</td>
+      <td class="td_importes">{{ aport.propuesta_valor_uma }}</td>
+      <td class="td_importes">{{ aport.propuesta_num_de_cotizantes }}</td>
+      <td class="td_importes">{{ aport.propuesta_num_dias_a_cotizar }}</td>
+      <td class="td_importes">{{ aport.propuesta_num_de_acreditados }}</td>
+      <td class="td_importes">{{ aport.cuotas_patronales }}</td>
+      <td class="td_importes">{{ aport.cuotas_obreras }}</td>
+      <td class="td_importes">{{ aport.cuotas_totales }}</td>
+      <td class="td_importes">{{ aport.aport_ssocial_pago }}</td>
+      <td class="td_importes">{{ aport.aport_ssocial_saldo }}</td>
+      <td>{{ aport.aport_ssocial_ord_pago_folio }}</td>
+      <td class="ultimo">
+        <a class="btn btn_extend text-bg-success rounded-3" [ngClass]="aport.aport_ssocial_ord_pago_token == '' ? 'disabled' : ''" [attr.disabled]="aport.aport_ssocial_ord_pago_token == '' ? true : null"
+          [attr.aria-disabled]="aport.aport_ssocial_ord_pago_token == '' ? true : null"
+          (click)="aport.aport_ssocial_ord_pago_token != '' && verAportSSocialSeguimientoOrdenPago(aport.aport_ssocial_token,aport.aport_ssocial_ord_pago_token)">
+          <i class="fa-solid fa-money-check-dollar"></i>&nbsp;Seguimiento
+        </a>
+      </td>
+      <td class="name">{{ aport.observaciones }}</td>
+      <!--imss-->
+      <td>
+        @if (aport.aport_ssocial_factura_doc_xml != null) {
+          <a class="btn btn_extend text-bg-primary rounded-4" target="_blank" [ngClass]="aport.aport_ssocial_factura_doc_xml == '' ? 'disabled' : ''"
+            [attr.disabled]="aport.aport_ssocial_factura_doc_xml == '' ? true : null" [attr.aria-disabled]="aport.aport_ssocial_factura_doc_xml == '' ? true : null"
+            [href]="aport.aport_ssocial_url_doc_xml">
+            <i class="fa-solid fa-code"></i>&nbsp;{{ aport.aport_ssocial_factura_doc_xml }}
+          </a>
+        } @else {
+          <div class="mb-3" style="margin: 0 !important">
+            <input class="form-control" [ngClass]="!aport.aport_ssocial_habilita_carga_docs ? 'disabled' : ''" [attr.disabled]="!aport.aport_ssocial_habilita_carga_docs ? true : null"
+              [attr.aria-disabled]="!aport.aport_ssocial_habilita_carga_docs ? true : null" type="file" id="facturaxml" placeholder="XML" accept=".xml"
+              style="padding: 0; line-height: 30px; width: 100% !important"
+              (change)="cargaAportSegSocialIMSSXml(aport.aport_ssocial_token, $event, $event.target)"/>
+          </div>
+        }
+      </td>
+      <td>
+        @if (aport.aport_ssocial_factura_doc_pdf != null) {
+          <a class="btn btn_extend text-bg-danger rounded-3" target="_blank" [ngClass]="aport.aport_ssocial_factura_doc_pdf == '' ? 'disabled' : ''"
+            [attr.disabled]="aport.aport_ssocial_factura_doc_pdf == '' ? true : null" [attr.aria-disabled]="aport.aport_ssocial_factura_doc_pdf == '' ? true : null" 
+            [href]="aport.aport_ssocial_url_doc_pdf">
+            <i class="fa-solid fa-file-pdf"></i>&nbsp;{{ aport.aport_ssocial_factura_doc_pdf }}
+          </a>
+        } @else {
+          <div class="mb-3" style="margin: 0 !important">
+            <input class="form-control" type="file" name="facturaCompraPdf" id="facturapdf" accept=".pdf" placeholder="PDF" style="padding: 0; line-height: 30px; width: 100% !important"
+              [ngClass]="!aport.aport_ssocial_habilita_carga_docs || aport.aport_ssocial_valida_xml != 'validoXml' ? 'disabled' : ''"
+              [attr.disabled]="!aport.aport_ssocial_habilita_carga_docs || aport.aport_ssocial_valida_xml != 'validoXml' ? true : null"
+              [attr.aria-disabled]="!aport.aport_ssocial_habilita_carga_docs || aport.aport_ssocial_valida_xml != 'validoXml' ? true : null"
+              (change)="aport.aport_ssocial_habilita_carga_docs && aport.aport_ssocial_valida_xml == 'validoXml' && cargaAportSegSocialIMSSPdf(aport.aport_ssocial_token, $event, $event.target)"
+            />
+          </div>
+        }
+      </td>
+      <td>
+        <a class="btn btn_extend text-bg-success rounded-3" [ngClass]="!validaCFDIIMSSLoaded(aport.aport_ssocial_token) ? 'disabled' : ''"
+          [attr.disabled]="!validaCFDIIMSSLoaded(aport.aport_ssocial_token) ? true : null" [attr.aria-disabled]="!validaCFDIIMSSLoaded(aport.aport_ssocial_token) ? true : null"
+          (click)="validaCFDIIMSSLoaded(aport.aport_ssocial_token) && cargaAportSegSocialIMSSCFDIS(aport.aport_ssocial_token)">
+          <i class="fa-solid fa-floppy-disk"></i>&nbsp;{{ 'sav_cam' | translate }}
+        </a>
+      </td>
+
+      <!--infonavit-->
+      <td>
+        @if (aport.aport_infonavit_factura_doc_xml != null) {
+          <a class="btn btn_extend text-bg-primary rounded-4" target="_blank" [ngClass]="aport.aport_infonavit_factura_doc_xml == '' ? 'disabled' : ''" 
+            [attr.disabled]="aport.aport_infonavit_factura_doc_xml == '' ? true : null" [attr.aria-disabled]="aport.aport_infonavit_factura_doc_xml == '' ? true : null"
+            [href]="aport.aport_infonavit_url_doc_xml">
+            <i class="fa-solid fa-code"></i>&nbsp;{{ aport.aport_infonavit_factura_doc_xml }}
+          </a>
+        } @else {
+          <div class="mb-3" style="margin: 0 !important">
+            <input class="form-control" [ngClass]="!aport.aport_infonavit_habilita_carga_docs ? 'disabled' : ''" [attr.disabled]="!aport.aport_infonavit_habilita_carga_docs ? true : null"
+              [attr.aria-disabled]="!aport.aport_infonavit_habilita_carga_docs ? true : null" type="file" id="facturaxml" placeholder="XML" accept=".xml" style="padding: 0; line-height: 30px; width: 100% !important"
+              (change)="cargaAportSegSocialInfonavitXml(aport.aport_ssocial_token, $event, $event.target)"/>
+          </div>
+        }
+      </td>
+      <td>
+        @if (aport.aport_infonavit_factura_doc_pdf != null) {
+          <a class="btn btn_extend text-bg-danger rounded-3" target="_blank" [ngClass]="aport.aport_infonavit_factura_doc_pdf == '' ? 'disabled' : ''" 
+            [attr.disabled]="aport.aport_infonavit_factura_doc_pdf == '' ? true : null" [attr.aria-disabled]="aport.aport_infonavit_factura_doc_pdf == '' ? true : null"
+            [href]="aport.aport_infonavit_url_doc_pdf">
+            <i class="fa-solid fa-file-pdf"></i>&nbsp;{{ aport.aport_infonavit_factura_doc_pdf }}
+          </a>
+        } @else {
+          <div class="mb-3" style="margin: 0 !important">
+            <input class="form-control" type="file" name="facturaCompraPdf" id="facturapdf" accept=".pdf" placeholder="PDF" style="padding: 0; line-height: 30px; width: 100% !important"
+              [ngClass]="!aport.aport_infonavit_habilita_carga_docs || aport.aport_infonavit_valida_xml != 'validoXml' ? 'disabled' : ''"
+              [attr.disabled]="!aport.aport_infonavit_habilita_carga_docs || aport.aport_infonavit_valida_xml != 'validoXml' ? true : null"
+              [attr.aria-disabled]="!aport.aport_infonavit_habilita_carga_docs || aport.aport_infonavit_valida_xml != 'validoXml' ? true : null"
+              (change)="aport.aport_infonavit_habilita_carga_docs && aport.aport_infonavit_valida_xml == 'validoXml' && cargaAportSegSocialInfonavitPdf(aport.aport_ssocial_token, $event, $event.target)"/>
+          </div>
+        }
+      </td>
+      <td>
+        <a class="btn btn_extend text-bg-success rounded-3" [ngClass]="!validaInfonavitCFDILoaded(aport.aport_ssocial_token) ? 'disabled' : ''" 
+          [attr.disabled]="!validaInfonavitCFDILoaded(aport.aport_ssocial_token) ? true : null"
+          [attr.aria-disabled]="!validaInfonavitCFDILoaded(aport.aport_ssocial_token) ? true : null"
+          (click)="validaInfonavitCFDILoaded(aport.aport_ssocial_token) && cargaAportSegSocialInfonavitCFDIS(aport.aport_ssocial_token)">
+          <i class="fa-solid fa-floppy-disk"></i>&nbsp;{{ 'sav_cam' | translate }}
+        </a>
+      </td>
+      <td class="ultimo">
+        <a class="btn btn_extend text-bg-danger rounded-3" [ngClass]="!aport.puede_eliminar ? 'disabled' : ''" [attr.disabled]="!aport.puede_eliminar ? true : null" 
+          [attr.aria-disabled]="!aport.puede_eliminar ? true : null" (click)="aport.puede_eliminar && deleteAportacionSegSocial(aport.aport_ssocial_token)">
+          <i class="fa-solid fa-eraser"></i>&nbsp;{{ 'delete_row' | translate }}
+        </a>
+      </td>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td colspan="32" class="text-center py-4">
+        <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280"></i>
+        <p class="mt-2" style="font-size: 1.2rem; color: #374151">
+          {{ 'no_rows' | translate }}
+        </p>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<p-dialog header="Informaci&oacute;n de aportaciones de Seguridad Social {{ isn_detalle_folio }}" [(visible)]="ver_aport_imss_seguimiento_pagos" [modal]="true"
+  [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  <p-table #opgen [value]="aport_imss_seguimiento_pagos" [globalFilterFields]="searchPagoGeneral" showGridlines [resizableColumns]="true" 
+    [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10, 20, 30, 50, 100]">
+    <ng-template #caption>
+      <div class="flex">
+        <p-iconfield iconPosition="left" class="ml-auto">
+          <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+          <input pInputText type="text" (input)="opgen.filterGlobal($event.target.value, 'contains')" placeholder="{{ 'bus_car' | translate }}"/>
+        </p-iconfield>
+      </div>
+    </ng-template>
+    <ng-template #header>
+      <tr>
+        <th rowspan="2" class="ultimo"></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="folio_ordenPago">folio&nbsp;<p-sortIcon field="folio_ordenPago" /></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="fecha_contabilizacion_orden_pago">{{ 'fecha_cont_pay_order' | translate }}&nbsp;<p-sortIcon field="fecha_contabilizacion_orden_pago"/></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="factura_relacionada_string">{{ 'doc_ant' | translate }}&nbsp;<p-sortIcon field="factura_relacionada_string" /></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="fecha_contabilizacion_doc_anterior">{{ 'fecha_cont_doc_ant' | translate }}&nbsp;<p-sortIcon field="fecha_contabilizacion_doc_anterior"/></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="orden_emisor_emp">{{ 'company_name' | translate }}&nbsp;<p-sortIcon field="orden_emisor_emp" /></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="autorizacion_pay">{{ 'autho_riza' | translate }}&nbsp;<p-sortIcon field="autorizacion_pay" /></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="fecha_autorizacion_pay">{{ 'date_autho_riza' | translate }}&nbsp;<p-sortIcon field="fecha_autorizacion_pay" /></th>
+        <th colspan="9" pResizableColumn>{{ 'payed' | translate }}</th>
+        <th rowspan="2" style="padding-left: 5px; padding-right: 5px" pResizableColumn pSortableColumn="importe_total_inicial">{{ 'total_refund' | translate }}&nbsp;<p-sortIcon field="importe_total_inicial" /></th>
+        <th rowspan="2" style="padding-left: 5px; padding-right: 5px" pResizableColumn pSortableColumn="importe_autorizado_inicial_format">{{ 'total_refund_auth' | translate }}&nbsp;<p-sortIcon field="importe_autorizado_inicial_format"/></th>
+        <th rowspan="2" style="padding-left: 5px; padding-right: 5px" pResizableColumn pSortableColumn="importe_autorizado_final">{{ 'total_refund_auth_converse' | translate }}&nbsp;<p-sortIcon field="importe_autorizado_final"/></th>
+        <th rowspan="2" style="padding-left: 5px; padding-right: 5px" pResizableColumn pSortableColumn="debe_format">DEBE&nbsp;<p-sortIcon field="debe_format" /></th>
+      </tr>
+      <tr>
+        <th pResizableColumn pSortableColumn="pago_anticipado">{{ 'prepayment' | translate }}&nbsp;<p-sortIcon field="pago_anticipado" /></th>
+        <th class="ultimo"></th>
+        <th class="noneView"></th>
+        <th pResizableColumn pSortableColumn="pago_realizado_folio">folio&nbsp;<p-sortIcon field="pago_realizado_folio" /></th>
+        <th pResizableColumn pSortableColumn="pago_realizado_fecha_contabilizacion">{{ 'fecha_cont' | translate }}&nbsp;<p-sortIcon field="pago_realizado_fecha_contabilizacion"/></th>
+        <th pResizableColumn pSortableColumn="pago_realizado_forma_pago_vinculada">{{ 'f_pago' | translate }}&nbsp;<p-sortIcon field="pago_realizado_forma_pago_vinculada" /></th>
+        <th pResizableColumn pSortableColumn="pago_realizado_forma_metodo_pago_cfdi">{{ 'f_m_pago_cfdi' | translate }}&nbsp;<p-sortIcon field="pago_realizado_forma_metodo_pago_cfdi"/></th>
+        <th pResizableColumn pSortableColumn="pago_realizado_monto">{{ 'total_import' | translate }}&nbsp;<p-sortIcon field="pago_realizado_monto" /></th>
+        <th pResizableColumn pSortableColumn="pago_realizado_tipo_cambio">{{ 'mon_tipo_cambio' | translate }}&nbsp;<p-sortIcon field="pago_realizado_tipo_cambio" /></th>
+        <th pResizableColumn pSortableColumn="pago_realizado_observaciones">{{ 'observ' | translate }}&nbsp;<p-sortIcon field="pago_realizado_observaciones" /></th>
+      </tr>
+    </ng-template>
+    <ng-template #body let-lPay>
+      <tr>
+        <td class="ultimo">
+          <a class="btn bg-red-700" [ngClass]="lPay.factura_relacionada_typo == '---' ? 'disabled' : ''" [attr.disabled]="lPay.factura_relacionada_typo == '---' ? true : null"
+            [attr.aria-disabled]="lPay.factura_relacionada_typo == '---' ? true : null" [attr.target]="lPay.factura_relacionada_typo != '---' ? '_blank' : null"
+            [attr.href]=" lPay.factura_relacionada_typo != '---' ? 
+              lPay.factura_relacionada_typo == 'compras' ? 'https://downloads.sos-mexico.com.mx/compras_pdf/' + lPay.factura_relacionada_token : 
+              lPay.factura_relacionada_typo == 'ventas' ? 'https://downloads.sos-mexico.com.mx/ventas_pdf/' + lPay.factura_relacionada_token : 
+              'https://downloads.sos-mexico.com.mx/reembolso_pdf/' + lPay.factura_relacionada_token : null">
+            <i class="fa-solid fa-file-pdf"></i>
+          </a>
+        </td>
+        <td>{{ lPay.folio_ordenPago }}</td>
+        <td>{{ lPay.fecha_contabilizacion_orden_pago }}</td>
+        <td class="name">{{ lPay.factura_relacionada_string }}</td>
+        <td>{{ lPay.fecha_contabilizacion_doc_anterior }}</td>
+        <td>{{ lPay.orden_emisor_emp }}</td>
+        <td>{{ lPay.autorizacion_pay_text }}</td>
+        <td>{{ lPay.fecha_autorizacion_pay }}</td>
+        <td class="td_importes">{{ lPay.pago_anticipado }}</td>
+        <td class="noneView">{{ lPay.status_pago_date }}</td>
+        <td class="ultimo">
+          <p class="btn text-bg-success rounded-3" [ngClass]="lPay.status_pago == true ? 'disabled' : ''" [attr.disabled]="lPay.status_pago == true ? true : null" 
+            [attr.aria-disabled]="lPay.status_pago == true ? true : null" style="width: 100% !important; border-radius: 25px !important; padding: 3px">
+            <i class="fa-solid fa-check-double"></i>{{ lPay.status_pago_date }}
+          </p>
+        </td>
+        <td>{{ lPay.pago_realizado_folio }}</td>
+        <td>{{ lPay.pago_realizado_fecha_contabilizacion }}</td>
+        <td class="name">{{ lPay.pago_realizado_forma_pago_vinculada }}</td>
+        <td class="name">{{ lPay.pago_realizado_forma_metodo_pago_cfdi }}</td>
+        <td class="td_importes">{{ lPay.pago_realizado_monto }}</td>
+        <td class="td_importes">{{ lPay.pago_realizado_tipo_cambio }}</td>
+        <td class="name">{{ lPay.pago_realizado_observaciones }}</td>
+
+        <td class="td_importes">{{ lPay.importe_total_inicial }}</td>
+        <td class="td_importes">{{ lPay.importe_autorizado_inicial_format }}</td>
+        <td class="td_importes">{{ lPay.importe_autorizado_final }}</td>
+        <td class="td_importes">{{ lPay.debe_format }}</td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="22" class="text-center py-4">
+          <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280"></i>
+          <p class="mt-2" style="font-size: 1.2rem; color: #374151">
+            {{ 'no_rows' | translate }}
+          </p>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <p-table #lpagos_realizados id="pagos_done_lista_general" [value]="aport_imss_pagos_historial" [globalFilterFields]="search_pagos_done" showGridlines 
+    [resizableColumns]="true" [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10, 20, 30, 50, 100]">
+    <ng-template #caption>
+      <div class="flex">
+        <p-iconfield iconPosition="left" class="ml-auto">
+          <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+          <input pInputText type="text" (input)="lpagos_realizados.filterGlobal($event.target.value, 'contains')" placeholder="{{ 'bus_car' | translate }}"/>
+        </p-iconfield>
+      </div>
+    </ng-template>
+    <ng-template #header>
+      <tr>
+        <th rowspan="2" class="ultimo"></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="folio_pagos">folio&nbsp;<p-sortIcon field="folio_pagos" /></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="fecha_contabilizacion">{{ 'fecha_cont' | translate }}&nbsp;<p-sortIcon field="fecha_contabilizacion" /></th>
+        <th colspan="2">{{ 'doc_ant' | translate }}</th>
+        <th colspan="3">status</th>
+        <th rowspan="2" pResizableColumn pSortableColumn="medio_pago_vinculado">{{ 'f_pago' | translate }}&nbsp;<p-sortIcon field="medio_pago_vinculado" /></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="forma_metodo_pago_cfdi">{{ 'f_m_pago_cfdi' | translate }}&nbsp;<p-sortIcon field="forma_metodo_pago_cfdi" /></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="forma_metodo_pago_anticipos">medio de pago por anticipos&nbsp;<p-sortIcon field="forma_metodo_pago_anticipos" /></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="observacionesPago">{{ 'observ' | translate }}&nbsp;<p-sortIcon field="observacionesPago" /></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="p_moneda">{{ 'currency' | translate }}&nbsp;<p-sortIcon field="p_moneda" /></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="monto_pago_format">{{ 'total_import' | translate }}&nbsp;<p-sortIcon field="monto_pago_format" /></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="tipo_cambio_format">{{ 'mon_tipo_cambio' | translate }}&nbsp;<p-sortIcon field="tipo_cambio_format" /></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="monto_pago_resultant">{{ 'total_import_resultant' | translate }}&nbsp;<p-sortIcon field="monto_pago_resultant"/></th>
+      </tr>
+      <tr>
+        <th pResizableColumn pSortableColumn="doc_anterior_folio">folio&nbsp;<p-sortIcon field="doc_anterior_folio" /></th>
+        <th pResizableColumn pSortableColumn="doc_anterior_fecha_contabilizacion">{{ 'fecha_cont' | translate }}&nbsp;<p-sortIcon field="doc_anterior_fecha_contabilizacion"/></th>
+        <th pResizableColumn pSortableColumn="pago_cancelado">status&nbsp;<p-sortIcon field="pago_cancelado" /></th>
+        <th pResizableColumn pSortableColumn="pago_folio_cancelacion">folio&nbsp;<p-sortIcon field="pago_folio_cancelacion" /></th>
+        <th pResizableColumn pSortableColumn="pago_fecha_contabilizacion_cancelacion">{{ 'fecha_cont' | translate }}&nbsp;<p-sortIcon field="pago_fecha_contabilizacion_cancelacion"/></th>
+      </tr>
+    </ng-template>
+    <ng-template #body let-payDone let-i="rowIndex">
+      <tr>
+        <td class="ultimo">
+          <a class="btn text-bg-success rounded-3" [ngClass]="!payDone.status_pago ? 'disabled' : ''" [attr.data-bs-toggle]="payDone.status_pago ? 'modal' : ''" [attr.data-bs-target]="payDone.status_pago ? '#modalDesglosePagos' : ''">
+            <i class="fa-solid fa-file-invoice-dollar"></i>
+          </a>
+        </td>
+        <td>{{ payDone.folio_pagos }}</td>
+        <td>{{ payDone.fecha_contabilizacion }}</td>
+        <td class="name">{{ payDone.doc_anterior_folio }}</td>
+        <td>{{ payDone.doc_anterior_fecha_contabilizacion }}</td>
+        <td class="name">{{ (payDone.pago_cancelado ? 'canceled_reg' : 'approved_reg') | translate }}</td>
+        <td class="name">{{ payDone.pago_folio_cancelacion }}</td>
+        <td>{{ payDone.pago_fecha_contabilizacion_cancelacion }}</td>
+        <td>{{ payDone.medio_pago_vinculado }}</td>
+        <td class="name">{{ payDone.forma_metodo_pago_cfdi }}</td>
+        <td [ngClass]="payDone.orden_factura_relacionada_typo == 'anticipos' ? 'name' : ''">{{ payDone.orden_factura_relacionada_typo == 'anticipos' ? payDone.forma_pago_pago : '' }}</td>
+        <td class="name">{{ payDone.observacionesPago }}</td>
+        <td>{{ payDone.p_moneda }}</td>
+        <td class="td_importes">{{ payDone.monto_pago_format }}</td>
+        <td class="td_importes">{{ payDone.tipo_cambio_format }}</td>
+        <td class="td_importes">{{ payDone.monto_pago_resultant }}</td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="16" class="text-center py-4">
+          <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280"></i>
+          <p class="mt-2" style="font-size: 1.2rem; color: #374151">
+            {{ 'no_rows' | translate }}
+          </p>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</p-dialog>
+
+<p-dialog header="Declaraci&oacute;n de aportaciones de Seguridad Social" [(visible)]="modal_desglose_aportacion_seguridad_social" 
+  [modal]="true" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  @for (aport of desglose_aportacion_de_imss; track aport.id; let i = $index) {
+    <div class="col-12 explain">
+      <h6 class="title">Folio</h6>
+      <h6 class="content">{{ aport.aport_ssocial_folio }}</h6>
+    </div>
+    @if (aport.vinculacion_a_pagos) {
+      <div class="col-12 row" style="padding: 0 !important">
+        <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3 col-xxl-2 explain">
+          <h6 class="title">{{ 'fecha_cont' | translate }}</h6>
+          <h6 class="content">{{ aport.nomi_imp_fecha_contabilizacion }}</h6>
+        </div>
+
+        <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3 col-xxl-2 explain">
+          <h6 class="title">Fecha de vencimiento</h6>
+          <h6 class="content">{{ aport.nomi_imp_fecha_vencimiento }}</h6>
+        </div>
+        <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3 col-xxl-4 explain">
+          <h6 class="title">Estado</h6>
+          <h6 class="content">{{ aport.nomi_imp_estado_name }}</h6>
+        </div>
+        <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3 col-xxl-2 explain">
+          <h6 class="title">Ejercicio y periodo</h6>
+          <h6 class="content">{{ aport.nomi_imp_periodo }}</h6>
+        </div>
+        <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3 col-xxl-2 explain">
+          <h6 class="title">Tipo de declaraci&oacute;n</h6>
+          <h6 class="content">{{ aport.nomi_imp_tipo_declaracion }}</h6>
+        </div>
+
+        <ul class="list-group" style="padding: 0 !important">
+          <li class="list-group-item disabled" aria-disabled="true">
+            <strong>Determinaci&oacute;n del impuesto</strong>
+          </li>
+          <li class="list-group-item row" style="padding: 0 !important">
+            <div class="col-9">A) Total de remuneraciones erogadas</div>
+            <div class="col-3 content div_importes">{{ aport.nomi_imp_total_remuneraciones_erogadas_format }}</div>
+          </li>
+          <li class="list-group-item row" style="padding: 0 !important">
+            <div class="col-9">B) % Sobre el total de remuneraciones erogadas</div>
+            <div class="col-3 content div_importes">{{ aport.nomi_imp_porcent_sobre_total_remuneraciones_erogadas_format }}</div>
+          </li>
+          <li class="list-group-item row" [ngClass]="aport.nomi_imp_tipo_declaracion == 'Normal' ? 'noneView' : ''">
+            <div class="col-12">C) Complementarias</div>
+            <div class="col-12 row" style="padding-bottom: 0 !important">
+              <div class="col-9" style="padding: 0 !important">Impuesto a cargo</div>
+              <div class="col-3 content div_importes" style="padding: 0 !important">{{ aport.nomi_imp_complementarias_impuesto_a_cargo_format }}</div>
+              <p-divider />
+            </div>
+            <div class="col-12 row" style="padding-top: 0 !important">
+              <div class="col-9" style="padding: 0 !important">Saldo a favor</div>
+              <div class="col-3 content div_importes" style="padding: 0 !important">{{ aport.nomi_imp_complementarias_saldo_a_favor_format }}</div>
+            </div>
+          </li>
+          <li class="list-group-item row" style="padding: 0 !important">
+            <div class="col-9">D) Impuesto actualizado</div>
+            <div class="col-3 content div_importes">{{ aport.nomi_imp_impuesto_actualizado_format }}</div>
+          </li>
+          <li class="list-group-item row" style="padding: 0 !important">
+            <div class="col-9">E) Descuento</div>
+            <div class="col-3 content div_importes">{{ aport.nomi_imp_impuesto_descuento_format }}</div>
+          </li>
+          <li class="list-group-item row" style="padding: 0 !important">
+            <div class="col-9">F) Recargos</div>
+            <div class="col-3 content div_importes">{{ aport.nomi_imp_impuesto_recargos_format }}</div>
+          </li>
+          <li class="list-group-item row" style="padding: 0 !important">
+            <div class="col-9">G) Recargos condonados</div>
+            <div class="col-3 content div_importes">{{ aport.nomi_imp_impuesto_recargos_condonados_format }}</div>
+          </li>
+          <li class="list-group-item row" style="padding: 0 !important">
+            <div class="col-9">H) Subsidio no. de resoluci&oacute;n</div>
+            <div class="col-12 row" style="padding-bottom: 0 !important">
+              <div class="col-9" style="padding: 0 !important">H1) Sobre el impuesto a pagar</div>
+              <div class="col-3 content div_importes" style="padding: 0 !important">{{ aport.nomi_imp_subsi_n_resolu_impuesto_pagar_format }}</div>
+              <p-divider />
+            </div>
+            <div class="col-12 row" style="padding-top: 0 !important">
+              <div class="col-9" style="padding: 0 !important">H2) Sobre recargos (%)</div>
+              <div class="col-3 content div_importes" style="padding: 0 !important">{{ aport.nomi_imp_subsi_n_resolu_recargos_format }}</div>
+            </div>
+          </li>
+          <li class="list-group-item row" style="padding: 0 !important">
+            <div class="col-9">I) Compensaci&oacute;n no. de resoluci&oacute;n</div>
+            <div class="col-12 row" style="padding-bottom: 0 !important">
+              <div class="col-9" style="padding: 0 !important">I1) Sobre el impuesto a pagar</div>
+              <div class="col-3 content div_importes" style="padding: 0 !important">{{ aport.nomi_imp_compensa_n_resolucion_format }}</div>
+              <p-divider />
+            </div>
+            <div class="col-12 row" style="padding-top: 0 !important">
+              <div class="col-9" style="padding: 0 !important">I2) Sobre recargos</div>
+              <div class="col-3 content div_importes" style="padding: 0 !important">{{ aport.nomi_imp_compensa_n_resolu_recargos_format }}</div>
+            </div>
+          </li>
+          <li class="list-group-item row" style="padding: 0 !important">
+            <div class="col-9"><strong>J) Total a pagar</strong></div>
+            <div class="col-3 content div_importes">{{ aport.nomi_imp_impuesto_total_a_pagar_format }}</div>
+          </li>
+          <li class="list-group-item row" style="padding: 0 !important">
+            <div class="col-9"><strong>K) Saldo a favor</strong></div>
+            <div class="col-3 content div_importes">{{ aport.nomi_imp_impuesto_saldo_a_favor_format }}</div>
+          </li>
+        </ul>
+
+        <div class="col-12 explain" style="margin-bottom: 10px !important">
+          <h6 class="title">{{ 'observ' | translate }}</h6>
+          <h6 class="content">{{ aport.observaciones }}</h6>
+        </div>
+        <div class="col-12 row">
+          <div class="explain">
+            <h6 class="title">Anexos registrados</h6>
+          </div>
+          <p-table #anexView [value]="aport.docsAnexos" showGridlines [resizableColumns]="true" [paginator]="true"
+            [rows]="10" [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10, 20, 30, 50, 100]" [globalFilterFields]="['name_documento']">
+            <ng-template #caption>
+              <div class="flex">
+                <p-iconfield iconPosition="left" class="ml-auto">
+                  <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                  <input pInputText type="text" (input)="anexView.filterGlobal($event.target.value, 'contains')" placeholder="{{ 'bus_car' | translate }}"/>
+                </p-iconfield>
+              </div>
+            </ng-template>
+            <ng-template #header>
+              <tr>
+                <th pResizableColumn pSortableColumn="name_documento">{{ 'file' | translate }}&nbsp;<p-sortIcon field="name_documento" /></th>
+                <th class="ultimo"></th>
+              </tr>
+            </ng-template>
+            <ng-template #body let-docs>
+              <tr>
+                <td>{{ docs.name_documento }}</td>
+                <td>
+                  <a class="btn" [ngClass]="docs.extension == 'pdf' ? 'text-bg-danger rounded-3' : 'text-bg-primary rounded-4'"
+                    target="_blank" [href]="docs.url" style="width: 25px !important; border-radius: 50% !important">
+                    <i class="fa-solid" [ngClass]="docs.extension == 'pdf' ? 'fa-file-pdf' : 'fa-globe'"></i>
+                  </a>
+                </td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="2" class="text-center py-4">
+                  <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280"></i>
+                  <p class="mt-2" style="font-size: 1.2rem; color: #374151">
+                    {{ 'no_rows' | translate }}
+                  </p>
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+      </div>
+    } @else {
+      @if (aportacion_seguridad_social_form) {
+        <form class="formAportSegSocial" #formAportSegSocial="ngForm" autocomplete="off" [formGroup]="aportacionImssForm"
+          name="formAportSegSocial" enctype="multipart/form-data" (ngSubmit)="validaReportAssocialUpdate(aport.aport_ssocial_token) && aportacionSegSocialReporteUpdate(formAportSegSocial, aport.aport_ssocial_token)">
+          <div class="bloque">
+            <h6 class="bloque-header">
+              Datos del patr&oacute;n o sujeto obligado registrados en el IMSS
+            </h6>
+            <div class="col-12 row grid-container">
+              <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-4 col-xxl-4 input-group">
+                <label for="contribNominaFechaPago" class="activeInput">{{'fecha_cont' | translate}}</label>
+                <input id="contribNominaFechaPago" type="date" name="contribNominaFechaPago" [value]="aport.aport_ssocial_fecha_contabilizacion" (change)="changeFechaContabilizacion($event.target, aport.aport_ssocial_token)"/>
+              </div>
+
+              <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-4 col-xxl-4 input-group">
+                <label for="contribNominaFechaPresentacion" class="activeInput">Fecha de presentaci&oacute;n</label>
+                <input id="contribNominaFechaPresentacion" [value]="aport.aport_ssocial_fecha_presentacion" type="date" name="contribNominaFechaPresentacion" (change)="changeFechaPresentacion($event.target, aport.aport_ssocial_token)"/>
+              </div>
+
+              <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-4 col-xxl-4 input-group">
+                <label class="activeInput" for="new_nomina_rpimss">Registro Patronal:</label>
+                <p-select [options]="catalogo_registros_patronales" id="new_nomina_rpimss" formControlName="registro_patronal" optionValue="clave_registro_patronal_imss" name="new_nomina_rpimss" 
+                  [ngClass]="nomina_registro_patronal ? 'correcto' : ''" optionLabel="clave_registro_patronal_imss" [filter]="true" filterBy="clave_registro_patronal_imss" appendTo="body"
+                  [showClear]="true" [placeholder]="'opt_select' | translate" class="w-full md:w-56" (onChange)="changeNominaRPIMSS($event.value, aport.aport_ssocial_token)">
+                  <ng-template #selectedItem let-selectedOption>
+                    <div class="flex items-center gap-2">
+                      <div>{{ selectedOption.clave_registro_patronal_imss }}</div>
+                    </div>
+                  </ng-template>
+                  <ng-template let-prov #item>
+                    <div class="flex items-center gap-2">
+                      <div>{{ prov.clave_registro_patronal_imss }}</div>
+                    </div>
+                  </ng-template>
+                </p-select>
+              </div>
+
+              <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+                <label class="activeInput" for="periodo_imss">Per&iacute;odo que comprende el pago de seguros imss (Mes-Año):</label>
+                <p-datepicker id="periodo_imss" name="periodo_imss" formControlName="periodo_pago_seguros" view="month" dateFormat="MM yy"
+                  [placeholder]="'opt_select' | translate" [readonlyInput]="true" (onSelect)="selectPeriodoPagoSegurosIMSS(aport.aport_ssocial_token)"/>
+              </div>
+              <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+                <label class="activeInput" for="bimestre_rcv">Bimestre que comprende el pago rcv e infonavit:</label>
+                <p-datepicker id="bimestre_rcv" name="bimestre_rcv" formControlName="pago_rcv_infonavit" view="month" selectionMode="range" dateFormat="MM/yy"
+                  [placeholder]="'opt_select' | translate" [readonlyInput]="true" (onSelect)="selectBimestrePagoRcv(aport.aport_ssocial_token)"/>
+              </div>
+              <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+                <label class="activeInput" for="folio_sua">Folio sua:</label>
+                <input type="text" id="folio_sua" name="folio_sua" [value]="aport.folio_sua" (keyup)="keyupFolioSUA($event.target, aport.aport_ssocial_token)"/>
+              </div>
+              <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+                <label class="activeInput" for="clave_de_recepcion_de_archivo_de_pago">Clave de recepci&oacute;n de archivo de pago:</label>
+                <input type="text" id="clave_de_recepcion_de_archivo_de_pago" name="clave_de_recepcion_de_archivo_de_pago" 
+                  [value]="aport.clave_recepcion_archivo_pago" (keyup)="keyupClaveRecepcionArchivoPago($event.target, aport.aport_ssocial_token)"/>
+              </div>
+            </div>
+          </div>
+
+          <div class="bloque row">
+            <h6 class="bloque-header">Informaci&oacute;n general de la propuesta</h6>
+            <div class="col-12 row grid-container">
+              <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input-group">
+                <label class="activeInput" for="fecha_limite_pago">Fecha L&iacute;mite de Pago:</label>
+                <input type="date" id="fecha_limite_pago" name="fecha_limite_pago" [value]="aport.propuesta_fecha_limite_pago" (change)="changePropuestaFechaLimitePago($event.target, aport.aport_ssocial_token)"/>
+              </div>
+
+              <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-8 col-xxl-8 input-group">
+                <label class="activeInput" for="linea_captura_sipare">Referencia de pago (L&iacute;nea de Captura SIPARE):</label>
+                <input type="text" id="linea_captura_sipare" name="linea_captura_sipare" [value]="aport.linea_captura_sipare" (keyup)="keyupPropuestaReferenciaDEPagoLineaSIPARE($event.target,aport.aport_ssocial_token)"/>
+              </div>
+              <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-4 col-xxl-4"></div>
+              <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-8 col-xxl-8 explain" style="margin-right: 0 !important">
+                <h6>Puedes pagar en tu portal bancario o descargarla desde SIPARE.</h6>
+              </div>
+
+              <p-divider />
+              <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input-group">
+                <label class="activeInput" for="s_m_g_d_f">S.M.G.D.F:</label>
+                <input type="number" id="s_m_g_d_f" name="s_m_g_d_f" [value]="aport.propuesta_s_m_g_d_f_edit" (keyup)="keyupPropuestaSMGDF($event.target, aport.aport_ssocial_token)"/>
+              </div>
+              <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input-group">
+                <label class="activeInput" for="fecha_salario_minimo_pago">Fecha SAL. MIN.:</label>
+                <input type="date" id="fecha_salario_minimo_pago" name="fecha_salario_minimo_pago" [value]="aport.propuesta_fecha_salario_minimo_pago" (change)="changePropuestaFechaSalarioMinimoPago($event.target, aport.aport_ssocial_token)"/>
+              </div>
+              <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input-group">
+                <label class="activeInput" for="valor_uma">Valor UMA:</label>
+                <input type="number" id="valor_uma" name="valor_uma" [value]="aport.propuesta_valor_uma_edit" (keyup)="keyupPropuestaValorUMA($event.target, aport.aport_ssocial_token)"/>
+              </div>
+              <p-divider />
+              <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input-group">
+                <label class="activeInput" for="num_de_cotizantes">No. de cotizantes:</label>
+                <input type="number" id="num_de_cotizantes" name="num_de_cotizantes" [value]="aport.propuesta_num_de_cotizantes" (keyup)="keyupPropuestaNumCotizantes($event.target, aport.aport_ssocial_token)"/>
+              </div>
+              <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input-group">
+                <label class="activeInput" for="num_dias_a_cotizar">No. de d&iacute;as a cotizar:</label>
+                <input type="number" id="num_dias_a_cotizar" name="num_dias_a_cotizar" [value]="aport.propuesta_num_dias_a_cotizar" (keyup)="keyupPropuestaNumDiasCotizar($event.target, aport.aport_ssocial_token)"/>
+              </div>
+              <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input-group">
+                <label class="activeInput" for="num_de_acreditados">No. de acreditados:</label>
+                <input type="number" id="num_de_acreditados" name="num_de_acreditados" [value]="aport.propuesta_num_de_acreditados" (keyup)="keyupPropuestaNumAcreditados($event.target, aport.aport_ssocial_token)"/>
+              </div>
+            </div>
+          </div>
+
+          <div class="bloque">
+            <h6 class="bloque-header">Informaci&oacute;n detallada del importe total de cuotas</h6>
+            <div class="col-12 row">
+              <p-table [value]="desglose_total_cuotas" [responsiveLayout]="'scroll'" style="padding: 0 !important">
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th>Conceptos</th>
+                    <th>Cuotas Patronales ($)</th>
+                    <th>Cuotas Obreras ($)</th>
+                    <th>Suma Total ($)</th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-row let-rowIndex="rowIndex">
+                  @if (row.type === 'section') {
+                    <tr>
+                      <td colspan="4" class="section-header name">
+                        <strong>{{ row.label }}</strong>
+                      </td>
+                    </tr>
+                  }
+                  @if (row.type === 'label') {
+                    <tr>
+                      <td class="name">{{ row.label }}</td>
+                      <td colspan="3"></td>
+                    </tr>
+                  }
+                  @if (row.type === 'label_aport') {
+                    <tr>
+                      <td></td>
+                      <td class="td_importes">APORTACIONES PATRONALES</td>
+                      <td class="td_importes">AMORTIZACI&Oacute;N DE CR&Eacute;DITO</td>
+                      <td></td>
+                    </tr>
+                  }
+                  @if (row.type === 'input') {
+                    <tr>
+                      <td class="name" [innerHTML]="row.label"></td>
+                      <td>
+                        <p-inputNumber name="patronal-{{ rowIndex }}" [(ngModel)]="row.patronal" [ngModelOptions]="{ standalone: true }" (onInput)="onCantidadChange(rowIndex, 'patronal', $event)" 
+                          mode="decimal" placeholder="$ 0.00" [maxFractionDigits]="6" decimalSeparator="." thousandSeparator="," [useGrouping]="true" [min]="-9999999999">
+                        </p-inputNumber>
+                      </td>
+                      <td>
+                        <p-inputNumber #ctrlObrera{{rowIndex}} [(ngModel)]="row.obrera" [ngModelOptions]="{ standalone: true }" name="obrera-{{ rowIndex }}" (onInput)="onCantidadChange(rowIndex, 'obrera', $event)"
+                          mode="decimal" placeholder="$ 0.00" [maxFractionDigits]="6" decimalSeparator="." thousandSeparator="," [useGrouping]="true" [min]="-9999999999">
+                        </p-inputNumber>
+                      </td>
+                      <td>
+                        <p-inputNumber #ctrlTotal{{rowIndex}} [(ngModel)]="row.total" [ngModelOptions]="{ standalone: true }" name="total-{{ rowIndex }}" (onInput)="onCantidadChange(rowIndex, 'total', $event)"
+                          mode="decimal" placeholder="$ 0.00" [maxFractionDigits]="6" decimalSeparator="." thousandSeparator="," [useGrouping]="true" [min]="-9999999999">
+                        </p-inputNumber>
+                      </td>
+                    </tr>
+                  }
+
+                  @if (row.type === 'subtotal') {
+                    <tr>
+                      <td class="name"><strong>{{ row.label }}</strong></td>
+                      <td class="td_importes"><strong>{{ formatNumber(row.patronal) }}</strong></td>
+                      <td class="td_importes"><strong>{{ formatNumber(row.obrera) }}</strong></td>
+                      <td class="td_importes"><strong>{{ formatNumber(row.total) }}</strong></td>
+                    </tr>
+                  }
+                </ng-template>
+
+                <ng-template pTemplate="footer">
+                  <tr>
+                    <td class="name"><strong>TOTAL A PAGAR</strong></td>
+                    <td class="td_importes"><strong>{{ formatNumber(totales.patronal) }}</strong></td>
+                    <td class="td_importes"><strong>{{ formatNumber(totales.obrera) }}</strong></td>
+                    <td class="td_importes"><strong>{{ formatNumber(totales.total) }}</strong></td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
+          </div>
+          <div class="bloque">
+            <h6 class="bloque-header">{{ 'observ' | translate }}</h6>
+            <div class="col-12 row grid-container">
+              <textarea id="pago_large_observ" name="pago_large_observ" class="validate" [value]="aport.observaciones" (keyup)="keyupObservacionApSegSocial($event.target, aport.aport_ssocial_token)"></textarea>
+            </div>
+          </div>
+          <div class="bloque">
+            <h6 class="bloque-header">Documentos adjuntos</h6>
+            <div class="explain">
+              <h6 class="title">Anexos registrados</h6>
+            </div>
+            <p-table #anexList [value]="aport.docsAnexos" showGridlines [resizableColumns]="true" [paginator]="true"
+              [rows]="10" [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]"
+              [globalFilterFields]="['name_documento']">
+              <ng-template #caption>
+                <div class="flex">
+                  <p-iconfield iconPosition="left" class="ml-auto">
+                    <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                    <input pInputText type="text" (input)="anexList.filterGlobal($event.target.value, 'contains')"
+                      placeholder="{{'bus_car' | translate}}" />
+                  </p-iconfield>
+                </div>
+              </ng-template>
+              <ng-template #header>
+                <tr>
+                  <th pResizableColumn pSortableColumn="name_documento">{{'file' | translate}}&nbsp;<p-sortIcon field="name_documento" /></th>
+                  <th class="ultimo"></th>
+                  <th class="ultimo"><i class="fa-solid fa-eraser"></i></th>
+                </tr>
+              </ng-template>
+              <ng-template #body let-docs>
+                <tr>
+                  <td>{{docs.name_documento}}</td>
+                  <td>
+                    <a class="btn" [ngClass]="docs.extension == 'pdf' ? 'text-bg-danger rounded-3' : 'text-bg-primary rounded-4'" target="_blank" [href]="docs.url" style="width: 25px!important;border-radius: 50%!important;">
+                      <i class="fa-solid" [ngClass]="docs.extension == 'pdf' ? 'fa-file-pdf' : 'fa-globe'"></i>
+                    </a>
+                  </td>
+                  <td>
+                    <div class="form-check form-switch form-check-reverse switch_primario switch_delete" style="justify-content: center;flex-direction: column;">
+                      <input class="form-check-input selectSwitchProvProd" style="width: 80%!important;" name="selectImpProd" 
+                        type="checkbox" [checked]="docs.eliminacion_proceso" (click)="deleteAnexoDocs(aport,docs.token_documento);"><!---->
+                    </div>
+                  </td>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td colspan="3" class="text-center py-4">
+                    <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                    <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                      {{'no_rows' | translate}}
+                    </p>
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+            <div class="explain">
+              <h6 class="title">Anexos para registrar</h6>
+            </div>
+            <div class="col-12 row grid-container">
+              <ngx-file-drop dropZoneLabel="Drop files here" (onFileDrop)="droppedApSegSocial($event)" (onFileOver)="fileOverApSegSocial($event)" (onFileLeave)="fileLeaveApSegSocial($event)">
+                <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
+                  <a class="btn btn_load_file" type="button" style="color: #0782d0 !important;" (click)="openFileSelector()">
+                    {{'load_files' | translate}} / {{'browse_files' | translate}}
+                  </a>
+                </ng-template>
+              </ngx-file-drop>
+              
+              <p-table #isnList [value]="filesAporSSOCIAL" showGridlines [resizableColumns]="true" [paginator]="true"
+                [rows]="10" [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10, 20, 30, 50, 100]">
+                <ng-template #caption>
+                  <div class="flex" style="display: flex !important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row !important;align-content: center;" ngbDropdown>
+                    <p-iconfield iconPosition="left" class="ml-auto">
+                      <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                      <input pInputText type="text" (input)="isnList.filterGlobal($event.target.value, 'contains')" placeholder="{{ 'bus_car' | translate }}"/>
+                    </p-iconfield>
+                  </div>
+                </ng-template>
+                <ng-template #header>
+                  <tr>
+                    <th>{{ 'file' | translate }}</th>
+                    <th class="ultimo"></th>
+                  </tr>
+                </ng-template>
+                <ng-template #body let-item let-posicion_doc="rowIndex">
+                  <tr>
+                    <td>
+                      <strong>{{ item.relativePath }}</strong>
+                    </td>
+                    <td class="ultimo">
+                      <a class="btn btn_extend text-bg-danger rounded-3" (click)="deleteAnexosApSegSocial(posicion_doc)">
+                        <i class="fa-solid fa-xmark"></i>
+                      </a>
+                    </td>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                  <tr>
+                    <td colspan="2" class="text-center py-4">
+                      <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280"></i>
+                      <p class="mt-2" style="font-size: 1.2rem; color: #374151">
+                        {{ 'no_rows' | translate }}
+                      </p>
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
+          </div>
+
+          <div class="col-12" style="display: flex !important;justify-content: end !important;margin-top: 5px !important;">
+            <button class="btn btn_extend text-bg-success rounded-3" [ngClass]="!validaReportAssocialUpdate(aport.aport_ssocial_token) ? 'disabled' : ''"
+              [attr.disabled]="!validaReportAssocialUpdate(aport.aport_ssocial_token) ? true : null"
+              [attr.aria-disabled]="!validaReportAssocialUpdate(aport.aport_ssocial_token) ? true : null">
+              <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{ 'sav_cam' | translate }}
+            </button>
+          </div>
+        </form>
+      }
+    }
+  }
+</p-dialog>
+
+<p-dialog header="Reportes de Aportaciones de Seguridad Social eliminados" [(visible)]="modal_deleted_aportaciones_seguridad_social" 
+  [modal]="true" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  <p-table #isnDeleted [value]="catalogo_deleted_aportaciones_de_imss" showGridlines [resizableColumns]="true" [paginator]="true"
+    [rows]="10" [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10, 20, 30, 50, 100]" [globalFilterFields]="search_aportaciones_de_imss">
+    <ng-template #caption>
+      <div class="flex">
+        <p-iconfield iconPosition="left" class="ml-auto">
+          <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+          <input pInputText type="text" (input)="isnDeleted.filterGlobal($event.target.value, 'contains')" placeholder="{{ 'bus_car' | translate }}"/>
+        </p-iconfield>
+      </div>
+    </ng-template>
+    <ng-template #header>
+      <tr>
+        <th pResizableColumn pSortableColumn="aport_ssocial_folio">folio&nbsp;<p-sortIcon field="aport_ssocial_folio" /></th>
+        <th pResizableColumn pSortableColumn="aport_ssocial_fecha_contabilizacion">{{ 'fecha_cont' | translate }}&nbsp;<p-sortIcon field="aport_ssocial_fecha_contabilizacion"/></th>
+        <th pResizableColumn pSortableColumn="aport_ssocial_registro_patronal_serie">Registro Patronal&nbsp;<p-sortIcon field="aport_ssocial_registro_patronal_serie" /></th>
+        <th pResizableColumn pSortableColumn="periodo_pago_seguros_imss">Per&iacute;odo que comprende el pago de seguros imss (Mes-Año)&nbsp;<p-sortIcon field="periodo_pago_seguros_imss"/></th>
+        <th pResizableColumn pSortableColumn="pago_rcv_infonavit">Bimestre que comprende el pago rcv e infonavit&nbsp;<p-sortIcon field="pago_rcv_infonavit"/></th>
+        <th pResizableColumn pSortableColumn="folio_sua">Folio sua&nbsp;<p-sortIcon field="folio_sua" /></th>
+        <th pResizableColumn pSortableColumn="clave_recepcion_archivo_pago">Clave de recepci&oacute;n de archivo de pago&nbsp;<p-sortIcon field="clave_recepcion_archivo_pago"/></th>
+        <th pResizableColumn pSortableColumn="propuesta_fecha_limite_pago">Fecha L&iacute;mite de Pago&nbsp;<p-sortIcon field="propuesta_fecha_limite_pago" /></th>
+        <th pResizableColumn pSortableColumn="linea_captura_sipare">Referencia de pago (L&iacute;nea de Captura SIPARE)&nbsp;<p-sortIcon field="linea_captura_sipare"/></th>
+        <th pResizableColumn pSortableColumn="propuesta_s_m_g_d_f">S.M.G.D.F&nbsp;<p-sortIcon field="propuesta_s_m_g_d_f" /></th>
+        <th pResizableColumn pSortableColumn="propuesta_fecha_salario_minimo_pago">Fecha SAL. MIN.&nbsp;<p-sortIcon field="propuesta_fecha_salario_minimo_pago" /></th>
+        <th pResizableColumn pSortableColumn="propuesta_valor_uma">Valor UMA&nbsp;<p-sortIcon field="propuesta_valor_uma" /></th>
+        <th pResizableColumn pSortableColumn="propuesta_num_de_cotizantes">No. de cotizantes&nbsp;<p-sortIcon field="propuesta_num_de_cotizantes" /></th>
+        <th pResizableColumn pSortableColumn="propuesta_num_dias_a_cotizar">No. de d&iacute;as a cotizar&nbsp;<p-sortIcon field="propuesta_num_dias_a_cotizar" /></th>
+        <th pResizableColumn pSortableColumn="propuesta_num_de_acreditados">No. de acreditados&nbsp;<p-sortIcon field="propuesta_num_de_acreditados" /></th>
+        <th pResizableColumn pSortableColumn="cuotas_patronales">Cuotas Patronales ($)&nbsp;<p-sortIcon field="cuotas_patronales" /></th>
+        <th pResizableColumn pSortableColumn="cuotas_obreras">Cuotas Obreras ($)&nbsp;<p-sortIcon field="cuotas_obreras" /></th>
+        <th pResizableColumn pSortableColumn="cuotas_totales">Suma Total ($)&nbsp;<p-sortIcon field="cuotas_totales" /></th>
+        <th pResizableColumn pSortableColumn="observaciones">{{ 'observ' | translate }}&nbsp;<p-sortIcon field="observaciones" /></th>
+        <th class="ultimo"></th>
+        <th class="ultimo"></th>
+      </tr>
+    </ng-template>
+    <ng-template #body let-aport>
+      <tr>
+        <td>{{ aport.aport_ssocial_folio }}</td>
+        <td class="name">{{ aport.aport_ssocial_fecha_contabilizacion }}</td>
+        <td class="name">{{ aport.aport_ssocial_registro_patronal_serie }}</td>
+        <td class="name">{{ aport.periodo_pago_seguros_imss }}</td>
+        <td class="name">{{ aport.pago_rcv_infonavit }}</td>
+        <td class="name">{{ aport.folio_sua }}</td>
+        <td class="name">{{ aport.clave_recepcion_archivo_pago }}</td>
+        <td class="name">{{ aport.propuesta_fecha_limite_pago }}</td>
+        <td class="name">{{ aport.linea_captura_sipare }}</td>
+        <td class="td_importes">{{ aport.propuesta_s_m_g_d_f }}</td>
+        <td class="name">{{ aport.propuesta_fecha_salario_minimo_pago }}</td>
+        <td class="td_importes">{{ aport.propuesta_valor_uma }}</td>
+        <td class="td_importes">{{ aport.propuesta_num_de_cotizantes }}</td>
+        <td class="td_importes">{{ aport.propuesta_num_dias_a_cotizar }}</td>
+        <td class="td_importes">{{ aport.propuesta_num_de_acreditados }}</td>
+        <td class="td_importes">{{ aport.cuotas_patronales }}</td>
+        <td class="td_importes">{{ aport.cuotas_obreras }}</td>
+        <td class="td_importes">{{ aport.cuotas_totales }}</td>
+        <td class="name">{{ aport.observaciones }}</td>
+        <td>
+          <a class="btn btn_extend text-bg-success rounded-3" (click)="restauraAportacionSegSocial(aport.aport_ssocial_token)">
+            <i class="fa-solid fa-trash-arrow-up"></i>&nbsp;{{ 'restore_row' | translate }}
+          </a>
+        </td>
+        <td>
+          <a class="btn btn_extend text-bg-danger rounded-3" (click)="deletePermanenteAportacionSegSocial(aport.aport_ssocial_token)">
+            <i class="fa-solid fa-eraser"></i>&nbsp;{{ 'delete_row' | translate }}
+          </a>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="21" class="text-center py-4">
+          <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280"></i>
+          <p class="mt-2" style="font-size: 1.2rem; color: #374151">
+            {{ 'no_rows' | translate }}
+          </p>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</p-dialog>

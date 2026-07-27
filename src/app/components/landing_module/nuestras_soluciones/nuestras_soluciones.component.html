@@ -1,0 +1,306 @@
+<div class="col-12 row">
+  <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-3 col-xxl-3">
+    <h2 class="section-title-left">{{'solu' | translate}}</h2>
+    <div class="title-underline" style="margin: 0;"></div>
+  </div>
+  <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-9 col-xxl-9" style="display: flex;flex-wrap: wrap;justify-content: center;">
+    <div class="col-12 row">
+      <p class="grey-text text-darken-3 lighten-3" style="margin: 0!important;">
+        Soluciones Oportunas Simples G&A (“<strong style="font-size:15px;">SOS-M&Eacute;XICO</strong>”) es una firma de profesionistas, 
+        integrada por Contadores, Abogados, Administradores, Ingenieros y otros profesionistas, quienes en conjunto ofrecen soluciones 
+        integrales con el principal objeto de cuidar, blindar y proteger el patrimonio de sus clientes y apoy&aacute;ndolos a alcanzar sus objetivos.
+      </p>
+      <p class="grey-text text-darken-3 lighten-3" style="margin: 0!important;">Nuestras principales soluciones son las siguientes:</p>
+    </div>
+
+    <div class="col-12 row">
+      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 card-wrapper" [class.is-expanded]="expan_adm_ded">
+        <p-card class="solucion-card" (click)="expan_adm_ded = !expan_adm_ded">
+          <ng-template #header>
+            <div class="image-container">
+              <img ngSrc="./assets/images/soluciones/sol_adm.png" width="800" height="400" class="main-card-img" [style]="expan_adm_ded ? 'border-radius: 8px 8px 0 0;' : 'border-radius: 8px;'">
+              <div class="close-icon" *ngIf="expan_adm_ded"><i class="fa-solid fa-xmark"></i></div>
+            </div>
+          </ng-template>
+
+          <ng-template #title>
+            <div class="card-header-flex">
+              <span class="title-text">{{'sol_adm' | translate}}</span>
+            </div>
+          </ng-template>
+
+          <div class="card-content-scrollable" *ngIf="expan_adm_ded">
+            <p class="intro-text">
+              Creamos sinergia administrativa con nuestros clientes y sus operaciones comerciales.
+            </p>
+            <p class="intro-text">
+              Con esta soluci&oacute;n, nuestro equipo alcanza una adecuada comunicaci&oacute;n con nuestros clientes y as&iacute; se logra obtener reportes 
+              administrativos oportunos que le ayudaran a alcanzar sus principales objetivos comerciales.
+            </p>
+            <p class="intro-text">
+              La principal forma de trabajo atiende a dos vertientes. La primera es utilizando los sistemas actuales, 
+              o los que el cliente considera confiables, ajustando los procesos administrativos y la operaci&oacute;n del negocio 
+              para crear una sinergia entre nuestro cliente y nuestro equipo.
+            </p>
+            <p class="intro-text">
+              Y la segunda vertiente que ayuda oportunamente a crear una planeaci&oacute;n, organizaci&oacute;n, direcci&oacute;n y control es, 
+              a trav&eacute;s de nuestra herramienta digital que hemos desarrollado durante estos años de experiencia y que hemos 
+              denominado “Sistema Integral de Sinergia Corporativa” (“SSIC”) cuyo objetivo principal es el facilitar 
+              los registros administrativos y facilitar la comunicaci&oacute;n y organizaci&oacute;n entre nuestro cliente y 
+              su equipo con el de SOS-M&Eacute;XICO, permitiendo en ello trabajar en tiempo real y reducir considerablemente costos, 
+              tiempos y riesgos durante la marcha del negocio.
+            </p>
+            <p class="intro-text">
+              Si quiere conocer m&aacute;s sobre nuestra herramienta “SSIC”, 
+              lo invitamos a dar clic en la siguiente liga: <strong>"Inicia Sesi&oacute;n"</strong>
+            </p>
+          </div>
+        </p-card>
+        <div class="card-overlay" (click)="expan_adm_ded = false" *ngIf="expan_adm_ded"></div>
+      </div>
+      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 card-wrapper" [class.is-expanded]="expan_con_ded">
+        <p-card class="solucion-card" (click)="expan_con_ded = !expan_con_ded">
+          <ng-template #header>
+            <div class="image-container">
+              <img ngSrc="./assets/images/soluciones/sol_con.png" width="800" height="400" class="main-card-img"
+                [style]="expan_con_ded ? 'border-radius: 8px 8px 0 0;' : 'border-radius: 8px;'">
+              <div class="close-icon" *ngIf="expan_con_ded"><i class="fa-solid fa-xmark"></i></div>
+            </div>
+          </ng-template>
+
+          <ng-template #title>
+            <div class="card-header-flex">
+              <span class="title-text">{{'sol_con' | translate}}</span>
+            </div>
+          </ng-template>
+
+          <div class="card-content-scrollable" *ngIf="expan_con_ded">
+            <p class="intro-text">
+              Hoy en d&iacute;a, la contabilidad ha retomado su gran importancia dentro de los negocios tanto para la toma de decisiones 
+              como para el cumplimiento de la regulaci&oacute;n normativa vigente. Es por ello, que SOS-M&Eacute;XICO ofrece esta soluci&oacute;n 
+              contable para que a trav&eacute;s de nuestros Profesionistas realicen los registros contables y la generaci&oacute;n de reportes 
+              financieros, o bien, realicen la supervisi&oacute;n del departamento contable de nuestro cliente a fin de verificar que 
+              los registros (asientos contables) concuerden con la informaci&oacute;n reportada y que esta sea elaborada conforme a la 
+              normatividad vigente.
+            </p>
+            <p class="intro-text">
+              La importancia de la contabilidad y sus respectivos reportes financieros pueden ser comparados con un tablero de 
+              control de un veh&iacute;culo, mismo que es utilizado por el conductor (similar al administrador) para identificar velocidad, 
+              temperatura, niveles, combustible disponible, rendimiento, fallas o avisos como alguna falla con las bolsas de aire, 
+              presi&oacute;n de llantas, motor, bater&iacute;a, etc. Sin estos reportes, es posible manejar un veh&iacute;culo. Sin embargo, el riesgo 
+              de que pueda tener alg&uacute;n percance o que llegue a fallar son sumamente altos, dejando a la deriva a sus ocupantes y 
+              limit&aacute;ndolo llegar a su destino.
+            </p>
+            <p class="intro-text">
+              La contabilidad es como el tablero de un veh&iacute;culo, este refleja sus condiciones y es sumamente necesario
+              para saber qu&eacute; le hace falta al negocio para que pueda continuar su marcha, adem&aacute;s de conocer 
+              la velocidad que est&aacute; alcanzando para llegar a su o sus objetivos.
+            </p>
+          </div>
+        </p-card>
+        <div class="card-overlay" (click)="expan_con_ded = false" *ngIf="expan_con_ded"></div>
+      </div>
+      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 card-wrapper" [class.is-expanded]="expan_fis_ded">
+        <p-card class="solucion-card" (click)="expan_fis_ded = !expan_fis_ded">
+          <ng-template #header>
+            <div class="image-container">
+              <img ngSrc="./assets/images/soluciones/sol_fis.png" width="800" height="400" class="main-card-img"
+                [style]="expan_fis_ded ? 'border-radius: 8px 8px 0 0;' : 'border-radius: 8px;'">
+              <div class="close-icon" *ngIf="expan_fis_ded"><i class="fa-solid fa-xmark"></i></div>
+            </div>
+          </ng-template>
+
+          <ng-template #title>
+            <div class="card-header-flex">
+              <span class="title-text">{{'sol_fis' | translate}}</span>
+            </div>
+          </ng-template>
+
+          <div class="card-content-scrollable" *ngIf="expan_fis_ded">
+            <p class="intro-text">
+              Debido a que las contribuciones son una obligaci&oacute;n tributaria en todos los pa&iacute;ses, sin que M&eacute;xico sea la excepci&oacute;n. 
+              A trav&eacute;s de esta soluci&oacute;n, ofrecemos que, a trav&eacute;s de nuestra asesor&iacute;a y acompañamiento, sus procesos administrativos 
+              y contable cumpl&iacute;an con las reglas fiscales y con esto obtenga las adecuadas deducciones que le permitir&aacute;n reducir 
+              profesionalmente la base fiscal y como consecuencia generar sus contribuciones de manera adecuada, eficiente y oportuna.
+            </p>
+            <p class="intro-text" style="margin:0;">Entre los servicios fiscales, est&aacute;s las siguientes:</p>
+            <ol type="1">
+              <li>Regulaci&oacute;n Fiscal.</li>
+              <li>Atenci&oacute;n a Cartas Invitaci&oacute;n.</li>
+              <li>Atenci&oacute;n a Ordenes de Visita.</li>
+              <li>Calculo y presentaci&oacute;n de declaraciones.</li>
+              <li>Avisos ante Autoridades.</li>
+              <li>Orientaci&oacute;n y asesor&iacute;a para gestionar tr&aacute;mites ante la Autoridad Fiscalizadora y otras.</li>
+              <li>Aviso, modificaciones y atenci&oacute;n relacionada con empresas vinculadas con el Registro de 
+                Prestadoras de Servicios Especializados u Obras Especializadas (REPSE).</li>
+            </ol>
+          </div>
+        </p-card>
+        <div class="card-overlay" (click)="expan_fis_ded = false" *ngIf="expan_fis_ded"></div>
+      </div>
+      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 card-wrapper" [class.is-expanded]="expan_leg_ded">
+        <p-card class="solucion-card" (click)="expan_leg_ded = !expan_leg_ded">
+          <ng-template #header>
+            <div class="image-container">
+              <img ngSrc="./assets/images/soluciones/sol_leg.png" width="800" height="400" class="main-card-img"
+                [style]="expan_leg_ded ? 'border-radius: 8px 8px 0 0;' : 'border-radius: 8px;'">
+              <div class="close-icon" *ngIf="expan_leg_ded"><i class="fa-solid fa-xmark"></i></div>
+            </div>
+          </ng-template>
+
+          <ng-template #title>
+            <div class="card-header-flex">
+              <span class="title-text">{{'sol_leg' | translate}}</span>
+            </div>
+          </ng-template>
+
+          <div class="card-content-scrollable" *ngIf="expan_leg_ded">
+            <p class="intro-text">
+              Nuestras soluciones legales principalmente se enfocan en materia administrativa, fiscal y penal; y todas relacionadas 
+              con temas patrimoniales.
+            </p>
+            <p class="intro-text">
+              Asesoramos y atendemos medios de defensa fiscal, recursos de revocaci&oacute;n, recursos de inconformidad, 
+              juicios de nulidad, juicios de amparo, carpetas de investigaci&oacute;n, procedimientos de evoluci&oacute;n patrimonial, 
+              procedimientos administrativos en materia de prevenci&oacute;n de operaciones con recursos de procedencia il&iacute;cita, 
+              entre otros.
+            </p>
+          </div>
+        </p-card>
+        <div class="card-overlay" (click)="expan_leg_ded = false" *ngIf="expan_leg_ded"></div>
+      </div>
+      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 card-wrapper" [class.is-expanded]="expan_cex_ded">
+        <p-card class="solucion-card" (click)="expan_cex_ded = !expan_cex_ded">
+          <ng-template #header>
+            <div class="image-container">
+              <img ngSrc="./assets/images/soluciones/sol_cex.png" width="800" height="400" class="main-card-img"
+                [style]="expan_cex_ded ? 'border-radius: 8px 8px 0 0;' : 'border-radius: 8px;'">
+              <div class="close-icon" *ngIf="expan_cex_ded"><i class="fa-solid fa-xmark"></i></div>
+            </div>
+          </ng-template>
+
+          <ng-template #title>
+            <div class="card-header-flex">
+              <span class="title-text">{{'sol_cex' | translate}}</span>
+            </div>
+          </ng-template>
+
+          <div class="card-content-scrollable" *ngIf="expan_cex_ded">
+            <p class="intro-text">
+              Si tu negocio desea o articula con operaciones de comercio exterior, esta soluci&oacute;n es la ideal, ya que nuestro equipo 
+              trabaja de la mano con tus departamentos internos y tus proveedores de comercio exterior como son agencias aduanales 
+              para crear sinergia entre las operaciones y as&iacute; lograr realizar correctamente la importaci&oacute;n, exportaci&oacute;n, 
+              arribo de mercanc&iacute;a y c&aacute;lculo de costos correctamente.
+            </p>
+            <p class="intro-text">Entre los servicios m&aacute;s comunes, se encuentran los siguientes:</p>
+            <ol type="1">
+              <li>Asesor&iacute;a, gesti&oacute;n y tr&aacute;mite ante el Padr&oacute;n General de Importadores.</li>
+              <li>Asesor&iacute;a, gesti&oacute;n y tr&aacute;mite ante el Padr&oacute;n de Importadores Sectorial.</li>
+              <li>Asesor&iacute;a, gesti&oacute;n y tr&aacute;mite ante el Padr&oacute;n de Exportadores Sectorial.</li>
+              <li>Avisos y modificaciones de cargos conferidos.</li>
+              <li>Suspensi&oacute;n de Padrones.</li>
+              <li>
+                Asesor&iacute;a, acompañamiento y gesti&oacute;n de programas para la exportaci&oacute;n o importaci&oacute;n, 
+                como ejemplo de ello se tiene el programa IMMEX.
+              </li>
+            </ol>
+          </div>
+        </p-card>
+        <div class="card-overlay" (click)="expan_cex_ded = false" *ngIf="expan_cex_ded"></div>
+      </div>
+
+      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 card-wrapper" [class.is-expanded]="expan_cor_ded">
+        <p-card class="solucion-card" (click)="expan_cor_ded = !expan_cor_ded">
+          <ng-template #header>
+            <div class="image-container">
+              <img ngSrc="./assets/images/soluciones/sol_cor.png" width="800" height="400" class="main-card-img"
+                [style]="expan_cor_ded ? 'border-radius: 8px 8px 0 0;' : 'border-radius: 8px;'">
+              <div class="close-icon" *ngIf="expan_cor_ded"><i class="fa-solid fa-xmark"></i></div>
+            </div>
+          </ng-template>
+
+          <ng-template #title>
+            <div class="card-header-flex">
+              <span class="title-text">{{'sol_opi' | translate}}</span>
+            </div>
+          </ng-template>
+
+          <div class="card-content-scrollable" *ngIf="expan_cor_ded">
+            <p class="intro-text">
+              Hoy en d&iacute;a la normatividad ha evolucionado, y con ello nacen nuevas obligaciones para aquellas personas que 
+              desean emprender o que tienen un negocio. Tal es el caso de las actividades vulnerables que por ley est&aacute;n 
+              obligadas a prevenir operaciones con recursos de procedencia il&iacute;cita, obligando a gestionar su inscripci&oacute;n 
+              y avisos con actividades relacionadas con juegos con apuestas, concursos o sorteos; pr&eacute;stamos; 
+              comercializaci&oacute;n de metales preciosos, joyas o relojes; subastas; agencias automotrices, a&eacute;reas y/o mar&iacute;timas; 
+              blindaje de veh&iacute;culos; traslado de valores; entre otros.
+            </p>
+            <p class="intro-text">
+              Es por ello, que en atenci&oacute;n a esta norma vigente. Nuestra soluci&oacute;n es para asesorar, defender, atender 
+              temas relacionados con esta ley especial.
+            </p>
+          </div>
+        </p-card>
+        <div class="card-overlay" (click)="expan_cor_ded = false" *ngIf="expan_cor_ded"></div>
+      </div>
+      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 card-wrapper" [class.is-expanded]="expan_aud_ded">
+        <p-card class="solucion-card" (click)="expan_aud_ded = !expan_aud_ded">
+          <ng-template #header>
+            <div class="image-container">
+              <img ngSrc="./assets/images/soluciones/sol_aud.png" width="800" height="400" class="main-card-img"
+                [style]="expan_aud_ded ? 'border-radius: 8px 8px 0 0;' : 'border-radius: 8px;'">
+              <div class="close-icon" *ngIf="expan_aud_ded"><i class="fa-solid fa-xmark"></i></div>
+            </div>
+          </ng-template>
+
+          <ng-template #title>
+            <div class="card-header-flex">
+              <span class="title-text">{{'sol_aud' | translate}}</span>
+            </div>
+          </ng-template>
+
+          <div class="card-content-scrollable" *ngIf="expan_aud_ded">
+            <p class="intro-text">¿Qu&eacute; es una auditor&iacute;a?</p>
+            <p class="intro-text">
+              Es una “revisi&oacute;n sistem&aacute;tica de una actividad o de una situaci&oacute;n para evaluar el cumplimiento de las 
+              reglas o criterios objetivos a que aquellas deben someterse” (RAE 2023). 
+            </p>
+            <p class="intro-text">Entre las auditorias que com&uacute;nmente practicamos, son las siguientes:</p>
+            <ol type="1">
+              <li>Auditor&iacute;a o Pericial Forense en materia de contabilidad especializada en temas patrimoniales para efectos penales.</li> 
+              <li>Auditor&iacute;a o Pericial en materia de contabilidad especializada en evoluci&oacute;n patrimonial.</li>
+              <li>Auditor&iacute;a o Pericial Forense en materia de contabilidad especializada en temas patrimoniales para efectos administrativos.</li> 
+              <li>Auditor&iacute;a y/o dictaminaci&oacute;n Fiscal para verificar cumplimiento o bien para atender una obligaci&oacute;n fiscal.</li> 
+              <li>Auditor&iacute;a o Pericial en materia de Cumplimiento Corporativo y prevenci&oacute;n de operaciones vulnerables.</li> 
+            </ol>
+          </div>
+        </p-card>
+        <div class="card-overlay" (click)="expan_aud_ded = false" *ngIf="expan_aud_ded"></div>
+      </div>
+      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 card-wrapper" [class.is-expanded]="expan_dhd_ded">
+        <p-card class="solucion-card" (click)="expan_dhd_ded = !expan_dhd_ded">
+          <ng-template #header>
+            <div class="image-container">
+              <img ngSrc="./assets/images/soluciones/sol_dhd.png" width="800" height="400" class="main-card-img"
+                [style]="expan_dhd_ded ? 'border-radius: 8px 8px 0 0;' : 'border-radius: 8px;'">
+              <div class="close-icon" *ngIf="expan_dhd_ded"><i class="fa-solid fa-xmark"></i></div>
+            </div>
+          </ng-template>
+
+          <ng-template #title>
+            <div class="card-header-flex">
+              <span class="title-text">{{'sol_dhd' | translate}}</span>
+            </div>
+          </ng-template>
+
+          <div class="card-content-scrollable" *ngIf="expan_dhd_ded">
+            <p class="intro-text">
+              A trav&eacute;s de nuestro departamento de Desarrollo Tecnol&oacute;gico Especializado, 
+              SOS-M&Eacute;XICO puede ayudarte a crear, desarrollar y/o modificar alguna herramienta digital conforme a tus necesidades.
+            </p>
+          </div>
+        </p-card>
+        <div class="card-overlay" (click)="expan_dhd_ded = false" *ngIf="expan_dhd_ded"></div>
+      </div>
+    </div>
+  </div>
+</div>

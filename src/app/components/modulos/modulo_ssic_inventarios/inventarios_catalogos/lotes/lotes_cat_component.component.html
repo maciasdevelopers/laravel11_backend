@@ -1,0 +1,310 @@
+<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco" #vContent>
+  <div class="contenido"><app-loader></app-loader>
+    <nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+    <div class="contenidoPagina">
+      <div class="listas_ps revanecer">
+        <div id="listaLote" class="lista-div lista-divNoFlex row">
+          <h4 class="col-12">CATALOGO DE LOTES</h4>
+          <div class="col-12">
+            <div class="btn-group lista_botones col" role="group" aria-label="Basic example">
+              <a class="btn btn_extend bg-indigo-600" (click)="listaLotesTrue();listaLotesDeleted();">
+                <i class="fa-solid fa-rotate"></i>&nbsp;{{'list_updt' | translate}}</a>
+              <a class="btn btn_extend bg-indigo-600" data-bs-toggle="modal" data-bs-target="#modalEliminadosLotes"
+                (click)="listaLotesDeleted();">
+                <i class="fa-solid fa-trash" style="margin-left: 5px;"></i>&nbsp;Lotes eliminados
+              </a>
+            </div>
+
+            <div class="card card_main col-12 row">
+              <p-tabs value="0">
+                <p-tablist>
+                  <p-tab value="0" (click)="listaLotesTrue();">Cat&aacute;logo de lotes</p-tab>
+                  <p-tab value="1">Registrar lote</p-tab>
+                </p-tablist>
+                <p-tabpanels>
+                  <p-tabpanel value="0">
+                    <div class="col-12">
+                      <p-table #lotesListOne [value]="listLotesTrue" dataKey="id" [paginator]="true" [rows]="10"
+                        [rowsPerPageOptions]="[10,20,30,50,100]"
+                        [globalFilterFields]="['token_lote','folio_lote','numero_lote','fecha_lote']">
+                        <ng-template #caption>
+                          <div class="flex">
+                            <p-iconfield iconPosition="left" class="ml-auto">
+                              <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                              <input pInputText type="text"
+                                (input)="lotesListOne.filterGlobal($event.target.value, 'contains')"
+                                placeholder="{{'bus_car' | translate}}" />
+                            </p-iconfield>
+                          </div>
+                        </ng-template>
+                        <ng-template #header>
+                          <tr>
+                            <th class="ultimo"></th>
+                            <th pSortableColumn="folio_lote">folio de lote&nbsp;<p-sortIcon field="folio_lote" /></th>
+                            <th pSortableColumn="numero_lote">n&uacute;mero de lote&nbsp;<p-sortIcon
+                                field="numero_lote" /></th>
+                            <th pSortableColumn="fecha_lote">fecha de lote&nbsp;<p-sortIcon field="fecha_lote" /></th>
+                            <th class="ultimo"></th>
+                          </tr>
+                        </ng-template>
+                        <ng-template #body let-ltrow>
+                          <tr>
+                            <td>
+                              <a class="btn bg-blue-600" (click)="verLote(ltrow,ltrow.token_lote);">
+                                <i class="fa-solid fa-info"></i>
+                              </a>
+                            </td>
+                            <td>{{ltrow.folio_lote}}</td>
+                            <td>{{ltrow.numero_lote}}</td>
+                            <td>{{ltrow.fecha_lote}}</td>
+                            <td>
+                              <a class="btn btn_extend text-bg-danger rounded-3"
+                                (click)="btnDeleteLote(ltrow.token_lote);">
+                                <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                              </a>
+                            </td>
+                          </tr>
+                          <tr *ngIf="ltrow === loteSelected">
+                            <td colspan="5">
+                              <div class="col-12" *ngFor="let det of ltrow.contenido">
+                                <div class="col-12 explain">
+                                  <h6 class="title">Folio de lote</h6>
+                                  <h6 class="content">{{det.folio_lote}}</h6>
+                                </div>
+
+                                <div class="col-12 explain">
+                                  <h6 class="title">Fecha de lote</h6>
+                                  <h6 class="content">{{det.fecha_lote}}</h6>
+                                </div>
+
+                                <div class="col-12 explain">
+                                  <h6 class="title">N&uacute;mero de lote</h6>
+                                  <h6 class="content">{{det.numero_lote}}</h6>
+                                </div>
+
+                                <div class="col-12 explain">
+                                  <h6 class="title">{{'observ' | translate}}</h6>
+                                  <h6 class="content">{{det.comentarios}}</h6>
+                                </div>
+
+                                <div class="col-12" *ngFor="let evd of det.evidencia_file">
+                                  <div class="col-12 explain">
+                                    <h6 class="title">Documento</h6>
+                                    <h6 class="content">{{evd.name_documento}}</h6>
+                                  </div>
+                                  <div class="col-12">
+                                    <iframe name="iFramevalSatComprobante" class="iframeComprobante" width="100%"
+                                      height="600" title="Sitio del SAT" [src]="htmlPdfevidencialote"
+                                      style="border-radius: 8px;"></iframe>
+                                  </div>
+                                </div>
+                              </div>
+                            </td>
+                          </tr>
+                        </ng-template>
+                        <ng-template pTemplate="emptymessage">
+                          <tr>
+                            <td colspan="5" class="text-center py-4">
+                              <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                              <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                {{'no_rows' | translate}}
+                              </p>
+                            </td>
+                          </tr>
+                        </ng-template>
+                      </p-table>
+                    </div>
+                  </p-tabpanel>
+                  <p-tabpanel value="1">
+                    <form class="row" #formRegistroLote="ngForm" autocomplete="off" enctype="multipart/form-data"
+                      (ngSubmit)="registraLote(formRegistroLote);">
+                      <div class="col-12 row">
+                        <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input-group">
+                          <label class="activeInput">Fecha de lote</label>
+                          <input id="dataLoteFecha" class="datepicker" name="fechaLoteAdd"
+                            (change)="checkFechaLote($event.target)" type="date" ngModel required>
+                        </div>
+                        <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input-group">
+                          <label for="numeroLoteAdd" class="activeInput">n&uacute;mero de lote</label>
+                          <input id="dataLoteNumero" class="validate" name="numeroLoteAdd"
+                            (keyup)="checkNumeroLote($event.target)" type="text" ngModel required>
+                        </div>
+
+                        <div class="col-12 input-group">
+                          <label for="comentsLoteAdd" class="activeInput">{{'observ' | translate}}</label>
+                          <textarea id="dataLoteComentarios" class="validate materialize-textarea" name="comentsLoteAdd"
+                            type="text" ngModel (keyup)="checkComentariosLote($event.target)"></textarea>
+                        </div>
+
+                        <p-panel header="Evidencia"
+                          [attr.style]="'margin-top: 10px!important;margin-bottom: 10px!important;'">
+                          <p class="m-0">
+                            <p-table #dt [value]="[1]" dataKey="id" [globalFilterFields]="['nombre']">
+                              <ng-template #header>
+                                <tr>
+                                  <th class="ultimo"></th>
+                                  <th>{{'file_name' | translate}}</th>
+                                  <th class="ultimo"></th>
+                                  <th class="ultimo"></th>
+                                  <th class="ultimo"></th>
+                                </tr>
+                              </ng-template>
+                              <ng-template #body let-product>
+                                <tr>
+                                  <td><i class="fa-solid fa-upload"></i></td>
+                                  <td>
+                                    <div class="mb-3" style="margin: 0!important;">
+                                      <input id="dataLoteDocs" class="form-control" type="file"
+                                        (change)="changeEscannersitfiscal($event);" placeholder="EVIDENCIA DE LOTE"
+                                        ngModel style="padding: 0;line-height: 30px;width: 100%!important;">
+                                    </div>
+                                  </td>
+                                  <td class="ultimo">
+                                    <a class="btn btn_extend bg-indigo-600" data-bs-toggle="modal"
+                                      data-bs-target="#scannerEvidenciaLote" (click)="clickEscannerEvidenciaLote();"><i
+                                        class="fa-solid fa-qrcode"></i>&nbsp;{{' ESCANEAR QR'}}</a>
+                                  </td>
+                                  <td class="ultimo">
+                                    <a class="btn btn_extend bg-indigo-600" data-bs-toggle="modal"
+                                      data-bs-target="#modalIframeEvidencia"
+                                      [ngClass]="!imagenAltaPdfevidencialote ? 'disabled' : ''"
+                                      [attr.disabled]="!imagenAltaPdfevidencialote ? true : null"
+                                      [attr.aria-disabled]="!imagenAltaPdfevidencialote ? true : null">
+                                      <i class="fa-solid fa-eye"></i>&nbsp;{{'file_list_open' | translate}}
+                                    </a>
+                                  </td>
+                                  <td class="ultimo">
+                                    <a class="btn btn_extend text-bg-danger rounded-3"
+                                      [ngClass]="!imagenAltaPdfevidencialote ? 'disabled' : ''"
+                                      [attr.disabled]="!imagenAltaPdfevidencialote ? true : null"
+                                      [attr.aria-disabled]="!imagenAltaPdfevidencialote ? true : null">
+                                      <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}</a>
+                                    <!--(click)="imagenNameEvidenciaXMl != '' && deleteDocSitfiscal();"-->
+                                  </td>
+                                </tr>
+                              </ng-template>
+                              <ng-template pTemplate="emptymessage">
+                                <tr>
+                                  <td colspan="5" class="text-center py-4">
+                                    <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                                    <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                      {{'no_rows' | translate}}
+                                    </p>
+                                  </td>
+                                </tr>
+                              </ng-template>
+                            </p-table>
+                          </p>
+                        </p-panel>
+
+                        <div class="col-12 row">
+                          <div class="col-12 col-sm-12 col-md-6 col-lg-8 col-xl-8 col-xxl-9"></div>
+                          <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3"
+                            style="display: flex !important;justify-content: end!important;">
+                            <button class="btn btn_extend text-bg-success rounded-3"
+                              [ngClass]="!verificaData ? 'disabled' : ''" [attr.disabled]="!verificaData ? true : null"
+                              [attr.aria-disabled]="!verificaData ? true : null" type="submit">
+                              <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </form>
+                  </p-tabpanel>
+                </p-tabpanels>
+              </p-tabs>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade bd-example-modal-lg" id="modalEliminadosLotes" tabindex="-1" role="dialog"
+  aria-labelledby="modalEliminadosLotesLabel" aria-hidden="true">
+  <div class="modal-dialog modal-fullscreen" style="margin: 1%;width: 98%!important;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="modalEliminadosLotesLabel">INFORMACI&Oacute;N DE LOTES
+          ELIMINADOS</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+          style="background-color: transparent !important;"></button>
+      </div>
+      <div class="modal-body">
+        <div class="col-12" *ngIf="view_lotes_deleted">
+          <table id="list_table_deleted_lotes" class="display nowrap mdl-data-table white striped centered"
+            style="width:100%!important;margin:0!important;">
+            <thead>
+              <tr>
+                <th>folio de lote</th>
+                <th>n&uacute;mero de lote</th>
+                <th>fecha de lote</th>
+                <th>fecha de eliminaci&oacute; del lote</th>
+                <th class="ultimo"></th>
+                <th class="ultimo"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let lteDel of arrayLotesDel">
+                <td>{{lteDel.folio_lote}}</td>
+                <td>{{lteDel.numero_lote}}</td>
+                <td>{{lteDel.fecha_lote}}</td>
+                <td>{{lteDel.fecha_delete_lote}}</td>
+                <td>
+                  <a class="btn btn_extend text-bg-success rounded-3" (click)="btnRestLoteListaPap(lteDel.token_lote);">
+                    <i class="fa-solid fa-trash-arrow-up"></i>&nbsp;{{'restore_row' | translate}}
+                  </a>
+                </td>
+                <td>
+                  <a class="btn btn_extend text-bg-danger rounded-3" (click)="btnDelLoteListaPape(lteDel.token_lote);">
+                    <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                  </a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade bd-example-modal-lg" id="scannerEvidenciaLote" tabindex="-1" role="dialog"
+  aria-labelledby="scannerEvidenciaLoteLabel" aria-hidden="true">
+  <div class="modal-dialog modal-fullscreen" style="margin: 1%;width: 98%!important;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="scannerEvidenciaLoteLabel">ESCANNER DE EVIDENCIA DE LOTE
+        </h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+          style="background-color: transparent !important;"></button>
+      </div>
+      <div class="modal-body">
+        <div id="readerEvidenciaLote" style="height: 400px;width: 100%;background-color: #353535;border-radius: 8px;">
+        </div>
+      </div>
+      <div class="modal-footer"></div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade bd-example-modal-lg" id="modalIframeEvidencia" tabindex="-1" role="dialog"
+  aria-labelledby="modalIframeEvidenciaLabel" aria-hidden="true">
+  <div class="modal-dialog modal-fullscreen" style="margin: 1%;width: 98%!important;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="modalIframeEvidenciaLabel">{{'doc_an' | translate}}</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+          style="background-color: transparent !important;"></button>
+      </div>
+      <div class="modal-body">
+        <div id="divImgClassSitfiscalProv" class="col-12 white-text" style="height: calc(100% - 60px);"></div>
+      </div>
+      <div class="modal-footer"></div>
+    </div>
+  </div>
+</div>

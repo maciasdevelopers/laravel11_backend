@@ -1,0 +1,219 @@
+<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco" #vContent>
+  <div class="contenido"><app-loader></app-loader>
+    <nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+    <div class="contenidoPagina">
+      <div class="listas_ps">
+        <div class="lista-div lista-divNoFlex">
+          <h4 class="col-12">CATALOGO DE CUENTAS CONTABLES</h4>
+
+          <div class="col-12">
+            <div class="btn-group lista_botones col" role="group" aria-label="Basic example">
+              <a class="btn btn_extend bg-indigo-600" data-bs-toggle="modal"
+                data-bs-target="#windowCuentaContableRegistro">
+                <i class="fa-solid fa-plus"></i>&nbsp;{{'c_contable_reg' | translate}}</a>
+              <a class="btn btn_extend bg-indigo-600" (click)="lista_cuentas_contables();">
+                <i class="fa-solid fa-rotate"></i>&nbsp;{{'list_updt' | translate}}</a>
+              <a class="btn btn_extend bg-indigo-600" data-bs-toggle="modal" data-bs-target="#infoAcreeEliminados">
+                <i class="fa-solid fa-trash"></i>&nbsp;Cuentas contables eliminadas</a>
+            </div>
+          </div>
+
+          <div class="buscador row" style="margin-top: 10px!important">
+            <div class="content">
+              <div class="col-12 col-sm-6 col-md-3 col-lg-2 row_buscador"></div>
+              <div class="col-12 col-sm-6 col-md-3 col-lg-2 row_buscador">
+                <input class="datasearch" type="text" [(ngModel)]="search_cuentas_contables_general_view"
+                  autocomplete="on" placeholder="{{'bus_car' | translate}}">
+              </div>
+            </div>
+          </div>
+
+          <p-treetable [value]="list_cuentas_contables_general" [scrollable]="true" scrollHeight="400px"
+            [tableStyle]="{'min-width':'50rem'}">
+            <ng-template pTemplate="header">
+              <tr>
+                <th class="ultimo"></th>
+                <th pSortableColumn="folio_c_contable">folio&nbsp;<p-sortIcon field="folio_c_contable" /></th>
+                <th pSortableColumn="fecha_contabilizacion">{{'fecha_cont' | translate}}&nbsp;<p-sortIcon
+                    field="fecha_contabilizacion" /></th>
+                <th pSortableColumn="numero">N&uacute;mero de cuenta contable&nbsp;<p-sortIcon field="numero" /></th>
+                <th pSortableColumn="tipo">Tipo&nbsp;<p-sortIcon field="tipo" /></th>
+                <th pSortableColumn="naturaleza">Naturaleza&nbsp;<p-sortIcon field="naturaleza" /></th>
+                <th pSortableColumn="clasificacion">Clasificaci&oacute;n&nbsp;<p-sortIcon field="clasificacion" /></th>
+                <th pSortableColumn="observaciones">{{'observ' | translate}}&nbsp;<p-sortIcon field="observaciones" />
+                </th>
+                <th class="ultimo"></th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-rowNode let-rowData="rowData">
+              <tr [ttRow]="rowNode">
+                <td>
+                  <p-treeTableToggler [rowNode]="rowNode"></p-treeTableToggler>
+                </td>
+                <td>{{rowData.folio_c_contable}}</td>
+                <td>{{rowData.fecha_contabilizacion}}</td>
+                <td>{{rowData.numero}}</td>
+                <td>{{rowData.tipo}}</td>
+                <td>{{rowData.naturaleza}}</td>
+                <td>{{rowData.clasificacion}}</td>
+                <td>{{rowData.observaciones}}</td>
+                <td>
+                  <button pButton icon="pi pi-trash" class="p-button-rounded p-button-text p-button-sm p-button-danger"
+                    (click)="eliminarCuenta(rowData)"></button>
+                </td>
+              </tr>
+            </ng-template>
+          </p-treetable>
+
+          <p-table [value]="list_cuentas_contables_general" dataKey="id" [tableStyle]="{ 'min-width': '60rem' }"
+            [expandedRowKeys]="expandedRows">
+            <!--(onRowExpand)="onRowExpand($event)" (onRowCollapse)="onRowCollapse($event)">
+						<ng-template #caption>
+							<div class="flex flex-wrap justify-end gap-2">
+								<p-button label="Expand All" icon="pi pi-plus" text (onClick)="expandAll()" />
+								<p-button label="Collapse All" icon="pi pi-minus" text (onClick)="collapseAll()" />
+							</div>
+						</ng-template>-->
+            <ng-template #header>
+              <tr>
+                <th style="width: 5rem"></th>
+                <th>Name</th>
+                <th>Image</th>
+                <th>Price</th>
+                <th>Category</th>
+                <th>Reviews</th>
+                <th>Status</th>
+              </tr>
+            </ng-template>
+            <ng-template #body let-product let-expanded="expanded">
+              <tr>
+                <td>
+                  <p-button type="button" pRipple [pRowToggler]="product" [attr.text]="true" severity="secondary"
+                    [attr.rounded]="true" [attr.icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'" />
+                </td>
+                <td>{{ product.name }}</td>
+                <td><img [src]="'https://primefaces.org/cdn/primeng/images/demo/product/' + product.image"
+                    [alt]="product.name" width="50" class="shadow-lg" /></td>
+                <td>{{ product.price | currency : 'USD' }}</td>
+                <td>{{ product.category }}</td>
+                <td><p-rating [ngModel]="product.rating" [attr.readonly]="true" [attr.cancel]="false" /></td>
+                <td>
+                  <p-tag [value]="product.inventoryStatus" [attr.severity]="getSeverity(product.inventoryStatus)" />
+                </td>
+              </tr>
+            </ng-template>
+            <ng-template #expandedrow let-product>
+              <tr>
+                <td colspan="7">
+                  <div class="p-4">
+                    <h5>Orders for {{ product.name }}</h5>
+                    <p-table [value]="product.orders" dataKey="id">
+                      <ng-template #header>
+              <tr>
+                <th pSortableColumn="id">
+                  <div class="flex items-center gap-2">
+                    Id
+                    <p-sortIcon field="price" />
+                  </div>
+                </th>
+                <th pSortableColumn="customer">
+                  <div class="flex items-center gap-2">
+                    Customer
+                    <p-sortIcon field="customer" />
+                  </div>
+                </th>
+                <th pSortableColumn="date">
+                  <div class="flex items-center gap-2">
+                    Date
+                    <p-sortIcon field="date" />
+                  </div>
+                </th>
+                <th pSortableColumn="amount">
+                  <div class="flex items-center gap-2">
+                    Amount
+                    <p-sortIcon field="amount" />
+                  </div>
+                </th>
+                <th pSortableColumn="status">
+                  <div class="flex items-center gap-2">
+                    Status
+                    <p-sortIcon field="status" />
+                  </div>
+                </th>
+                <th style="width: 4rem"></th>
+              </tr>
+            </ng-template>
+            <ng-template #body let-order>
+              <tr>
+                <td>{{ order.id }}</td>
+                <td>{{ order.customer }}</td>
+                <td>{{ order.date }}</td>
+                <td>{{ order.amount | currency : 'USD' }}</td>
+                <td><p-tag [value]="order.status" [attr.severity]="getStatusSeverity(order.status)" /></td>
+                <td><p-button type="button" icon="pi pi-search" /></td>
+              </tr>
+            </ng-template>
+            <ng-template #emptymessage>
+              <tr>
+                <td colspan="6">There are no order for this product yet.</td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+        </td>
+        </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="7" class="text-center py-4">
+              <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+              <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                {{'no_rows' | translate}}
+              </p>
+            </td>
+          </tr>
+        </ng-template>
+        </p-table>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="modal fade bd-example-modal-lg" id="windowCuentaContableRegistro" tabindex="-1" role="dialog"
+  aria-labelledby="windowCuentaContableRegistroLabel" aria-hidden="true">
+  <div class="modal-dialog modal-fullscreen" style="margin: 1%;width: 98%!important;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="windowCuentaContableRegistroLabel">{{'c_contable_reg' |
+          translate}}</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+          style="background-color: transparent !important;"></button>
+      </div>
+      <div class="modal-body">
+        <app_contabilidad_catalogo_cuentas_contables_registro></app_contabilidad_catalogo_cuentas_contables_registro>
+      </div>
+      <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade bd-example-modal-lg" id="windowCuentaContableInfo" tabindex="-1" role="dialog"
+  aria-labelledby="windowCuentaContableInfoLabel" aria-hidden="true">
+  <div class="modal-dialog modal-fullscreen" style="margin: 1%;width: 98%!important;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="windowCuentaContableInfoLabel">Informaci&oacute;n dela
+          cuenta contable</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+          style="background-color: transparent !important;"></button>
+      </div>
+      <div class="modal-body" *ngFor="let prVd of cuentaDetalleData">
+      </div>
+      <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

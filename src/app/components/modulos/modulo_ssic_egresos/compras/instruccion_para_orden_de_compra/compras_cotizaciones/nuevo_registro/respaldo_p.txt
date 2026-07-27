@@ -1,0 +1,276 @@
+																	<div class="col-12" style="overflow-y:overlay!important;max-height:600px!important;overflow-x:hidden!important;">
+																		<div class="buscador buscador_transparent row s12" style="margin-bottom: 5px!important;">
+																			<input class="datasearch" type="text" autocomplete="on" [(ngModel)]="searchCotizacion" placeholder="{{'bus_car' | translate}}">
+																		</div>
+																		<div class="col-12">
+																			<div id="card_coti_{{cotList.folio_registro+inside.num_lista}}" class="col-12 card card_cotizacion_main" *ngFor="let inside of cotList.desglose_pag">
+																				<div class="card-header col-12 row">
+																					<select class="browser-default btn btn_extend" style="height: 20px !important;margin-right: 3px!important;" (change)="viewDocumento($event.target);">
+																						<option value="" disabled selected><p>&#xf15b;</p> {{'doc_an' | translate}}</option>
+																						<option *ngFor="let doc of inside.archivosPartida" [value]="doc.url">{{doc.nombre_documento}}</option>
+																					</select>
+																					<button class="btn btn_header btn_extend bg-blue-600" style="height: 20px !important;" [disabled]="lista_proveedor_seleccionado.length < 3" 
+																						(click)="inside.open_desglose == false ? abre_desglose(cotList.token_solicitud_cotizacion,inside.token_detalle_requisicion,'#card_coti_'+cotList.folio_registro+inside.num_lista,'#card_coti_'+cotList.folio_registro+inside.num_lista+'_desglose') : cierra_desglose(cotList.token_solicitud_cotizacion,inside.token_detalle_requisicion,'#card_coti_'+cotList.folio_registro+inside.num_lista,'#card_coti_'+cotList.folio_registro+inside.num_lista+'_desglose');">
+																						<i class="fa-regular" [ngClass]="inside.open_desglose == false ? 'fa-folder-open' : 'fa-folder-closed'"></i></button>
+																					<a class="btn btn_header btn_extend text-bg-danger rounded-3" style="height: 20px !important;" disabled><i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}</a> 
+																				</div>
+								
+																				<div class="col-12 row card-content card_content_inside">
+																					<div class="col-12 data_project">
+																						<h6 class="data_request nameProy">{{'concept' | translate}}{{": "+inside.requi_necesidad+" "}}{{'canti' | translate}}{{": "+inside.requi_cantidad_autorizada+" ("+inside.requi_tipo_front+")"}}</h6>
+																						<h6 class="data_request data_request_caract" *ngIf="inside.requi_caracteristicas_list.length > 0">Caracter&iacute;sticas:<div *ngFor="let carval of inside.requi_caracteristicas_list">&nbsp;{{carval.clave+": "+carval.valorFront}}</div></h6>
+																						<h6 class="data_request" *ngIf="inside.requi_caracteristicas_list.length > 0 && inside.requi_caracteristicas_other != null">{{"Otras características: "+inside.requi_caracteristicas_other}}</h6>
+																						<h6 class="data_request" *ngIf="inside.requi_caracteristicas_list.length == 0 && inside.requi_caracteristicas_other != null">{{"Características: "+inside.requi_caracteristicas_other}}</h6>
+																						<h6 class="data_request">{{"Unidad de medida: "+inside.requi_unidad_medida_name}}</h6>
+																						<h6 class="data_request">{{"Marca sugerida: "+inside.requi_marca}}</h6>
+																					</div>
+																				</div>
+																				<div id="card_coti_{{cotList.folio_registro+inside.num_lista}}_desglose" class="col-12 row card-content content_detail noneView" style="padding: 10px!important;">
+																					<div class="card-content desglose">	
+																						<div class="col-12 row card-content card_content_inside">
+																							<div class="col-12 data_project">
+																								<h6 class="data_request">{{"Proveedores seleccionados: "+inside.proveedores.length}}</h6>
+																							</div>
+																						</div>
+																						<div class="col-12 row" style="overflow: overlay!important;">
+																							<div class="col-12 col-sm-3 col-md-3 col-lg-3 col-xl-3 col-xxl-3" style="padding: 0!important;box-shadow: 10px 1px 10px #353535!important;position: relative!important;">
+																								<table id="tableReq_coti_{{cotList.folio_registro+inside.num_lista}}" class="table table-dark table-striped-columns" style="width:max-content!important;margin:0!important;">
+																									<thead>
+																										<tr>
+																											<th class="concepto">concepto</th>
+																										</tr>
+																									</thead>
+																									<tbody>
+																										<tr class="especificaciones"><td>Especificaciones</td></tr>
+																										<tr class="especificaciones"><td>Cantidad</td></tr>
+																										<tr class="precio"><td>Precio</td></tr>
+																										<tr class="calidad"><td>Calidad</td></tr>
+																										<tr class="servicio"><td>Servicio</td></tr>
+																										<tr class="entrega"><td>Tipo y tiempo de entrega</td></tr>
+																										<tr class="descuento"><td>Descuento</td></tr>
+																										<tr class="descuento"><td>Cr&eacute;dito</td></tr>
+																										<tr class="garantia"><td>Garant&iacute;a</td></tr>
+																										<tr class="unidad_medida"><td>{{'uni_med' | translate}}</td></tr>
+																										<tr class="forma_pago"><td>Forma de pago</td></tr>
+																										<tr class="valoracion"><td>Valoraci&oacute;n</td></tr>
+																										<tr class="valoracion" *ngFor="let more of inside.adicionales"><td>{{more.clave}}</td></tr>
+																									</tbody>
+																								</table>
+																							</div>
+																							<div class="col-12 col-sm-9 col-md-9 col-lg-9 col-xl-9 col-xxl-9" style="padding: 0!important;overflow: overlay!important;">
+																								<table id="tableReq_coti_{{cotList.folio_registro+inside.num_lista}}" class="display nowrap mdl-data-table white centered" style="width:max-content!important;margin:0!important;">
+																									<thead>
+																										<tr><th *ngFor="let prvcot of inside.proveedores;index as pos" style="min-width: 600px;">{{prvcot.nombre+" ("+(pos+1)+" de "+inside.proveedores.length+")"}}</th></tr>
+																									</thead>
+																									<tbody>
+																										<tr class="especificaciones">
+																											<td *ngFor="let prvcot of inside.proveedores" class="td_editable" contenteditable="true" (keypress)="onKeyPressAlfa($event);"
+																												(keyup)="validaEspecificacionesCotizacion($event.target,cotList.token_solicitud_cotizacion,inside.token_detalle_requisicion,prvcot.token_cat_proveedores)"></td>
+																										</tr>
+																										<tr class="especificaciones">
+																											<td *ngFor="let prvcot of inside.proveedores" class="td_editable" contenteditable="true" (keypress)="onKeyPressNumbers($event);" 
+																												(keyup)="validaCantidadCotizacion($event,$event.target,cotList.token_solicitud_cotizacion,inside.token_detalle_requisicion,prvcot.token_cat_proveedores);">
+																											</td>
+																										</tr>
+																										<tr class="precio">
+																											<td *ngFor="let prvcot of inside.proveedores" class="td_editable" style="padding: 0!important;">
+																												<tr class="col-12 row" style="padding: 0!important;">
+																													<td class="col-3" tooltipPosition="top" placeholder="Top" [pTooltip]="prvcot.tipo_cambio" contenteditable="true" (keypress)="onKeyPressNumbers($event);" (keyup)="validaPrecioCotizacion($event.target,cotList.token_solicitud_cotizacion,inside.token_detalle_requisicion,prvcot.token_cat_proveedores);"></td>
+																													<td class="col-3" tooltipPosition="top" placeholder="Top" [pTooltip]="prvcot.tipo_cambio">
+																														<datalist id="dataListMonedaNewCotizacion"><option *ngFor="let mon of lista_monedas" [value]="mon.moneda">{{"código "+mon.codigo+", "+mon.decimales+" decimales"}}</option></datalist>
+																														<input class="validate" list="dataListMonedaNewCotizacion" type="text" (keypress)="onKeyPressAlfa($event);" (change)="validaMonedaCotizacion($event.target,cotList.token_solicitud_cotizacion,inside.token_detalle_requisicion,prvcot.token_cat_proveedores);">
+																													</td>
+																													<td class="col-3"  tooltipPosition="top" placeholder="Top" [pTooltip]="prvcot.tipo_cambio" *ngIf="prvcot.moneda == emp_moneda_ktn">{{prvcot.tipo_cambio}}</td>
+																													<td class="col-3"  tooltipPosition="top" placeholder="Top" [pTooltip]="prvcot.tipo_cambio" *ngIf="prvcot.moneda != emp_moneda_ktn" contenteditable="true" (keypress)="onKeyPressNumbers($event);" (keyup)="validaTipoCambioCotizacion($event.target,cotList.token_solicitud_cotizacion,inside.token_detalle_requisicion,prvcot.token_cat_proveedores);"></td>
+																													<td class="col-3"  tooltipPosition="top" placeholder="Top" [pTooltip]="prvcot.tipo_cambio">{{prvcot.conversion}}</td>
+																												</tr>
+																											</td>	
+																										</tr>
+																										<tr class="calidad">
+																											<td *ngFor="let prvcot of inside.proveedores" class="td_editable" contenteditable="true" (keypress)="onKeyPressAlfa($event);"
+																												(keyup)="validaCalidadCotizacion($event.target,cotList.token_solicitud_cotizacion,inside.token_detalle_requisicion,prvcot.token_cat_proveedores);"></td>
+																										</tr>
+																										<tr class="servicio">
+																											<td *ngFor="let prvcot of inside.proveedores" class="td_editable" contenteditable="true" (keypress)="onKeyPressAlfa($event);"
+																												(keyup)="validaServicioCotizacion($event.target,cotList.token_solicitud_cotizacion,inside.token_detalle_requisicion,prvcot.token_cat_proveedores);"></td>
+																										</tr>
+																										<tr class="entrega">
+																											<td *ngFor="let prvcot of inside.proveedores" class="td_editable" style="padding: 0!important;">
+																												<tr class="col-12 row" style="padding: 0!important;">
+																													<td class="col-6" style="padding: 0!important;justify-content: center;display: flex;align-items: center;">
+																														<select class="browser-default btn btn_extend" (change)="validaTypoEntregaCotizacion($event.target,cotList.token_solicitud_cotizacion,inside.token_detalle_requisicion,prvcot.token_cat_proveedores);">
+																															<option value="" disabled selected>{{'opt_select' | translate}}</option>
+																															<option value="domi">domicilio</option>
+																															<option value="stre">tienda</option>
+																															<option value="ofna">oficina</option>
+																															<option value="dest">destino</option>
+																															<option value="cntr">contra reembolso</option>
+																														</select>
+																													</td>
+																													<td contenteditable="true" class="col-6" (keypress)="onKeyPressAlfa($event);" (keyup)="validaTiempoEntregaCotizacion($event.target,cotList.token_solicitud_cotizacion,inside.token_detalle_requisicion,prvcot.token_cat_proveedores);"></td>
+																												</tr>
+																											</td>		
+																										</tr>
+																										<tr class="descuento">
+																											<td *ngFor="let prvcot of inside.proveedores" class="td_editable">
+																												<datalist id="dataListDescList">
+																													<option value="N/A">No aplica</option>
+																													<option value="10%">10%</option>
+																													<option value="30%">30%</option>
+																													<option value="50%">50%</option>
+																													<option value="75%">75%</option>
+																												</datalist>
+																												<input class="validate" list="dataListDescList" type="text" (keypress)="onKeyPressAlfa($event);" (change)="validaDescuentoCotizacion($event.target,cotList.token_solicitud_cotizacion,inside.token_detalle_requisicion,prvcot.token_cat_proveedores);"
+																												(keyup)="validaDescuentoCotizacion($event.target,cotList.token_solicitud_cotizacion,inside.token_detalle_requisicion,prvcot.token_cat_proveedores);">
+																											</td>
+																										</tr>
+																										<tr class="descuento">
+																											<td *ngFor="let prvcot of inside.proveedores" class="td_editable" style="padding: 0!important;">
+																												<tr class="col-12 row" style="padding: 0!important;">
+																													<td class="col-6 form-check form-switch" style="padding: 0!important;justify-content: center;display: flex;align-items: center;">
+																														<input class="form-check-input" role="switch" id="flexSwitchCheckDefault" type="checkbox" [checked]="prvcot.credito_otorga == true" 
+																															(click)="validaCredOfreceCotizacion($event.target,cotList.token_solicitud_cotizacion,inside.token_detalle_requisicion,prvcot.token_cat_proveedores);">
+																														<label class="form-check-label" for="flexSwitchCheckDefault">¿Ofrece credito?</label>
+																													</td>
+																													<td *ngIf="prvcot.credito_otorga == false" class="col-6">---</td>
+																													<td *ngIf="prvcot.credito_otorga == true" class="col-6" contenteditable="true" (keypress)="onKeyPressAlfa($event);" (keyup)="validaCredTimeCotizacion($event.target,cotList.token_solicitud_cotizacion,inside.token_detalle_requisicion,prvcot.token_cat_proveedores);"></td>
+																												</tr>
+																											</td>		
+																										</tr>
+																										<tr class="garantia">
+																											<td *ngFor="let prvcot of inside.proveedores" class="td_editable" contenteditable="true" (keypress)="onKeyPressAlfa($event);"
+																												(keyup)="validaGarantiaCotizacion($event.target,cotList.token_solicitud_cotizacion,inside.token_detalle_requisicion,prvcot.token_cat_proveedores);"></td>
+																										</tr>
+																										<tr class="unidad_medida">
+																											<td *ngFor="let prvcot of inside.proveedores" class="td_editable">
+																												<datalist id="dataListUmedida"><option *ngFor="let medU of lista_unidad_medida" value="{{medU.unidad_medida}}">{{"clave"+medU.sat_clave+" representa "+medU.representa}}</option></datalist>
+																												<input class="req_uMedida validate" name="req_uMedida" type="text" id="req_uMedida" list="dataListUmedida" (keypress)="onKeyPressAlfa($event);" 
+																													(keyup)="validaUnidadMedidaCotizacion($event.target,cotList.token_solicitud_cotizacion,inside.token_detalle_requisicion,prvcot.token_cat_proveedores);">
+																											</td>
+																										</tr>
+																										<tr class="forma_pago">
+																											<td *ngFor="let prvcot of inside.proveedores" class="td_editable">
+																												<datalist id="fpago_listCoti"><option *ngFor="let fpago of lista_forma_pago" [value]="fpago.forma">{{"clave "+fpago.clave}}</option></datalist>
+																												<input list="fpago_listCoti" name="browser" id="reem_f_pago" type="text" (keypress)="onKeyPressAlfa($event);" 
+																													(change)="validaFormaPagoCotizacion($event.target,cotList.token_solicitud_cotizacion,inside.token_detalle_requisicion,prvcot.token_cat_proveedores);">																				
+																											</td>
+																										</tr>
+																										<tr class="valoracion">
+																											<td *ngFor="let prvcot of inside.proveedores" class="td_editable" contenteditable="true" (keypress)="onKeyPressAlfa($event);"
+																												(keyup)="validaValoracionCotizacion($event.target,cotList.token_solicitud_cotizacion,inside.token_detalle_requisicion,prvcot.token_cat_proveedores);"></td>
+																										</tr>
+																										<tr class="valoracion" *ngFor="let more of inside.adicionales">
+																											<td *ngFor="let prvcot of inside.proveedores" class="td_editable" contenteditable="true" (keypress)="onKeyPressAlfa($event);"
+																												(keyup)="validaMoreNuevoValorCotizacion($event.target,cotList.token_solicitud_cotizacion,inside.token_detalle_requisicion,more.clave,prvcot.token_cat_proveedores);"></td>
+																										</tr>
+																									</tbody>
+																								</table>
+																							</div>
+																						</div>
+																						<div class="col-12">
+																							<table id="tableReq_coti_new_categoria" class="display nowrap mdl-data-table white centered" style="width:max-content!important;margin:0!important;">
+																								<thead>
+																									<tr>
+																										<th class="concepto">agregar conceptos</th>
+																										<th class="ultimo"></th>
+																									</tr>
+																								</thead>
+																								<tbody>
+																									<tr class="especificaciones">
+																										<td><input id="clave_text_adicionales" class="validate" type="text" (keypress)="onKeyPressAlfa($event);" (keyup)="validaMoreNuevaclaveCotizacion($event.target,cotList.token_solicitud_cotizacion,inside.token_detalle_requisicion);"></td>
+																										<td> 
+																											<a class="btn text-bg-success rounded-3" *ngIf="inside.nueva_clave_nombre == ''" disabled><i class="fa-solid fa-plus"></i></a>
+																											<a class="btn text-bg-success rounded-3" *ngIf="inside.nueva_clave_nombre != ''" (click)="addMoreCotizacion(cotList.token_solicitud_cotizacion,inside.token_detalle_requisicion);"><i class="fa-solid fa-plus"></i></a>
+																										</td>
+																									</tr>
+																								</tbody>
+																							</table>
+																						</div>
+							
+																						<div class="col-12 row card-content card_content_inside">
+																							<div class="col-12 data_project">
+																								<h6 class="data_request">Mejor opci&oacute;n:</h6>
+																							</div>
+							
+																							<div class="col-12" *ngIf="inside.proveedores_mejor_opcion.length > 0">
+																								<table id="tableReq_coti_new_categoria" class="display nowrap mdl-data-table white centered" style="width:max-content!important;margin:0!important;">
+																									<thead>
+																										<tr>
+																											<th>{{'name' | translate}}</th>
+																											<th>No</th>
+																											<th>{{'observ' | translate}}</th>
+																										</tr>
+																									</thead>
+																									<tbody>
+																										<tr class="especificaciones" *ngFor="let posProv of inside.proveedores_mejor_opcion">
+																											<td>{{posProv.nombre}}</td>
+																											<td>
+																												<input class="req_uMedida validate" type="number" (keypress)="onKeyPressNumbers($event);" 
+																												(keyup)="mejor_opcion_estrellas(cotList.token_solicitud_cotizacion,inside.token_detalle_requisicion,posProv.token_cat_proveedores,$event.target);">
+																											</td>
+																											<td style="vertical-align:middle;display:flex;min-height:90px!important;">
+																												<textarea name="large_descript" style="min-height:90px!important;width:100%!important;" class="validate" (keypress)="onKeyPressAlfa($event);" 
+																												(keyup)="mejor_opcion_observaciones(cotList.token_solicitud_cotizacion,inside.token_detalle_requisicion,posProv.token_cat_proveedores,$event.target);"></textarea>
+																											</td>
+																										</tr>
+																									</tbody>
+																								</table>
+																							</div>
+																						</div>
+							
+																						<div class="col-12 row card-content card_content_inside">
+																							<div class="input-group col-12">
+																								<label for="req_especificacion" class="activeInput">Comentarios finales</label>
+																								<textarea class="materialize-textarea validate" name="justificacion" (keypress)="onKeyPressAlfa($event);" (keyup)="comentarios_finales(cotList.token_solicitud_cotizacion,inside.token_detalle_requisicion,$event.target);"></textarea>
+																							</div>
+																						</div>
+							
+																						<div class="col-12" style="margin: 0;margin-top: 5px;">
+																							<div class="col-12 col-sm-3 col-md-3 col-lg-4 col-xl-4 col-xxl-4"></div>
+																							<div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-4" style="display: flex;flex-wrap: wrap;justify-content: space-evenly;margin: 0;">
+																								<a class="btn btn_extend text-bg-success rounded-3" *ngIf="inside.proveedores_opcion_bool == true || inside.comentarios_finales == '' || valida_cotizacion_completa == false" disabled>
+																									<i class="fa-solid fa-floppy-disk" style="margin-right: 5px;"></i>&nbsp;{{'sav_cam' | translate}}</a>
+																								<a class="btn btn_extend text-bg-success rounded-3" *ngIf="inside.proveedores_opcion_bool == false && inside.comentarios_finales != '' && valida_cotizacion_completa == true"
+																									 (click)="guardar_cotizacion(cotList.token_solicitud_cotizacion,inside.token_detalle_requisicion,inside.proveedores,inside.adicionales,inside.proveedores_mejor_opcion,inside.comentarios_finales);">
+																									<i class="fa-solid fa-floppy-disk" style="margin-right: 5px;"></i>&nbsp;{{'sav_cam' | translate}}</a>
+																							</div>
+																							<div class="col-12 col-sm-3 col-md-3 col-lg-4 col-xl-4 col-xxl-4"></div>
+																						</div>
+																					</div>
+																				</div>
+																			</div>
+																		</div>
+																		<div class="col-12">
+																			<p-paginator [rows]="10" [totalRecords]="cotList.desglose.length" [rowsPerPageOptions]="[10,20,30,50,100]" (onPageChange)="cambiaPagina($event,cotList.token_solicitud_cotizacion)"></p-paginator>
+																		</div>
+																	</div>
+
+
+                                  												<div class="accordion" id="accordionExample">
+													<div class="accordion-item">
+														<h2 class="accordion-header">
+															<button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseProvCat" aria-expanded="true" aria-controls="collapseProvCat">
+																{{'prov_cat' | translate}} <div class="col" *ngIf="lista_proveedor_seleccionado.length > 0">{{" proveedores seleccionados "+lista_proveedor_seleccionado.length}}</div>
+															</button>
+														</h2>
+														<div id="collapseProvCat" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
+															<div class="accordion-body">
+																<div class="col-12">
+
+																</div>
+															</div>
+														</div>
+													</div>
+													<div class="accordion-item">
+														<h2 class="accordion-header">
+															<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePartidas" aria-expanded="false" aria-controls="collapsePartidas">
+																registros
+															</button>
+														</h2>
+														<div id="collapsePartidas" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+															<div class="accordion-body">
+
+															</div>
+														</div>
+													</div>
+												</div>

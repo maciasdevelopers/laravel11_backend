@@ -1,0 +1,110 @@
+.footer_main_home {
+  background: linear-gradient(135deg, rgba(26, 42, 58, 0.98) 0%, rgba(15, 23, 42, 1) 100%);
+  color: #f8fafc;
+  padding: 50px 20px 30px 20px;
+  font-family: 'Inter', sans-serif;
+}
+
+.footer-container {
+  max-width: 1800px;
+  margin: 0 auto;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr 1fr;
+  gap: 40px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 40px;
+}
+
+/* Títulos */
+.footer-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 15px;
+  background: linear-gradient(90deg, #fff, #94a3b8);
+  -webkit-text-fill-color: transparent;
+}
+
+.section-title {
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #64748b;
+  margin-bottom: 10px;
+}
+
+/* Items de contacto */
+.contact-item, .location-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  /*margin-bottom: 15px;*/
+  margin-bottom: 0!important;
+  font-size: 0.95rem;
+  color: #cbd5e1;
+}
+
+.contact-item i, .location-item i {
+  color: #38bdf8; /* Azul brillante para iconos */
+}
+
+/* Redes Sociales */
+.social-links {
+  display: flex;
+  gap: 15px;
+  /*margin-top: 20px;*/
+}
+
+.social-links a {
+  font-size: 1.2rem;
+  color: #94a3b8;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.social-links a:hover {transform: translateY(-3px);}
+.social-links a.instagram:hover {color: #833ab4;}
+.social-links a.facebook:hover {color: #4267b2;}
+.social-links a.twitter:hover {color: #009ffc;}
+.social-links a.youtube:hover {color: #b31217;}
+
+/* Parte Inferior */
+.footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 10px;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.legal-links a {
+  color: #94a3b8;
+  text-decoration: none;
+  font-size: 0.85rem;
+  margin-right: 25px;
+  transition: color 0.2s;
+}
+
+.legal-links a:hover { color: #fff; }
+
+.alert-fraud {
+  color: #f87171 !important; /* Rojo suave */
+  font-weight: 600;
+}
+
+.visitas-badge {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 5px 15px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .footer-grid { grid-template-columns: 1fr; gap: 30px; }
+  .footer-bottom { justify-content: center; text-align: center; }
+}

@@ -1,0 +1,118 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 460 285"
+  width="460"
+  height="285"
+>
+
+  <defs>
+    <style>
+      text {
+        font-family: 'Ubuntu', sans-serif;
+      }
+
+      .stroke-anim {
+        animation: colorShift 3s infinite;
+      }
+
+      .lock-anim {
+        animation: lockPulse 2s infinite;
+      }
+
+      @keyframes colorShift {
+        0%   { stroke: #1e88e5; }   /* proceso */
+        50%  { stroke: #43a047; }   /* seguridad */
+        100% { stroke: #f9a825; }   /* credenciales */
+      }
+
+      @keyframes lockPulse {
+        0%   { fill: #1e88e5; }
+        50%  { fill: #43a047; }
+        100% { fill: #f9a825; }
+      }
+    </style>
+  </defs>
+
+  <!-- Campo de contraseña -->
+  <g transform="translate(90,40)">
+    <rect
+      x="0"
+      y="0"
+      rx="26"
+      ry="26"
+      width="280"
+      height="70"
+      fill="none"
+      stroke-width="6"
+      class="stroke-anim"
+    />
+
+    <!-- Asteriscos -->
+    <text
+      x="65"
+      y="50"
+      font-size="44"
+      font-weight="700"
+      class="lock-anim"
+    >*</text>
+
+    <text
+      x="115"
+      y="50"
+      font-size="44"
+      font-weight="700"
+      class="lock-anim"
+    >*</text>
+
+    <!-- Candado -->
+    <g transform="translate(175,18)">
+      <rect
+        x="0"
+        y="20"
+        width="34"
+        height="30"
+        rx="6"
+        class="lock-anim"
+      />
+      <path
+        d="M6 20v-8a11 11 0 0 1 22 0v8"
+        fill="none"
+        stroke-width="4"
+        class="stroke-anim"
+      />
+    </g>
+  </g>
+
+  <!-- Texto corporativo -->
+  <text
+    x="230"
+    y="155"
+    text-anchor="middle"
+    font-size="22"
+    font-weight="700"
+    fill="#2e2e2e"
+  >
+    Fortalezca la seguridad de su cuenta
+  </text>
+
+  <text
+    x="230"
+    y="185"
+    text-anchor="middle"
+    font-size="18"
+    fill="#555"
+  >
+    Utilice una contraseña robusta y única
+  </text>
+
+  <text
+    x="230"
+    y="215"
+    text-anchor="middle"
+    font-size="16"
+    fill="#777"
+  >
+    Proteja la información de su empresa
+  </text>
+
+</svg>

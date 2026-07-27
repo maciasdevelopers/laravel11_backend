@@ -1,0 +1,823 @@
+<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco" #vContent>
+  <div class="contenido"><app-loader></app-loader>
+    <nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+    <main class="contenidoPagina">
+      <div class="listas_ps revanecer">
+        <div id="listaProveedores" class="lista-div lista-divNoFlex">
+          <h4 class="col-12">SOLICITUDES DE CANCELACI&Oacute;N</h4>
+          
+          <p-table #tsoliCancelacion [value]="list_cancel_soli" showGridlines [resizableColumns]="true" [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]"
+            [globalFilterFields]="['cancel_soli_cancel_realizada','cancel_soli_cancel_realizada','cancel_soli_folio','reem_cancel_main_folio','reem_cancel_soli_folio','doc_anterior_folio_folio','cancel_soli_observaciones','cancel_soli_cancel_realizada']">
+            <ng-template #caption>
+              <div class="flex" style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;" ngbDropdown>
+                <a class="btn btn_extend" [ngClass]="indicador_cancel_soli == 'hoy' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_solicitudes_cancelacion('hoy');">
+                  <i class="fa-solid fa-calendar-days"></i>&nbsp;Hoy
+                </a>
+                <a class="btn btn_extend" [ngClass]="indicador_cancel_soli == 'esta_semana' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_solicitudes_cancelacion('esta_semana');">
+                  <i class="fa-solid fa-calendar-days"></i>&nbsp;Esta semana
+                </a>
+                <a class="btn btn_extend" [ngClass]="indicador_cancel_soli == 'este_mes' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_solicitudes_cancelacion('este_mes');">
+                  <i class="fa-solid fa-calendar-days"></i>&nbsp;Este mes
+                </a>
+                <a class="btn btn_extend" [ngClass]="indicador_cancel_soli == 'mes_anterior' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_solicitudes_cancelacion('mes_anterior');">
+                  <i class="fa-solid fa-arrow-left"></i>&nbsp;mes anterior
+                </a>
+                <a id="menuDropOPCancelaciones" class="btn btn_extend" [ngClass]="indicador_cancel_soli == 'otras_fechas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" ngbDropdownToggle>
+                  <i class="fa-solid fa-list-ul"></i>&nbsp;otras fechas
+                </a>
+                <div class="dropdown-menu-end menu-despegable" ngbDropdownMenu="menuDropOPCancelaciones" style="padding: 0!important; margin: 0!important; width: max-content!important; max-height: 400px; overflow-y: auto;">
+                  <div class="col-12 input-group">
+                    <label for="eegr_cancelaciones_otras_fechas" class="activeInput">Periodo de fechas</label>
+                    <p-datepicker id="eegr_cancelaciones_otras_fechas" name="eegr_cancelaciones_otras_fechas" [(ngModel)]="rangoPeriodoCancelSoli" appendTo="body" dateFormat="dd/mm/yy"
+                      placeholder="dd/mm/aaaa" selectionMode="range" (onSelect)="ver_solicitudes_cancelacion('otras_fechas')" />
+                  </div>
+                </div>
+                <a class="btn btn_extend" [ngClass]="indicador_cancel_soli == 'all_partidas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_solicitudes_cancelacion('all_partidas');">
+                  <i class="fa-solid fa-list-ul"></i>&nbsp;todos los registros
+                </a>
+                <a class="btn btn_extend bg-green-600 descarga_lista_excel" style="height: 25px !important;"><!-- (click)="descarga_excel_lgeneral();"-->
+                  descargar&nbsp;<i class="fa-solid fa-file-excel"></i>
+                </a>
+                <p-iconfield iconPosition="left" class="ml-auto">
+                  <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                  <input pInputText type="text" (input)="tsoliCancelacion.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}"/>
+                </p-iconfield>
+              </div>
+            </ng-template>
+            <ng-template #header>
+              <tr>
+                <th class="ultimo"></th>
+                <th pResizableColumn pSortableColumn="cancel_soli_folio">folio&nbsp;<p-sortIcon field="cancel_soli_folio"/></th>
+                <th pResizableColumn pSortableColumn="doc_anterior_folio">Compra vinculada&nbsp;<p-sortIcon field="doc_anterior_folio"/></th>
+                <th pResizableColumn pSortableColumn="cancel_soli_observaciones">{{'observ' | translate}}&nbsp;<p-sortIcon field="cancel_soli_observaciones"/></th>
+                <th pResizableColumn pSortableColumn="cancel_soli_cancel_realizada">cancelaci&oacute;n realizada&nbsp;<p-sortIcon field="cancel_soli_cancel_realizada"/></th>
+              </tr>
+            </ng-template>
+            <ng-template #body let-canc>
+              <tr>
+                <td class="ultimo">
+                  <a class="btn bg-blue-600" [ngClass]="canc.cancel_soli_cancel_realizada ? 'disabled' : ''" [attr.disabled]="canc.cancel_soli_cancel_realizada ? true : null"
+                    [attr.aria-disabled]="canc.cancel_soli_cancel_realizada ? true : null" (click)="detalle_solicitud_de_cancelacion(canc);">
+                    <i class="fa-solid fa-info"></i>
+                  </a>
+                </td>
+                <td>{{canc.cancel_soli_folio}}</td>
+                <td>{{canc.doc_anterior_folio}}</td>
+                <td>{{canc.cancel_soli_observaciones}}</td>
+                <td>{{canc.cancel_soli_cancel_realizada ? ['yes_auth' | translate] : ['not_auth' | translate]}}
+                </td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="6" class="text-center py-4">
+                  <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                  <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                    {{'no_rows' | translate}}
+                  </p>
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+      </div>
+    </main>
+    <app-footer-inside></app-footer-inside>
+  </div>
+</div>
+
+<p-dialog header="Solicitud de cancelaci&oacute;n de nómina (Efectivo)" [(visible)]="windowSoliCancelacionNominaEFInfo" [modal]="true" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  @for (cancd of desglose_solicitud_cancelacion; track $index) {
+    <div class="col-12 explain">
+      <h6 class="title">folio</h6>
+      <h6 class="content">{{cancd.cancel_soli_folio}}</h6>
+    </div>
+    <div class="col-12 explain">
+      <h6 class="title">Pago</h6>
+      <h6 class="content">{{cancd.doc_anterior_folio}}</h6>
+    </div>
+    <div class="col-12 explain">
+      <h6 class="title">{{'observ' | translate}}</h6>
+      <h6 class="content">{{cancd.cancel_soli_observaciones}}</h6>
+    </div>
+    <div class="col-12 explain">
+      <h6 class="title">cancelaci&oacute;n realizada</h6>
+      <h6 class="content">{{cancd.cancel_soli_cancel_realizada ? ['yes_auth' | translate] : ['not_auth' | translate]}}</h6>
+    </div>
+  }
+  <p-divider />
+  <div class="col-12 explain">
+    <h6 class="title">Compra vinculada</h6>
+  </div>
+
+  <p-table [value]="desglose_solicitud_cancel_nomina_efectivo" dataKey="folio_pagos">
+    <ng-template #header>
+      <tr>
+        <th rowspan="2" pResizableColumn pSortableColumn="folio_interior">folio&nbsp;<p-sortIcon field="folio_interior" /></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="nomina_fecha_contabilizacion">{{'fecha_cont' | translate}}&nbsp;<p-sortIcon field="nomina_fecha_contabilizacion" /></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="nomina_numero">N&uacute;mero de n&oacute;mina&nbsp;<p-sortIcon field="nomina_numero" /></th>
+        <th colspan="5"><i class="fa-solid fa-money-check"></i>&nbsp;Orden de pago (Efectivo)</th>
+        <th colspan="5"><i class="fa-solid fa-money-check"></i>&nbsp;Orden de pago (Especie)</th>
+        <th rowspan="2" class="ultimo"></th>
+        <th rowspan="2" class="ultimo"></th>
+      </tr>
+      <tr>
+        <th pResizableColumn pSortableColumn="nomina_reporte_efectivo">reporte total&nbsp;<p-sortIcon field="nomina_reporte_efectivo" /></th>
+        <th pResizableColumn pSortableColumn="nomina_pago_efectivo">pagado&nbsp;<p-sortIcon field="nomina_pago_efectivo" /></th>
+        <th pResizableColumn pSortableColumn="nomina_saldo_efectivo">Saldo&nbsp;<p-sortIcon field="nomina_saldo_efectivo" /></th>
+        <th pResizableColumn pSortableColumn="nomina_efectivo_ord_pago_folio">Orden de pago&nbsp;<p-sortIcon field="nomina_efectivo_ord_pago_folio" /></th>
+        <th class="ultimo"></th>
+
+        <th pResizableColumn pSortableColumn="nomina_reporte_especie">reporte total&nbsp;<p-sortIcon field="nomina_reporte_especie" /></th>
+        <th pResizableColumn pSortableColumn="nomina_pago_especie">pagado&nbsp;<p-sortIcon field="nomina_pago_especie" /></th>
+        <th pResizableColumn pSortableColumn="nomina_saldo_especie">Saldo&nbsp;<p-sortIcon field="nomina_saldo_especie" /></th>
+        <th pResizableColumn pSortableColumn="nomina_especie_ord_pago_folio">Orden de pago&nbsp;<p-sortIcon field="nomina_especie_ord_pago_folio" /></th>
+        <th class="ultimo"></th>
+      </tr>
+    </ng-template>
+    <ng-template #body let-nom>
+      <tr>
+        <td>{{nom.folio_interior}}</td>
+        <td>{{nom.nomina_fecha_contabilizacion}}</td>
+        <td>{{nom.nomina_numero}}</td>
+        <td class="td_importes">{{nom.nomina_reporte_efectivo}}</td>
+        <td class="td_importes">{{nom.nomina_pago_efectivo}}</td>
+        <td class="td_importes">{{nom.nomina_saldo_efectivo}}</td>
+        <td>{{nom.nomina_efectivo_ord_pago_folio}}</td>
+        <td class="ultimo">
+          <!--<a class="btn btn_extend text-bg-success rounded-3"
+            [ngClass]="nom.nomina_efectivo_ord_pago_token == '' ? 'disabled' : ''"
+            [attr.disabled]="nom.nomina_efectivo_ord_pago_token == '' ? true : null"
+            [attr.aria-disabled]="nom.nomina_efectivo_ord_pago_token == '' ? true : null"
+            (click)="nom.nomina_efectivo_ord_pago_token != '' && verNominaEfectivoSeguimientoOrdenPago(nom.token_nominas_periodos,nom.nomina_efectivo_ord_pago_token);">
+            <i class="fa-solid fa-money-check-dollar"></i>&nbsp;Seguimiento
+          </a>-->
+        </td>
+        <td class="td_importes">{{nom.nomina_reporte_especie}}</td>
+        <td class="td_importes">{{nom.nomina_pago_especie}}</td>
+        <td class="td_importes">{{nom.nomina_saldo_especie}}</td>
+        <td>{{nom.nomina_especie_ord_pago_folio}}</td>
+        <td class="ultimo">
+          <!--<a class="btn btn_extend text-bg-success rounded-3"
+            [ngClass]="nom.nomina_especie_ord_pago_token == '' ? 'disabled' : ''"
+            [attr.disabled]="nom.nomina_especie_ord_pago_token == '' ? true : null"
+            [attr.aria-disabled]="nom.nomina_especie_ord_pago_token == '' ? true : null"
+            (click)="nom.nomina_especie_ord_pago_token != '' && verNominaEspecieSeguimientoOrdenPago(nom.token_nominas_periodos,nom.nomina_especie_ord_pago_token);">
+            <i class="fa-solid fa-money-check-dollar"></i>&nbsp;Seguimiento
+          </a>-->
+        </td>
+        <td class="ultimo">
+          <!--<a class="btn btn_extend bg-blue-600" (click)="verNominaDesglose(nom.token_nominas_periodos);">
+            <i class="fa-solid fa-folder-open"></i>&nbsp;desglosar n&oacute;mina
+          </a>-->
+        </td>
+        <td class="ultimo">
+          <!--<a class="btn btn_extend text-bg-danger rounded-3"
+            [ngClass]="nom.vinculacion_a_pagos ? 'disabled' : ''"
+            [attr.disabled]="nom.vinculacion_a_pagos ? true : null"
+            [attr.aria-disabled]="nom.vinculacion_a_pagos ? true : null"
+            (click)="!nom.vinculacion_a_pagos && deleteNomina(nom.token_nominas_periodos);">
+            <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+          </a>-->
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="15" class="text-center py-4">
+          <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+          <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+            {{'no_rows' | translate}}
+          </p>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+  @for (cancd of desglose_solicitud_cancelacion; track $index) {
+    @if (!cancd.cancel_soli_cancel_realizada && desglose_soli_cancel_nomina_efectivo) {
+      <p-divider />
+      <div class="col-12 explain">
+        <h6 class="title">confirmar cancelación</h6>
+      </div>
+      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+        <label class="activeInput">{{'fecha_cont' | translate}}</label>
+        <input class="validate datepicker" id="fechaContabilizacionPago" name="fechaContabilizacionCompra" type="date" (change)="confirmaCancelacionFechaContNomiEF($event.target,cancd.cancel_soli_token);">
+      </div>
+      <div class="col-12 input-group" style="margin-bottom: 10px!important;">
+        <label for="stockmin_regCat" id="lblStockmin" class="activeInput">{{'observ' | translate}}</label>
+        <textarea class="validate" name="large_descript" (keyup)="confirmaCancelacionObservaNomiEF($event.target,cancd.cancel_soli_token);"></textarea>
+      </div>
+      <div class="col-12" style="display: flex !important;justify-content: end!important;">
+        <a class="btn btn_extend text-bg-success rounded-3" type="submit" name="btnAltaProducto2"
+          [ngClass]="cancd.f_contab_confirma_cancelacion == '' || cancd.comentarios_confirma_cancelacion == '' ? 'disabled' : ''"
+          [attr.disabled]="cancd.f_contab_confirma_cancelacion == '' || cancd.comentarios_confirma_cancelacion == '' ? true : null"
+          [attr.aria-disabled]="cancd.f_contab_confirma_cancelacion == '' || cancd.comentarios_confirma_cancelacion == '' ? true : null"
+          (click)="(cancd.f_contab_confirma_cancelacion != '' && cancd.comentarios_confirma_cancelacion != '') && confirmaCancelNominaEfectivo(cancd.cancel_soli_token,cancd.f_contab_confirma_cancelacion,cancd.comentarios_confirma_cancelacion);">
+          <i class="fa-solid fa-floppy-disk"
+            style="height: 15px!important;line-height: 15px!important;width: 15px!important;font-size: small!important;"></i>&nbsp;{{'sav_cam' | translate}}
+        </a>
+      </div>
+    }
+  }
+</p-dialog>
+
+<p-dialog header="Solicitud de cancelaci&oacute;n de nómina (Especie)" [(visible)]="windowSoliCancelacionNominaESPInfo" [modal]="true" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  @for (cancd of desglose_solicitud_cancelacion; track $index) {
+    <div class="col-12 explain">
+      <h6 class="title">folio</h6>
+      <h6 class="content">{{cancd.cancel_soli_folio}}</h6>
+    </div>
+    <div class="col-12 explain">
+      <h6 class="title">Pago</h6>
+      <h6 class="content">{{cancd.doc_anterior_folio}}</h6>
+    </div>
+    <div class="col-12 explain">
+      <h6 class="title">{{'observ' | translate}}</h6>
+      <h6 class="content">{{cancd.cancel_soli_observaciones}}</h6>
+    </div>
+    <div class="col-12 explain">
+      <h6 class="title">cancelaci&oacute;n realizada</h6>
+      <h6 class="content">{{cancd.cancel_soli_cancel_realizada ? ['yes_auth' | translate] : ['not_auth' | translate]}}</h6>
+    </div>
+  }
+  <p-divider />
+  <div class="col-12 explain">
+    <h6 class="title">Compra vinculada</h6>
+  </div>
+
+  <p-table [value]="desglose_solicitud_cancel_nomina_especie" dataKey="folio_pagos">
+    <ng-template #header>
+      <tr>
+        <th rowspan="2" pResizableColumn pSortableColumn="folio_interior">folio&nbsp;<p-sortIcon field="folio_interior" /></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="nomina_fecha_contabilizacion">{{'fecha_cont' | translate}}&nbsp;<p-sortIcon field="nomina_fecha_contabilizacion" /></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="nomina_numero">N&uacute;mero de n&oacute;mina&nbsp;<p-sortIcon field="nomina_numero" /></th>
+        <th colspan="5"><i class="fa-solid fa-money-check"></i>&nbsp;Orden de pago (Efectivo)</th>
+        <th colspan="5"><i class="fa-solid fa-money-check"></i>&nbsp;Orden de pago (Especie)</th>
+        <th rowspan="2" class="ultimo"></th>
+        <th rowspan="2" class="ultimo"></th>
+      </tr>
+      <tr>
+        <th pResizableColumn pSortableColumn="nomina_reporte_efectivo">reporte total&nbsp;<p-sortIcon field="nomina_reporte_efectivo" /></th>
+        <th pResizableColumn pSortableColumn="nomina_pago_efectivo">pagado&nbsp;<p-sortIcon field="nomina_pago_efectivo" /></th>
+        <th pResizableColumn pSortableColumn="nomina_saldo_efectivo">Saldo&nbsp;<p-sortIcon field="nomina_saldo_efectivo" /></th>
+        <th pResizableColumn pSortableColumn="nomina_efectivo_ord_pago_folio">Orden de pago&nbsp;<p-sortIcon field="nomina_efectivo_ord_pago_folio" /></th>
+        <th class="ultimo"></th>
+
+        <th pResizableColumn pSortableColumn="nomina_reporte_especie">reporte total&nbsp;<p-sortIcon field="nomina_reporte_especie" /></th>
+        <th pResizableColumn pSortableColumn="nomina_pago_especie">pagado&nbsp;<p-sortIcon field="nomina_pago_especie" /></th>
+        <th pResizableColumn pSortableColumn="nomina_saldo_especie">Saldo&nbsp;<p-sortIcon field="nomina_saldo_especie" /></th>
+        <th pResizableColumn pSortableColumn="nomina_especie_ord_pago_folio">Orden de pago&nbsp;<p-sortIcon field="nomina_especie_ord_pago_folio" /></th>
+        <th class="ultimo"></th>
+      </tr>
+    </ng-template>
+    <ng-template #body let-nom>
+      <tr>
+        <td>{{nom.folio_interior}}</td>
+        <td>{{nom.nomina_fecha_contabilizacion}}</td>
+        <td>{{nom.nomina_numero}}</td>
+        <td class="td_importes">{{nom.nomina_reporte_efectivo}}</td>
+        <td class="td_importes">{{nom.nomina_pago_efectivo}}</td>
+        <td class="td_importes">{{nom.nomina_saldo_efectivo}}</td>
+        <td>{{nom.nomina_efectivo_ord_pago_folio}}</td>
+        <td class="ultimo">
+          <!--<a class="btn btn_extend text-bg-success rounded-3"
+            [ngClass]="nom.nomina_efectivo_ord_pago_token == '' ? 'disabled' : ''"
+            [attr.disabled]="nom.nomina_efectivo_ord_pago_token == '' ? true : null"
+            [attr.aria-disabled]="nom.nomina_efectivo_ord_pago_token == '' ? true : null"
+            (click)="nom.nomina_efectivo_ord_pago_token != '' && verNominaEfectivoSeguimientoOrdenPago(nom.token_nominas_periodos,nom.nomina_efectivo_ord_pago_token);">
+            <i class="fa-solid fa-money-check-dollar"></i>&nbsp;Seguimiento
+          </a>-->
+        </td>
+        <td class="td_importes">{{nom.nomina_reporte_especie}}</td>
+        <td class="td_importes">{{nom.nomina_pago_especie}}</td>
+        <td class="td_importes">{{nom.nomina_saldo_especie}}</td>
+        <td>{{nom.nomina_especie_ord_pago_folio}}</td>
+        <td class="ultimo">
+          <!--<a class="btn btn_extend text-bg-success rounded-3"
+            [ngClass]="nom.nomina_especie_ord_pago_token == '' ? 'disabled' : ''"
+            [attr.disabled]="nom.nomina_especie_ord_pago_token == '' ? true : null"
+            [attr.aria-disabled]="nom.nomina_especie_ord_pago_token == '' ? true : null"
+            (click)="nom.nomina_especie_ord_pago_token != '' && verNominaEspecieSeguimientoOrdenPago(nom.token_nominas_periodos,nom.nomina_especie_ord_pago_token);">
+            <i class="fa-solid fa-money-check-dollar"></i>&nbsp;Seguimiento
+          </a>-->
+        </td>
+        <td class="ultimo">
+          <!--<a class="btn btn_extend bg-blue-600" (click)="verNominaDesglose(nom.token_nominas_periodos);">
+            <i class="fa-solid fa-folder-open"></i>&nbsp;desglosar n&oacute;mina
+          </a>-->
+        </td>
+        <td class="ultimo">
+          <!--<a class="btn btn_extend text-bg-danger rounded-3"
+            [ngClass]="nom.vinculacion_a_pagos ? 'disabled' : ''"
+            [attr.disabled]="nom.vinculacion_a_pagos ? true : null"
+            [attr.aria-disabled]="nom.vinculacion_a_pagos ? true : null"
+            (click)="!nom.vinculacion_a_pagos && deleteNomina(nom.token_nominas_periodos);">
+            <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+          </a>-->
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="15" class="text-center py-4">
+          <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+          <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+            {{'no_rows' | translate}}
+          </p>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+  @for (cancd of desglose_solicitud_cancelacion; track $index) {
+    @if (!cancd.cancel_soli_cancel_realizada && desglose_soli_cancel_nomina_especie) {
+      <p-divider />
+      <div class="col-12 explain">
+        <h6 class="title">confirmar cancelación</h6>
+      </div>
+      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+        <label class="activeInput">{{'fecha_cont' | translate}}</label>
+        <input class="validate datepicker" id="fechaContabilizacionPago" name="fechaContabilizacionCompra" type="date" (change)="confirmaCancelacionFechaContNomiESP($event.target,cancd.cancel_soli_token);">
+      </div>
+      <div class="col-12 input-group" style="margin-bottom: 10px!important;">
+        <label for="stockmin_regCat" id="lblStockmin" class="activeInput">{{'observ' | translate}}</label>
+        <textarea class="validate" name="large_descript" (keyup)="confirmaCancelacionObservaNomiESP($event.target,cancd.cancel_soli_token);"></textarea>
+      </div>
+      <div class="col-12" style="display: flex !important;justify-content: end!important;">
+        <a class="btn btn_extend text-bg-success rounded-3" type="submit" name="btnAltaProducto2"
+          [ngClass]="cancd.f_contab_confirma_cancelacion == '' || cancd.comentarios_confirma_cancelacion == '' ? 'disabled' : ''"
+          [attr.disabled]="cancd.f_contab_confirma_cancelacion == '' || cancd.comentarios_confirma_cancelacion == '' ? true : null"
+          [attr.aria-disabled]="cancd.f_contab_confirma_cancelacion == '' || cancd.comentarios_confirma_cancelacion == '' ? true : null"
+          (click)="(cancd.f_contab_confirma_cancelacion != '' && cancd.comentarios_confirma_cancelacion != '') && confirmaCancelNominaEspecie(cancd.cancel_soli_token,cancd.f_contab_confirma_cancelacion,cancd.comentarios_confirma_cancelacion);">
+          <i class="fa-solid fa-floppy-disk"
+            style="height: 15px!important;line-height: 15px!important;width: 15px!important;font-size: small!important;"></i>&nbsp;{{'sav_cam' | translate}}
+        </a>
+      </div>
+    }
+  }
+</p-dialog>
+
+<p-dialog header="Solicitud de cancelaci&oacute;n de asimilados" [(visible)]="windowSoliCancelacionAsimilados" [modal]="true" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  @for (cancd of desglose_solicitud_cancelacion; track $index) {
+    <div class="col-12 explain">
+      <h6 class="title">folio</h6>
+      <h6 class="content">{{cancd.cancel_soli_folio}}</h6>
+    </div>
+    <div class="col-12 explain">
+      <h6 class="title">Pago</h6>
+      <h6 class="content">{{cancd.doc_anterior_folio}}</h6>
+    </div>
+    <div class="col-12 explain">
+      <h6 class="title">{{'observ' | translate}}</h6>
+      <h6 class="content">{{cancd.cancel_soli_observaciones}}</h6>
+    </div>
+    <div class="col-12 explain">
+      <h6 class="title">cancelaci&oacute;n realizada</h6>
+      <h6 class="content">{{cancd.cancel_soli_cancel_realizada ? ['yes_auth' | translate] : ['not_auth' | translate]}}</h6>
+    </div>
+  }
+  <p-divider />
+  <div class="col-12 explain">
+    <h6 class="title">Compra vinculada</h6>
+  </div>
+
+  <p-table [value]="desglose_solicitud_cancel_asimilados" dataKey="folio_pagos">
+    <ng-template #header>
+      <tr>
+        <th rowspan="2" pResizableColumn pSortableColumn="folio_compra">folio de compra&nbsp;<p-sortIcon field="folio_compra" /></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="fecha_contabilizacion">{{'fecha_cont' | translate}}&nbsp;<p-sortIcon field="fecha_contabilizacion" /></th>
+        <th colspan="3" pResizableColumn>{{'prov' | translate}}</th>
+        <th colspan="2">Compra a cr&eacute;dito</th>
+        <th rowspan="2" pSortableColumn="compra_moneda">{{'mon_name' | translate}}&nbsp;<p-sortIcon field="compra_moneda" /></th>
+        <th rowspan="2" pSortableColumn="compra_subtotal">Subtotal&nbsp;<p-sortIcon field="compra_subtotal" /></th>
+        <th rowspan="2" pSortableColumn="compra_descuento">Descuento&nbsp;<p-sortIcon field="compra_descuento" /></th>
+        <th rowspan="2" pSortableColumn="compra_retenciones">Retenciones&nbsp;<p-sortIcon field="compra_retenciones" /></th>
+        <th rowspan="2" pSortableColumn="compra_traslados">Traslados&nbsp;<p-sortIcon field="compra_traslados" /></th>
+        <th rowspan="2" pSortableColumn="importe_total_compra">Total&nbsp;<p-sortIcon field="importe_total_compra" /></th>
+        <th colspan="16">Facturas (CFDI)</th>
+        <th colspan="3"><i class="fa-solid fa-dolly"></i>&nbsp;Orden de recepci&oacute;n</th>
+        <th colspan="3"><i class="fa-solid fa-money-check"></i>&nbsp;Orden de pago</th>
+      </tr>
+      <tr>
+        <th pResizableColumn pSortableColumn="proveedor_folio">folio&nbsp;<p-sortIcon field="proveedor_nombre" /></th>
+        <th pResizableColumn pSortableColumn="proveedor_nombre">{{'prov' | translate}}&nbsp;<p-sortIcon field="proveedor_nombre" /></th>
+        <th pResizableColumn pSortableColumn="proveedor_nombre_comercial">{{'comercial_name' | translate}}&nbsp;<p-sortIcon field="proveedor_nombre" /></th>
+        <th pSortableColumn="compra_a_credito">Tipo&nbsp;<p-sortIcon field="compra_a_credito" /></th>
+        <th pSortableColumn="fecha_vencimiento">Fecha de vencimiento&nbsp;<p-sortIcon field="fecha_vencimiento" /></th>
+        <!--facturas CFDI-->
+        <th pSortableColumn="aplica_recepcion_facturas">Aplica recepci&oacute;n de facturas&nbsp;<p-sortIcon field="aplica_recepcion_facturas" /></th>
+        <th pSortableColumn="recibeFactura">recibi&oacute; Factura&nbsp;<p-sortIcon field="recibeFactura" /></th>
+        <th pSortableColumn="cfdi_comprobante_version">Versi&oacute;n&nbsp;<p-sortIcon field="cfdi_comprobante_version" /></th>
+        <th pSortableColumn="cfdi_comprobante_serie">Serie&nbsp;<p-sortIcon field="cfdi_comprobante_serie" /></th>
+        <th pSortableColumn="cfdi_comprobante_folio">Folio&nbsp;<p-sortIcon field="cfdi_comprobante_folio" /></th>
+        <th pSortableColumn="cfdi_comprobante_fecha">Fecha&nbsp;<p-sortIcon field="cfdi_comprobante_fecha" /></th>
+        <th pSortableColumn="cfdi_comprobante_forma_de_pago">{{'f_pago' | translate}}&nbsp;<p-sortIcon field="cfdi_comprobante_forma_de_pago" /></th>
+        <th pSortableColumn="cfdi_comprobante_metodo_de_pago">{{'m_pago' | translate}}&nbsp;<p-sortIcon field="cfdi_comprobante_metodo_de_pago" /></th>
+        <th pSortableColumn="cfdi_comprobante_subtotal">Subtotal&nbsp;<p-sortIcon field="cfdi_comprobante_subtotal" /></th>
+        <th pSortableColumn="cfdi_comprobante_moneda">Moneda&nbsp;<p-sortIcon field="cfdi_comprobante_moneda" /></th>
+        <th pSortableColumn="cfdi_comprobante_tipo_de_cambio">Tipo de cambio&nbsp;<p-sortIcon field="cfdi_comprobante_tipo_de_cambio" /></th>
+        <th pSortableColumn="cfdi_comprobante_total">Total&nbsp;<p-sortIcon field="cfdi_comprobante_total" /></th>
+        <th pSortableColumn="cfdi_comprobante_confirmacion">Confirmaci&oacute;n&nbsp;<p-sortIcon field="cfdi_comprobante_confirmacion" /></th>
+        <th pSortableColumn="cfdi_comprobante_tipo_de_comprobante">Tipo de comprobante&nbsp;<p-sortIcon field="cfdi_comprobante_tipo_de_comprobante" /></th>
+        <th pSortableColumn="cfdi_complementoFechaTimbrado">Fecha de timbrado&nbsp;<p-sortIcon field="cfdi_complementoFechaTimbrado" /></th>
+        <th pSortableColumn="cfdi_complementoUUID">UUID&nbsp;<p-sortIcon field="cfdi_complementoUUID" /></th>
+        <!--ordenes de recepción-->
+        <th pSortableColumn="total_articulos">articulos recibidos&nbsp;<p-sortIcon field="total_articulos" /></th>
+        <th pResizableColumn>lugar de recepci&oacute;n</th>
+        <th></th>
+        <!--ordenes de pago-->
+        <th pSortableColumn="folio_orden_pago">Orden de pago&nbsp;<p-sortIcon field="folio_orden_pago" /></th>
+        <th pResizableColumn>Pago realizado</th>
+        <th></th>
+      </tr>
+    </ng-template>
+    <ng-template #body let-cBuy>
+      <tr>
+        <td>{{cBuy.folio_compra}}</td>
+        <td>{{cBuy.fecha_contabilizacion}}</td>
+        <td>{{cBuy.proveedor_folio}}</td>
+        <td class="name" style="text-transform: uppercase !important;">{{cBuy.proveedor_nombre}}</td>
+        <td class="name" style="text-transform: uppercase !important;">{{cBuy.proveedor_nombre_comercial}}</td>
+        <td>{{cBuy.compra_a_credito}}</td>
+        <td>{{cBuy.fecha_vencimiento}}</td>
+        <td>{{cBuy.compra_moneda}}</td>
+        <td class="td_importes">{{cBuy.compra_subtotal}}</td>
+        <td class="td_importes">{{cBuy.compra_descuento}}</td>
+        <td class="td_importes">{{cBuy.compra_retenciones}}</td>
+        <td class="td_importes">{{cBuy.compra_traslados}}</td>
+        <td class="td_importes">{{cBuy.importe_total_compra}}</td>
+        <!--facturas CFDI-->
+        <td>{{cBuy.aplica_recepcion_facturas}}</td>
+        <td>{{cBuy.recibeFactura === true ? 'Antes' : 'Despues'}}</td>
+        <td>{{cBuy.aplica_recepcion_facturas == 'No' ? "N/A" : cBuy.cfdi_comprobante_version}}</td>
+        <td>{{cBuy.aplica_recepcion_facturas == 'No' ? "N/A" : cBuy.cfdi_comprobante_serie}}</td>
+        <td>{{cBuy.aplica_recepcion_facturas == 'No' ? "N/A" : cBuy.cfdi_comprobante_folio}}</td>
+        <td>{{cBuy.aplica_recepcion_facturas == 'No' ? "N/A" : cBuy.cfdi_comprobante_fecha}}</td>
+        <td>{{cBuy.aplica_recepcion_facturas == 'No' ? "N/A" : cBuy.cfdi_comprobante_forma_de_pago}}</td>
+        <td>{{cBuy.aplica_recepcion_facturas == 'No' ? "N/A" : cBuy.cfdi_comprobante_metodo_de_pago}}</td>
+        <td class="td_importes">{{cBuy.aplica_recepcion_facturas == 'No' ? "N/A" : cBuy.cfdi_comprobante_subtotal}}</td>
+        <td>{{cBuy.aplica_recepcion_facturas == 'No' ? "N/A" : cBuy.cfdi_comprobante_moneda}}</td>
+        <td class="td_importes">{{cBuy.aplica_recepcion_facturas == 'No' ? "N/A" : cBuy.cfdi_comprobante_tipo_de_cambio}}</td>
+        <td class="td_importes">{{cBuy.aplica_recepcion_facturas == 'No' ? "N/A" : cBuy.cfdi_comprobante_total}}</td>
+        <td>{{cBuy.aplica_recepcion_facturas == 'No' ? "N/A" : cBuy.cfdi_comprobante_confirmacion}}</td>
+        <td>{{cBuy.aplica_recepcion_facturas == 'No' ? "N/A" : cBuy.cfdi_comprobante_tipo_de_comprobante}} </td>
+        <td>{{cBuy.aplica_recepcion_facturas == 'No' ? "N/A" : cBuy.cfdi_complementoFechaTimbrado}} </td>
+        <td>{{cBuy.aplica_recepcion_facturas == 'No' ? "N/A" : cBuy.cfdi_complementoUUID}}</td>
+        <!--ordenes de recepción-->
+        <td>{{cBuy.articulos_recibidos+" / "+cBuy.total_articulos}}</td>
+        <td>{{cBuy.lugarRecepcionTipo == 'N/A' ? cBuy.lugarRecepcionTipo : cBuy.lugarRecepcionTipo+" "+cBuy.lugarRecepcionDireccion}}</td>
+        <td>{{cBuy.existe_orden_recepcion ? 'Orden ' + cBuy.folio_orden_recepcion : ''}}</td>
+        <!--ordenes de pago-->
+        <td class="name">{{cBuy.folio_orden_pago == '---' ? '---' : cBuy.folio_orden_pago+" "+cBuy.fecha_contabilizacion_orden_pago}}</td>
+        <td class="name">{{cBuy.pagos_realizados_folio == '---' ? '---' : cBuy.pagos_realizados_folio+" "+cBuy.pagos_realizados_fecha_contabilizacion}}</td>
+        <td class="ultimo">{{cBuy.existe_orden_pago ? 'Orden ' + cBuy.folio_orden_pago : 'Generar orden'}}</td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="35" class="text-center py-4">
+          <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+          <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+            {{'no_rows' | translate}}
+          </p>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+  @for (cancd of desglose_solicitud_cancelacion; track $index) {
+    @if (!cancd.cancel_soli_cancel_realizada && desglose_soli_cancel_asimilados) {
+      <p-divider />
+      <div class="col-12 explain">
+        <h6 class="title">confirmar cancelación</h6>
+      </div>
+      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+        <label class="activeInput">{{'fecha_cont' | translate}}</label>
+        <input class="validate datepicker" id="fechaContabilizacionPago" name="fechaContabilizacionCompra" type="date" (change)="confirmaCancelacionAsimilFechaCont($event.target,cancd.cancel_soli_token);">
+      </div>
+      <div class="col-12 input-group" style="margin-bottom: 10px!important;">
+        <label for="stockmin_regCat" id="lblStockmin" class="activeInput">{{'observ' | translate}}</label>
+        <textarea class="validate" name="large_descript" (keyup)="confirmaCancelacionAsimilObserva($event.target,cancd.cancel_soli_token);"></textarea>
+      </div>
+      <div class="col-12" style="display: flex !important;justify-content: end!important;">
+        <a class="btn btn_extend text-bg-success rounded-3" type="submit" name="btnAltaProducto2"
+          [ngClass]="cancd.f_contab_confirma_cancelacion == '' || cancd.comentarios_confirma_cancelacion == '' ? 'disabled' : ''"
+          [attr.disabled]="cancd.f_contab_confirma_cancelacion == '' || cancd.comentarios_confirma_cancelacion == '' ? true : null"
+          [attr.aria-disabled]="cancd.f_contab_confirma_cancelacion == '' || cancd.comentarios_confirma_cancelacion == '' ? true : null"
+          (click)="(cancd.f_contab_confirma_cancelacion != '' && cancd.comentarios_confirma_cancelacion != '') && confirmaCancelAsimilados(cancd.cancel_soli_token,cancd.f_contab_confirma_cancelacion,cancd.comentarios_confirma_cancelacion);">
+          <i class="fa-solid fa-floppy-disk"
+            style="height: 15px!important;line-height: 15px!important;width: 15px!important;font-size: small!important;"></i>&nbsp;{{'sav_cam' | translate}}
+        </a>
+      </div>
+    }
+  }
+</p-dialog>
+
+<p-dialog header="Solicitud de cancelaci&oacute;n de impuestos sobre nómina" [(visible)]="windowSoliCancelacionISN" [modal]="true" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  @for (cancd of desglose_solicitud_cancelacion; track $index) {
+    <div class="col-12 explain">
+      <h6 class="title">folio</h6>
+      <h6 class="content">{{cancd.cancel_soli_folio}}</h6>
+    </div>
+    <div class="col-12 explain">
+      <h6 class="title">Pago</h6>
+      <h6 class="content">{{cancd.doc_anterior_folio}}</h6>
+    </div>
+    <div class="col-12 explain">
+      <h6 class="title">{{'observ' | translate}}</h6>
+      <h6 class="content">{{cancd.cancel_soli_observaciones}}</h6>
+    </div>
+    <div class="col-12 explain">
+      <h6 class="title">cancelaci&oacute;n realizada</h6>
+      <h6 class="content">{{cancd.cancel_soli_cancel_realizada ? ['yes_auth' | translate] : ['not_auth' | translate]}}</h6>
+    </div>
+  }
+  <p-divider />
+  <div class="col-12 explain">
+    <h6 class="title">Compra vinculada</h6>
+  </div>
+
+  <p-table [value]="desglose_solicitud_cancel_isn" dataKey="folio_pagos">
+    <ng-template #header>
+      <tr>
+        <th rowspan="2" pResizableColumn pSortableColumn="folio_compra">folio de compra&nbsp;<p-sortIcon field="folio_compra" /></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="fecha_contabilizacion">{{'fecha_cont' | translate}}&nbsp;<p-sortIcon field="fecha_contabilizacion" /></th>
+        <th colspan="3" pResizableColumn>{{'prov' | translate}}</th>
+        <th colspan="2">Compra a cr&eacute;dito</th>
+        <th rowspan="2" pSortableColumn="compra_moneda">{{'mon_name' | translate}}&nbsp;<p-sortIcon field="compra_moneda" /></th>
+        <th rowspan="2" pSortableColumn="compra_subtotal">Subtotal&nbsp;<p-sortIcon field="compra_subtotal" /></th>
+        <th rowspan="2" pSortableColumn="compra_descuento">Descuento&nbsp;<p-sortIcon field="compra_descuento" /></th>
+        <th rowspan="2" pSortableColumn="compra_retenciones">Retenciones&nbsp;<p-sortIcon field="compra_retenciones" /></th>
+        <th rowspan="2" pSortableColumn="compra_traslados">Traslados&nbsp;<p-sortIcon field="compra_traslados" /></th>
+        <th rowspan="2" pSortableColumn="importe_total_compra">Total&nbsp;<p-sortIcon field="importe_total_compra" /></th>
+        <th colspan="16">Facturas (CFDI)</th>
+        <th colspan="3"><i class="fa-solid fa-dolly"></i>&nbsp;Orden de recepci&oacute;n</th>
+        <th colspan="3"><i class="fa-solid fa-money-check"></i>&nbsp;Orden de pago</th>
+      </tr>
+      <tr>
+        <th pResizableColumn pSortableColumn="proveedor_folio">folio&nbsp;<p-sortIcon field="proveedor_nombre" /></th>
+        <th pResizableColumn pSortableColumn="proveedor_nombre">{{'prov' | translate}}&nbsp;<p-sortIcon field="proveedor_nombre" /></th>
+        <th pResizableColumn pSortableColumn="proveedor_nombre_comercial">{{'comercial_name' | translate}}&nbsp;<p-sortIcon field="proveedor_nombre" /></th>
+        <th pSortableColumn="compra_a_credito">Tipo&nbsp;<p-sortIcon field="compra_a_credito" /></th>
+        <th pSortableColumn="fecha_vencimiento">Fecha de vencimiento&nbsp;<p-sortIcon field="fecha_vencimiento" /></th>
+        <!--facturas CFDI-->
+        <th pSortableColumn="aplica_recepcion_facturas">Aplica recepci&oacute;n de facturas&nbsp;<p-sortIcon field="aplica_recepcion_facturas" /></th>
+        <th pSortableColumn="recibeFactura">recibi&oacute; Factura&nbsp;<p-sortIcon field="recibeFactura" /></th>
+        <th pSortableColumn="cfdi_comprobante_version">Versi&oacute;n&nbsp;<p-sortIcon field="cfdi_comprobante_version" /></th>
+        <th pSortableColumn="cfdi_comprobante_serie">Serie&nbsp;<p-sortIcon field="cfdi_comprobante_serie" /></th>
+        <th pSortableColumn="cfdi_comprobante_folio">Folio&nbsp;<p-sortIcon field="cfdi_comprobante_folio" /></th>
+        <th pSortableColumn="cfdi_comprobante_fecha">Fecha&nbsp;<p-sortIcon field="cfdi_comprobante_fecha" /></th>
+        <th pSortableColumn="cfdi_comprobante_forma_de_pago">{{'f_pago' | translate}}&nbsp;<p-sortIcon field="cfdi_comprobante_forma_de_pago" /></th>
+        <th pSortableColumn="cfdi_comprobante_metodo_de_pago">{{'m_pago' | translate}}&nbsp;<p-sortIcon field="cfdi_comprobante_metodo_de_pago" /></th>
+        <th pSortableColumn="cfdi_comprobante_subtotal">Subtotal&nbsp;<p-sortIcon field="cfdi_comprobante_subtotal" /></th>
+        <th pSortableColumn="cfdi_comprobante_moneda">Moneda&nbsp;<p-sortIcon field="cfdi_comprobante_moneda" /></th>
+        <th pSortableColumn="cfdi_comprobante_tipo_de_cambio">Tipo de cambio&nbsp;<p-sortIcon field="cfdi_comprobante_tipo_de_cambio" /></th>
+        <th pSortableColumn="cfdi_comprobante_total">Total&nbsp;<p-sortIcon field="cfdi_comprobante_total" /></th>
+        <th pSortableColumn="cfdi_comprobante_confirmacion">Confirmaci&oacute;n&nbsp;<p-sortIcon field="cfdi_comprobante_confirmacion" /></th>
+        <th pSortableColumn="cfdi_comprobante_tipo_de_comprobante">Tipo de comprobante&nbsp;<p-sortIcon field="cfdi_comprobante_tipo_de_comprobante" /></th>
+        <th pSortableColumn="cfdi_complementoFechaTimbrado">Fecha de timbrado&nbsp;<p-sortIcon field="cfdi_complementoFechaTimbrado" /></th>
+        <th pSortableColumn="cfdi_complementoUUID">UUID&nbsp;<p-sortIcon field="cfdi_complementoUUID" /></th>
+        <!--ordenes de recepción-->
+        <th pSortableColumn="total_articulos">articulos recibidos&nbsp;<p-sortIcon field="total_articulos" /></th>
+        <th pResizableColumn>lugar de recepci&oacute;n</th>
+        <th></th>
+        <!--ordenes de pago-->
+        <th pSortableColumn="folio_orden_pago">Orden de pago&nbsp;<p-sortIcon field="folio_orden_pago" /></th>
+        <th pResizableColumn>Pago realizado</th>
+        <th></th>
+      </tr>
+    </ng-template>
+    <ng-template #body let-cBuy>
+      <tr>
+        <td>{{cBuy.folio_compra}}</td>
+        <td>{{cBuy.fecha_contabilizacion}}</td>
+        <td>{{cBuy.proveedor_folio}}</td>
+        <td class="name" style="text-transform: uppercase !important;">{{cBuy.proveedor_nombre}}</td>
+        <td class="name" style="text-transform: uppercase !important;">{{cBuy.proveedor_nombre_comercial}}</td>
+        <td>{{cBuy.compra_a_credito}}</td>
+        <td>{{cBuy.fecha_vencimiento}}</td>
+        <td>{{cBuy.compra_moneda}}</td>
+        <td class="td_importes">{{cBuy.compra_subtotal}}</td>
+        <td class="td_importes">{{cBuy.compra_descuento}}</td>
+        <td class="td_importes">{{cBuy.compra_retenciones}}</td>
+        <td class="td_importes">{{cBuy.compra_traslados}}</td>
+        <td class="td_importes">{{cBuy.importe_total_compra}}</td>
+        <!--facturas CFDI-->
+        <td>{{cBuy.aplica_recepcion_facturas}}</td>
+        <td>{{cBuy.recibeFactura === true ? 'Antes' : 'Despues'}}</td>
+        <td>{{cBuy.aplica_recepcion_facturas == 'No' ? "N/A" : cBuy.cfdi_comprobante_version}}</td>
+        <td>{{cBuy.aplica_recepcion_facturas == 'No' ? "N/A" : cBuy.cfdi_comprobante_serie}}</td>
+        <td>{{cBuy.aplica_recepcion_facturas == 'No' ? "N/A" : cBuy.cfdi_comprobante_folio}}</td>
+        <td>{{cBuy.aplica_recepcion_facturas == 'No' ? "N/A" : cBuy.cfdi_comprobante_fecha}}</td>
+        <td>{{cBuy.aplica_recepcion_facturas == 'No' ? "N/A" : cBuy.cfdi_comprobante_forma_de_pago}}</td>
+        <td>{{cBuy.aplica_recepcion_facturas == 'No' ? "N/A" : cBuy.cfdi_comprobante_metodo_de_pago}}</td>
+        <td class="td_importes">{{cBuy.aplica_recepcion_facturas == 'No' ? "N/A" : cBuy.cfdi_comprobante_subtotal}}</td>
+        <td>{{cBuy.aplica_recepcion_facturas == 'No' ? "N/A" : cBuy.cfdi_comprobante_moneda}}</td>
+        <td class="td_importes">{{cBuy.aplica_recepcion_facturas == 'No' ? "N/A" : cBuy.cfdi_comprobante_tipo_de_cambio}}</td>
+        <td class="td_importes">{{cBuy.aplica_recepcion_facturas == 'No' ? "N/A" : cBuy.cfdi_comprobante_total}}</td>
+        <td>{{cBuy.aplica_recepcion_facturas == 'No' ? "N/A" : cBuy.cfdi_comprobante_confirmacion}}</td>
+        <td>{{cBuy.aplica_recepcion_facturas == 'No' ? "N/A" : cBuy.cfdi_comprobante_tipo_de_comprobante}} </td>
+        <td>{{cBuy.aplica_recepcion_facturas == 'No' ? "N/A" : cBuy.cfdi_complementoFechaTimbrado}} </td>
+        <td>{{cBuy.aplica_recepcion_facturas == 'No' ? "N/A" : cBuy.cfdi_complementoUUID}}</td>
+        <!--ordenes de recepción-->
+        <td>{{cBuy.articulos_recibidos+" / "+cBuy.total_articulos}}</td>
+        <td>{{cBuy.lugarRecepcionTipo == 'N/A' ? cBuy.lugarRecepcionTipo : cBuy.lugarRecepcionTipo+" "+cBuy.lugarRecepcionDireccion}}</td>
+        <td>{{cBuy.existe_orden_recepcion ? 'Orden ' + cBuy.folio_orden_recepcion : ''}}</td>
+        <!--ordenes de pago-->
+        <td class="name">{{cBuy.folio_orden_pago == '---' ? '---' : cBuy.folio_orden_pago+" "+cBuy.fecha_contabilizacion_orden_pago}}</td>
+        <td class="name">{{cBuy.pagos_realizados_folio == '---' ? '---' : cBuy.pagos_realizados_folio+" "+cBuy.pagos_realizados_fecha_contabilizacion}}</td>
+        <td class="ultimo">{{cBuy.existe_orden_pago ? 'Orden ' + cBuy.folio_orden_pago : 'Generar orden'}}</td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="35" class="text-center py-4">
+          <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+          <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+            {{'no_rows' | translate}}
+          </p>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+  @for (cancd of desglose_solicitud_cancelacion; track $index) {
+    @if (!cancd.cancel_soli_cancel_realizada && desglose_soli_cancel_isn) {
+      <p-divider />
+      <div class="col-12 explain">
+        <h6 class="title">confirmar cancelación</h6>
+      </div>
+      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+        <label class="activeInput">{{'fecha_cont' | translate}}</label>
+        <input class="validate datepicker" id="fechaContabilizacionPago" name="fechaContabilizacionCompra" type="date" (change)="confirmaCancelacionISNFechaCont($event.target,cancd.cancel_soli_token);">
+      </div>
+      <div class="col-12 input-group" style="margin-bottom: 10px!important;">
+        <label for="stockmin_regCat" id="lblStockmin" class="activeInput">{{'observ' | translate}}</label>
+        <textarea class="validate" name="large_descript" (keyup)="confirmaCancelacionISNObserva($event.target,cancd.cancel_soli_token);"></textarea>
+      </div>
+      <div class="col-12" style="display: flex !important;justify-content: end!important;">
+        <a class="btn btn_extend text-bg-success rounded-3" type="submit" name="btnAltaProducto2"
+          [ngClass]="cancd.f_contab_confirma_cancelacion == '' || cancd.comentarios_confirma_cancelacion == '' ? 'disabled' : ''"
+          [attr.disabled]="cancd.f_contab_confirma_cancelacion == '' || cancd.comentarios_confirma_cancelacion == '' ? true : null"
+          [attr.aria-disabled]="cancd.f_contab_confirma_cancelacion == '' || cancd.comentarios_confirma_cancelacion == '' ? true : null"
+          (click)="(cancd.f_contab_confirma_cancelacion != '' && cancd.comentarios_confirma_cancelacion != '') && confirmaCancelISN(cancd.cancel_soli_token,cancd.f_contab_confirma_cancelacion,cancd.comentarios_confirma_cancelacion);">
+          <i class="fa-solid fa-floppy-disk"
+            style="height: 15px!important;line-height: 15px!important;width: 15px!important;font-size: small!important;"></i>&nbsp;{{'sav_cam' | translate}}
+        </a>
+      </div>
+    }
+  }
+</p-dialog>
+
+<p-dialog header="Solicitud de cancelaci&oacute;n de aportaciones de seguridad social" [(visible)]="windowSoliCancelacionIMSS" [modal]="true" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  @for (cancd of desglose_solicitud_cancelacion; track $index) {
+    <div class="col-12 explain">
+      <h6 class="title">folio</h6>
+      <h6 class="content">{{cancd.cancel_soli_folio}}</h6>
+    </div>
+    <div class="col-12 explain">
+      <h6 class="title">Pago</h6>
+      <h6 class="content">{{cancd.doc_anterior_folio}}</h6>
+    </div>
+    <div class="col-12 explain">
+      <h6 class="title">{{'observ' | translate}}</h6>
+      <h6 class="content">{{cancd.cancel_soli_observaciones}}</h6>
+    </div>
+    <div class="col-12 explain">
+      <h6 class="title">cancelaci&oacute;n realizada</h6>
+      <h6 class="content">{{cancd.cancel_soli_cancel_realizada ? ['yes_auth' | translate] : ['not_auth' | translate]}}</h6>
+    </div>
+  }
+  <p-divider />
+  <div class="col-12 explain">
+    <h6 class="title">Compra vinculada</h6>
+  </div>
+
+  <p-table [value]="desglose_solicitud_cancel_imss" dataKey="folio_pagos">
+    <ng-template #header>
+      <tr>
+        <th rowspan="2" pResizableColumn pSortableColumn="folio_compra">folio de compra&nbsp;<p-sortIcon field="folio_compra" /></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="fecha_contabilizacion">{{'fecha_cont' | translate}}&nbsp;<p-sortIcon field="fecha_contabilizacion" /></th>
+        <th colspan="3" pResizableColumn>{{'prov' | translate}}</th>
+        <th colspan="2">Compra a cr&eacute;dito</th>
+        <th rowspan="2" pSortableColumn="compra_moneda">{{'mon_name' | translate}}&nbsp;<p-sortIcon field="compra_moneda" /></th>
+        <th rowspan="2" pSortableColumn="compra_subtotal">Subtotal&nbsp;<p-sortIcon field="compra_subtotal" /></th>
+        <th rowspan="2" pSortableColumn="compra_descuento">Descuento&nbsp;<p-sortIcon field="compra_descuento" /></th>
+        <th rowspan="2" pSortableColumn="compra_retenciones">Retenciones&nbsp;<p-sortIcon field="compra_retenciones" /></th>
+        <th rowspan="2" pSortableColumn="compra_traslados">Traslados&nbsp;<p-sortIcon field="compra_traslados" /></th>
+        <th rowspan="2" pSortableColumn="importe_total_compra">Total&nbsp;<p-sortIcon field="importe_total_compra" /></th>
+        <th colspan="16">Facturas (CFDI)</th>
+        <th colspan="3"><i class="fa-solid fa-dolly"></i>&nbsp;Orden de recepci&oacute;n</th>
+        <th colspan="3"><i class="fa-solid fa-money-check"></i>&nbsp;Orden de pago</th>
+      </tr>
+      <tr>
+        <th pResizableColumn pSortableColumn="proveedor_folio">folio&nbsp;<p-sortIcon field="proveedor_nombre" /></th>
+        <th pResizableColumn pSortableColumn="proveedor_nombre">{{'prov' | translate}}&nbsp;<p-sortIcon field="proveedor_nombre" /></th>
+        <th pResizableColumn pSortableColumn="proveedor_nombre_comercial">{{'comercial_name' | translate}}&nbsp;<p-sortIcon field="proveedor_nombre" /></th>
+        <th pSortableColumn="compra_a_credito">Tipo&nbsp;<p-sortIcon field="compra_a_credito" /></th>
+        <th pSortableColumn="fecha_vencimiento">Fecha de vencimiento&nbsp;<p-sortIcon field="fecha_vencimiento" /></th>
+        <!--facturas CFDI-->
+        <th pSortableColumn="aplica_recepcion_facturas">Aplica recepci&oacute;n de facturas&nbsp;<p-sortIcon field="aplica_recepcion_facturas" /></th>
+        <th pSortableColumn="recibeFactura">recibi&oacute; Factura&nbsp;<p-sortIcon field="recibeFactura" /></th>
+        <th pSortableColumn="cfdi_comprobante_version">Versi&oacute;n&nbsp;<p-sortIcon field="cfdi_comprobante_version" /></th>
+        <th pSortableColumn="cfdi_comprobante_serie">Serie&nbsp;<p-sortIcon field="cfdi_comprobante_serie" /></th>
+        <th pSortableColumn="cfdi_comprobante_folio">Folio&nbsp;<p-sortIcon field="cfdi_comprobante_folio" /></th>
+        <th pSortableColumn="cfdi_comprobante_fecha">Fecha&nbsp;<p-sortIcon field="cfdi_comprobante_fecha" /></th>
+        <th pSortableColumn="cfdi_comprobante_forma_de_pago">{{'f_pago' | translate}}&nbsp;<p-sortIcon field="cfdi_comprobante_forma_de_pago" /></th>
+        <th pSortableColumn="cfdi_comprobante_metodo_de_pago">{{'m_pago' | translate}}&nbsp;<p-sortIcon field="cfdi_comprobante_metodo_de_pago" /></th>
+        <th pSortableColumn="cfdi_comprobante_subtotal">Subtotal&nbsp;<p-sortIcon field="cfdi_comprobante_subtotal" /></th>
+        <th pSortableColumn="cfdi_comprobante_moneda">Moneda&nbsp;<p-sortIcon field="cfdi_comprobante_moneda" /></th>
+        <th pSortableColumn="cfdi_comprobante_tipo_de_cambio">Tipo de cambio&nbsp;<p-sortIcon field="cfdi_comprobante_tipo_de_cambio" /></th>
+        <th pSortableColumn="cfdi_comprobante_total">Total&nbsp;<p-sortIcon field="cfdi_comprobante_total" /></th>
+        <th pSortableColumn="cfdi_comprobante_confirmacion">Confirmaci&oacute;n&nbsp;<p-sortIcon field="cfdi_comprobante_confirmacion" /></th>
+        <th pSortableColumn="cfdi_comprobante_tipo_de_comprobante">Tipo de comprobante&nbsp;<p-sortIcon field="cfdi_comprobante_tipo_de_comprobante" /></th>
+        <th pSortableColumn="cfdi_complementoFechaTimbrado">Fecha de timbrado&nbsp;<p-sortIcon field="cfdi_complementoFechaTimbrado" /></th>
+        <th pSortableColumn="cfdi_complementoUUID">UUID&nbsp;<p-sortIcon field="cfdi_complementoUUID" /></th>
+        <!--ordenes de recepción-->
+        <th pSortableColumn="total_articulos">articulos recibidos&nbsp;<p-sortIcon field="total_articulos" /></th>
+        <th pResizableColumn>lugar de recepci&oacute;n</th>
+        <th></th>
+        <!--ordenes de pago-->
+        <th pSortableColumn="folio_orden_pago">Orden de pago&nbsp;<p-sortIcon field="folio_orden_pago" /></th>
+        <th pResizableColumn>Pago realizado</th>
+        <th></th>
+      </tr>
+    </ng-template>
+    <ng-template #body let-cBuy>
+      <tr>
+        <td>{{cBuy.folio_compra}}</td>
+        <td>{{cBuy.fecha_contabilizacion}}</td>
+        <td>{{cBuy.proveedor_folio}}</td>
+        <td class="name" style="text-transform: uppercase !important;">{{cBuy.proveedor_nombre}}</td>
+        <td class="name" style="text-transform: uppercase !important;">{{cBuy.proveedor_nombre_comercial}}</td>
+        <td>{{cBuy.compra_a_credito}}</td>
+        <td>{{cBuy.fecha_vencimiento}}</td>
+        <td>{{cBuy.compra_moneda}}</td>
+        <td class="td_importes">{{cBuy.compra_subtotal}}</td>
+        <td class="td_importes">{{cBuy.compra_descuento}}</td>
+        <td class="td_importes">{{cBuy.compra_retenciones}}</td>
+        <td class="td_importes">{{cBuy.compra_traslados}}</td>
+        <td class="td_importes">{{cBuy.importe_total_compra}}</td>
+        <!--facturas CFDI-->
+        <td>{{cBuy.aplica_recepcion_facturas}}</td>
+        <td>{{cBuy.recibeFactura === true ? 'Antes' : 'Despues'}}</td>
+        <td>{{cBuy.aplica_recepcion_facturas == 'No' ? "N/A" : cBuy.cfdi_comprobante_version}}</td>
+        <td>{{cBuy.aplica_recepcion_facturas == 'No' ? "N/A" : cBuy.cfdi_comprobante_serie}}</td>
+        <td>{{cBuy.aplica_recepcion_facturas == 'No' ? "N/A" : cBuy.cfdi_comprobante_folio}}</td>
+        <td>{{cBuy.aplica_recepcion_facturas == 'No' ? "N/A" : cBuy.cfdi_comprobante_fecha}}</td>
+        <td>{{cBuy.aplica_recepcion_facturas == 'No' ? "N/A" : cBuy.cfdi_comprobante_forma_de_pago}}</td>
+        <td>{{cBuy.aplica_recepcion_facturas == 'No' ? "N/A" : cBuy.cfdi_comprobante_metodo_de_pago}}</td>
+        <td class="td_importes">{{cBuy.aplica_recepcion_facturas == 'No' ? "N/A" : cBuy.cfdi_comprobante_subtotal}}</td>
+        <td>{{cBuy.aplica_recepcion_facturas == 'No' ? "N/A" : cBuy.cfdi_comprobante_moneda}}</td>
+        <td class="td_importes">{{cBuy.aplica_recepcion_facturas == 'No' ? "N/A" : cBuy.cfdi_comprobante_tipo_de_cambio}}</td>
+        <td class="td_importes">{{cBuy.aplica_recepcion_facturas == 'No' ? "N/A" : cBuy.cfdi_comprobante_total}}</td>
+        <td>{{cBuy.aplica_recepcion_facturas == 'No' ? "N/A" : cBuy.cfdi_comprobante_confirmacion}}</td>
+        <td>{{cBuy.aplica_recepcion_facturas == 'No' ? "N/A" : cBuy.cfdi_comprobante_tipo_de_comprobante}} </td>
+        <td>{{cBuy.aplica_recepcion_facturas == 'No' ? "N/A" : cBuy.cfdi_complementoFechaTimbrado}} </td>
+        <td>{{cBuy.aplica_recepcion_facturas == 'No' ? "N/A" : cBuy.cfdi_complementoUUID}}</td>
+        <!--ordenes de recepción-->
+        <td>{{cBuy.articulos_recibidos+" / "+cBuy.total_articulos}}</td>
+        <td>{{cBuy.lugarRecepcionTipo == 'N/A' ? cBuy.lugarRecepcionTipo : cBuy.lugarRecepcionTipo+" "+cBuy.lugarRecepcionDireccion}}</td>
+        <td>{{cBuy.existe_orden_recepcion ? 'Orden ' + cBuy.folio_orden_recepcion : ''}}</td>
+        <!--ordenes de pago-->
+        <td class="name">{{cBuy.folio_orden_pago == '---' ? '---' : cBuy.folio_orden_pago+" "+cBuy.fecha_contabilizacion_orden_pago}}</td>
+        <td class="name">{{cBuy.pagos_realizados_folio == '---' ? '---' : cBuy.pagos_realizados_folio+" "+cBuy.pagos_realizados_fecha_contabilizacion}}</td>
+        <td class="ultimo">{{cBuy.existe_orden_pago ? 'Orden ' + cBuy.folio_orden_pago : 'Generar orden'}}</td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="35" class="text-center py-4">
+          <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+          <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+            {{'no_rows' | translate}}
+          </p>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+  @for (cancd of desglose_solicitud_cancelacion; track $index) {
+    @if (!cancd.cancel_soli_cancel_realizada && desglose_soli_cancel_imss) {
+      <p-divider />
+      <div class="col-12 explain">
+        <h6 class="title">confirmar cancelación</h6>
+      </div>
+      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+        <label class="activeInput">{{'fecha_cont' | translate}}</label>
+        <input class="validate datepicker" id="fechaContabilizacionPago" name="fechaContabilizacionCompra" type="date" (change)="confirmaCancelacionImssFechaCont($event.target,cancd.cancel_soli_token);">
+      </div>
+      <div class="col-12 input-group" style="margin-bottom: 10px!important;">
+        <label for="stockmin_regCat" id="lblStockmin" class="activeInput">{{'observ' | translate}}</label>
+        <textarea class="validate" name="large_descript" (keyup)="confirmaCancelacionImssObserva($event.target,cancd.cancel_soli_token);"></textarea>
+      </div>
+      <div class="col-12" style="display: flex !important;justify-content: end!important;">
+        <a class="btn btn_extend text-bg-success rounded-3" type="submit" name="btnAltaProducto2"
+          [ngClass]="cancd.f_contab_confirma_cancelacion == '' || cancd.comentarios_confirma_cancelacion == '' ? 'disabled' : ''"
+          [attr.disabled]="cancd.f_contab_confirma_cancelacion == '' || cancd.comentarios_confirma_cancelacion == '' ? true : null"
+          [attr.aria-disabled]="cancd.f_contab_confirma_cancelacion == '' || cancd.comentarios_confirma_cancelacion == '' ? true : null"
+          (click)="(cancd.f_contab_confirma_cancelacion != '' && cancd.comentarios_confirma_cancelacion != '') && confirmaCancelImss(cancd.cancel_soli_token,cancd.f_contab_confirma_cancelacion,cancd.comentarios_confirma_cancelacion);">
+          <i class="fa-solid fa-floppy-disk"
+            style="height: 15px!important;line-height: 15px!important;width: 15px!important;font-size: small!important;"></i>&nbsp;{{'sav_cam' | translate}}
+        </a>
+      </div>
+    }
+  }
+</p-dialog>

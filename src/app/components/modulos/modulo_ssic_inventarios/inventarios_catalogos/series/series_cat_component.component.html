@@ -1,0 +1,198 @@
+<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco" #vContent>
+  <div class="contenido">
+    <app-loader></app-loader>
+    <nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+    <main class="contenidoPagina">
+      <div class="listas_ps revanecer">
+        <div class="lista-div lista-divNoFlex row">
+          <h4 class="col-12">Cat&aacute;logo de series</h4>
+
+          <p-tabs value="0">
+            <p-tablist>
+              <p-tab value="0" (click)="lista_series_catalogo_true();">Cat&aacute;logo</p-tab>
+              <p-tab value="1">Series eliminadas</p-tab>
+              <p-tab value="2">Registrar series</p-tab>
+            </p-tablist>
+            <p-tabpanels>
+              <p-tabpanel value="0">
+                <div class="col-12">
+                  <p-table #listSerieTrue [value]="seriesCatalogoTrue"
+                    [globalFilterFields]="['serie_token','serie_fecha_registro','serie_codigo','uso_unico','comentarios']"
+                    dataKey="id" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]">
+                    <ng-template #caption>
+                      <div class="flex">
+                        <p-iconfield iconPosition="left" class="ml-auto">
+                          <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                          <input pInputText type="text"
+                            (input)="listSerieTrue.filterGlobal($event.target.value, 'contains')"
+                            placeholder="{{'bus_car' | translate}}" />
+                        </p-iconfield>
+                      </div>
+                    </ng-template>
+                    <ng-template #header>
+                      <tr>
+                        <th class="ultimo"></th>
+                        <th pSortableColumn="serie_fecha_registro">{{'fecha_reg' | translate}}&nbsp;<p-sortIcon
+                            field="serie_fecha_registro" /></th>
+                        <th pSortableColumn="serie_codigo">serie&nbsp;<p-sortIcon field="serie_codigo" /></th>
+                        <th pSortableColumn="uso_unico">uso unico&nbsp;<p-sortIcon field="uso_unico" /></th>
+                        <th pSortableColumn="comentarios">{{'observ' | translate}}&nbsp;<p-sortIcon
+                            field="comentarios" /></th>
+                        <th class="ultimo"></th>
+                      </tr>
+                    </ng-template>
+                    <ng-template #body let-mSer>
+                      <tr>
+                        <td class="ultimo">
+                          <a class="btn bg-blue-600" (click)="verSerie(mSer,mSer.serie_token);">
+                            <i class="fa-solid fa-info"></i>
+                          </a>
+                        </td>
+                        <td>{{mSer.serie_fecha_registro}}</td>
+                        <td>{{mSer.serie_codigo}}</td>
+                        <td>{{mSer.uso_unico ? ['enabled' | translate] : ['disabled' | translate]}}</td>
+                        <td>{{mSer.comentarios != null ? mSer.comentarios : '---'}}</td>
+                        <td>
+                          <a class="btn btn_extend text-bg-danger rounded-3"
+                            (click)="enviaSerieToPapalera(mSer.serie_token);">
+                            <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                          </a>
+                        </td>
+                      </tr>
+                      <tr *ngIf="mSer === serieSelected">
+                        <td colspan="6">
+                          <div class="col-12" *ngFor="let det of mSer.detalle">
+                            <div class="col-12 explain">
+                              <h6 class="title">{{'fecha_reg' | translate}}</h6>
+                              <h6 class="content">{{det.serie_fecha_registro}}</h6>
+                            </div>
+
+                            <div class="col-12 explain">
+                              <h6 class="title">Serie</h6>
+                              <h6 class="content">{{det.serie_codigo}}</h6>
+                            </div>
+
+                            <div class="col-12 explain">
+                              <h6 class="title">Uso unico</h6>
+                              <h6 class="content">{{det.uso_unico ? ['enabled' | translate] : ['disabled' | translate]}}
+                              </h6>
+                            </div>
+
+                            <div class="col-12 explain">
+                              <h6 class="title">{{'observ' | translate}}</h6>
+                              <h6 class="content">{{det.comentarios != null ? det.comentarios : '---'}}</h6>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    </ng-template>
+                    <ng-template pTemplate="emptymessage">
+                      <tr>
+                        <td colspan="6" class="text-center py-4">
+                          <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                          <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                            {{'no_rows' | translate}}
+                          </p>
+                        </td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
+                </div>
+              </p-tabpanel>
+              <p-tabpanel value="1">
+                <div class="col-12">
+                  <p-table #deletedSeries [value]="seriesCatalogoPapalera"
+                    [globalFilterFields]="['serie_fecha_registro','serie_codigo','serie_token']" dataKey="id"
+                    [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]">
+                    <ng-template #caption>
+                      <div class="flex">
+                        <p-iconfield iconPosition="left" class="ml-auto">
+                          <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                          <input pInputText type="text"
+                            (input)="deletedSeries.filterGlobal($event.target.value, 'contains')"
+                            placeholder="{{'bus_car' | translate}}" />
+                        </p-iconfield>
+                      </div>
+                    </ng-template>
+                    <ng-template #header>
+                      <tr>
+                        <th pSortableColumn="serie_fecha_registro">{{'fecha_reg' | translate}}&nbsp;<p-sortIcon
+                            field="serie_fecha_registro" /></th>
+                        <th pSortableColumn="serie_codigo">serie&nbsp;<p-sortIcon field="serie_codigo" /></th>
+                        <th class="ultimo"></th>
+                        <th class="ultimo"></th>
+                      </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-mComi>
+                      <tr>
+                        <td>{{mComi.serie_fecha_registro}}</td>
+                        <td>{{mComi.serie_codigo}}</td>
+                        <td class="ultimo">
+                          <a class="btn btn_extend text-bg-success rounded-3"
+                            (click)="serieRestaurar(mComi.serie_token);">
+                            <i class="fa-solid fa-trash-arrow-up"></i>&nbsp;{{'restore_row' | translate}}
+                          </a>
+                        </td>
+                        <td class="ultimo">
+                          <a class="btn btn_extend text-bg-danger rounded-3"
+                            (click)="seriePapaleraDelete(mComi.serie_token);">
+                            <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                          </a>
+                        </td>
+                      </tr>
+                    </ng-template>
+                    <ng-template pTemplate="emptymessage">
+                      <tr>
+                        <td colspan="4" class="text-center py-4">
+                          <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                          <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                            {{'no_rows' | translate}}
+                          </p>
+                        </td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
+                </div>
+              </p-tabpanel>
+              <p-tabpanel value="2">
+                <form class="formAddServCat" #formAddServCat="ngForm" autocomplete="off" name="formAddServCat"
+                  enctype="multipart/form-data" (ngSubmit)="registraSerie(formAddServCat);">
+                  <div class="col-12 row" style="margin-bottom: 5px!important;">
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-8 col-xl-8 col-xxl-9 input-group">
+                      <label class="activeInput">Serie</label>
+                      <input id="txt_new_serie" class="validate" type="text" name="num_serie"
+                        (input)="validaNuevaSerie($event.target);">
+                    </div>
+                    <div
+                      class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3 form-check form-switch form-check-reverse switch_primario"
+                      style="margin-top: 25px;">
+                      <label class="form-check-label" for="flexSwitchCheckReverse">Uso unico</label>
+                      <input class="form-check-input" type="checkbox" [checked]="serie_uso_unico"
+                        (click)="decideUsoUnico($event.target);">
+                    </div>
+                    <div class="col-12 input-group">
+                      <label for="comentsLoteAdd" class="activeInput">{{'observ' | translate}}</label>
+                      <textarea id="dataLoteComentarios" class="validate materialize-textarea" name="comentsLoteAdd"
+                        type="text" ngModel (keyup)="serieComentariosLoteKeyUp($event.target)"></textarea>
+                    </div>
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-8 col-xl-8 col-xxl-9 input-group"></div>
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3"
+                      style="display: flex !important;justify-content: end!important;padding-top: 20px!important;">
+                      <button class="btn btn_extend text-bg-success rounded-3"
+                        [ngClass]="serie_nueva == '' ? 'disabled' : ''"
+                        [attr.disabled]="serie_nueva == '' ? true : null"
+                        [attr.aria-disabled]="serie_nueva == '' ? true : null" type="submit" name="btnAltaServicio2">
+                        <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}</button>
+                    </div>
+                  </div>
+                </form>
+              </p-tabpanel>
+            </p-tabpanels>
+          </p-tabs>
+        </div>
+      </div>
+    </main>
+    <app-footer-inside></app-footer-inside>
+  </div>
+</div>

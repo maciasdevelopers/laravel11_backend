@@ -1,0 +1,2018 @@
+					<!--<ul class="tabs row">
+						<li class="tab col s4"><a class="active" href="#catalog_solicitudes_registro">Solicitudes de registro</a></li>
+						<li class="tab col s4"><a href="#catalog_empresas_registradas">Catalogo de empresas</a></li>
+						<li class="tab col s4"><a href="#catalog_usuarios_registrados">Catalogo de usuarios</a></li>
+					</ul>
+					<div id="catalog_solicitudes_registro" class="col-12 tab_content">
+						<ul class="collapsable">
+							<li class="licollapsible">
+								<div id="headDecisionFactura" class="collapsable-header">
+									<div class="chip">lista general</div>
+								</div>
+								<div id="bodyDecisionFactura" class="collapsable-body row">
+									<div class="col-12 row" style="overflow: overlay!important;">
+										<table class="centered" style="min-width: max-content;">
+											<thead>
+												<tr>
+													<th>empresa</th>
+													<th>tipo</th>
+													<th>fecha de nacimiento / constituci&oacute;n</th>
+													<th>fecha de registro</th>
+													<th>rfc</th>
+													<th>tel&eacute;fono</th>
+													<th>extensi&oacute;n</th>
+													<th>correo electr&oacute;nico</th>
+													<th class="ultimo"></th>
+													<th class="ultimo"></th>
+													<th class="ultimo"></th>
+												</tr>
+											</thead>
+											<tbody *ngIf="list_solicitudes_registro.length > 0">
+												<tr *ngFor="let soli_reg_list of list_solicitudes_registro">
+													<td>{{soli_reg_list.company_name}}</td>
+													<td>{{soli_reg_list.tipoPersona}}</td>
+													<td>{{soli_reg_list.fecha_nac_const}}</td>
+													<td>{{soli_reg_list.fecha_registro}}</td>
+													<td>{{soli_reg_list.company_rfc}}</td>
+													<td>{{soli_reg_list.telefono}}</td>
+													<td>{{soli_reg_list.extension}}</td>
+													<td>{{soli_reg_list.correo}}</td>
+													<td>
+														<!--(click)="verModalProducto($event.target);"
+														<a
+															class="btn text-bg-success rounded-3 modal-trigger"><i
+																class="tiny material-icons">visibility</i>
+														</a>
+													</td>
+													<td>
+														<a
+															class="btn text-bg-success rounded-3 modal-trigger"><i
+																class="tiny material-icons">visibility</i>
+														</a>
+													</td>
+													<td>
+														<a
+															class="btn text-bg-success rounded-3 modal-trigger"><i
+																class="tiny material-icons">visibility</i>
+														</a>
+													</td>
+												</tr>
+											</tbody>
+											<tbody *ngIf="list_solicitudes_registro.length == 0">
+												<tr>
+													<td colspan="11">{{'no_rows' | translate}}</td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+								</div>
+							</li>
+							<li class="licollapsible">
+								<div id="headDecisionFactura" class="collapsable-header">
+									<div class="chip">canceladas</div>
+								</div>
+								<div id="bodyDecisionFactura" class="collapsable-body row">
+									<table>
+										<thead>
+											<tr>
+												<th>empresa</th>
+												<th>tipo</th>
+												<th>fecha de nacimiento / constituci&oacute;n</th>
+												<th>fecha de registro</th>
+												<th>rfc</th>
+												<th>tel&eacute;fono</th>
+												<th>extensi&oacute;n</th>
+												<th>correo electr&oacute;nico</th>
+												<th class="ultimo"></th>
+												<th class="ultimo"></th>
+												<th class="ultimo"></th>
+											</tr>
+										</thead>
+										<tbody *ngIf="list_solicitudes_registro_canceled.length > 0">
+											<tr *ngFor="let soli_reg_list of list_solicitudes_registro_canceled">
+												<td>{{soli_reg_list.company_name}}</td>
+												<td>{{soli_reg_list.tipoPersona}}</td>
+												<td>{{soli_reg_list.fecha_nac_const}}</td>
+												<td>{{soli_reg_list.fecha_registro}}</td>
+												<td>{{soli_reg_list.company_rfc}}</td>
+												<td>{{soli_reg_list.telefono}}</td>
+												<td>{{soli_reg_list.extension}}</td>
+												<td>{{soli_reg_list.correo}}</td>
+												<td>
+													<!--(click)="verModalProducto($event.target);"
+													<a
+														class="btn text-bg-success rounded-3 modal-trigger"><i
+															class="tiny material-icons">visibility</i>
+													</a>
+												</td>
+												<td>
+													<a
+														class="btn text-bg-success rounded-3 modal-trigger"><i
+															class="tiny material-icons">visibility</i>
+													</a>
+												</td>
+												<td>
+													<a
+														class="btn text-bg-success rounded-3 modal-trigger"><i
+															class="tiny material-icons">visibility</i>
+													</a>
+												</td>
+											</tr>
+										</tbody>
+										<tbody *ngIf="list_solicitudes_registro_canceled.length == 0">
+											<tr>
+												<td colspan="11">{{'no_rows' | translate}}</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</li>
+							<li class="licollapsible">
+								<div id="headDecisionFactura" class="collapsable-header">
+									<div class="chip">eliminadas</div>
+								</div>
+								<div id="bodyDecisionFactura" class="collapsable-body row">
+									<table>
+										<thead>
+											<tr>
+												<th>empresa</th>
+												<th>tipo</th>
+												<th>fecha de nacimiento / constituci&oacute;n</th>
+												<th>fecha de registro</th>
+												<th>rfc</th>
+												<th>tel&eacute;fono</th>
+												<th>extensi&oacute;n</th>
+												<th>correo electr&oacute;nico</th>
+												<th class="ultimo"></th>
+												<th class="ultimo"></th>
+												<th class="ultimo"></th>
+											</tr>
+										</thead>
+										<tbody *ngIf="list_solicitudes_registro_Deleted.length > 0">
+											<tr *ngFor="let soli_reg_list of list_solicitudes_registro_Deleted">
+												<td>{{soli_reg_list.company_name}}</td>
+												<td>{{soli_reg_list.tipoPersona}}</td>
+												<td>{{soli_reg_list.fecha_nac_const}}</td>
+												<td>{{soli_reg_list.fecha_registro}}</td>
+												<td>{{soli_reg_list.company_rfc}}</td>
+												<td>{{soli_reg_list.telefono}}</td>
+												<td>{{soli_reg_list.extension}}</td>
+												<td>{{soli_reg_list.correo}}</td>
+												<td>
+													<!--(click)="verModalProducto($event.target);"
+													<a
+														class="btn text-bg-success rounded-3 modal-trigger"><i
+															class="tiny material-icons">visibility</i>
+													</a>
+												</td>
+												<td>
+													<a
+														class="btn text-bg-success rounded-3 modal-trigger"><i
+															class="tiny material-icons">visibility</i>
+													</a>
+												</td>
+												<td>
+													<a
+														class="btn text-bg-success rounded-3 modal-trigger"><i
+															class="tiny material-icons">visibility</i>
+													</a>
+												</td>
+											</tr>
+										</tbody>
+										<tbody *ngIf="list_solicitudes_registro_Deleted.length == 0">
+											<tr>
+												<td colspan="11">{{'no_rows' | translate}}</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</li>
+						</ul>
+					</div>
+					<div id="catalog_empresas_registradas" class="col-12 tab_content">
+						<div class="col-12" style="/* height: -webkit-fill-available; */overflow: overlay;">
+							<div class="card card_white">
+								<div class="card-content"
+									style="height: 100%;display: flex;flex-wrap: wrap;align-items: center;">
+									<span class="card-title" style="margin-bottom: 5px;font-weight: bold;text-transform: capitalize;color:#353535;">{{'company_new' | translate}}</span>
+									<div style="width: 100%!important;">
+										
+										<div *ngIf="validateFoundEmp == false" class="card-verifRfc col-12 row">
+											<div class="col-12 col-sm-12 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+												<div class="card">
+													<div class="card-header">
+														<h6>empresa nacional</h6>
+													</div>
+													<div class="card-content row">
+														<div class="botones col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+															<a id="nacFisBtn" class="btn waves-light darken-2"
+																(click)="selectTipoNacionalidadEmp('nacional','empresaFisica','nacFisBtn');"
+																(click)="especificacionesInputRfcEmp();">
+																<i class="fa-solid fa-person"></i>
+																Persona f&iacute;sica
+															</a>
+														</div>
+														<div class="botones col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+															<a id="nacMorBtn" class="btn waves-light darken-2"
+																(click)="selectTipoNacionalidadEmp('nacional','empresaMoral','nacMorBtn');"
+																(click)="especificacionesInputRfcEmp();">
+																<i class="fa-solid fa-people-group"></i>
+																Persona moral
+															</a>
+														</div>
+														<div class="col-12" style="padding:0!important;" *ngIf="v_clasificacion_emp != '' && v_clasificacion_emp == 'nacional' && v_subclasificacion_emp != ''">
+															<div class="col-12" style="padding:0!important;">
+																<div class="input-field rfcMayus">
+																	<input
+																		*ngIf="v_subclasificacion_emp == 'empresaFisica'"
+																		class="verif_rfc validate inputWthPass"
+																		name="especificacionesInputRfcEmpMx" type="text"
+																		autocomplete="off" id="verif_rfcEmp"
+																		data-length="13" placeholder="Ej. ABCD000000XXX"
+																		maxlength="13"
+																		(keyup)="keyupverif_rfcProv($event.target);">
+																	<input
+																		*ngIf="v_subclasificacion_emp == 'empresaMoral'"
+																		class="verif_rfc validate inputWthPass"
+																		name="verif_rfcProvMx" type="text"
+																		autocomplete="off" id="verif_rfcEmp"
+																		data-length="12" placeholder="Ej. ABC000000XXX"
+																		maxlength="12"
+																		(keyup)="keyupverif_rfcProv($event.target);">
+
+																	<label
+																		*ngIf="v_subclasificacion_emp == 'empresaFisica'"
+																		for="first_name" class="activeInput">Escriba su
+																		rfc con Homoclave (13 caracteres)</label>
+																	<label
+																		*ngIf="v_subclasificacion_emp == 'empresaMoral'"
+																		for="first_name" class="activeInput">Escriba su
+																		rfc con Homoclave (12 caracteres)</label>
+																</div>
+															</div>
+															<div class="col-12" style="padding:0!important;">
+																<div class="input-field rfcMayus">
+																	<input class="validate" name="verifRfcMaterno"
+																		type="text" autocomplete="off"
+																		(keyup)="checkNombreEmp($event.target);"
+																		id="verifNameCompany_reg">
+																	<label for="txtMaternoPF_reg" class="activeInput"
+																		id="lblMaterno">Nombre completo / raz&oacute;n
+																		social de la empresa</label>
+																</div>
+															</div>
+															<div class="col-12 col-sm-3 col-md-3 col-lg-2"></div>
+															<div class="col-12 col-sm-6 col-md-3 col-lg-2">
+																<a class="btn btnGuardar btnRow waves-light"
+																	*ngIf="emp_name_razon_social != '' && (emp_rfc_generico != '' || emp_rfc != '')"
+																	name="verifrfcbuy"
+																	(click)="functionBuscaEmpNacDB();"
+																	id="btnBuscaEmpDB">Verificar RFC</a>
+															</div>
+															<div class="col-12 col-sm-3 col-md-3 col-lg-2"></div>
+														</div>
+													</div>
+												</div>
+											</div>
+											<div class="col-12 col-sm-12 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+												<div class="card">
+													<div class="card-header">
+														<h6>empresa extranjera</h6>
+													</div>
+													<div class="card-content row">
+														<div class="botones col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+															<a id="extFisBtn" class="btn waves-light darken-2"
+																(click)="selectTipoNacionalidadEmp('extranjero','empresaFisica','extFisBtn');"
+																(click)="especificacionesInputRfcEmp();">
+																<i class="fa-solid fa-person"></i>
+																Persona f&iacute;sica
+															</a>
+														</div>
+														<div class="botones col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+															<a id="extMorBtn" class="btn waves-light darken-2"
+																(click)="selectTipoNacionalidadEmp('extranjero','empresaMoral','extMorBtn');"
+																(click)="especificacionesInputRfcEmp();">
+																<i class="fa-solid fa-people-group"></i>
+																Persona moral
+															</a>
+														</div>
+														<div class="col-12" style="padding:0!important;" *ngIf="v_clasificacion_emp != '' && v_clasificacion_emp == 'extranjero' && v_subclasificacion_emp != ''">
+															<div class="col-12" style="padding:0!important;">
+																<div class="input-field rfcMayus">
+																	<input
+																		*ngIf="v_subclasificacion_emp == 'empresaFisica'"
+																		id="verif_rfcEmp" class="verif_rfc validate"
+																		name="verif_rfcProvMx" autocomplete="off"
+																		type="text" placeholder="Ej. ABCD000000XXX"
+																		[value]="emp_rfc"
+																		(keyup)="keyupverif_rfcExtEmp($event.target);">
+																	<input
+																		*ngIf="v_subclasificacion_emp == 'empresaMoral'"
+																		id="verif_rfcEmp" class="verif_rfc validate"
+																		name="verif_rfcProvMx" autocomplete="off"
+																		type="text" placeholder="Ej. ABC000000XXX"
+																		[value]="emp_rfc"
+																		(keyup)="keyupverif_rfcExtEmp($event.target);">
+																	<label for="first_name" class="activeInput">Escriba
+																		su rfc</label>
+																</div>
+															</div>
+															<div class="col-12" style="padding:0!important;">
+																<div class="input-field rfcMayus">
+																	<input class="verif_rfc validate"
+																		name="verif_rfcProvMx" type="text" minlength="9"
+																		maxlength="40" autocomplete="off"
+																		id="verif_idTaxEmp" [value]="emp_id_tax"
+																		(keyup)="keyupverif_TaxIdEmp($event.target);">
+																	<label for="first_name" id="lbl_empresa"
+																		class="activeInput">Escriba Tax ID de la
+																		empresa</label>
+																</div>
+															</div>
+															<div class="col-12" style="padding:0!important;">
+																<div class="input-field rfcMayus">
+																	<input class="validate" name="verifRfcMaterno"
+																		type="text" autocomplete="off"
+																		(keyup)="checkNombreEmp($event.target);"
+																		id="verifNameCompany_reg">
+																	<label for="txtMaternoPF_reg" class="activeInput"
+																		id="lblMaterno">Nombre completo / raz&oacute;n
+																		social de la empresa</label>
+																</div>
+															</div>
+															<div class="col-12 col-sm-3 col-md-3 col-lg-2"></div>
+															<div class="col-12 col-sm-6 col-md-3 col-lg-2">
+																<a class="btn btnGuardar btnRow waves-light"
+																	name="verifrfcbuy" (click)="funtcBuscaEmpExtDB();"
+																	*ngIf="emp_name_razon_social != '' && (emp_rfc_generico != '' || emp_rfc != '' || emp_id_tax != '')"
+																	id="btnBuscaEmpDB">Verificar RFC</a>
+															</div>
+															<div class="col-12 col-sm-3 col-md-3 col-lg-2"></div>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+
+										<div *ngIf="validateFoundEmp == true" class="col-12">
+											<form method="post" class="frmAddProv" id="frmAddProv" name="frmAddProv"
+												enctype="multipart/form-data" (ngSubmit)="solicitaRegistroEmpresa();">
+												<div id="data-regProv" class="data-reg row">
+													<div class="cabecera col-12 row" style="padding: 0;">
+														<div class="rfcnomcom col-12">
+															<h6 class="errorTh">Clasificaci&oacute;n de la empresa</h6>
+															<h6 *ngIf="v_subclasificacion_emp == 'empresaFisica'">
+																Persona f&iacute;sica</h6>
+															<h6 *ngIf="v_subclasificacion_emp == 'empresaMoral'">Persona
+																moral</h6>
+														</div>
+														<div class="rfcnomcom col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+															<h6 class="errorTh">Rfc</h6>
+															<h6 *ngIf="emp_rfc != ''">{{emp_rfc}}</h6>
+															<h6 *ngIf="emp_rfc == ''">{{emp_rfc_generico}}</h6>
+														</div>
+														<div class="rfcnomcom col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+															<h6 class="errorTh">idTax</h6>
+															<h6 *ngIf="emp_id_tax != ''">{{emp_id_tax}}</h6>
+															<h6 *ngIf="emp_id_tax == ''">---</h6>
+														</div>
+														<div class="rfcnomcom col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+															<h6 class="errorTh">nombre de la empresa</h6>
+															<h6>{{emp_name_razon_social}}</h6>
+														</div>
+														<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+															<span class="error">* Campos obligatorios</span>
+														</div>
+														<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+															<a class="btn btnGuardar btnRow bg-red-700"
+																(click)="comeBackPrincipalMenu();">&#xf053; Regresar al
+																menu principal</a>
+														</div>
+													</div>
+
+													<div class="cabecera cabecera_transparent col-12 row"
+														style="padding: 0;">
+														<ul id="collapsible" class="collapsable" style="padding: 0;">
+															<li id="datGenPF" *ngIf="v_subclasificacion_emp != ''"
+																class="licollapsible active">
+																<div id="datGenPFHead" class="collapsable-header">
+																	<div class="chip"> DATOS GENERALES </div>
+																</div>
+																<div id="datGenPFBody"
+																	class="activeView collapsable-body row">
+																	<div *ngIf="v_subclasificacion_emp == 'empresaFisica'" class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+																		<div class="input-field">
+																			<input class="validate" name="txt_paterno" type="text" (keyup)="keyupPaterno($event.target);" id="txt_paterno" required>
+																			<label for="txt_paterno" class="activeInput" id="lblPaterno"><h6 class="errorLabel">*</h6>Apellido Paterno</label>
+																		</div>
+																	</div>
+																	<div *ngIf="v_subclasificacion_emp == 'empresaFisica'" class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+																		<div class="input-field">
+																			<input class="validate" name="txt_materno" type="text" (keyup)="keyupMaterno($event.target);" id="txt_materno" required>
+																			<label for="txt_materno" class="activeInput" id="lblMaterno"><h6 class="errorLabel">*</h6>Apellido Materno</label>
+																		</div>
+																	</div>
+																	<div *ngIf="v_subclasificacion_emp == 'empresaFisica'" class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+																		<div class="input-field">
+																			<input class="validate" name="txt_nombres" type="text" (keyup)="keyupNombres($event.target);" id="txt_nombres" required>
+																			<label for="txt_nombres" class="activeInput" id="lblNombrePF"><h6 class="errorLabel">*</h6>Nombre(s)</label>
+																		</div>
+																	</div>
+
+																	<div *ngIf="v_subclasificacion_emp == 'empresaMoral'" class="col-12 col-sm-9 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+																		<div class="input-field">
+																			<input class="validate correcto" name="txtempresa" type="text" (keyup)="keyupRSocial($event.target);" id="txtempresa_reg" [value]="emp_name_razon_social" required>
+																			<label for="txtempresa_reg" class="activeInput correctoLabel" id="lblEmpresa"><h6 class="errorLabel">*</h6>Empresa</label>
+																		</div>
+																	</div>
+
+																	<div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+																		<div class="input-field">
+																			<input class="validate correcto" name="txtempresa" type="text" (keyup)="keyupAbrev($event.target);" id="txt_abrev" required>
+																			<label for="txtempresa_reg" class="activeInput correctoLabel" id="lblEmpresa"><h6 class="errorLabel">*</h6>Abrev.</label>
+																		</div>
+																	</div>
+
+																	<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+																		<div class="input-field">
+																			<input class="validate" name="txtNomComercialPF" type="text" (keyup)="keyupComercialName($event.target);" id="txtnomCom_regPF">
+																			<label for="txtnomCom_regPF" class="activeInput" id="lblNomComercial">Nombre comercial</label>
+																		</div>
+																	</div>
+																	<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2" *ngIf="v_clasificacion_emp == 'nacional'">
+																		<div class="input-field">
+																			<input class="validate" name="txtcurpPF" type="text" (keyup)="keyupCurp($event.target);" id="txtcurpPF_reg">
+																			<label for="txtcurpPF_reg" class="activeInput" *ngIf="v_clasificacion_emp == 'nacional'">CURP</label>
+																		</div>
+																	</div>
+
+																	<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2" *ngIf="v_clasificacion_emp == 'extranjero'">
+																		<div
+																			class="input-field input-field-select pais">
+																			<select id="selPaisExtPF_reg" class="browser-default" name="paisPF" (change)="changePais($event.target);">
+																				<option value="" disabled selected>{{'opt_select' | translate}}</option>
+																				<option *ngFor="let ltpais of lista_paises" value="{{ltpais.token_pais}}">{{ltpais.pais}}</option>
+																			</select>
+																			<label for="selPaisExtPF_reg" class="active activeSelect" id="lblselPaisExtPF_reg"><h6 class="errorLabel">*</h6>País</label>
+																		</div>
+																	</div>
+
+																	<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+																		<div class="input-field input-field-website">
+																			<input class="validate" name="txtSitioWebPF" type="text" (change)="changeSitioWeb($event.target);" id="txtsitWebPF_reg">
+																			<label for="txtsitWeb_reg"class="activeInput"id="lblSitioWeb">Sitio web</label>
+																		</div>
+																	</div>
+
+																	<div class="col-12">
+																		<div
+																			class="input-field input-field-select pais">
+																			<select
+																				*ngIf="v_subclasificacion_emp == 'empresaFisica'"
+																				id="selRegimenFiscal"
+																				class="browser-default"
+																				name="selRegimenFiscal"
+																				(change)="changeRegimenFiscal($event.target);">
+																				<option value="" disabled selected>DEBE
+																					SELECIONAR UNA OPCI&Oacute;N
+																				</option>
+																				<option
+																					*ngFor="let ltrfis of PfAllRegFisArray"
+																					value="{{ltrfis.token_regimen_fiscal}}">
+																					{{ltrfis.regimen}}</option>
+																			</select>
+																			<select
+																				*ngIf="v_subclasificacion_emp == 'empresaMoral'"
+																				id="selRegimenFiscal"
+																				class="browser-default"
+																				name="selRegimenFiscal"
+																				(change)="changeRegimenFiscal($event.target);">
+																				<option value="" disabled selected>DEBE
+																					SELECIONAR UNA OPCI&Oacute;N
+																				</option>
+																				<option
+																					*ngFor="let ltrfis of PmAllRegFisArray"
+																					value="{{ltrfis.token_regimen_fiscal}}">
+																					{{ltrfis.regimen}}</option>
+																			</select>
+																			<label for="selRegimenFiscal"
+																				class="active activeSelect obligatorios">
+																				<h6 class="errorLabel">*</h6>Regimen
+																				fiscal
+																			</label>
+																		</div>
+																	</div>
+																</div>
+															</li>
+															<!--<li id="lidirsucursal" class="licollapsible">
+																	<div id="collapsible-headerDirSuc" class="collapsable-header"><div class="chip"> DIRECCIONES (UBICACI&Oacute;N) </div></div>
+																	<div id="col-12 rowDirSuc" class="collapsable-body row">
+																		<span id="serrorDirSuc" class="error noneView">{{'opt_select' | translate}}</span>
+																		<div *ngIf="v_clasificacion_emp != '' && v_clasificacion_emp == 'extranjero'" class="col-12 row rowForm">
+																			<div class="col-12 col-sm-4 col-md-3 col-lg-2">
+																				<h6 class="errorTh">* C&oacute;digo postal</h6>
+																				<input class="validate" name="txtCodPostalSucExt" type="text" (keyup)="keyupUbicaciontxtCodPostalExt($event.target);"
+																					id="txtCodPostalUbicacionExt" minlength="5">
+																			</div>
+																		</div>
+																		<div *ngIf="v_clasificacion_emp != '' && v_clasificacion_emp == 'nacional'" class="col-12 row rowForm">
+																			<div class="col-12">
+																				<ul class="collecction collection_postales">
+																					<li class="collection-item">
+																						<div class="busqueda row">
+																							<div class="col s6 m6 col-md-3 col-lg-2 col-xl-2 col-xxl-2" style="display: flex;justify-content: flex-start;margin: auto;padding: 0;height: 30px;line-height: 30px;">
+																								<h6>C&oacute;digo postal: </h6>
+																							</div>
+																							<div class="col s6 m6 col-md-3 col-lg-2 col-xl-2 col-xxl-2 field_buscar">
+																								<input class="validate" type="text" placeholder="{{'bus_car' | translate}}" (keyup)="buscaCodPostalDipomex($event.target);">
+																							</div>
+																						</div>
+																					</li>
+																					<li class="collection-item">Estado: {{dipomex_cod_postal_estado}}</li>
+																					<li class="collection-item">Municipio: {{dipomex_cod_postal_municipio}}</li>
+																					<li class="collection-item">C&oacute;digo postal: {{dipomex_cod_postal_cp}}</li>
+																					<li class="collection-item" *ngIf="dipomex_cod_postal_colonias.length == 0">Colonias: ---</li>
+																					<li class="collection-item itemFor" *ngIf="dipomex_cod_postal_colonias.length > 0">Colonias: <p *ngFor="let col of dipomex_cod_postal_colonias" (click)="seleccionaColoniaCPDipomex(col);">{{col}}</p></li>
+																					<li class="collection-item itemColoniaSeleted" *ngIf="dipomex_cod_postal_colonia_vinculada != ''">Colonia seleccionada: {{dipomex_cod_postal_colonia_vinculada}}</li>
+																				</ul>
+										
+																				<table *ngIf="dipomex_cod_postal_cp != '' && dipomex_cod_postal_cp == ('unk_nown' | translate)" class="centered responsive-table">
+																					<thead>
+																						<tr>
+																							<th>Estado</th>
+																							<th>Municipio</th>
+																							<th>C&oacute;digo postal</th>
+																							<th>Colonia</th>
+																							<th class="ultimo"></th>
+																						</tr>
+																					</thead>
+																					<tbody>
+																						<tr>
+																							<td><input id="newDipoMexEstado" class="validate" type="text" (keyup)="keyupCPostal_EstName($event.target);"></td>
+																							<td><input id="newDipoMexMunicipio" class="validate" type="text" (keyup)="keyupCPostal_Municipio($event.target);"></td>
+																							<td><input id="newDipoMexCP" class="validate" type="text" (keyup)="keyupCPostal_CP($event.target);"></td>
+																							<td><input id="newDipoMexColonia" class="validate" type="text" (keyup)="keyupCPostal_Colonia($event.target);"></td>
+																							<td class="ultimo">
+																								<a *ngIf="validaCPNew == false" class="btn btnGuardar btnRow text-bg-success rounded-3" disabled><i class="fa-solid fa-floppy-disk"></i></a>
+																								<a *ngIf="validaCPNew == true" class="btn btnGuardar btnRow text-bg-success rounded-3" (click)="addListPostal();"><i class="fa-solid fa-floppy-disk"></i></a>
+																							</td>
+																						</tr>
+																						<tr *ngFor="let newCP of listnewdireccionNac;index as pos">
+																							<td>{{newCP.estado}}</td>
+																							<td>{{newCP.municipio}}</td>
+																							<td>{{newCP.codigo_postal}}</td>
+																							<td>{{newCP.colonia}}</td>
+																							<td class="ultimo">
+																								<a class="btn btnGuardar btnRow text-bg-danger rounded-3" (click)="deleteListCPostal(pos);"><i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}</a>
+																							</td>
+																						</tr>
+																					</tbody>
+																				</table>
+																			</div>
+																		</div>
+																	</div>
+																</li>
+														</ul>
+													</div>
+
+													<div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+													<div id="botonRegProv" class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+														<button class="btn bg-blue-300"
+															style="width: 100%!important;" type="submit"
+															[disabled]="validatePersonales == false"><i
+																class="fa-solid fa-floppy-disk"
+																style="margin-left:5px!important;"></i>Registrar
+															empresa</button>
+													</div>
+													<div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+
+												</div>
+											</form>
+										</div>
+
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="col-12" style="/* height: -webkit-fill-available; */overflow: overlay;">
+							<div class="card card_white" style="height: 100%;">
+								<div class="card-content" style="height: 100%;">
+									<span class="card-title" style="margin-bottom: 5px;font-weight: bold;text-transform: capitalize;cursor: pointer;">{{'company_catalog' | translate}}</span>
+									<div style="width: 100%!important;display: flex;flex-wrap: wrap;justify-content: center;">
+										<div class="col-12 row" style="overflow: overlay!important;">
+											<table class="centered" style="min-width: max-content;">
+												<thead>
+													<tr>
+														<th>company_name</th>
+														<th>zona_horaria</th>
+														<th>zona_horaria_utc</th>
+														<th>codigo_pais</th>
+														<th>rfc_generico</th>
+														<th>rfc_company</th>
+														<th>tax_id_company</th>
+														<th class="ultimo"></th>
+														<th class="ultimo"></th>
+													</tr>
+												</thead>
+												<tbody *ngIf="list_empresas_all.length > 0">
+													<tr *ngFor="let emp_list of list_empresas_all">
+														<td>{{emp_list.company_name}}</td>
+														<td>{{emp_list.zona_horaria}}</td>
+														<td>{{emp_list.zona_horaria_utc}}</td>
+														<td>{{emp_list.codigo_pais}}</td>
+														<td>{{emp_list.rfc_generico}}</td>
+														<td>{{emp_list.rfc_company}}</td>
+														<td>{{emp_list.tax_id_company}}</td>
+														<td class="img"><img src="{{emp_list.logotypo}}"
+																alt="Contact Person"></td>
+														<td><a
+																class="btn text-bg-success rounded-3 modal-trigger"><i
+																	class="tiny material-icons">visibility</i></a></td>
+													</tr>
+												</tbody>
+												<tbody *ngIf="list_empresas_all.length == 0">
+													<tr>
+														<td colspan="9">{{'no_rows' | translate}}</td>
+													</tr>
+												</tbody>
+											</table>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div id="catalog_usuarios_registrados" class="col-12 tab_content">
+
+						<div class="col-12">
+							<ul class="collecction with-header" style="border-radius: 15px!important;">
+								<li class="collection-header" style="padding: 10px!important;"><h6 style="font-family: roboto_cr,FontAwesome;font-size: small;">Nuevo usuario</h6></li>
+								<li class="collection-item" style="padding: 5px!important;font-family: roboto_cr,FontAwesome;font-size: small;">
+									<div style="display: flex;justify-content: space-between;align-items: center;">
+										<div class="input-group col-12" style="padding: 0!important;margin: 0!important;">
+											<label for="marca_regCat" id="lblMarca" class="activeInput">Apellido Paterno</label>
+											<input id="user_paterno" class="validate" type="text" name="user_paterno" (keyup)="creaPaternoUsuario($event.target);">
+										</div>
+									</div>
+								</li>
+
+								<li class="collection-item" style="padding: 5px!important;font-family: roboto_cr,FontAwesome;font-size: small;">
+									<div style="display: flex;justify-content: space-between;align-items: center;">
+										<div class="input-group col-12" style="padding: 0!important;margin: 0!important;">
+											<label for="marca_regCat" id="lblMarca" class="activeInput">Apellido Materno</label>
+											<input id="user_materno" class="validate" type="text" name="user_materno" (keyup)="creaMaternoUsuario($event.target);">
+										</div>
+									</div>
+								</li>
+
+								<li class="collection-item" style="padding: 5px!important;font-family: roboto_cr,FontAwesome;font-size: small;">
+									<div style="display: flex;justify-content: space-between;align-items: center;">
+										<div class="input-group col-12" style="padding: 0!important;margin: 0!important;">
+											<label for="marca_regCat" id="lblMarca" class="activeInput">Nombre(s)</label>
+											<input id="user_nombres" class="validate" type="text" name="user_nombres" (keyup)="creaNombresUsuario($event.target);">
+										</div>
+									</div>
+								</li>
+
+								<li class="collection-item" style="padding: 5px!important;font-family: roboto_cr,FontAwesome;font-size: small;">
+									<div style="display: flex;justify-content: space-between;align-items: center;">
+										<div class="input-group col-12" style="padding: 0!important;margin: 0!important;">
+											<label for="marca_regCat" id="lblMarca" class="activeInput">{{'email' | translate}}</label>
+											<input id="user_email" class="validate" type="email" style="text-transform: lowercase!important;" (keyup)="creaEmailUsuario($event.target);">
+										</div>
+									</div>
+								</li>
+								<li class="collection-item" style="padding: 5px!important;font-family: roboto_cr,FontAwesome;font-size: small;">
+									<div style="display: flex;justify-content: space-between;align-items: center;">
+										<div class="input-group col-12" style="padding: 0!important;margin: 0!important;">
+											<table class="centered" style="min-width: max-content;">
+												<thead>
+													<tr>
+														<th>{{'company_name' | translate }}</th>
+														<th class="ultimo"></th>
+													</tr>
+												</thead>
+												<tbody>
+													<tr *ngFor="let emp_list of list_empresas_user">
+														<td>{{emp_list.company_name}}</td>
+														<td class="ultimo">
+															<div class="switch">
+																<label>
+																	<input class="selectSwitchProvProd" name="selectImpProd" type="checkbox" [checked]="emp_list.selected == true"
+																		(click)="selectEmpresaUsuario($event.target,emp_list.emp_token);"style="width: auto;">
+																	<span class="lever"></span>
+																</label>
+															</div>
+														</td>
+													</tr>
+												</tbody>
+											</table>
+										</div>
+									</div>
+								</li>
+								<li class="collection-item" style="padding: 5px!important;font-family: roboto_cr,FontAwesome;font-size: small;">
+									<div style="display: flex;justify-content: space-between;align-items: center;">
+										<div class="input-group col-12" style="padding: 0!important;margin: 0!important;">
+											<label for="marca_regCat" id="lblMarca" class="activeInput">Area</label>
+											<select id="user_area" class="browser-default" name="formaPago" (change)="selectAreasUsuario($event.target);">
+												<option value="" disabled selected>{{'opt_select' | translate}}</option>
+												<option *ngFor="let area of list_areas_user" value="{{area.token_area}}">{{area.areaemp}}</option>
+											</select>
+										</div>
+									</div>
+								</li>
+
+								<li class="collection-item" style="padding: 5px!important;font-family: roboto_cr,FontAwesome;font-size: small;" *ngIf="list_cargos_user.length > 0">
+									<div style="display: flex;justify-content: space-between;align-items: center;">
+										<div class="input-group col-12" style="padding: 0!important;margin: 0!important;">
+											<label for="marca_regCat" id="lblMarca" class="activeInput">Cargo</label>
+											<select id="user_cargo" class="browser-default" name="formaPago" (change)="selectCargoUsuario(new_user_area,$event.target);">
+												<option value="" disabled selected>{{'opt_select' | translate}}</option>
+												<option *ngFor="let carg of list_cargos_user" value="{{carg.cargo_tkn}}">{{carg.cargo_nombre}}</option>
+											</select>
+										</div>
+									</div>
+								</li>
+								<li class="collection-item col-12" style="padding: 5px!important;font-family: roboto_cr,FontAwesome;font-size: small;margin: 0!important;">
+									<div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+									<div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2" style="margin: 0!important;">
+										<a class="btn btn_extend btnRow waves-light" type="submit" name="btnAltaProducto2" style="padding: 0!important;" *ngIf="valida_registro_usuario == false" disabled>
+											<i class="fa-regular fa-floppy-disk" style="height: 15px!important;line-height: 15px!important;width: 15px!important;font-size: small!important;"></i> 
+											Registrar usuario</a>
+		
+										<a class="btn btn_extend btnRow waves-light" type="submit" name="btnAltaProducto2" style="padding: 0!important;" *ngIf="valida_registro_usuario == true" (click)="registraUsuario();">
+											<i class="fa-regular fa-floppy-disk" style="height: 15px!important;line-height: 15px!important;width: 15px!important;font-size: small!important;"></i> 
+											Registrar usuario</a>
+									</div>
+									<div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+								</li>
+							</ul>
+						</div>
+
+						<div class="col-12">
+							<ul class="collapsable" *ngIf="usuariosList.length > 0">
+								<li class="licollapsible" *ngFor="let userList of usuariosList">
+									<div class="collapsable-header">
+										<div class="chip"><img src="{{userList.imagen}}" alt="Contact Person">{{userList.nombre_completo}}</div>
+									</div>
+									<div class="collapsable-body">
+										<!--									<td><input (change)="updatePaternoPers($event.target,userspers.token_personal);"class="claveServProvAlta txtClave validate" type="text" value="{{userspers.paterno}}"></td>
+									  <td><input (change)="updateMaternoPers($event.target,userspers.token_personal);"class="claveServProvAlta txtClave validate" type="text" value="{{userspers.materno}}"></td>
+									  <td><input (change)="updateNombresPers($event.target,userspers.token_personal);"class="claveServProvAlta txtClave validate" type="text" value="{{userspers.nombres}}"></td>
+									  <td><input (change)="updateMailPers($event.target,userspers.token_personal);"class="claveServProvAlta txtClave validate" style="text-transform: lowercase!important;" type="text" value="{{userspers.email}}"></td>
+									  <td *ngIf="userspers.arrayTelefonos.length == 0"><input (change)="registraTelefono($event.target,userspers.token_personal);"class="claveServProvAlta txtClave validate" type="text"></td>
+	
+										<div [class]="userList.class_perm">
+											<div class="cabecera col-12" style="height: 100%!important;">
+												<div class="col-12 row">
+													<h6 class="title">solicitud de permisos</h6>
+													<div class="col-12 row" style="overflow: overlay!important;padding: 3px;">
+	
+														<table class="centered" style="min-width: max-content;">
+															<thead>
+																<tr>
+																	<th>folio</th>
+																	<th>{{'fecha_reg' | translate}}</th>
+																	<th>m&oacute;dulo</th>
+																	<th>{{'perm' | translate}}</th>
+																	<th>{{'observ' | translate}}</th>
+																	<th class="ultimo"></th>
+																</tr>
+															</thead>
+															<tbody *ngIf="userList.permisos_solicitud.length > 0">
+																<tr *ngFor="let soli_perm of userList.permisos_solicitud">
+																	<td>{{soli_perm.folio_permiso}}</td>
+																	<td>{{soli_perm.date_registro}}</td>
+																	<td>{{soli_perm.extend_modulo}}</td>
+																	<td>{{soli_perm.extend_permiso | translate}}</td>
+																	<td>{{soli_perm.observaciones}}</td>
+																	<td>
+																		<a
+																			class="btn text-bg-success rounded-3 modal-trigger"><i
+																				class="tiny material-icons">visibility</i>
+																		</a>
+																	</td>
+																</tr>
+															</tbody>
+															<tbody *ngIf="userList.permisos_solicitud.length == 0">
+																<tr>
+																	<td colspan="6">{{'no_rows' | translate}}</td>
+																</tr>
+															</tbody>
+														</table>
+	
+													</div>
+												</div>
+											</div>
+										</div>
+										<div [class]="userList.class_user" style="overflow: overlay;height: 500px;">
+											<div class="cabecera col-12">
+												<div class="col-12 row">
+													<h6 class="title">credenciales</h6>
+													<h6 *ngIf="userList.hasPass == true" class="content">Credenciales
+														generadas</h6>
+													<div class="col-12 row" style="padding: 3px;">
+														<div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+														<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+															<a class="btn btnRow btn text-bg-success rounded-3"
+																*ngIf="userList.hasPass == false"
+																(click)="generaCodigosAccessAndPass(userList.token_personal);"><i
+																	class="fa-solid fa-pen-to-square"></i> Generar
+																credenciales</a>
+															<a class="btn btnRow text-bg-danger rounded-3"
+																*ngIf="userList.hasPass == true"
+																(click)="revocarCodigosAccessAndPass(userList.user_token);"><i
+																	class="fa-solid fa-eraser"></i> Revocar credenciales</a>
+														</div>
+														<div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+													</div>
+												</div>
+											</div>
+		
+											<div class="col-12 card card_main">
+												<div class="card-content">
+													<span class="card-title">Acceso a m&oacute;dulos</span>
+													<div class="inside">
+														<div class="col-12 row" style="border-top: solid 2px lightgray!important;padding: 0 !important;">
+															<div class="col-12 col-sm-8 col-md-3 col-lg-2 col-xl-2 col-xxl-2 explain"><h6 class="title">SSIC</h6></div>
+															<div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2 switch" style="height: 20px;line-height: 20px;margin: 0;padding: 0;display: flex;justify-content: end;">
+																<label>No<input type="checkbox" (click)="userAccesoModuloSsic(userList.emp_token,userList.user_token,userList.inside_ssic);" [checked]="userList.inside_ssic == true"><span class="lever" style="margin: 5px!important;"></span>{{'yes' | translate}}</label>
+															</div>
+														</div>
+														<div class="col-12 row" style="border-top: solid 2px lightgray!important;padding: 0 !important;">
+															<div class="col-12 col-sm-8 col-md-3 col-lg-2 col-xl-2 col-xxl-2 explain"><h6 class="title">Descarga de xml</h6></div>
+															<div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2 switch" style="height: 20px;line-height: 20px;margin: 0;padding: 0;display: flex;justify-content: end;">
+																<label>No<input type="checkbox" (click)="userAccesoModuloDescargaXml(userList.emp_token,userList.user_token,userList.outside_descarga_xml);" [checked]="userList.outside_descarga_xml == true"><span class="lever" style="margin: 5px!important;"></span>{{'yes' | translate}}</label>
+															</div>
+														</div>
+														<div class="col-12 row" style="border-top: solid 2px lightgray!important;padding: 0 !important;">
+															<div class="col-12 col-sm-8 col-md-3 col-lg-2 col-xl-2 col-xxl-2 explain"><h6 class="title">Log&iacute;stica</h6></div>
+															<div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2 switch" style="height: 20px;line-height: 20px;margin: 0;padding: 0;display: flex;justify-content: end;">
+																<label>No<input type="checkbox" (click)="userAccesoModuloLogistica(userList.emp_token,userList.user_token,userList.outside_logistica);" [checked]="userList.outside_logistica == true"><span class="lever" style="margin: 5px!important;"></span>{{'yes' | translate}}</label>
+															</div>
+														</div>
+														<div class="col-12 row" style="border-top: solid 2px lightgray!important;padding: 0 !important;">
+															<div class="col-12 col-sm-8 col-md-3 col-lg-2 col-xl-2 col-xxl-2 explain"><h6 class="title">Compras</h6></div>
+															<div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2 switch" style="height: 20px;line-height: 20px;margin: 0;padding: 0;display: flex;justify-content: end;">
+																<label>No<input type="checkbox" (click)="userAccesoModuloCompras(userList.emp_token,userList.user_token,userList.outside_compras);" [checked]="userList.outside_compras == true"><span class="lever" style="margin: 5px!important;"></span>{{'yes' | translate}}</label>
+															</div>
+														</div>
+														<div class="col-12 row" style="border-top: solid 2px lightgray!important;padding: 0 !important;">
+															<div class="col-12 col-sm-8 col-md-3 col-lg-2 col-xl-2 col-xxl-2 explain"><h6 class="title">Proyectos</h6></div>
+															<div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2 switch" style="height: 20px;line-height: 20px;margin: 0;padding: 0;display: flex;justify-content: end;">
+																<label>No<input type="checkbox" (click)="userAccesoModuloProyectos(userList.emp_token,userList.user_token,userList.outside_proyectos);" [checked]="userList.outside_proyectos == true"><span class="lever" style="margin: 5px!important;"></span>{{'yes' | translate}}</label>
+															</div>
+														</div>
+														<div class="col-12 row" style="border-top: solid 2px lightgray!important;padding: 0 !important;">
+															<div class="col-12 col-sm-8 col-md-3 col-lg-2 col-xl-2 col-xxl-2 explain"><h6 class="title">Terceros</h6></div>
+															<div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2 switch" style="height: 20px;line-height: 20px;margin: 0;padding: 0;display: flex;justify-content: end;">
+																<label>No<input type="checkbox" (click)="userAccesoModuloTerceros(userList.emp_token,userList.user_token,userList.outside_terceros);" [checked]="userList.outside_terceros == true"><span class="lever" style="margin: 5px!important;"></span>{{'yes' | translate}}</label>
+															</div>
+														</div>
+														<div class="col-12 row" style="padding: 0 !important;" *ngIf="userList.outside_terceros == true">
+															<div class="col-12 row" style="padding: 0 !important;">
+																<div class="col-12 col-sm-8 col-md-3 col-lg-2 col-xl-2 col-xxl-2 explain" style="padding-left: 20px!important;"><h6 class="title">Asociados</h6></div>
+																<div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2 switch" style="height: 20px;line-height: 20px;margin: 0;padding: 0;display: flex;justify-content: end;">
+																	<label>No<input type="checkbox" (click)="userAccesoModuloTercerosAssociates(userList.emp_token,userList.user_token,userList.outside_terceros_associates);" [checked]="userList.outside_terceros_associates == true"><span class="lever" style="margin: 5px!important;"></span>{{'yes' | translate}}</label>
+																</div>
+															</div>
+															<div class="col-12 row" style="padding: 0 !important;">
+																<div class="col-12 col-sm-8 col-md-3 col-lg-2 col-xl-2 col-xxl-2 explain" style="padding-left: 20px!important;"><h6 class="title">Clientes</h6></div>
+																<div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2 switch" style="height: 20px;line-height: 20px;margin: 0;padding: 0;display: flex;justify-content: end;">
+																	<label>No<input type="checkbox" (click)="userAccesoModuloTercerosClientes(userList.emp_token,userList.user_token,userList.outside_terceros_clientes);" [checked]="userList.outside_terceros_clientes == true"><span class="lever" style="margin: 5px!important;"></span>{{'yes' | translate}}</label>
+																</div>
+															</div>
+															<div class="col-12 row" style="padding: 0 !important;">
+																<div class="col-12 col-sm-8 col-md-3 col-lg-2 col-xl-2 col-xxl-2 explain" style="padding-left: 20px!important;"><h6 class="title">Proveedores</h6></div>
+																<div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2 switch" style="height: 20px;line-height: 20px;margin: 0;padding: 0;display: flex;justify-content: end;">
+																	<label>No<input type="checkbox" (click)="userAccesoModuloTercerosProveedores(userList.emp_token,userList.user_token,userList.outside_terceros_proveedores);" [checked]="userList.outside_terceros_proveedores == true"><span class="lever" style="margin: 5px!important;"></span>{{'yes' | translate}}</label>
+																</div>
+															</div>
+															<div class="col-12 row" style="padding: 0 !important;">
+																<div class="col-12 col-sm-8 col-md-3 col-lg-2 col-xl-2 col-xxl-2 explain" style="padding-left: 20px!important;"><h6 class="title">Empleados</h6></div>
+																<div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2 switch" style="height: 20px;line-height: 20px;margin: 0;padding: 0;display: flex;justify-content: end;">
+																	<label>No<input type="checkbox" (click)="userAccesoModuloTercerosEmpleados(userList.emp_token,userList.user_token,userList.outside_terceros_empleados);" [checked]="userList.outside_terceros_empleados == true"><span class="lever" style="margin: 5px!important;"></span>{{'yes' | translate}}</label>
+																</div>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+
+											<div class="cabecera col-12">
+												<div class="col-12 row">
+													<div class="col-12 row" style="padding: 0;" *ngIf="userList.conf_ingresos.length > 0">
+														<div class="col-12 row" style="padding: 0;" *ngFor="let cfing of userList.conf_ingresos">
+															<div class="col-12">
+																<h6 class="title" style="display: flex;justify-content: space-between;padding-left: 15px;padding-right: 15px;height: 25px;align-items: center;">Permisos para ingresos
+																	<div class="switch" style="display: flex;justify-content: center;">
+																		<label>acceso {{'no' | translate}}<input type="checkbox" (click)="userIngresosPermAcceso(userList.emp_token,userList.user_token,cfing.acceso_ingr_cpc);" [checked]="cfing.acceso_ingr_cpc == true"><span class="lever"></span>{{'yes' | translate}}</label>
+																	</div>
+																</h6>
+															</div>
+															<div class="col s2">
+																<h6 class="title">Jerarquía</h6>
+																<div class="switch" style="display: flex;justify-content: center;">
+																	<label>D<input type="checkbox" (click)="userIngresosPermJerarquia(userList.emp_token,userList.user_token,cfing.jerarquia);" [checked]="cfing.jerarquia == 'P'"><span class="lever"></span>P</label>
+																</div>
+															</div>
+															<div class="col s2">
+																<h6 class="title">CREAR</h6>
+																<div class="switch"
+																	style="display: flex;justify-content: center;">
+																	<label>{{'no' | translate}}
+																		<input type="checkbox" (click)="userIngresosPermCrear(userList.emp_token,userList.user_token,cfing.bool_ingr_perm_crear);" [checked]="cfing.bool_ingr_perm_crear == 'permitido'">
+																		<span class="lever"></span>
+																		{{'yes' | translate}}</label>
+																</div>
+															</div>
+															<div class="col s2">
+																<h6 class="title">Editar/actualizar</h6>
+																<div class="switch"
+																	style="display: flex;justify-content: center;">
+																	<label>{{'no' | translate}}
+																		<input type="checkbox" (click)="userIngresosPermEditar(userList.emp_token,userList.user_token,cfing.bool_ingr_perm_editar);" [checked]="cfing.bool_ingr_perm_editar == 'permitido'">
+																		<span class="lever"></span>
+																		{{'yes' | translate}}</label>
+																</div>
+															</div>
+		
+															<div class="col s2">
+																<h6 class="title">Consulta</h6>
+																<div class="switch"
+																	style="display: flex;justify-content: center;">
+																	<label>{{'no' | translate}}
+																		<input type="checkbox" (click)="userIngresosPermConsultar(userList.emp_token,userList.user_token,cfing.bool_ingr_perm_consulta);" [checked]="cfing.bool_ingr_perm_consulta == 'permitido'">
+																		<span class="lever"></span>
+																		{{'yes' | translate}}</label>
+																</div>
+															</div>
+															<div class="col s2">
+																<h6 class="title">Eliminaci&oacute;n</h6>
+																<div class="switch"
+																	style="display: flex;justify-content: center;">
+																	<label>{{'no' | translate}}
+																		<input type="checkbox" (click)="userIngresosPermEliminar(userList.emp_token,userList.user_token,cfing.bool_ingr_perm_elimina);" [checked]="cfing.bool_ingr_perm_elimina == 'permitido'">
+																		<span class="lever"></span>
+																		{{'yes' | translate}}</label>
+																</div>
+															</div>
+															<div class="col s2">
+																<h6 class="title tooltipped" data-position="top"
+																	data-tooltip="Ver / descargar / eliminar">documentos
+																</h6>
+																<div class="switch"
+																	style="display: flex;justify-content: center;">
+																	<label>{{'no' | translate}}
+																		<input type="checkbox" (click)="userIngresosPermVerDocs(userList.emp_token,userList.user_token,cfing.bool_ingr_perm_ver_docs);" [checked]="cfing.bool_ingr_perm_ver_docs == 'permitido'">
+																		<span class="lever"></span>
+																		{{'yes' | translate}}</label>
+																</div>
+															</div>
+		
+															<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+																<ul class="collecction">
+																	<li class="collection-item"
+																		style="display: flex;justify-content: space-between;">
+																		Catalogos
+																		<div class="switch"><label>{{'no' | translate}}
+																				<input type="checkbox"
+																					[checked]="cfing.bool_ingr_catalogos == 'permitido'">
+																				<span class="lever"></span>
+																				{{'yes' | translate}}</label>
+																		</div>
+																	</li>
+		
+																	<li class="collection-item row" style="padding: 0;">
+																		<div class="col s4">
+																			<h6 class="title">Mercancias</h6>
+																			<div class="switch"
+																				style="display: flex;justify-content: center;">
+																				<label>{{'no' | translate}}
+																					<input type="checkbox"
+																						[disabled]="cfing.bool_ingr_catalogos == 'denegado'"
+																						[checked]="cfing.bool_ingr_catalogos == 'permitido' && cfing.bool_ingr_cat_merc == 'permitido'">
+																					<span class="lever"></span>
+																					{{'yes' | translate}}</label>
+																			</div>
+																		</div>
+																		<div class="col s4">
+																			<h6 class="title">Servicios</h6>
+																			<div class="switch"
+																				style="display: flex;justify-content: center;">
+																				<label>{{'no' | translate}}
+																					<input type="checkbox"
+																						[disabled]="cfing.bool_ingr_catalogos == 'denegado'"
+																						[checked]="cfing.bool_ingr_catalogos == 'permitido' && cfing.bool_ingr_cat_serv == 'permitido'">
+																					<span class="lever"></span>
+																					{{'yes' | translate}}</label>
+																			</div>
+																		</div>
+																		<div class="col s4">
+																			<h6 class="title">Lista de precios</h6>
+																			<div class="switch"
+																				style="display: flex;justify-content: center;">
+																				<label>{{'no' | translate}}
+																					<input type="checkbox"
+																						[disabled]="cfing.bool_ingr_catalogos == 'denegado'"
+																						[checked]="cfing.bool_ingr_catalogos == 'permitido' && cfing.bool_ingr_cat_prec == 'permitido'">
+																					<span class="lever"></span>
+																					{{'yes' | translate}}</label>
+																			</div>
+																		</div>
+																	</li>
+		
+																	<li class="collection-item row" style="padding: 0;">
+																		<div class="col s3">
+																			<h6 class="title">Descuentos</h6>
+																			<div class="switch"
+																				style="display: flex;justify-content: center;">
+																				<label>{{'no' | translate}}
+																					<input type="checkbox"
+																						[disabled]="cfing.bool_ingr_catalogos == 'denegado'"
+																						[checked]="cfing.bool_ingr_catalogos == 'permitido' && cfing.bool_ingr_cat_desc == 'permitido'">
+																					<span class="lever"></span>
+																					{{'yes' | translate}}</label>
+																			</div>
+																		</div>
+																		<div class="col s3">
+																			<h6 class="title">Promociones</h6>
+																			<div class="switch"
+																				style="display: flex;justify-content: center;">
+																				<label>{{'no' | translate}}
+																					<input type="checkbox"
+																						[disabled]="cfing.bool_ingr_catalogos == 'denegado'"
+																						[checked]="cfing.bool_ingr_catalogos == 'permitido' && cfing.bool_ingr_cat_prom == 'permitido'">
+																					<span class="lever"></span>
+																					{{'yes' | translate}}</label>
+																			</div>
+																		</div>
+																		<div class="col s3">
+																			<h6 class="title">Impuestos</h6>
+																			<div class="switch"
+																				style="display: flex;justify-content: center;">
+																				<label>{{'no' | translate}}
+																					<input type="checkbox"
+																						[disabled]="cfing.bool_ingr_catalogos == 'denegado'"
+																						[checked]="cfing.bool_ingr_catalogos == 'permitido' && cfing.bool_ingr_cat_impu == 'permitido'">
+																					<span class="lever"></span>
+																					{{'yes' | translate}}</label>
+																			</div>
+																		</div>
+																		<div class="col s3">
+																			<h6 class="title">Clientes</h6>
+																			<div class="switch"
+																				style="display: flex;justify-content: center;">
+																				<label>{{'no' | translate}}
+																					<input type="checkbox"
+																						[disabled]="cfing.bool_ingr_catalogos == 'denegado'"
+																						[checked]="cfing.bool_ingr_catalogos == 'permitido' && cfing.bool_ingr_cat_clie == 'permitido'">
+																					<span class="lever"></span>
+																					{{'yes' | translate}}</label>
+																			</div>
+																		</div>
+																	</li>
+																</ul>
+															</div>
+															<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+																<ul class="collecction">
+																	<li class="collection-item"
+																		style="display: flex;justify-content: space-between;">
+																		Ventas
+																		<div class="switch"><label>{{'no' | translate}}
+																				<input type="checkbox"
+																					[checked]="cfing.bool_ingr_ventas == 'permitido'">
+																				<span class="lever"></span>
+																				{{'yes' | translate}}</label>
+																		</div>
+																	</li>
+		
+																	<li class="collection-item row" style="padding: 0;">
+																		<div class="col s4">
+																			<h6 class="title">Pedidos</h6>
+																			<div class="switch"
+																				style="display: flex;justify-content: center;">
+																				<label>{{'no' | translate}}
+																					<input type="checkbox"
+																						[disabled]="cfing.bool_ingr_ventas == 'denegado'"
+																						[checked]="cfing.bool_ingr_ventas == 'permitido' && cfing.bool_ingr_vent_ped == 'permitido'">
+																					<span class="lever"></span>
+																					{{'yes' | translate}}</label>
+																			</div>
+																		</div>
+																		<div class="col s4">
+																			<h6 class="title">Ventas</h6>
+																			<div class="switch"
+																				style="display: flex;justify-content: center;">
+																				<label>{{'no' | translate}}
+																					<input type="checkbox"
+																						[disabled]="cfing.bool_ingr_ventas == 'denegado'"
+																						[checked]="cfing.bool_ingr_ventas == 'permitido' && cfing.bool_ingr_vent_dir == 'permitido'">
+																					<span class="lever"></span>
+																					{{'yes' | translate}}</label>
+																			</div>
+																		</div>
+																		<div class="col s4">
+																			<h6 class="title">Seguimiento de ventas</h6>
+																			<div class="switch"
+																				style="display: flex;justify-content: center;">
+																				<label>{{'no' | translate}}
+																					<input type="checkbox"
+																						[disabled]="cfing.bool_ingr_ventas == 'denegado'"
+																						[checked]="cfing.bool_ingr_ventas == 'permitido' && cfing.bool_ingr_vent_seg == 'permitido'">
+																					<span class="lever"></span>
+																					{{'yes' | translate}}</label>
+																			</div>
+																		</div>
+																	</li>
+																	<li class="collection-item row" style="padding: 0;">
+																		<div class="col s6">
+																			<h6 class="title">Devoluciones</h6>
+																			<div class="switch"
+																				style="display: flex;justify-content: center;">
+																				<label>{{'no' | translate}}
+																					<input type="checkbox"
+																						[disabled]="cfing.bool_ingr_ventas == 'denegado'"
+																						[checked]="cfing.bool_ingr_ventas == 'permitido' && cfing.bool_ingr_vent_dev == 'permitido'">
+																					<span class="lever"></span>
+																					{{'yes' | translate}}</label>
+																			</div>
+																		</div>
+																		<div class="col s6">
+																			<h6 class="title">Facturaci&oacute;n</h6>
+																			<div class="switch"
+																				style="display: flex;justify-content: center;">
+																				<label>{{'no' | translate}}
+																					<input type="checkbox"
+																						[disabled]="cfing.bool_ingr_ventas == 'denegado'"
+																						[checked]="cfing.bool_ingr_ventas == 'permitido' && cfing.bool_ingr_vent_fac == 'permitido'">
+																					<span class="lever"></span>
+																					{{'yes' | translate}}</label>
+																			</div>
+																		</div>
+																	</li>
+		
+																	<!--<li class="collection-item">Alvin</li>
+																</ul>
+															</div>
+														</div>
+													</div>
+													<h6 *ngIf="userList.conf_ingresos.length == 0" class="content">
+														{{'no_rows' | translate}}</h6>
+												</div>
+											</div>
+		
+											<div class="cabecera col-12">
+												<div class="col-12 row">
+													<div class="col-12 row" style="padding: 0;" *ngIf="userList.conf_egresos.length > 0">
+														<div class="col-12 row" style="padding: 0;" *ngFor="let cfegr of userList.conf_egresos">
+															<div class="col-12">
+																<h6 class="title" style="display: flex;justify-content: space-between;padding-left: 15px;padding-right: 15px;height: 25px;align-items: center;">Permisos para egresos
+																	<div class="switch" style="display: flex;justify-content: center;">
+																		<label>acceso {{'no' | translate}}<input type="checkbox" (click)="userEgresosPermAcceso(userList.emp_token,userList.user_token,cfegr.acceso_eegr_cpp);" [checked]="cfegr.acceso_eegr_cpp == true"><span class="lever"></span>{{'yes' | translate}}</label>
+																	</div>
+																</h6>
+															</div>
+															<div class="col s2">
+																<h6 class="title">Jerarquía</h6>
+																<div class="switch" style="display: flex;justify-content: center;">
+																	<label>D<input type="checkbox"[checked]="cfegr.jerarquia == 'P'" (click)="userEgresosPermJerarquia(userList.emp_token,userList.user_token,cfegr.jerarquia);"><span class="lever"></span>P</label>
+																</div>
+															</div>
+															<div class="col s2">
+																<h6 class="title">CREAR</h6>
+																<div class="switch"
+																	style="display: flex;justify-content: center;">
+																	<label>{{'no' | translate}}
+																		<input type="checkbox" (click)="userEgresosPermCrear(userList.emp_token,userList.user_token,cfegr.bool_eegr_perm_crear);" [checked]="cfegr.bool_eegr_perm_crear == 'permitido'">
+																		<span class="lever"></span>
+																		{{'yes' | translate}}</label>
+																</div>
+															</div>
+															<div class="col s2">
+																<h6 class="title">Editar/actualizar</h6>
+																<div class="switch"
+																	style="display: flex;justify-content: center;">
+																	<label>{{'no' | translate}}
+																		<input type="checkbox" (click)="userEgresosPermEditar(userList.emp_token,userList.user_token,cfegr.bool_eegr_perm_editar);" [checked]="cfegr.bool_eegr_perm_editar == 'permitido'">
+																		<span class="lever"></span>
+																		{{'yes' | translate}}</label>
+																</div>
+															</div>
+		
+															<div class="col s2">
+																<h6 class="title">Consulta</h6>
+																<div class="switch"
+																	style="display: flex;justify-content: center;">
+																	<label>{{'no' | translate}}
+																		<input type="checkbox" (click)="userEgresosPermConsultar(userList.emp_token,userList.user_token,cfegr.bool_eegr_perm_consulta);" [checked]="cfegr.bool_eegr_perm_consulta == 'permitido'">
+																		<span class="lever"></span>
+																		{{'yes' | translate}}</label>
+																</div>
+															</div>
+															<div class="col s2">
+																<h6 class="title">Eliminaci&oacute;n</h6>
+																<div class="switch"
+																	style="display: flex;justify-content: center;">
+																	<label>{{'no' | translate}}
+																		<input type="checkbox" (click)="userEgresosPermEliminar(userList.emp_token,userList.user_token,cfegr.bool_eegr_perm_elimina);" [checked]="cfegr.bool_eegr_perm_elimina == 'permitido'">
+																		<span class="lever"></span>
+																		{{'yes' | translate}}</label>
+																</div>
+															</div>
+															<div class="col s2">
+																<h6 class="title tooltipped" data-position="top"
+																	data-tooltip="Ver / descargar / eliminar">documentos
+																</h6>
+																<div class="switch"
+																	style="display: flex;justify-content: center;">
+																	<label>{{'no' | translate}}
+																		<input type="checkbox" (click)="userEgresosPermVerDocs(userList.emp_token,userList.user_token,cfegr.bool_eegr_perm_ver_docs);" [checked]="cfegr.bool_eegr_perm_ver_docs == 'permitido'">
+																		<span class="lever"></span>
+																		{{'yes' | translate}}</label>
+																</div>
+															</div>
+		
+															<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+																<ul class="collecction">
+																	<li class="collection-item"
+																		style="display: flex;justify-content: space-between;">
+																		Catalogos
+																		<div class="switch"><label>{{'no' | translate}}
+																				<input type="checkbox"
+																					[checked]="cfegr.bool_eegr_catalogos == 'permitido'">
+																				<span class="lever"></span>
+																				{{'yes' | translate}}</label>
+																		</div>
+																	</li>
+		
+																	<li class="collection-item row" style="padding: 0;">
+																		<div class="col s4">
+																			<h6 class="title">Productos</h6>
+																			<div class="switch"
+																				style="display: flex;justify-content: center;">
+																				<label>{{'no' | translate}}
+																					<input type="checkbox"
+																						[disabled]="cfegr.bool_eegr_catalogos == 'denegado'"
+																						[checked]="cfegr.bool_eegr_catalogos == 'permitido' && cfegr.bool_eegr_cat_prod == 'permitido'">
+																					<span class="lever"></span>
+																					{{'yes' | translate}}</label>
+																			</div>
+																		</div>
+																		<div class="col s4">
+																			<h6 class="title">Servicios</h6>
+																			<div class="switch"
+																				style="display: flex;justify-content: center;">
+																				<label>{{'no' | translate}}
+																					<input type="checkbox"
+																						[disabled]="cfegr.bool_eegr_catalogos == 'denegado'"
+																						[checked]="cfegr.bool_eegr_catalogos == 'permitido' && cfegr.bool_eegr_cat_serv == 'permitido'">
+																					<span class="lever"></span>
+																					{{'yes' | translate}}</label>
+																			</div>
+																		</div>
+																		<div class="col s4">
+																			<h6 class="title">Activos fijos</h6>
+																			<div class="switch"
+																				style="display: flex;justify-content: center;">
+																				<label>{{'no' | translate}}
+																					<input type="checkbox"
+																						[disabled]="cfegr.bool_eegr_catalogos == 'denegado'"
+																						[checked]="cfegr.bool_eegr_catalogos == 'permitido' && cfegr.bool_eegr_cat_actf == 'permitido'">
+																					<span class="lever"></span>
+																					{{'yes' | translate}}</label>
+																			</div>
+																		</div>
+																	</li>
+		
+																	<li class="collection-item row" style="padding: 0;">
+																		<div class="col s4">
+																			<h6 class="title">Activos intang.</h6>
+																			<div class="switch"
+																				style="display: flex;justify-content: center;">
+																				<label>{{'no' | translate}}
+																					<input type="checkbox"
+																						[disabled]="cfegr.bool_eegr_catalogos == 'denegado'"
+																						[checked]="cfegr.bool_eegr_catalogos == 'permitido' && cfegr.bool_eegr_cat_acti == 'permitido'">
+																					<span class="lever"></span>
+																					{{'yes' | translate}}</label>
+																			</div>
+																		</div>
+																		<div class="col s4">
+																			<h6 class="title">Proveedores</h6>
+																			<div class="switch"
+																				style="display: flex;justify-content: center;">
+																				<label>{{'no' | translate}}
+																					<input type="checkbox"
+																						[disabled]="cfegr.bool_eegr_catalogos == 'denegado'"
+																						[checked]="cfegr.bool_eegr_catalogos == 'permitido' && cfegr.bool_eegr_cat_prov == 'permitido'">
+																					<span class="lever"></span>
+																					{{'yes' | translate}}</label>
+																			</div>
+																		</div>
+																		<div class="col s4">
+																			<h6 class="title">Establecimientos</h6>
+																			<div class="switch"
+																				style="display: flex;justify-content: center;">
+																				<label>{{'no' | translate}}
+																					<input type="checkbox"
+																						[disabled]="cfegr.bool_eegr_catalogos == 'denegado'"
+																						[checked]="cfegr.bool_eegr_catalogos == 'permitido' && cfegr.bool_eegr_cat_esta == 'permitido'">
+																					<span class="lever"></span>
+																					{{'yes' | translate}}</label>
+																			</div>
+																		</div>
+																	</li>
+																</ul>
+															</div>
+															<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+																<ul class="collecction">
+																	<li class="collection-item"
+																		style="display: flex;justify-content: space-between;">
+																		Compras
+																		<div class="switch"><label>{{'no' | translate}}
+																				<input type="checkbox"
+																					[checked]="cfegr.bool_eegr_compras == 'permitido'">
+																				<span class="lever"></span>
+																				{{'yes' | translate}}</label>
+																		</div>
+																	</li>
+		
+																	<li class="collection-item row" style="padding: 0;">
+																		<div class="col s6">
+																			<h6 class="title">Requisiciones</h6>
+																			<div class="switch"
+																				style="display: flex;justify-content: center;">
+																				<label>{{'no' | translate}}
+																					<input type="checkbox"
+																						[disabled]="cfegr.bool_eegr_compras == 'denegado'"
+																						[checked]="cfegr.bool_eegr_compras == 'permitido' && cfegr.bool_eegr_comp_req == 'permitido'">
+																					<span class="lever"></span>
+																					{{'yes' | translate}}</label>
+																			</div>
+																		</div>
+																		<div class="col s6">
+																			<h6 class="title">Cotizaciones</h6>
+																			<div class="switch"
+																				style="display: flex;justify-content: center;">
+																				<label>{{'no' | translate}}
+																					<input type="checkbox"
+																						[disabled]="cfegr.bool_eegr_compras == 'denegado'"
+																						[checked]="cfegr.bool_eegr_compras == 'permitido' && cfegr.bool_eegr_comp_cot == 'permitido'">
+																					<span class="lever"></span>
+																					{{'yes' | translate}}</label>
+																			</div>
+																		</div>
+																	</li>
+																	<li class="collection-item row" style="padding: 0;">
+																		<div class="col s6">
+																			<h6 class="title">Compra directa</h6>
+																			<div class="switch"
+																				style="display: flex;justify-content: center;">
+																				<label>{{'no' | translate}}
+																					<input type="checkbox"
+																						[disabled]="cfegr.bool_eegr_compras == 'denegado'"
+																						[checked]="cfegr.bool_eegr_compras == 'permitido' && cfegr.bool_eegr_comp_dir == 'permitido'">
+																					<span class="lever"></span>
+																					{{'yes' | translate}}</label>
+																			</div>
+																		</div>
+																		<div class="col s6">
+																			<h6 class="title">Seguimiento de compra</h6>
+																			<div class="switch"
+																				style="display: flex;justify-content: center;">
+																				<label>{{'no' | translate}}
+																					<input type="checkbox"
+																						[disabled]="cfegr.bool_eegr_compras == 'denegado'"
+																						[checked]="cfegr.bool_eegr_compras == 'permitido' && cfegr.bool_eegr_comp_seg == 'permitido'">
+																					<span class="lever"></span>
+																					{{'yes' | translate}}</label>
+																			</div>
+																		</div>
+																	</li>
+		
+																	<!--<li class="collection-item">Alvin</li>
+																</ul>
+															</div>
+														</div>
+													</div>
+													<h6 *ngIf="userList.conf_egresos.length == 0" class="content">
+														{{'no_rows' | translate}}</h6>
+												</div>
+											</div>
+		
+											<div class="cabecera col-12">
+												<div class="col-12 row">
+													<div class="col-12 row" style="padding: 0;" *ngIf="userList.conf_finanzas.length > 0">
+														<div class="col-12 row" style="padding: 0;" *ngFor="let cfnzs of userList.conf_finanzas">
+															<div class="col-12">
+																<h6 class="title" style="display: flex;justify-content: space-between;padding-left: 15px;padding-right: 15px;height: 25px;align-items: center;">Permisos para finanzas
+																	<div class="switch" style="display: flex;justify-content: center;">
+																		<label>acceso {{'no' | translate}}<input type="checkbox" (click)="userFinanzasPermAcceso(userList.emp_token,userList.user_token,cfnzs.acceso_fnzs);" [checked]="cfnzs.acceso_fnzs == true"><span class="lever"></span>{{'yes' | translate}}</label>
+																	</div>
+																</h6>
+															</div>
+															<div class="col s2">
+																<h6 class="title">Jerarquía</h6>
+																<div class="switch" style="display: flex;justify-content: center;">
+																	<label>D<input type="checkbox" (click)="userFinanzasPermJerarquia(userList.emp_token,userList.user_token,cfnzs.jerarquia);" [checked]="cfnzs.jerarquia == 'P'"><span class="lever"></span>P</label>
+																</div>
+															</div>
+															<div class="col s2">
+																<h6 class="title">CREAR</h6>
+																<div class="switch"
+																	style="display: flex;justify-content: center;">
+																	<label>{{'no' | translate}}
+																		<input type="checkbox" (click)="userFinanzasPermCrear(userList.emp_token,userList.user_token,cfnzs.bool_fnzs_perm_crear);" [checked]="cfnzs.bool_fnzs_perm_crear == 'permitido'">
+																		<span class="lever"></span>
+																		{{'yes' | translate}}</label>
+																</div>
+															</div>
+															<div class="col s2">
+																<h6 class="title">Editar/actualizar</h6>
+																<div class="switch"
+																	style="display: flex;justify-content: center;">
+																	<label>{{'no' | translate}}
+																		<input type="checkbox" (click)="userFinanzasPermEditar(userList.emp_token,userList.user_token,cfnzs.bool_fnzs_perm_editar);" [checked]="cfnzs.bool_fnzs_perm_editar == 'permitido'">
+																		<span class="lever"></span>
+																		{{'yes' | translate}}</label>
+																</div>
+															</div>
+		
+															<div class="col s2">
+																<h6 class="title">Consulta</h6>
+																<div class="switch"
+																	style="display: flex;justify-content: center;">
+																	<label>{{'no' | translate}}
+																		<input type="checkbox" (click)="userFinanzasPermConsultar(userList.emp_token,userList.user_token,cfnzs.bool_fnzs_perm_consulta);" [checked]="cfnzs.bool_fnzs_perm_consulta == 'permitido'">
+																		<span class="lever"></span>
+																		{{'yes' | translate}}</label>
+																</div>
+															</div>
+															<div class="col s2">
+																<h6 class="title">Eliminaci&oacute;n</h6>
+																<div class="switch"
+																	style="display: flex;justify-content: center;">
+																	<label>{{'no' | translate}}
+																		<input type="checkbox" (click)="userFinanzasPermEliminar(userList.emp_token,userList.user_token,cfnzs.bool_fnzs_perm_elimina);" [checked]="cfnzs.bool_fnzs_perm_elimina == 'permitido'">
+																		<span class="lever"></span>
+																		{{'yes' | translate}}</label>
+																</div>
+															</div>
+															<div class="col s2">
+																<h6 class="title tooltipped" data-position="top"
+																	data-tooltip="Ver / descargar / eliminar">documentos
+																</h6>
+																<div class="switch"
+																	style="display: flex;justify-content: center;">
+																	<label>{{'no' | translate}}
+																		<input type="checkbox" (click)="userFinanzasPermVerDocs(userList.emp_token,userList.user_token,cfnzs.bool_fnzs_perm_ver_docs);" [checked]="cfnzs.bool_fnzs_perm_ver_docs == 'permitido'">
+																		<span class="lever"></span>
+																		{{'yes' | translate}}</label>
+																</div>
+															</div>
+		
+															<div class="col-12">
+																<ul class="collecction">
+																	<li class="collection-item"
+																		style="display: flex;justify-content: space-between;">
+																		Catalogos
+																		<div class="switch"><label>{{'no' | translate}}
+																				<input type="checkbox"
+																					[checked]="cfnzs.bool_fnzs_catalogos == 'permitido'">
+																				<span class="lever"></span>
+																				{{'yes' | translate}}</label>
+																		</div>
+																	</li>
+		
+																	<li class="collection-item row" style="padding: 0;">
+																		<div class="col s3">
+																			<h6 class="title">Cuentas bancarias</h6>
+																			<div class="switch"
+																				style="display: flex;justify-content: center;">
+																				<label>{{'no' | translate}}
+																					<input type="checkbox"
+																						[disabled]="cfnzs.bool_fnzs_catalogos == 'denegado'"
+																						[checked]="cfnzs.bool_fnzs_catalogos == 'permitido' && cfnzs.bool_fnzs_cat_cban == 'permitido'">
+																					<span class="lever"></span>
+																					{{'yes' | translate}}</label>
+																			</div>
+																		</div>
+																		<div class="col s3">
+																			<h6 class="title">Caja</h6>
+																			<div class="switch"
+																				style="display: flex;justify-content: center;">
+																				<label>{{'no' | translate}}
+																					<input type="checkbox"
+																						[disabled]="cfnzs.bool_fnzs_catalogos == 'denegado'"
+																						[checked]="cfnzs.bool_fnzs_catalogos == 'permitido' && cfnzs.bool_fnzs_cat_caja == 'permitido'">
+																					<span class="lever"></span>
+																					{{'yes' | translate}}</label>
+																			</div>
+																		</div>
+																		<div class="col s3">
+																			<h6 class="title">Monederos electr&oacute;nicos
+																			</h6>
+																			<div class="switch"
+																				style="display: flex;justify-content: center;">
+																				<label>{{'no' | translate}}
+																					<input type="checkbox"
+																						[disabled]="cfnzs.bool_fnzs_catalogos == 'denegado'"
+																						[checked]="cfnzs.bool_fnzs_catalogos == 'permitido' && cfnzs.bool_fnzs_cat_moel == 'permitido'">
+																					<span class="lever"></span>
+																					{{'yes' | translate}}</label>
+																			</div>
+																		</div>
+																		<div class="col s3">
+																			<h6 class="title">Dispositivos
+																				electr&oacute;nicos</h6>
+																			<div class="switch"
+																				style="display: flex;justify-content: center;">
+																				<label>{{'no' | translate}}
+																					<input type="checkbox"
+																						[disabled]="cfnzs.bool_fnzs_catalogos == 'denegado'"
+																						[checked]="cfnzs.bool_fnzs_catalogos == 'permitido' && cfnzs.bool_fnzs_cat_disp == 'permitido'">
+																					<span class="lever"></span>
+																					{{'yes' | translate}}</label>
+																			</div>
+																		</div>
+																	</li>
+																</ul>
+															</div>
+		
+															<div class="col-12">
+																<ul class="collecction">
+																	<li class="collection-item row" style="padding: 0;">
+																		<div class="col s4">
+																			<h6 class="title">Control de movimientos
+																				bancarios</h6>
+																			<div class="switch"
+																				style="display: flex;justify-content: center;">
+																				<label>{{'no' | translate}}
+																					<input type="checkbox"
+																						[checked]="cfnzs.bool_fnzs_cmov_ban ==  'permitido'">
+																					<span class="lever"></span>
+																					{{'yes' | translate}}</label>
+																			</div>
+																		</div>
+																		<div class="col s4">
+																			<h6 class="title">Control de movimientos en
+																				efectivo</h6>
+																			<div class="switch"
+																				style="display: flex;justify-content: center;">
+																				<label>{{'no' | translate}}
+																					<input type="checkbox"
+																						[checked]="cfnzs.bool_fnzs_cmov_efe ==  'permitido'">
+																					<span class="lever"></span>
+																					{{'yes' | translate}}</label>
+																			</div>
+																		</div>
+																		<div class="col s4">
+																			<h6 class="title">Ordenes de pago</h6>
+																			<div class="switch"
+																				style="display: flex;justify-content: center;">
+																				<label>{{'no' | translate}}
+																					<input type="checkbox"
+																						[checked]="cfnzs.bool_fnzs_paym_ord ==  'permitido'">
+																					<span class="lever"></span>
+																					{{'yes' | translate}}</label>
+																			</div>
+																		</div>
+																	</li>
+																	<li class="collection-item row" style="padding: 0;">
+																		<div class="col s6">
+																			<h6 class="title">Ajustes y cuentas propias</h6>
+																			<div class="switch"
+																				style="display: flex;justify-content: center;">
+																				<label>{{'no' | translate}}
+																					<input type="checkbox"
+																						[checked]="cfnzs.bool_fnzs_cuen_aju ==  'permitido'">
+																					<span class="lever"></span>
+																					{{'yes' | translate}}</label>
+																			</div>
+																		</div>
+																		<div class="col s6">
+																			<h6 class="title">Información bancaria</h6>
+																			<div class="switch"
+																				style="display: flex;justify-content: center;">
+																				<label>{{'no' | translate}}
+																					<input type="checkbox"
+																						[checked]="cfnzs.bool_fnzs_info_ban ==  'permitido'">
+																					<span class="lever"></span>
+																					{{'yes' | translate}}</label>
+																			</div>
+																		</div>
+																	</li>
+																</ul>
+															</div>
+														</div>
+													</div>
+													<h6 *ngIf="userList.conf_finanzas.length == 0" class="content">
+														{{'no_rows' | translate}}</h6>
+												</div>
+											</div>
+		
+											<div class="cabecera col-12">
+												<div class="col-12 row">
+													<div class="col-12 row" style="padding: 0;" *ngIf="userList.conf_valor_humano.length > 0">
+														<div class="col-12 row" style="padding: 0;" *ngFor="let cvhum of userList.conf_valor_humano">
+															<div class="col-12">
+																<h6 class="title" style="display: flex;justify-content: space-between;padding-left: 15px;padding-right: 15px;height: 25px;align-items: center;">Permisos para valor humano
+																	<div class="switch" style="display: flex;justify-content: center;">
+																		<label>acceso {{'no' | translate}}<input type="checkbox" (click)="userValorHumanoPermAcceso(userList.emp_token,userList.user_token,cvhum.acceso_vhum);" [checked]="cvhum.acceso_vhum == true"><span class="lever"></span>{{'yes' | translate}}</label>
+																	</div>
+																</h6>
+															</div>
+															<div class="col s2">
+																<h6 class="title">Jerarquía</h6>
+																<div class="switch" style="display: flex;justify-content: center;">
+																	<label>D<input type="checkbox" (click)="userValorHumanoPermJerarquia(userList.emp_token,userList.user_token,cvhum.jerarquia);" [checked]="cvhum.jerarquia == 'P'"><span class="lever"></span>P</label>
+																</div>
+															</div>
+															<div class="col s2">
+																<h6 class="title">CREAR</h6>
+																<div class="switch"
+																	style="display: flex;justify-content: center;">
+																	<label>{{'no' | translate}}
+																		<input type="checkbox" (click)="userValorHumanoPermCrear(userList.emp_token,userList.user_token,cvhum.bool_vhum_perm_crear);" [checked]="cvhum.bool_vhum_perm_crear == 'permitido'">
+																		<span class="lever"></span>
+																		{{'yes' | translate}}</label>
+																</div>
+															</div>
+															<div class="col s2">
+																<h6 class="title">Editar/actualizar</h6>
+																<div class="switch"
+																	style="display: flex;justify-content: center;">
+																	<label>{{'no' | translate}}
+																		<input type="checkbox" (click)="userValorHumanoPermEditar(userList.emp_token,userList.user_token,cvhum.bool_vhum_perm_editar);" [checked]="cvhum.bool_vhum_perm_editar == 'permitido'">
+																		<span class="lever"></span>
+																		{{'yes' | translate}}</label>
+																</div>
+															</div>
+		
+															<div class="col s2">
+																<h6 class="title">Consulta</h6>
+																<div class="switch"
+																	style="display: flex;justify-content: center;">
+																	<label>{{'no' | translate}}
+																		<input type="checkbox" (click)="userValorHumanoPermConsultar(userList.emp_token,userList.user_token,cvhum.bool_vhum_perm_consulta);" [checked]="cvhum.bool_vhum_perm_consulta == 'permitido'">
+																		<span class="lever"></span>
+																		{{'yes' | translate}}</label>
+																</div>
+															</div>
+															<div class="col s2">
+																<h6 class="title">Eliminaci&oacute;n</h6>
+																<div class="switch"
+																	style="display: flex;justify-content: center;">
+																	<label>{{'no' | translate}}
+																		<input type="checkbox" (click)="userValorHumanoPermEliminar(userList.emp_token,userList.user_token,cvhum.bool_vhum_perm_elimina);" [checked]="cvhum.bool_vhum_perm_elimina == 'permitido'">
+																		<span class="lever"></span>
+																		{{'yes' | translate}}</label>
+																</div>
+															</div>
+															<div class="col s2">
+																<h6 class="title tooltipped" data-position="top"
+																	data-tooltip="Ver / descargar / eliminar">documentos
+																</h6>
+																<div class="switch"
+																	style="display: flex;justify-content: center;">
+																	<label>{{'no' | translate}}
+																		<input type="checkbox" (click)="userValorHumanoPermVerDocs(userList.emp_token,userList.user_token,cvhum.bool_vhum_perm_ver_docs);" [checked]="cvhum.bool_vhum_perm_ver_docs == 'permitido'">
+																		<span class="lever"></span>
+																		{{'yes' | translate}}</label>
+																</div>
+															</div>
+		
+															<div class="col-12">
+																<ul class="collecction">
+																	<li class="collection-item"
+																		style="display: flex;justify-content: space-between;">
+																		Catalogos
+																		<div class="switch"><label>{{'no' | translate}}
+																				<input type="checkbox"
+																					[checked]="cvhum.bool_vhum_reembolsos ==  'permitido'">
+																				<span class="lever"></span>
+																				{{'yes' | translate}}</label>
+																		</div>
+																	</li>
+		
+																	<li class="collection-item row" style="padding: 0;">
+																		<div class="col s4">
+																			<h6 class="title">Reembolsos</h6>
+																			<div class="switch"
+																				style="display: flex;justify-content: center;">
+																				<label>{{'no' | translate}}
+																					<input type="checkbox"
+																						[disabled]="cvhum.bool_vhum_catalogos == 'denegado'"
+																						[checked]="cvhum.bool_vhum_reembolsos ==  'permitido'">
+																					<span class="lever"></span>
+																					{{'yes' | translate}}</label>
+																			</div>
+																		</div>
+																		<div class="col s4">
+																			<h6 class="title">Justificaci&oacute;n de gastos
+																			</h6>
+																			<div class="switch"
+																				style="display: flex;justify-content: center;">
+																				<label>{{'no' | translate}}
+																					<input type="checkbox"
+																						[disabled]="cvhum.bool_cont_catalogos == 'denegado'"
+																						[checked]="cvhum.bool_vhum_justificaciones ==  'permitido'">
+																					<span class="lever"></span>
+																					{{'yes' | translate}}</label>
+																			</div>
+																		</div>
+																		<div class="col s4">
+																			<h6 class="title">Reportes</h6>
+																			<div class="switch"
+																				style="display: flex;justify-content: center;">
+																				<label>{{'no' | translate}}
+																					<input type="checkbox"
+																						[disabled]="cvhum.bool_cont_catalogos == 'denegado'"
+																						[checked]="cvhum.bool_vhum_reportes ==  'permitido'">
+																					<span class="lever"></span>
+																					{{'yes' | translate}}</label>
+																			</div>
+																		</div>
+																	</li>
+																</ul>
+															</div>
+														</div>
+													</div>
+													<h6 *ngIf="userList.conf_valor_humano.length == 0" class="content">
+														{{'no_rows' | translate}}</h6>
+												</div>
+											</div>
+		
+											<div class="cabecera col-12">
+												<div class="col-12 row">
+													<div class="col-12 row" style="padding: 0;" *ngIf="userList.conf_contabilidad.length > 0">
+														<div class="col-12 row" style="padding: 0;" *ngFor="let ccont of userList.conf_contabilidad">
+															<div class="col-12">
+																<h6 class="title" style="display: flex;justify-content: space-between;padding-left: 15px;padding-right: 15px;height: 25px;align-items: center;">Permisos para contabilidad
+																	<div class="switch" style="display: flex;justify-content: center;">
+																		<label>acceso {{'no' | translate}}<input type="checkbox" (click)="userContabilidadPermAcceso(userList.emp_token,userList.user_token,ccont.acceso_cont);" [checked]="ccont.acceso_cont == true"><span class="lever"></span>{{'yes' | translate}}</label>
+																	</div>
+																</h6>
+															</div>
+															<div class="col s2">
+																<h6 class="title">Jerarquía</h6>
+																<div class="switch" style="display: flex;justify-content: center;">
+																	<label>D<input type="checkbox" (click)="userContabilidadPermJerarquia(userList.emp_token,userList.user_token,ccont.jerarquia);" [checked]="ccont.jerarquia == 'P'"><span class="lever"></span>P</label>
+																</div>
+															</div>
+															<div class="col s2">
+																<h6 class="title">CREAR</h6>
+																<div class="switch"
+																	style="display: flex;justify-content: center;">
+																	<label>{{'no' | translate}}
+																		<input type="checkbox" (click)="userContabilidadPermCrear(userList.emp_token,userList.user_token,ccont.bool_cont_perm_crear);" [checked]="ccont.bool_cont_perm_crear == 'permitido'">
+																		<span class="lever"></span>
+																		{{'yes' | translate}}</label>
+																</div>
+															</div>
+															<div class="col s2">
+																<h6 class="title">Editar/actualizar</h6>
+																<div class="switch"
+																	style="display: flex;justify-content: center;">
+																	<label>{{'no' | translate}}
+																		<input type="checkbox" (click)="userContabilidadPermEditar(userList.emp_token,userList.user_token,ccont.bool_cont_perm_editar);" [checked]="ccont.bool_cont_perm_editar == 'permitido'">
+																		<span class="lever"></span>
+																		{{'yes' | translate}}</label>
+																</div>
+															</div>
+		
+															<div class="col s2">
+																<h6 class="title">Consulta</h6>
+																<div class="switch"
+																	style="display: flex;justify-content: center;">
+																	<label>{{'no' | translate}}
+																		<input type="checkbox" (click)="userContabilidadPermConsultar(userList.emp_token,userList.user_token,ccont.bool_cont_perm_consulta);" [checked]="ccont.bool_cont_perm_consulta == 'permitido'">
+																		<span class="lever"></span>
+																		{{'yes' | translate}}</label>
+																</div>
+															</div>
+															<div class="col s2">
+																<h6 class="title">Eliminaci&oacute;n</h6>
+																<div class="switch"
+																	style="display: flex;justify-content: center;">
+																	<label>{{'no' | translate}}
+																		<input type="checkbox" (click)="userContabilidadPermEliminar(userList.emp_token,userList.user_token,ccont.bool_cont_perm_elimina);" [checked]="ccont.bool_cont_perm_elimina == 'permitido'">
+																		<span class="lever"></span>
+																		{{'yes' | translate}}</label>
+																</div>
+															</div>
+															<div class="col s2">
+																<h6 class="title tooltipped" data-position="top"
+																	data-tooltip="Ver / descargar / eliminar">documentos
+																</h6>
+																<div class="switch"
+																	style="display: flex;justify-content: center;">
+																	<label>{{'no' | translate}}
+																		<input type="checkbox" (click)="userContabilidadPermVerDocs(userList.emp_token,userList.user_token,ccont.bool_cont_perm_ver_docs);" [checked]="ccont.bool_cont_perm_ver_docs == 'permitido'">
+																		<span class="lever"></span>
+																		{{'yes' | translate}}</label>
+																</div>
+															</div>
+		
+															<div class="col-12">
+																<ul class="collecction">
+																	<li class="collection-item"
+																		style="display: flex;justify-content: space-between;">
+																		Catalogos
+																		<div class="switch"><label>{{'no' | translate}}
+																				<input type="checkbox"
+																					[checked]="ccont.bool_cont_catalogos ==  'permitido'">
+																				<span class="lever"></span>
+																				{{'yes' | translate}}</label>
+																		</div>
+																	</li>
+		
+																	<li class="collection-item row" style="padding: 0;">
+																		<div class="col s4">
+																			<h6 class="title">Catalogo de cuentas</h6>
+																			<div class="switch"
+																				style="display: flex;justify-content: center;">
+																				<label>{{'no' | translate}}
+																					<input type="checkbox"
+																						[disabled]="ccont.bool_cont_catalogos == 'denegado'"
+																						[checked]="ccont.bool_cont_catalogos == 'permitido' && ccont.bool_cont_cat_cuentas ==  'permitido'">
+																					<span class="lever"></span>
+																					{{'yes' | translate}}</label>
+																			</div>
+																		</div>
+																		<div class="col s4">
+																			<h6 class="title">Estados Financieros</h6>
+																			<div class="switch"
+																				style="display: flex;justify-content: center;">
+																				<label>{{'no' | translate}}
+																					<input type="checkbox"
+																						[disabled]="ccont.bool_cont_catalogos == 'denegado'"
+																						[checked]="ccont.bool_cont_catalogos == 'permitido' && ccont.bool_cont_estados_fin ==  'permitido'">
+																					<span class="lever"></span>
+																					{{'yes' | translate}}</label>
+																			</div>
+																		</div>
+																		<div class="col s4">
+																			<h6 class="title">Reportes</h6>
+																			<div class="switch"
+																				style="display: flex;justify-content: center;">
+																				<label>{{'no' | translate}}
+																					<input type="checkbox"
+																						[disabled]="ccont.bool_cont_catalogos == 'denegado'"
+																						[checked]="ccont.bool_cont_catalogos == 'permitido' && ccont.bool_cont_reportes ==  'permitido'">
+																					<span class="lever"></span>
+																					{{'yes' | translate}}</label>
+																			</div>
+																		</div>
+																	</li>
+																</ul>
+															</div>
+														</div>
+													</div>
+													<h6 *ngIf="userList.conf_contabilidad.length == 0" class="content">
+														{{'no_rows' | translate}}</h6>
+												</div>
+											</div>
+		
+											<div class="cabecera col-12">
+												<div class="col-12 row">
+													<div class="col-12 row" style="padding: 0;" *ngIf="userList.conf_tec_info.length > 0">
+														<div class="col-12 row" style="padding: 0;" *ngFor="let cteci of userList.conf_tec_info">
+															<div class="col-12">
+																<h6 class="title" style="display: flex;justify-content: space-between;padding-left: 15px;padding-right: 15px;height: 25px;align-items: center;">Permisos para tecnolog&iacute;as de la informaci&oacute;n
+																	<div class="switch" style="display: flex;justify-content: center;">
+																		<label>acceso {{'no' | translate}}<input type="checkbox" (click)="userTecInfoPermAcceso(userList.emp_token,userList.user_token,cteci.acceso_teci);" [checked]="cteci.acceso_teci == true"><span class="lever"></span>{{'yes' | translate}}</label>
+																	</div>
+																</h6>
+															</div>
+															<div class="col s2">
+																<h6 class="title">Jerarquía</h6>
+																<div class="switch" style="display: flex;justify-content: center;">
+																	<label>D<input type="checkbox" (click)="userTecInfoPermJerarquia(userList.emp_token,userList.user_token,cteci.jerarquia);" [checked]="cteci.jerarquia == 'P'"><span class="lever"></span>P</label>
+																</div>
+															</div>
+															<div class="col s2">
+																<h6 class="title">CREAR</h6>
+																<div class="switch"
+																	style="display: flex;justify-content: center;">
+																	<label>{{'no' | translate}}
+																		<input type="checkbox" (click)="userTecInfoPermCrear(userList.emp_token,userList.user_token,cteci.bool_teci_perm_crear);" [checked]="cteci.bool_teci_perm_crear == 'permitido'">
+																		<span class="lever"></span>
+																		{{'yes' | translate}}</label>
+																</div>
+															</div>
+															<div class="col s2">
+																<h6 class="title">Editar/actualizar</h6>
+																<div class="switch"
+																	style="display: flex;justify-content: center;">
+																	<label>{{'no' | translate}}
+																		<input type="checkbox" (click)="userTecInfoPermEditar(userList.emp_token,userList.user_token,cteci.bool_teci_perm_editar);" [checked]="cteci.bool_teci_perm_editar == 'permitido'">
+																		<span class="lever"></span>
+																		{{'yes' | translate}}</label>
+																</div>
+															</div>
+		
+															<div class="col s2">
+																<h6 class="title">Consulta</h6>
+																<div class="switch"
+																	style="display: flex;justify-content: center;">
+																	<label>{{'no' | translate}}
+																		<input type="checkbox" (click)="userTecInfoPermConsultar(userList.emp_token,userList.user_token,cteci.bool_teci_perm_consulta);" [checked]="cteci.bool_teci_perm_consulta == 'permitido'">
+																		<span class="lever"></span>
+																		{{'yes' | translate}}</label>
+																</div>
+															</div>
+															<div class="col s2">
+																<h6 class="title">Eliminaci&oacute;n</h6>
+																<div class="switch"
+																	style="display: flex;justify-content: center;">
+																	<label>{{'no' | translate}}
+																		<input type="checkbox" (click)="userTecInfoPermEliminar(userList.emp_token,userList.user_token,cteci.bool_teci_perm_elimina);" [checked]="cteci.bool_teci_perm_elimina == 'permitido'">
+																		<span class="lever"></span>
+																		{{'yes' | translate}}</label>
+																</div>
+															</div>
+															<div class="col s2">
+																<h6 class="title tooltipped" data-position="top"
+																	data-tooltip="Ver / descargar / eliminar">documentos
+																</h6>
+																<div class="switch"
+																	style="display: flex;justify-content: center;">
+																	<label>{{'no' | translate}}
+																		<input type="checkbox" (click)="userTecInfoPermVerDocs(userList.emp_token,userList.user_token,cteci.bool_teci_perm_ver_docs);" [checked]="cteci.bool_teci_perm_ver_docs == 'permitido'">
+																		<span class="lever"></span>
+																		{{'yes' | translate}}</label>
+																</div>
+															</div>
+		
+															<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+																<ul class="collecction">
+																	<li class="collection-item"
+																		style="display: flex;justify-content: space-between;">
+																		Apps complementarias
+																		<div class="switch"><label>{{'no' | translate}}
+																				<input type="checkbox"
+																					[checked]="cteci.bool_teci_apps_complement ==  'permitido'">
+																				<span class="lever"></span>
+																				{{'yes' | translate}}</label>
+																		</div>
+																	</li>
+																</ul>
+															</div>
+															<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+																<ul class="collecction">
+																	<li class="collection-item"
+																		style="display: flex;justify-content: space-between;">
+																		Soporte
+																		<div class="switch"><label>{{'no' | translate}}
+																				<input type="checkbox"
+																					[checked]="cteci.bool_teci_soporte ==  'permitido'">
+																				<span class="lever"></span>
+																				{{'yes' | translate}}</label>
+																		</div>
+																	</li>
+																</ul>
+															</div>
+		
+															<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+																<ul class="collecction">
+																	<li class="collection-item"
+																		style="display: flex;justify-content: space-between;">
+																		Comunicaci&oacute;n
+																		<div class="switch"><label>{{'no' | translate}}
+																				<input type="checkbox"
+																					[checked]="cteci.bool_teci_comunicacion ==  'permitido'">
+																				<span class="lever"></span>
+																				{{'yes' | translate}}</label>
+																		</div>
+																	</li>
+																</ul>
+															</div>
+															<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+																<ul class="collecction">
+																	<li class="collection-item"
+																		style="display: flex;justify-content: space-between;">
+																		Publicaciones
+																		<div class="switch"><label>{{'no' | translate}}
+																				<input type="checkbox"
+																					[checked]="cteci.bool_teci_publicaciones ==  'permitido'">
+																				<span class="lever"></span>
+																				{{'yes' | translate}}</label>
+																		</div>
+																	</li>
+																</ul>
+															</div>
+														</div>
+													</div>
+													<h6 *ngIf="userList.conf_tec_info.length == 0" class="content">
+														{{'no_rows' | translate}}</h6>
+												</div>
+											</div>
+										</div>
+									</div>
+								</li>
+							</ul>
+							<h6 *ngIf="usuariosList.length == 0" style="width: 100%;color: #e7e7ea;font-size: 15px;font-weight: bold;">{{'no_rows' | translate}}</h6>
+						</div>
+					</div>-->

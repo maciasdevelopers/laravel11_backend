@@ -1,0 +1,54 @@
+import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
+import {CanActivate, Router, RouterStateSnapshot, ActivatedRouteSnapshot} from '@angular/router';
+import { GuardGuard } from './guard.guard';
+import { isPlatformBrowser } from '@angular/common';
+
+@Injectable()
+export class DisAuthGuardService implements CanActivate {
+
+  constructor(private authGuard:GuardGuard,private router: Router,@Inject(PLATFORM_ID) private platformId: Object) {}
+
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean | Promise<boolean>{
+    const ls = localStorage;
+    const ss = sessionStorage;
+
+    //console.log(ls.length, ss.length);
+
+    if (ls.length === 0) {
+      ss.clear();
+      return true;
+    }
+    
+    const moduleWorking = ls.getItem('module_working');
+    
+    switch (moduleWorking) {
+      // Gestion de proyectos
+      case "ZUpOYkRNby81M2ZaT0ozYjlmb0srL2FwcCtxa0ZUY1N3TUYyU3F1Y05RRT06OjEyMzQ1Njc4MTIzNDU2Nzg=":
+        this.router.navigate(['/gestion_de_proyectos']);
+        break;
+  
+      // Terceros
+      case "dEUrRnRDQ3NxVFR6RE14ZHNTRkRJZWk0cklObE10cldhUjJ2YXg1bE1LMD06OjEyMzQ1Njc4MTIzNDU2Nzg=":
+        const type = ls.getItem('type_ter_module');
+        if (type === 'associates') this.router.navigate(['/portal_para_terceros_asociados']);
+        else if (type === 'customers') this.router.navigate(['/portal_para_terceros_clientes']);
+        else if (type === 'suppliers') this.router.navigate(['/portal_para_terceros_proveedores']);
+        else if (type === 'employees') this.router.navigate(['/portal_para_terceros_empleados/select_company']);
+        break;
+  
+      // Inside SSIC
+      case "bEIxeFFKY2k4RnFEbWtnWDE5c1dKMGN5TFUwSW5EY0pTditvM3drV3FzTnFCZVhZN3A5aDREM3ZLRHF1YjFGUmNhY1pacDJDS3JsTm9RSXF6SkVTS2c9PTo6MTIzNDU2NzgxMjM0NTY3OA==":
+        const processType = ls.getItem('type_process_module');
+        if (processType === 'inicial') this.router.navigate(['/sos_inside/administracion_actualiza_contrasena']);
+        else if (processType === 'profile-validate') this.router.navigate(['/sos_inside/administracion_completa_registro']);
+        else if (processType === 'finished') this.router.navigate(['/sos_inside']);
+        break;
+  
+      default:
+        return false;
+    }
+  
+    return false; // Bloquea navegación actual después de redirección
+  }
+
+}

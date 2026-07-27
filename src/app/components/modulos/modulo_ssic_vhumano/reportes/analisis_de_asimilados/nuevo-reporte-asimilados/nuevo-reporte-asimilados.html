@@ -1,0 +1,700 @@
+@if (viewNewAsimiladoForm) {
+  <form class="formAsimReport" #formAsimReport="ngForm" [formGroup]="nominaForm" name="formAsimReport" enctype="multipart/form-data" (ngSubmit)="validaRegistroAsimiladosReport && registraNominaReporte(formAsimReport);">
+    <div class="col-12 row" style="padding: 0!important;">
+      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input-group">
+        <label class="activeInput" for="newReportAsimFechaCont">{{'fecha_cont' | translate}}</label>
+        <input id="newReportAsimFechaCont" name="newReportAsimFechaCont" #newNominaFechaCont type="date" (change)="select_fecha_contabilizacion($event.target);">
+      </div>
+      <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-4 col-xxl-4 input-group">
+        <label class="activeInput" for="newReportAsimXML"><i class="fa-solid fa-file-code"></i>&nbsp;{{'cfdi_xml_import' | translate}}</label>
+        <input id="newReportAsimXML" class="form-control" type="file" name="newReportAsimXML" placeholder="XML" accept=".xml" (change)="cargaXmlAsimReporte($event,$event.target);" style="padding: 0;line-height: 30px;width: 100%!important;">
+      </div>
+      <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-4 col-xxl-4 input-group">
+        <label class="activeInput" for="newReportAsimPDF"><i class="fa-solid fa-file-pdf"></i>&nbsp;{{'cfdi_pdf_import' | translate}}</label>
+        <input id="newReportAsimPDF" class="form-control" type="file" name="newReportAsimPDF" [ngClass]="resultXml == '' || resultXml == 'errorXml' ? 'disabled' : ''"
+          [attr.disabled]="resultXml == '' || resultXml == 'errorXml' ? true : null" [attr.aria-disabled]="resultXml == '' || resultXml == 'errorXml' ? true : null"
+          (change)="resultXml != '' && resultXml == 'validoXml' && escanPdfCompra($event,$event.target);" accept=".pdf" placeholder="PDF" style="padding: 0;line-height: 30px;width: 100%!important;">
+      </div>
+    </div>
+    <p-divider />
+    <div class="col-12 explain">
+      <h6 class="title">Informaci&oacute;n del CFDI</h6>
+    </div> 
+    @switch (resultXml) {
+      @case ('validoXml') {
+        <div class="col-12" style="padding: 5px!important;">
+          <p-accordion value="1">
+            <p-accordion-panel value="0">
+              <p-accordion-header>
+                <ng-template #toggleicon let-active="active"><i class="fa-solid" [ngClass]="active ? 'fa-sort-up' : 'fa-sort-down'" style="margin-right: 3px!important;"></i></ng-template>
+                <span class="flex items-center gap-2 w-full">Nodo Comprobante</span>
+              </p-accordion-header>
+              <p-accordion-content>
+                <div class="col-12">
+                  @for (comp of dataCFDI_comprobante_obj | keyvalue: keepOrder; track $index) {
+                    <div [ngClass]="comp.key === 'sello' || comp.key === 'certificado' ? 'explain explain_column' : 'col-12 explain'">
+                      <h6 class="title">{{ formatLabel($any(comp.key)) }}</h6>
+                      <h6 class="content"
+                        [attr.style]="comp.key === 'sello' || comp.key === 'certificado' ? 'text-align: justify;word-wrap: break-word;max-width: 100%;' : ''">
+                        {{ comp.value }}</h6>
+                    </div>
+                  }
+                </div>
+              </p-accordion-content>
+            </p-accordion-panel>
+            <p-accordion-panel value="1">
+              <p-accordion-header>
+                <ng-template #toggleicon let-active="active"><i class="fa-solid" [ngClass]="active ? 'fa-sort-up' : 'fa-sort-down'" style="margin-right: 3px!important;"></i></ng-template>
+                <span class="flex items-center gap-2 w-full">Nodo Emisor</span>
+              </p-accordion-header>
+              <p-accordion-content>
+                <div class="col-12">
+                  @for (emi of dataCFDIEmisor_obj | keyvalue: keepOrder; track $index) {
+                    <div class="explain">
+                      <h6 class="title">{{ formatLabel($any(emi.key)) }}</h6>
+                      <h6 class="content">{{ emi.value }}</h6>
+                    </div>
+                  }
+                </div>
+              </p-accordion-content>
+            </p-accordion-panel>
+            <p-accordion-panel value="2">
+              <p-accordion-header>
+                <ng-template #toggleicon let-active="active"><i class="fa-solid" [ngClass]="active ? 'fa-sort-up' : 'fa-sort-down'" style="margin-right: 3px!important;"></i></ng-template>
+                <span class="flex items-center gap-2 w-full">Nodo Receptor</span>
+              </p-accordion-header>
+              <p-accordion-content>
+                <div class="col-12">
+                  @for (rec of dataCFDIReceptor_obj | keyvalue: keepOrder; track $index) {
+                    <div class="explain">
+                      <h6 class="title">{{ formatLabel($any(rec.key)) }}</h6>
+                      <h6 class="content">{{ rec.value }}</h6>
+                    </div>
+                  }
+                  <div class="explain">
+                    @if (!dataCFDI_receptor_Rfc_registrado) {
+                      <h6 class="content">
+                        <a class="btn btn_extend bg-indigo-600" style="height: 13px;margin-left: 5px;" (click)="verVentanaReceptorProveedorRegistro();">
+                          <i class="fa-solid fa-plus"></i>&nbsp;{{'prov_reg' | translate}}
+                        </a>
+                      </h6>
+                    }
+                  </div>
+                  <p-dialog header="REGISTRO DE PROVEEDORES" [modal]="true" [(visible)]="dataCFDI_receptor_new_registro" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+                    <div class="col-12">
+                      @for (emi of dataCFDIReceptor_obj | keyvalue: keepOrder; track $index) {
+                        <div class="explain">
+                          <h6 class="title">{{ formatLabel($any(emi.key)) }}</h6>
+                          <h6 class="content">{{ emi.value }}</h6>
+                        </div>
+                      }
+                      <!--<app-interno-egresos-catalogos-altaprov></app-interno-egresos-catalogos-altaprov>-->
+                    </div>
+                  </p-dialog>
+                </div>
+              </p-accordion-content>
+            </p-accordion-panel>
+            <p-accordion-panel value="3">
+              <p-accordion-header>
+                <ng-template #toggleicon let-active="active"><i class="fa-solid" [ngClass]="active ? 'fa-sort-up' : 'fa-sort-down'" style="margin-right: 3px!important;"></i></ng-template>
+                <span class="flex items-center gap-2 w-full">Conceptos registrados</span>
+              </p-accordion-header>
+              <p-accordion-content>
+                <div class="col-12">
+                  <p-table #conceptCFDIList [value]="dataCFDI_conceptos" [globalFilterFields]="dataCFDIBuscarConcepto" dataKey="id" [resizableColumns]="true" responsiveLayout="stack">
+                    <ng-template #caption>
+                      <div class="flex">
+                        <p-iconfield iconPosition="left" class="ml-auto">
+                          <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                          <input pInputText type="text" (input)="conceptCFDIList.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+                        </p-iconfield>
+                      </div>
+                    </ng-template>
+                    <ng-template #header>
+                      <tr>
+                        <th class="ultimo" pSortableColumn="num_lista">&nbsp;<p-sortIcon field="num_lista" /></th>
+                        <th pSortableColumn="Descripcion">Concepto / Descripci&oacute;n&nbsp;<p-sortIcon field="Descripcion" /></th>
+                        <th pSortableColumn="Unidad">Unidad de Medida-SAT&nbsp;<p-sortIcon field="Unidad" /></th>
+                        <th pSortableColumn="ClaveProdServ">Cat&aacute;logo SAT&nbsp;<p-sortIcon field="ClaveProdServ" /></th>
+                        <th pSortableColumn="ValorUnitario">Valor unitario&nbsp;<p-sortIcon field="ValorUnitario" /></th>
+                        <th pSortableColumn="Cantidad">cantidad&nbsp;<p-sortIcon field="Cantidad" /></th>
+                        <th pSortableColumn="Descuento">descuento&nbsp;<p-sortIcon field="Descuento" /></th>
+                        <th pSortableColumn="Importe">subtotal&nbsp;<p-sortIcon field="Importe" /></th>
+                        <th pSortableColumn="Subtotal">Total&nbsp;<p-sortIcon field="Subtotal" /></th>
+                      </tr>
+                    </ng-template>
+                    <ng-template #body let-conceptList>
+                      <tr>
+                        <td>{{conceptList.num_lista}}</td>
+                        <td class="text_large">
+                          <p class="large_text">{{conceptList.Descripcion}}</p>
+                        </td>
+                        <td style="padding: 5px!important;height: 30px;">{{conceptList.Unidad}}</td>
+                        <td style="padding: 5px!important;height: 30px;">{{conceptList.ClaveProdServ}}</td>
+                        <td style="padding: 5px!important;height: 30px;">${{conceptList.ValorUnitario}}</td>
+                        <td style="padding: 5px!important;height: 30px;">{{conceptList.Cantidad}}</td>
+                        <td style="padding: 5px!important;height: 30px;">${{conceptList.Descuento}}</td>
+                        <td style="padding: 5px!important;height: 30px;">${{conceptList.Importe}}</td>
+                        <td style="padding: 5px!important;height: 30px;">${{conceptList.Subtotal}}</td>
+                      </tr>
+                    </ng-template>
+                    <ng-template pTemplate="emptymessage">
+                      <tr>
+                        <td colspan="17" class="text-center py-4">
+                          <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                          <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                            {{'no_rows' | translate}}
+                          </p>
+                        </td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
+                </div>
+                <p-divider />
+                <div class="col-12">
+                  <div class="col-12 explain">
+                    <h6 class="title">N&oacute;mina</h6>
+                  </div>
+                  <p-table [value]="asimilado_arreglo_vacio" dataKey="id" [paginator]="true" [rows]="10"
+                    [rowsPerPageOptions]="[10,20,30,50,100]"
+                    [globalFilterFields]="['token_establecimiento','estab_folio','estab_alias','estab_tipo','estab_desc','estab_encargado','aplica_ingresos','aplica_egresos','aplica_interno','aplica_almacen']">
+                    <ng-template #header>
+                      <tr>
+                        <th>PERIODO DE PAGO</th>
+                        <th>FECHA DE PAGO</th>
+                        <th>DÍAS PAGADOS</th>
+                        <th colspan="2">TOTAL PERCEPCIONES</th>
+                        <th colspan="2">TOTAL DEDUCCIONES</th>
+                      </tr>
+                    </ng-template>
+                    <ng-template #body let-est>
+                      <tr>
+                        <td>
+                          <div class="col-12 input-group">
+                            <p-datepicker id="newReportAsimPeriodo" name="newReportAsimPeriodo" formControlName="periodo_de_pago" appendTo="body" 
+                              dateFormat="dd/mm/yy" placeholder="dd/mm/aaaa" selectionMode="range" (onSelect)="changePeriodoPagoAsimilado()" 
+                            />
+                          </div>
+                        </td>
+                        <td><input id="newReportAsimFechaPago" class="validate" type="date" formControlName="fecha_de_pago"
+                          placeholder="$ 0.00" name="newReportAsimFechaPago" (change)="changeAsimiladoFechaPago($event.target);">
+                        </td>
+                        <td>
+                          <input id="newReportAsimDiasPagados" class="validate" type="number" formControlName="dias_pagados" placeholder="$ 0.00" 
+                            name="newReportAsimDiasPagados" (keyup)="keyupAsimiladoDiasPagados($event.target);">
+                        </td>
+                        <td>
+                          <input 
+                            id="new_nomina_total_percepciones" 
+                            class="validate" 
+                            type="number" 
+                            formControlName="total_percepciones"
+                            placeholder="$ 0.00" 
+                            name="new_nomina_total_percepciones" 
+                            (keyup)="keyupAsimiladoTotalPercepciones($event.target);" 
+                            (change)="$event.stopPropagation();">
+                        </td>
+                        <td class="ultimo">
+                          <a class="btn" [ngClass]="dataReceptor.length == 0 ? 'bg-blue-600 disabled' : (modelAsimilados.percepciones_servicio_token == '' ? 'bg-blue-600' : 'text-bg-success rounded-3')"
+                            style="border-radius: 50%!important;" [attr.disabled]="dataReceptor.length == 0 ? true : null" [attr.aria-disabled]="dataReceptor.length == 0 ? true : null" 
+                            (click)="dataReceptor.length > 0 && verConceptoXMLServicios();">
+                            <i class="fa-solid" [ngClass]="modelAsimilados.percepciones_servicio_token == '' ? 'fa-eye' : 'fa-check-double'"></i>
+                          </a>
+                          
+                          <p-dialog header="CATALOGO DE SERVICIOS" [(visible)]="modelAsimilados.percepciones_window" [style]="{ width: '95%' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+                            <div class="col-12">
+                              <p-tabs value="0" scrollable>
+                                <p-tablist>
+                                  <p-tab value="0">Cat&aacute;logo de servicios vinculados al proveedor</p-tab>
+                                  <p-tab value="1">Cat&aacute;logo general de servicios</p-tab>
+                                  <p-tab value="2">Guardar como servicio</p-tab>
+                                </p-tablist>
+                                <p-tabpanels>
+                                  <p-tabpanel value="0">
+                                    <p-table #prdVincLista [value]="serviciosVincLista" dataKey="id" [resizableColumns]="true" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]" responsiveLayout="stack"
+                                      [globalFilterFields]="['token_articulo','num_lista','identificador','clasificacion','sat','clave','concepto']">
+                                      <ng-template #caption>
+                                        <div class="flex">
+                                          <p-iconfield iconPosition="left" class="ml-auto">
+                                            <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                                            <input pInputText type="text"
+                                              (input)="prdVincLista.filterGlobal($event.target.value, 'contains')"
+                                              placeholder="{{'bus_car' | translate}}" />
+                                          </p-iconfield>
+                                        </div>
+                                      </ng-template>
+                                      <ng-template #header>
+                                        <tr>
+                                          <th class="ultimo"></th>
+                                          <th class="ultimo"></th>
+                                          <th pSortableColumn="identificador">identificador&nbsp;<p-sortIcon field="identificador" /></th>
+                                          <th pSortableColumn="clasificacion">Clasificaci&oacute;n&nbsp;<p-sortIcon field="clasificacion" /></th>
+                                          <th pSortableColumn="sat">Unidad de Medida-SAT&nbsp;<p-sortIcon field="sat" /></th>
+                                          <th pSortableColumn="clave">Cat&aacute;logo SAT&nbsp;<p-sortIcon field="clave" /></th>
+                                          <th pSortableColumn="concepto">Concepto / Descripci&oacute;n&nbsp;<p-sortIcon field="concepto" /></th>
+                                        </tr>
+                                      </ng-template>
+                                      <ng-template #body let-compProd>
+                                        <tr>
+                                          <td>
+                                            <div class="form-check radio_check">
+                                              <input class="form-check-input" type="radio" name="artCatSelect" [checked]="compProd.token_articulo == modelAsimilados.percepciones_servicio_token ? true : null"
+                                                (click)="selecionaServicio(compProd.token_articulo);">
+                                            </div>
+                                          </td>
+                                          <td class="img_dat">
+                                            <div class="col-12"><img class="circle optimizedImage" fill ngSrc="{{compProd.imagen}}" alt=""></div>
+                                          </td>
+                                          <td class="name">{{compProd.identificador}}</td>
+                                          <td class="name">{{compProd.clasificacion}}</td>
+                                          <td class="name">{{compProd.sat}}</td>
+                                          <td class="name">{{compProd.clave}}</td>
+                                          <td class="name">{{compProd.concepto}}</td>
+                                        </tr>
+                                      </ng-template>
+                                      <ng-template pTemplate="emptymessage">
+                                        <tr>
+                                          <td colspan="7" class="text-center py-4">
+                                            <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                                            <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                              {{'no_rows' | translate}}
+                                            </p>
+                                          </td>
+                                        </tr>
+                                      </ng-template>
+                                    </p-table>
+                                  </p-tabpanel>
+                                  <p-tabpanel value="1">                                    
+                                    <p-table #prodServCatGral [value]="servCatGeneral" dataKey="listado" [resizableColumns]="true"
+                                      [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]" responsiveLayout="stack"
+                                      [globalFilterFields]="['num_lista','token_articulo','identificador','clasificacion','sat','clave','concepto']"
+                                      [expandedRowKeys]="expandRowsServicios" rowExpandMode="single">
+                                      <ng-template #caption>
+                                        <div class="flex">
+                                          <p-iconfield iconPosition="left" class="ml-auto">
+                                            <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                                            <input pInputText type="text"
+                                              (input)="prodServCatGral.filterGlobal($event.target.value, 'contains')"
+                                              placeholder="{{'bus_car' | translate}}" />
+                                          </p-iconfield>
+                                        </div>
+                                      </ng-template>
+                                      <ng-template #header>
+                                        <tr>
+                                          <th class="ultimo"></th>
+                                          <th class="ultimo"></th>
+                                          <th pSortableColumn="identificador">identificador&nbsp;<p-sortIcon field="identificador" /></th>
+                                          <th pSortableColumn="clasificacion">Clasificaci&oacute;n&nbsp;<p-sortIcon field="clasificacion" /></th>
+                                          <th pSortableColumn="sat">Unidad de Medida-SAT&nbsp;<p-sortIcon field="sat" /></th>
+                                          <th pSortableColumn="clave">Cat&aacute;logo SAT&nbsp;<p-sortIcon field="clave" /></th>
+                                          <th pSortableColumn="concepto">Concepto / Descripci&oacute;n&nbsp;<p-sortIcon field="concepto" /></th>
+                                        </tr>
+                                      </ng-template>
+                                      <ng-template #body let-lgProd let-i="rowIndex" let-expanded="expanded">
+                                        <tr>
+                                          <td>
+                                            @if (lgProd.prov_relacionado_rfc == dataCFDI_emisor_Rfc) {
+                                            <div class="form-check radio_check">
+                                              <input class="form-check-input" type="radio" name="artCatSelect" [checked]="lgProd.token_articulo == modelAsimilados.percepciones_servicio_token ? true : null"
+                                                (click)="seleccionaArticuloGralCompra(lgProd.token_articulo,lgProd.identificador);">
+                                            </div>
+                                            } @else {
+                                            <a class="btn bg-blue-600" [pRowToggler]="lgProd">
+                                              <i class="fa-solid" [ngClass]="expanded ? 'fa-angle-up' : 'fa-angle-down'"></i>
+                                            </a>
+                                            }
+                                          </td>
+                                          <td class="img_dat">
+                                            <div class="col-12"><img class="circle optimizedImage" fill ngSrc="{{lgProd.imagen}}" alt=""></div>
+                                          </td>
+                                          <td class="name">{{lgProd.identificador}}</td>
+                                          <td class="name">{{lgProd.clasificacion}}</td>
+                                          <td class="name">{{lgProd.sat}}</td>
+                                          <td class="name">{{lgProd.clave}}</td>
+                                          <td class="name">{{lgProd.concepto}}</td>
+                                        </tr>
+                                      </ng-template>
+                                      <ng-template #expandedrow let-lgProd let-i="rowIndex">
+                                        <tr>
+                                          <td colspan="7">
+                                            <div class="col-12 row">
+                                              <div class="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-3 col-xxl-3">
+                                                <div class="col-12 input-group">
+                                                  <label class="activeInput">Vincular a proveedor</label>
+                                                  <div class="form-check form-switch form-check-reverse switch_primario" style="justify-content: left;width: 100%!important;">
+                                                    <label class="form-check-label" for="flexSwitchCheckReverse">No</label>
+                                                    <input class="form-check-input selectSwitchProvProd" name="selectImpProd" type="checkbox" [checked]="lgProd.prov_relacionado_registrar" (click)="prov_relacionado_registrar($event.target,lgProd);">
+                                                    <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                                                  </div>
+                                                </div>
+                                                <div class="col-12 input-group">
+                                                  <label class="activeInput">Cuenta con clave alterna</label>
+                                                  <div class="form-check form-switch form-check-reverse switch_primario" style="justify-content: left;width: 100%!important;">
+                                                    <label class="form-check-label" for="flexSwitchCheckReverse">No</label>
+                                                    <input class="form-check-input selectSwitchProvProd" name="selectImpProd" type="checkbox" [checked]="lgProd.prov_relacionado_tiene_clave" (click)="decideHabilitaClave($event.target,lgProd);">
+                                                    <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                                                  </div>
+                                                </div>
+                                                <div class="col-12 input-group">
+                                                  <label class="activeInput">Clave alterna (asignada por el proveedor)</label>
+                                                  <input class="claveServProvAlta txtClave validate" type="text" [ngClass]="!lgProd.prov_relacionado_tiene_clave ? 'disabled' : ''" [attr.disabled]="!lgProd.prov_relacionado_tiene_clave ? true : null"
+                                                    [attr.aria-disabled]="!lgProd.prov_relacionado_tiene_clave ? true : null" (keyup)="keyupProvProdClave($event.target,lgProd);" (keypress)="keypressProvProdClave($event);">
+                                                </div>
+                                              </div>
+                                              <div class="col-12 col-sm-12 col-md-8 col-lg-8 col-xl-9 col-xxl-9"></div>
+                                            </div>
+                                            <div class="col-12 row">
+                                              <div class="col-12 col-sm-12 col-md-6 col-lg-8 col-xl-8 col-xxl-9"></div>
+                                              <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3" style="display: flex !important;justify-content: end!important;">
+                                                <a class="btn btn_extend text-bg-success rounded-3" type="submit"
+                                                  name="btnAltaProducto2" [ngClass]="!validaRegClaveProdPRV(lgProd) ? 'disabled' : ''"
+                                                  [attr.disabled]="!validaRegClaveProdPRV(lgProd) ? true : null"
+                                                  [attr.aria-disabled]="!validaRegClaveProdPRV(lgProd) ? true : null"
+                                                  (click)="validaRegClaveProdPRV(lgProd) && registraClaveProdPRV(lgProd);">
+                                                  <i class="fa-solid fa-floppy-disk" style="height: 15px!important;line-height: 15px!important;width: 15px!important;font-size: small!important;"></i>&nbsp;{{'sav_cam' | translate}}
+                                                </a>
+                                              </div>
+                                            </div>
+                                          </td>
+                                        </tr>
+                                      </ng-template>
+                                      <ng-template pTemplate="emptymessage">
+                                        <tr>
+                                          <td colspan="7" class="text-center py-4">
+                                            <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                                            <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                              {{'no_rows' | translate}}
+                                            </p>
+                                          </td>
+                                        </tr>
+                                      </ng-template>
+                                    </p-table>
+                                  </p-tabpanel>
+                                  <p-tabpanel value="2">
+                                    <!--<app-invent-serv-compras-alta></app-invent-serv-compras-alta>-->
+                                  </p-tabpanel>
+                                </p-tabpanels>
+                              </p-tabs>
+                            </div>
+                            <div class="col-12 row" style="margin-top: 5px!important;">
+                              <div class="col-12 col-sm-12 col-md-8 col-lg-8 col-xl-9 col-xxl-10"></div>
+                              <div class="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-3 col-xxl-2" style="display: flex !important;justify-content: end!important;">
+                                <div class="btn-group lista_botones col" role="group" aria-label="Basic example">
+                                  <a class="btn btn_extend bg-indigo-600"
+                                    [ngClass]="modelAsimilados.percepciones_servicio_token != '' ? 'disabled' : ''"
+                                    [attr.disabled]="modelAsimilados.percepciones_servicio_token != '' ? true : null"
+                                    [attr.aria-disabled]="modelAsimilados.percepciones_servicio_token != '' ? true : null"
+                                    (click)="cancelarArticuloAsim();">
+                                    <i class="fa-solid fa-xmark"></i>&nbsp;{{'swal_cancel' | translate}}
+                                  </a>
+                                  <a class="btn btn_extend bg-indigo-600"
+                                    [ngClass]="percepciones_servicio_save == '' ? 'disabled' : ''"
+                                    [attr.disabled]="percepciones_servicio_save == '' ? true : null"
+                                    [attr.aria-disabled]="percepciones_servicio_save == '' ? true : null"
+                                    (click)="guardaArticuloCompraXML();">
+                                    <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+                                  </a>
+                                </div>
+                              </div>
+                            </div>
+                          </p-dialog>
+                        </td>
+                        <td>
+                          <input 
+                            id="new_nomina_total_deducciones" 
+                            class="validate" 
+                            type="number" 
+                            formControlName="total_deducciones"
+                            placeholder="$ 0.00" 
+                            name="new_nomina_total_deducciones"
+                            (keyup)="keyupAsimiladoTotalDeducciones($event.target);
+                            $event.stopPropagation();" 
+                            (change)="$event.stopPropagation();">
+                        </td>
+                        <td class="ultimo">
+                          <a class="btn" [ngClass]="activaBotonImpuestosClass()"
+                            [attr.disabled]="!activaBotonImpuestosEnabled() ? true : null"
+                            [attr.aria-disabled]="!activaBotonImpuestosEnabled() ? true : null"
+                            (click)="activaBotonImpuestosEnabled() && verConceptoXMLImpuestos();">
+                            <i class="fa-solid" [ngClass]="activaBotonImpuestosIcono()"></i>
+                          </a>
+                          
+                          <p-dialog header="Retenciones" [(visible)]="modelAsimilados.deducciones_window" [attr.position]="'bottom'" [modal]="true" [style]="{ width: '50rem' }" 
+                            [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+                            <div class="col-12 row">
+                              <div class="col-12">
+                                <p-table #impRetListOne [value]="dataCFDI_complemento_DeducConceptos" dataKey="id" [resizableColumns]="true" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]" responsiveLayout="stack"
+                                  [globalFilterFields]="['Base','Impuesto','TipoFactor','TasaOCuota','Importe','impuesto_relacion_nombre']" [expandedRowKeys]="expandedRowsRetenciones" rowExpandMode="single">
+                                  <ng-template #caption>
+                                    <div class="flex">
+                                      <p-iconfield iconPosition="left" class="ml-auto">
+                                        <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                                        <input pInputText type="text" (input)="impRetListOne.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+                                      </p-iconfield>
+                                    </div>
+                                  </ng-template>
+                                  <ng-template #header>
+                                    <tr>
+                                      <th style="width: 50px" class="ultimo"></th>
+                                      <th style="width: 100px" pSortableColumn="Clave">Clave&nbsp;<p-sortIcon field="Clave" /></th>
+                                      <th style="width: 100px" pSortableColumn="Concepto">Concepto&nbsp;<p-sortIcon field="Concepto" /></th>
+                                      <th style="width: 100px" pSortableColumn="Importe">Importe&nbsp;<p-sortIcon field="Importe" /></th>
+                                      <th style="width: 120px" pSortableColumn="TipoDeduccion">TipoDeduccion&nbsp;<p-sortIcon field="TipoDeduccion" /></th>
+                                    </tr>
+                                  </ng-template>
+                                  <ng-template #body let-ret let-i="rowIndex" let-expandReten="expanded">
+                                    <tr>
+                                      <td class="ultimo">
+                                        <a class="btn bg-blue-600" [pRowToggler]="ret">
+                                          <i class="fa-solid" [ngClass]="expandReten ? 'fa-angle-up' : 'fa-angle-down'"></i>
+                                        </a>
+                                      </td>
+                                      <td>{{ret.Clave}}</td>
+                                      <td>{{ret.Concepto}}</td>
+                                      <td>{{ret.Importe}}</td>
+                                      <td>{{ret.TipoDeduccion}}</td>
+                                    </tr>
+                                  </ng-template>
+                                  <ng-template #expandedrow let-ret let-i="rowIndex">
+                                    <tr>
+                                      <td colspan="5">
+                                        <div style="overflow-x: auto;">
+                                          <p-table #impRetCat [value]="impRetencionesCatalogo" [globalFilterFields]="dataCFDIBuscarRetenciones" dataKey="id" [resizableColumns]="true" 
+                                            [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]" responsiveLayout="stack">
+                                            <ng-template #caption>
+                                              <div class="flex" style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;" ngbDropdown>
+                                                <a class="btn btn_extend" [ngClass]="indicadorImpRetenciones == 'hoy' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_impuestos_catalogo_retenciones('hoy');">
+                                                  <i class="fa-solid fa-calendar-days"></i>&nbsp;Hoy
+                                                </a>
+                                                <a class="btn btn_extend" [ngClass]="indicadorImpRetenciones == 'esta_semana' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_impuestos_catalogo_retenciones('esta_semana');">
+                                                  <i class="fa-solid fa-calendar-days"></i>&nbsp;Esta semana
+                                                </a>
+                                                <a class="btn btn_extend" [ngClass]="indicadorImpRetenciones == 'este_mes' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_impuestos_catalogo_retenciones('este_mes');">
+                                                  <i class="fa-solid fa-calendar-days"></i>&nbsp;Este mes
+                                                </a>
+                                                <a class="btn btn_extend" [ngClass]="indicadorImpRetenciones == 'mes_anterior' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_impuestos_catalogo_retenciones('mes_anterior');">
+                                                  <i class="fa-solid fa-arrow-left"></i>&nbsp;mes anterior
+                                                </a>
+                                                <a id="menuDropImpRetenciones" class="btn btn_extend" [ngClass]="indicadorImpRetenciones == 'otras_fechas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" ngbDropdownToggle>
+                                                  <i class="fa-solid fa-list-ul"></i>&nbsp;otras fechas
+                                                </a>
+                                                <div class="dropdown-menu-end menu-despegable" ngbDropdownMenu="menuDropImpRetenciones" style="padding: 0!important; margin: 0!important; width: max-content!important; max-height: 400px; overflow-y: auto;">
+                                                  <div class="col-12 input-group">
+                                                    <label for="imp_retenciones_otras_fechas" class="activeInput">Periodo de fechas</label>
+                                                    <p-datepicker id="imp_retenciones_otras_fechas" name="imp_retenciones_otras_fechas" [(ngModel)]="rangoPeriodoImpRetenciones" appendTo="body" dateFormat="dd/mm/yy"
+                                                      placeholder="dd/mm/aaaa" selectionMode="range" (onSelect)="ver_impuestos_catalogo_retenciones('otras_fechas')" />
+                                                  </div>
+                                                </div>
+                                                <a class="btn btn_extend" [ngClass]="indicadorImpRetenciones == 'all_partidas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_impuestos_catalogo_retenciones('all_partidas');">
+                                                  <i class="fa-solid fa-list-ul"></i>&nbsp;todos los registros
+                                                </a>
+                                                <p-iconfield iconPosition="left" class="ml-auto">
+                                                  <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                                                  <input pInputText type="text" (input)="impRetCat.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+                                                </p-iconfield>
+                                              </div>
+                                            </ng-template>
+                                            <ng-template #header>
+                                              <tr>
+                                                <th class="ultimo"></th>
+                                                <th pSortableColumn="folio_impuesto">folio&nbsp;<p-sortIcon field="folio_impuesto" /></th>
+                                                <th pSortableColumn="abreviacion_impuesto">Abreviaci&oacute;n&nbsp;<p-sortIcon field="abreviacion_impuesto" /></th>
+                                                <th pSortableColumn="concepto_impuesto">Concepto&nbsp;<p-sortIcon field="concepto_impuesto" /></th>
+                                                <th pSortableColumn="modulo">M&oacute;dulo&nbsp;<p-sortIcon field="modulo" /></th>
+                                                <th pSortableColumn="nivel_aplicacion">nivel de aplicaci&oacute;n&nbsp;<p-sortIcon field="nivel_aplicacion" /></th>
+                                                <th pSortableColumn="catalogo_sat">clave sat&nbsp;<p-sortIcon field="catalogo_sat" /></th>
+                                                <th pSortableColumn="tipo_impuesto">Tipo&nbsp;<p-sortIcon field="tipo_impuesto" /></th>
+                                                <th pSortableColumn="exento">Exento&nbsp;<p-sortIcon field="exento" /></th>
+                                                <th pSortableColumn="calculo">Tasa o cuota&nbsp;<p-sortIcon field="calculo" /></th>
+                                                <th pSortableColumn="txtimporte">Importe del impuesto&nbsp;<p-sortIcon field="txtimporte" /></th>
+                                                <th pSortableColumn="tipo_cambio">Tipo de cambio aplicado&nbsp;<p-sortIcon field="tipo_cambio" /></th>
+                                                <th pSortableColumn="monedas_codigo">Moneda aplicada&nbsp;<p-sortIcon field="monedas_codigo" /></th>
+                                                <th pSortableColumn="base_aplicable">Aplica sobre&nbsp;<p-sortIcon field="base_aplicable" /></th>
+                                                <th pSortableColumn="desglose">Desglose&nbsp;<p-sortIcon field="desglose" /></th>
+                                                <th pSortableColumn="gl_por_pagarcobrar">GL por pagar o cobrar&nbsp;<p-sortIcon field="gl_por_pagarcobrar" /></th>
+                                                <th pSortableColumn="gl_pagada_o_cobrada">GL efectivamente pagada o cobrada&nbsp;<p-sortIcon field="gl_pagada_o_cobrada" /></th>
+                                                <th pSortableColumn="observaciones">{{'observ' | translate}}&nbsp;<p-sortIcon field="observaciones" /></th>
+                                              </tr>
+                                            </ng-template>
+                                            <ng-template #body let-impVig>
+                                              <tr>
+                                                <td>
+                                                  <div class="form-check radio_check">
+                                                    <input class="form-check-input" type="radio" name="imp_ret_selector" [value]="impVig.token_catalogo_impuesto"
+                                                      [checked]="impVig.token_catalogo_impuesto == modelAsimilados.deducciones_impuesto_token" (click)="selecciona_imp_retencion($event.target);">
+                                                  </div>
+                                                </td>
+                                                <td>{{impVig.folio_impuesto}}</td>
+                                                <td class="td_names_rfc">{{impVig.abreviacion_impuesto}}</td>
+                                                <td class="td_names_rfc">{{impVig.concepto_impuesto}}</td>
+                                                <td>{{impVig.modulo}}</td>
+                                                <td>{{impVig.nivel_aplicacion}}</td>
+                                                <td>{{impVig.catalogo_sat}}</td>
+                                                <td>{{impVig.tipo_impuesto}}</td>
+                                                <td>{{impVig.exento | translate}}</td>
+                                                <td>{{impVig.exento == 'yes' ? '---' : impVig.calculo}}</td>
+                                                <td class="td_importes">{{impVig.exento == 'yes' ? '---' : impVig.txtimporte}}</td>
+                                                <td class="td_importes">{{impVig.exento == 'yes' ? '---' : impVig.tipo_cambio}}</td>
+                                                <td>{{impVig.exento == 'yes' ? '---' : impVig.monedas_codigo+" - "+impVig.monedas_moneda}}</td>
+                                                <td>{{impVig.exento == 'yes' ? '---' : impVig.base_aplicable}}</td>
+                                                <td>{{impVig.exento == 'yes' ? '---' : impVig.desglose | translate}}</td>
+                                                <td>{{impVig.exento == 'yes' ? '---' : impVig.gl_por_pagarcobrar}}</td>
+                                                <td>{{impVig.exento == 'yes' ? '---' : impVig.gl_pagada_o_cobrada}}</td>
+                                                <td>{{impVig.observaciones}}</td>
+                                              </tr>
+                                            </ng-template>
+                                            <ng-template pTemplate="emptymessage">
+                                              <tr>
+                                                <td colspan="18" class="text-center py-4">
+                                                  <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                                                  <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                                    {{'no_rows' | translate}}
+                                                  </p>
+                                                </td>
+                                              </tr>
+                                            </ng-template>
+                                          </p-table>
+                                        </div>
+                                      </td>
+                                    </tr>
+                                  </ng-template>
+                                  <ng-template pTemplate="emptymessage">
+                                    <tr>
+                                      <td colspan="5" class="text-center py-4">
+                                        <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                                        <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                          {{'no_rows' | translate}}
+                                        </p>
+                                      </td>
+                                    </tr>
+                                  </ng-template>
+                                </p-table>
+
+                                <div class="col-12 row" style="margin-top: 5px!important;">
+                                  <div class="col-12 col-sm-12 col-md-8 col-lg-8 col-xl-9 col-xxl-10"></div>
+                                  <div class="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-3 col-xxl-2" style="display: flex !important;justify-content: end!important;">
+                                    <div class="btn-group lista_botones col" role="group" aria-label="Basic example">
+                                      <a class="btn btn_extend bg-indigo-600"
+                                        [ngClass]="modelAsimilados.deducciones_impuesto_token != '' ? 'disabled' : ''"
+                                        [attr.disabled]="modelAsimilados.deducciones_impuesto_token != '' ? true : null"
+                                        [attr.aria-disabled]="modelAsimilados.deducciones_impuesto_token != '' ? true : null"
+                                        (click)="imp_retencion_cancelar();">
+                                        <i class="fa-solid fa-xmark"></i>&nbsp;{{'swal_cancel' | translate}}
+                                      </a>
+                                      <a class="btn btn_extend bg-indigo-600"
+                                        [ngClass]="deducciones_impuesto_save == '' ? 'disabled' : ''"
+                                        [attr.disabled]="deducciones_impuesto_save == '' ? true : null"
+                                        [attr.aria-disabled]="deducciones_impuesto_save == '' ? true : null"
+                                        (click)="guarda_imp_retencion();">
+                                        <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+                                      </a>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </p-dialog>
+                        </td>
+                      </tr>
+                    </ng-template>
+                    <ng-template pTemplate="footer">
+                      <tr>
+                        <td colspan="5" class="td_importes"><strong>TOTAL</strong></td>
+                        <td class="td_importes"><strong>{{get_asimilado_total}}</strong></td>
+                        <td></td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
+                </div>
+              </p-accordion-content>
+            </p-accordion-panel>
+            <p-accordion-panel value="4">
+              <p-accordion-header>
+                <ng-template #toggleicon let-active="active"><i class="fa-solid" [ngClass]="active ? 'fa-sort-up' : 'fa-sort-down'" style="margin-right: 3px!important;"></i></ng-template>
+                <span class="flex items-center gap-2 w-full">Nodo Complemento</span>
+              </p-accordion-header>
+              <p-accordion-content>
+                <div class="col-12 row">
+                  @for (last of dataCFDIComplemento_obj | keyvalue: keepOrder; track $index) {
+                    <div [ngClass]="last.key === 'SelloCFD' || last.key === 'SelloSAT' ? 'explain explain_column' : 'col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-3 explain'">
+                      <h6 class="title">{{ formatLabel($any(last.key)) }}</h6>
+                      <h6 class="content" [ngClass]="last.key === 'SelloCFD' || last.key === 'SelloSAT' ? 'content_text_large' : ''">{{ last.value }}</h6>
+                    </div>
+                  }
+                </div>
+              </p-accordion-content>
+            </p-accordion-panel>
+            @if (dataCFDIRelacionados_obj.uuids?.length > 0) {
+              <p-accordion-panel value="5">
+                <p-accordion-header>
+                  <ng-template #toggleicon let-active="active"><i class="fa-solid" [ngClass]="active ? 'fa-sort-up' : 'fa-sort-down'" style="margin-right: 3px!important;"></i></ng-template>
+                  <span class="flex items-center gap-2 w-full">Nodo Cfdi relacionados</span>
+                </p-accordion-header>
+                <p-accordion-content>
+                  @for (rel of dataCFDIRelacionados_obj | keyvalue: keepOrder; track $index) {
+                    <div class="col-12">
+                      <div class="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-2 col-xxl-2 explain">
+                        <h6 class="title">{{ formatLabel($any(rel.key)) }}</h6>
+                        <h6 class="content">{{ rel.value }}</h6>
+                      </div>
+                    </div>
+                  }
+                </p-accordion-content>
+              </p-accordion-panel>
+            }
+          </p-accordion>
+        </div>
+      }
+      @case ('errorXml') {
+        <p>CFDI Invalido.</p>
+      }
+      @default {
+        <p>Registre CFDI.</p>
+      }
+    }
+    <p-divider />
+    <div class="col-12 input-group" style="margin-bottom: 10px!important;">
+      <label for="new_nomina_observaciones" class="activeInput">{{'observ' | translate}}</label>
+      <textarea id="new_nomina_observaciones" #newNominaObservaciones class="validate" (keyup)="keyupObservacionReporte($event.target);"></textarea>
+    </div>
+    <p-divider />
+    <div class="col-12 field_file_drop">
+      <ngx-file-drop dropZoneLabel="Drop files here" (onFileDrop)="droppedAsimilados($event)" (onFileOver)="fileOverImpAsimilados($event)" (onFileLeave)="fileLeaveImpAsimilados($event)">
+        <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
+          <a class="btn btn_load_file" type="button" style="color: #0782d0 !important;" (click)="openFileSelector()">
+            {{'load_files' | translate}} / {{'browse_files' | translate}}
+          </a>
+        </ng-template>
+      </ngx-file-drop>
+      <table class="white centered" style="margin-top:5px!important;width: 100% !important;">
+        <thead>
+          <tr>
+            <th>{{'file' | translate}}</th>
+            <th class="ultimo"></th>
+          </tr>
+        </thead>
+        <tbody class="upload-name-style" *ngIf="filesAsimilados.length != 0">
+          <tr *ngFor="let item of filesAsimilados; index as i">
+            <td><strong>{{ item.relativePath }}</strong></td>
+            <td class="ultimo">
+              <a class="btn btn_extend text-bg-danger rounded-3"
+                (click)="deleteAnexosAsimilados(i);">
+                <i class="fa-solid fa-xmark"></i>
+              </a>
+            </td>
+          </tr>
+        </tbody>
+        <tbody *ngIf="filesAsimilados.length == 0">
+          <tr><td colspan="2">{{'no_rows' | translate}}</td></tr>
+        </tbody>
+      </table>
+    </div>
+    
+    <div class="col-12" style="display: flex !important;justify-content: end!important;margin-top: 5px!important;">
+      <button class="btn btn_extend text-bg-success rounded-3" [ngClass]="!validaRegistroAsimiladosReport ? 'disabled' : ''" 
+        [attr.disabled]="!validaRegistroAsimiladosReport ? true : null" [attr.aria-disabled]="!validaRegistroAsimiladosReport ? true : null">
+        <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+      </button>
+    </div>
+  </form>
+}

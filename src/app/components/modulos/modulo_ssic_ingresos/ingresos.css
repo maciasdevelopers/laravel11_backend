@@ -1,0 +1,40 @@
+div.menuCat div.categoria div.item{border-bottom: 5px inset #52C633;}
+
+.listas_ps .lista-div, .listas_ps .fmAlta{border-left: 10px solid #2D7D17;}
+
+/*Estructura general 140-*/
+/*modal*/
+    div.open div.contenido div.header{
+        background-color: #52C633;
+    }
+
+    div.open div.contenido div.modal-content div.form{
+        background-color: #D3D3D3;
+        background-color: #f8f9fc;
+    }
+
+/*ul*/
+    .listas_ps ul.collapsible li{
+        box-shadow: 1px 1px 10px #2D7D17;
+    }
+
+    .listas_ps ul.collapsible li div.collapsible-header{
+        background-color: #2D7D17;
+    }
+    .listas_ps ul.collapsible li div.collapsible-header .chip{
+        color: #fff;
+        font-weight: bold;
+    }
+/*radio buttons*/
+    .listas_ps p.radio label{
+        background-color: #A5EC92;
+    }
+
+    .listas_ps p.radio label.disabled{
+        background-color: #52C633;
+    }
+/*ul collapsible*/
+div.listas_ps div.fmAlta div.form form div.data-reg ul.collapsible li.licollapsible{
+    box-shadow: 1px 1px 10px #2D7D17;
+    background-color: rgba(53,53,53,0.3);
+}

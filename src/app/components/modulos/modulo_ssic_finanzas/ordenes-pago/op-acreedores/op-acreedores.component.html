@@ -1,0 +1,599 @@
+<p-table #acrGralList [value]="list_acreedores_general" showGridlines [resizableColumns]="true" [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]"
+  [globalFilterFields]="['token_cat_acreedores','folio','nombre','nombre_comercial','pais','rfc_acree','tax_id_acree','cuenta_contable','deuda_al_acreedor']">
+  <ng-template #caption>
+    <div class="flex" style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;" ngbDropdown>
+      <a class="btn btn_extend" [ngClass]="indicadorAcree == 'hoy' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="catalogo_acreedores('hoy');">
+        <i class="fa-solid fa-calendar-days"></i>&nbsp;Hoy
+      </a>
+      <a class="btn btn_extend" [ngClass]="indicadorAcree == 'esta_semana' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="catalogo_acreedores('esta_semana');">
+        <i class="fa-solid fa-calendar-days"></i>&nbsp;Esta semana
+      </a>
+      <a class="btn btn_extend" [ngClass]="indicadorAcree == 'este_mes' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="catalogo_acreedores('este_mes');">
+        <i class="fa-solid fa-calendar-days"></i>&nbsp;Este mes
+      </a>
+      <a class="btn btn_extend" [ngClass]="indicadorAcree == 'mes_anterior' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="catalogo_acreedores('mes_anterior');">
+        <i class="fa-solid fa-arrow-left"></i>&nbsp;mes anterior
+      </a>
+      <a id="menuDropGralAcree" class="btn btn_extend" [ngClass]="indicadorAcree == 'otras_fechas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" ngbDropdownToggle>
+        <i class="fa-solid fa-list-ul"></i>&nbsp;otras fechas
+      </a>
+      <div class="dropdown-menu-end menu-despegable" ngbDropdownMenu="menuDropGralAcree" style="padding: 0!important; margin: 0!important; width: max-content!important; max-height: 400px; overflow-y: auto;">
+        <div class="col-12 input-group">
+          <label for="acree_gral_otras_fechas" class="activeInput">Periodo de fechas</label>
+          <p-datepicker id="acree_gral_otras_fechas" name="acree_gral_otras_fechas" [(ngModel)]="rangoPeriodoAcree" appendTo="body" dateFormat="dd/mm/yy" 
+            placeholder="dd/mm/aaaa" selectionMode="range" (onSelect)="catalogo_acreedores('otras_fechas');"/>
+        </div>
+      </div>
+      <a class="btn btn_extend" [ngClass]="indicadorAcree == 'all_partidas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="catalogo_acreedores('all_partidas');">
+        <i class="fa-solid fa-list-ul"></i>&nbsp;todos los registros
+      </a>
+      <a class="btn btn_extend bg-green-600 descarga_lista_excel" style="height: 25px !important;"><!-- (click)="descarga_excel_pagos();"-->
+        descargar&nbsp;<i class="fa-solid fa-file-excel"></i>
+      </a>
+      <p-iconfield iconPosition="left" class="ml-auto">
+        <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+        <input pInputText type="text" (input)="acrGralList.filterGlobal($event.target.value, 'contains')"
+          placeholder="{{'bus_car' | translate}}" />
+      </p-iconfield>
+    </div>
+  </ng-template>
+  <ng-template #header>
+    <tr>
+      <th class="ultimo"></th>
+      <th pResizableColumn pSortableColumn="folio">folio&nbsp;<p-sortIcon field="folio" /></th>
+      <th pResizableColumn pSortableColumn="nombre">acreedor&nbsp;<p-sortIcon field="nombre" /></th>
+      <th pResizableColumn pSortableColumn="nombre_comercial">{{'comercial_name' | translate}} &nbsp;<p-sortIcon field="nombre_comercial" /></th>
+      <th pResizableColumn pSortableColumn="pais">pais&nbsp;<p-sortIcon field="pais" /></th>
+      <th pResizableColumn pSortableColumn="rfc_acree">rfc&nbsp;<p-sortIcon field="rfc_acree" /></th>
+      <th pResizableColumn pSortableColumn="tax_id_acree">idTax&nbsp;<p-sortIcon field="tax_id_acree" /></th>
+      <th pResizableColumn pSortableColumn="cuenta_contable">Cuenta contable &nbsp;<p-sortIcon field="cuenta_contable" /></th>
+      <th pResizableColumn pSortableColumn="deuda_al_acreedor">Deuda al acreedor &nbsp;<p-sortIcon field="deuda_al_acreedor" /></th>
+    </tr>
+  </ng-template>
+  <ng-template #body let-row_acree>
+    <tr>
+      <td class="ultimo">
+        <a class="btn bg-blue-600" (click)="infoAcreeDetalle(row_acree.token_cat_acreedores);">
+          <i class="fa-solid fa-info"></i>
+        </a>
+      </td>
+      <td class="name">{{row_acree.folio}}</td>
+      <td class="name">{{row_acree.nombre}}</td>
+      <td class="name">{{row_acree.nombre_comercial ? row_acree.nombre_comercial : 'N/A'}}</td>
+      <td>{{row_acree.pais ? row_acree.pais : 'N/A'}}</td>
+      <td>{{row_acree.rfc_acree ? row_acree.rfc_acree : 'N/A'}}</td>
+      <td>{{row_acree.tax_id_acree ? row_acree.tax_id_acree : 'N/A'}}</td>
+      <td>{{row_acree.cuenta_contable ? row_acree.cuenta_contable : 'N/A'}}</td>
+      <td class="td_importes">{{row_acree.deuda_al_acreedor}}</td>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td colspan="9" class="text-center py-4">
+        <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+        <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+          {{'no_rows' | translate}}
+        </p>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<p-dialog header="Informaci&oacute;n del acreedor" [(visible)]="acreeDetalleVer" [modal]="true" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  @for (acrInfo of acreeDetalleData; track $index) {
+    <div class="col-12 row">
+      <div class="col-12 explain">
+        <h6 class="title">Folio</h6>
+        <h6 class="content">{{acrInfo.folio}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">Tipo de acreedor</h6>
+        <h6 class="content">{{acrInfo.tipo}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">Tipo de persona</h6>
+        <h6 class="content">{{acrInfo.subtipo}}</h6>
+      </div>
+      <div class="col-12 explain" *ngIf="acrInfo.rfc_acr != ''">
+        <h6 class="title">RFC con Homoclave</h6>
+        <h6 class="content">{{acrInfo.rfc_acr}}</h6>
+      </div>
+      <div class="col-12 explain" *ngIf="acrInfo.tax_id_acr != ''">
+        <h6 class="title">Tax ID</h6>
+        <h6 class="content">{{acrInfo.tax_id_acr}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">Nombre / Raz&oacute;n social</h6>
+        <h6 class="content">{{acrInfo.nombre}}</h6>
+      </div>
+      <div class="col-12 explain" *ngIf="acrInfo.nombre_comercial != ''">
+        <h6 class="title">Nombre Comercial</h6>
+        <h6 class="content">{{acrInfo.nombre_comercial}}</h6>
+      </div>
+      <div class="col-12 explain" *ngIf="acrInfo.cuenta_contable != ''">
+        <h6 class="title">Cuenta contable</h6>
+        <h6 class="content">{{acrInfo.cuenta_contable}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">Deuda al acreedor</h6>
+        <h6 class="content">{{acrInfo.acr_total_saldo}}</h6>
+      </div>
+      <div class="col-12" style="padding: 0!important;margin-top: 5px!important;">
+        <p-tabs value="0" scrollable>
+          <p-tablist>
+            <p-tab value="0">Desglose de deuda al acreedor</p-tab>
+            <p-tab value="1" (click)="data_para_pagos_m_b_m();">Registro de movimientos a favor del acreedor</p-tab>
+            <!--<p-tab value="1">Registro de movimientos a favor del acreedor</p-tab>-->
+          </p-tablist>
+          <p-tabpanels>
+            <p-tabpanel value="0">
+              <p-table #acrEstCuenta [value]="acrInfo.estado_de_cuenta" showGridlines [resizableColumns]="true" [tableStyle]="{ 'min-width': '50rem' }" [globalFilterFields]="search_acreedor_estado_de_cuenta">
+                <ng-template #caption>
+                  <div class="flex"
+                    style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;">
+                    <a class="btn btn_extend bg-green-600 descarga_lista_excel" style="margin-right:5px!important;"
+                      (click)="descarga_excel_acr_estado_cuenta(acrInfo.estado_de_cuenta);">descargar
+                      <i class="fa-solid fa-file-excel"></i>
+                    </a>
+                    <p-iconfield iconPosition="left" class="ml-auto" style="margin:0!important;">
+                      <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                      <input pInputText type="text" (input)="acrEstCuenta.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+                    </p-iconfield>
+                  </div>
+                </ng-template>
+                <ng-template #header>
+                  <tr>
+                    <th pResizableColumn pSortableColumn="folio_e_cuenta">folio&nbsp;<p-sortIcon field="folio_e_cuenta" /></th>
+                    <th pResizableColumn pSortableColumn="fecha_contabilizacion">{{'fecha_cont' | translate}}&nbsp;<p-sortIcon field="fecha_contabilizacion" /></th>
+                    <th pResizableColumn pSortableColumn="cancelacion_doc_anterior">{{'doc_ant' | translate}}&nbsp;<p-sortIcon field="cancelacion_doc_anterior" /></th>
+                    <th pResizableColumn pSortableColumn="forma_pago_vinculada">{{'f_pago' | translate}}&nbsp;<p-sortIcon field="forma_pago_vinculada" /></th>
+                    <th pResizableColumn pSortableColumn="forma_pago_cfdi">{{'f_m_pago_cfdi' | translate}}&nbsp;<p-sortIcon field="forma_pago_cfdi" /></th>
+                    <th pResizableColumn pSortableColumn="observacionesPago">{{'observ' | translate}}&nbsp;<p-sortIcon field="observacionesPago" /></th>
+                    <th pResizableColumn pSortableColumn="monto_pago">{{'total_import' | translate}}&nbsp;<p-sortIcon field="monto_pago" /></th>
+                    <th pResizableColumn pSortableColumn="tipo_cambio_movimiento">{{'mon_tipo_cambio' | translate}}&nbsp;<p-sortIcon field="tipo_cambio_movimiento" /></th>
+                    <th pResizableColumn pSortableColumn="estado_cuenta_debe_format">debe&nbsp;(-)&nbsp;<p-sortIcon field="estado_cuenta_debe_format" /></th>
+                    <th pResizableColumn pSortableColumn="estado_cuenta_haber_format">haber&nbsp;(+)&nbsp;<p-sortIcon field="estado_cuenta_haber_format" /></th>
+                    <th pResizableColumn pSortableColumn="estado_cuenta_saldo_format">saldo&nbsp;(=)&nbsp;<p-sortIcon field="estado_cuenta_saldo_format" /></th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-payDone let-i="rowIndex">
+                  <tr>
+                    <td class="name">{{payDone.folio_e_cuenta}}</td>
+                    <td>{{payDone.fecha_contabilizacion}}</td>
+                    <td>{{payDone.cancelacion_doc_anterior}}</td>
+                    <td>{{payDone.forma_pago_vinculada}}</td>
+                    <td>{{payDone.f_m_pago_cfdi}}</td>
+                    <td>{{payDone.observacionesPago}}</td>
+                    <td class="td_importes">{{payDone.monto_pago}}</td>
+                    <td class="td_importes">{{payDone.tipo_cambio_movimiento}}</td>
+                    <td class="td_importes">{{payDone.estado_cuenta_debe_format}}</td>
+                    <td class="td_importes">{{payDone.estado_cuenta_haber_format}}</td>
+                    <td class="td_importes">{{payDone.estado_cuenta_saldo_format}}</td>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                  <tr>
+                    <td colspan="11" class="text-center py-4">
+                      <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                      <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                        {{'no_rows' | translate}}
+                      </p>
+                    </td>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="footer">
+                  <tr>
+                    <td class="td_importes" colspan="8"><strong>Totales</strong></td>
+                    <td class="td_importes"><strong>{{acrInfo.acr_total_debe}}<!--{{ totalDebe | currency:'MXN':'symbol' }}--></strong></td>
+                    <td class="td_importes"><strong>{{acrInfo.acr_total_haber}}<!--{{ totalHaber | currency:'MXN':'symbol' }}--></strong></td>
+                    <td class="td_importes"><strong>{{acrInfo.acr_total_saldo}}<!--{{ totalSaldo | currency:'MXN':'symbol' }}--></strong></td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </p-tabpanel>
+            <p-tabpanel value="1">
+              <form class="formAddPagoAcreedor" #formAddPagoAcreedor="ngForm" autocomplete="off" name="formAddPagoAcreedor" enctype="multipart/form-data"
+                (ngSubmit)="pay_acr_to_validate && onSavePagoAcreedor(acrInfo.token_cat_acreedores,acrInfo.deudor_vinculado_token,formAddPagoAcreedor);">
+                <div class="col-12 row" style="margin: 0!important;">
+                  <div class="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-2 col-xxl-2 input-group">
+                    <label class="activeInput">{{'fecha_cont' | translate}}</label>
+                    <input class="validate datepicker" id="fechaContabilizacionACRPago" name="fechaContabilizacionCompra" type="date" (change)="select_acree_pago_fecha_contab($event.target);">
+                  </div>
+                  <div class="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-2 col-xxl-2 input-group">
+                    <label for="fechaAltaProd" class="activeInput">{{'mon_name' | translate}}</label>
+                    <p-select id="acreedorMonedaCode" [options]="catalogo_monedas_api" [(ngModel)]="monedas_acree_pago" name="monedas_acree_pago" optionLabel="_filtro_busqueda"
+                      [filter]="true" filterBy="_filtro_busqueda" [showClear]="true" [placeholder]="'opt_select' | translate" class="w-full md:w-56" (onChange)="keyup_acree_pago_moneda($event.value);">
+                      <ng-template #selectedItem let-selectedOption>
+                        <div class="flex items-center gap-2">
+                          <div>{{selectedOption.code+" "+selectedOption.langEN}}</div>
+                        </div>
+                      </ng-template>
+                      <ng-template let-mon #item>
+                        <div class="flex items-center gap-2">
+                          <div>{{mon.code+" "+mon.langEN}}</div>
+                        </div>
+                      </ng-template>
+                    </p-select>
+                  </div>
+                  <div class="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-2 col-xxl-2 input-group">
+                    <label class="activeInput">{{'mon_tipo_cambio' | translate}}</label>
+                    <input class="validate" [ngClass]="acree_pago_moneda_code == emp_moneda_code ? 'disabled' : ''" [attr.disabled]="acree_pago_moneda_code == emp_moneda_code ? true : null"
+                      [attr.aria-disabled]="acree_pago_moneda_code == emp_moneda_code ? true : null" [attr.value]="acree_pago_moneda_code == emp_moneda_code ? '1.00' : ''"
+                      id="pagos_acr_tipo_cambio" type="number" min="1" max="100000000000000" (keyup)="keyup_acree_tipo_cambio($event.target);">
+                  </div>
+                  <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+                    <label for="fechaAltaProd" class="activeInput">{{'f_pago' | translate}}</label>
+                    <select id="pagos_acr_forma_pago" class="browser-default" [ngClass]="acree_pago_moneda_code == '' ? 'disabled' : ''" [attr.disabled]="acree_pago_moneda_code == '' ? true : null" 
+                      [attr.aria-disabled]="acree_pago_moneda_code == '' ? true : null" (change)="acree_pago_moneda_code != '' && select_acree_forma_pago($event.target,acrInfo.deudor_vinculado_token);">
+                      <option value="" disabled selected>{{'bus_car_por' | translate}}</option>
+                      <option value="por-caja" *ngIf="listaCajasRegistradas.length > 0">por caja</option>
+                      <option value="por-cuenta-bancaria" *ngIf="listaCuentasBancarias.length > 0">por cuenta bancaria</option>
+                      <option value="por-monedero-electronico" *ngIf="listaCuentasMonederoElectronico.length > 0"> por monedero electr&oacute;nico</option>
+                      <option value="por-compensacion" *ngIf="acrInfo.deudor_vinculado_token != ''">por compensaci&oacute;n {{acrInfo.deudor_vinculado_folio+" "+acrInfo.deudor_vinculado_nombre}}</option>
+                      <!--<option value="por-anticipos" *ngIf="ordenes_pago_listaProceso_prv_anticipos.length > 0">por anticipos</option>
+                      <option value="por-saldos" *ngIf="ordenes_pago_listaProceso_prv_saldos_a_favor.length > 0">por saldos</option>-->
+                    </select>
+                  </div>
+                  <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+                    <label for="fechaAltaProd" class="activeInput">Tipo de movimiento</label>
+                    <select id="pagos_acr_debe_o_haber" class="browser-default" [ngClass]="acree_pago_forma_pago == '' ? 'disabled' : ''" [attr.disabled]="acree_pago_forma_pago == '' ? true : null"
+                      [attr.aria-disabled]="acree_pago_forma_pago == '' ? true : null" (change)="select_acree_debe_haber($event.target);">
+                      <option value="" disabled selected>{{'opt_select' | translate}}</option>
+                      <option value="debe">Recibe del acreedor (debe)</option>
+                      <option value="haber">Entrega al acreedor (haber)</option>
+                    </select>
+                  </div>
+    
+                  <div class="col-12" [ngClass]="acree_pago_forma_pago != 'por-caja' ? 'noneView' : ''" style="margin-top: 5px!important;">
+                    <div class="buscador row" style="margin-top: 10px!important">
+                      <div class="content">
+                        <div class="col-12 col-sm-6 col-md-3 col-lg-2 row_buscador btn-group lista_botones col" role="group" aria-label="ejemplo">
+                          <a class="btn btn_extend bg-indigo-600" (click)="showCajasRegistradas();">
+                            <i class="fa-solid fa-rotate" style="margin-left: 5px;"></i>&nbsp;{{'list_updt' | translate}}
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                    <p-table #acrCajasLista [value]="listaCajasRegistradas" [globalFilterFields]="search_cajas_registradas" dataKey="id" showGridlines [resizableColumns]="true" 
+                      [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]">
+                      <ng-template #caption>
+                        <div class="flex">
+                          <p-iconfield iconPosition="left" class="ml-auto">
+                            <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                            <input pInputText type="text" (input)="acrCajasLista.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}"/>
+                          </p-iconfield>
+                        </div>
+                      </ng-template>
+                      <ng-template #header>
+                        <tr>
+                          <th class="ultimo"></th>
+                          <th pResizableColumn pSortableColumn="caja_folio">Caja&nbsp;<p-sortIcon field="caja_folio" /></th>
+                          <th pResizableColumn pSortableColumn="establecimiento">Establecimiento&nbsp;<p-sortIcon field="establecimiento" /></th>
+                          <th pResizableColumn pSortableColumn="salDoCaja">Saldo&nbsp;<p-sortIcon field="salDoCaja" /></th>
+                          <th style="width: 200px!important;">Monto a aplicar</th>
+                        </tr>
+                      </ng-template>
+                      <ng-template #body let-caj>
+                        <tr>
+                          <td>
+                            <div class="form-check radio_check">
+                              <input class="form-check-input" type="checkbox" name="caja_select" [checked]="caj.select_for_pagos" (click)="select_acree_caja($event.target,caj.token_caja);">
+                            </div>
+                          </td>
+                          <td>{{caj.caja_folio+" "+caj.caja_alias}}</td>
+                          <td>{{caj.establecimiento}}</td>
+                          <td class="td_importes">{{caj.salDoCaja}}</td>
+                          <td>
+                            @if (!caj.select_for_pagos) {---}
+                            @else {
+                              <input class="validate" name="monto_aplicar" type="number" (input)="caj.select_for_pagos && acree_importe_by_caja($event.target,caj.token_caja);" [max]="caj.saldofloat" min="0" step="0.01" placeholder="Monto a aplicar"/>
+                            }
+                          </td>
+                        </tr>
+                      </ng-template>
+                      <ng-template pTemplate="emptymessage">
+                        <tr>
+                          <td colspan="5" class="text-center py-4">
+                            <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                            <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                              {{'no_rows' | translate}}
+                            </p>
+                          </td>
+                        </tr>
+                      </ng-template>
+                    </p-table>
+                  </div>
+                  <div class="col-12" [ngClass]="acree_pago_forma_pago != 'por-cuenta-bancaria' ? 'noneView' : ''"
+                    style="margin-top: 5px!important;">
+                    <div class="buscador row" style="margin-top: 10px!important">
+                      <div class="content">
+                        <div class="col-12 col-sm-6 col-md-3 col-lg-2 row_buscador btn-group lista_botones col" role="group" aria-label="ejemplo">
+                          <a class="btn btn_extend bg-indigo-600" (click)="getCuentasBancarias();">
+                            <i class="fa-solid fa-rotate" style="margin-left: 5px;"></i>&nbsp;{{'list_updt' | translate}}
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                    <p-table #acrCuentasBancarias [value]="listaCuentasBancarias" [globalFilterFields]="search_cuentas_bancarias" dataKey="id" showGridlines [resizableColumns]="true" [paginator]="true" [rows]="10"
+                      [rowsPerPageOptions]="[10,20,30,50,100]">
+                      <ng-template #caption>
+                        <div class="flex">
+                          <p-iconfield iconPosition="left" class="ml-auto">
+                            <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                            <input pInputText type="text"
+                              (input)="acrCuentasBancarias.filterGlobal($event.target.value, 'contains')"
+                              placeholder="{{'bus_car' | translate}}" />
+                          </p-iconfield>
+                        </div>
+                      </ng-template>
+                      <ng-template #header>
+                        <tr>
+                          <th class="ultimo"></th>
+                          <th pResizableColumn pSortableColumn="folio_cuenta">folio&nbsp;<p-sortIcon field="folio_cuenta" /></th>
+                          <th pResizableColumn pSortableColumn="banco_nombre_comercial">banco&nbsp;<p-sortIcon field="banco_nombre_comercial" /></th>
+                          <th class="ultimo" pResizableColumn pSortableColumn="cuenta_bancaria">cuenta&nbsp;<p-sortIcon field="cuenta_bancaria" /></th>
+                          <th pResizableColumn pSortableColumn="saldo_cuenta_format">Saldo&nbsp;<p-sortIcon field="saldo_cuenta_format" /></th>
+                          <th style="width: 200px!important;">Monto a aplicar</th>
+                        </tr>
+                      </ng-template>
+                      <ng-template #body let-cuent>
+                        <tr>
+                          <td>
+                            <div class="form-check radio_check">
+                              <input class="form-check-input" type="checkbox" name="cuenta_bancaria_selected" [checked]="cuent.select_for_pagos" (click)="select_acree_cuenta($event.target,cuent.token_cuenta);">
+                            </div>
+                          </td>
+                          <td>{{cuent.folio_cuenta}}</td>
+                          <td>{{cuent.banco_clave+' '+cuent.banco_nombre_comercial}}</td>
+                          <td>
+                            <a class="btn btn_extend bg-blue-600" (click)="functCuentaNumber(cuent.token_cuenta);">
+                              {{cuent.cuenta_bancaria}}&nbsp;<i class="fa-solid"
+                                [ngClass]="cuent.cuenta_view ? 'fa-user-clock' : 'fa-eye'"></i>&nbsp;{{cuent.cuenta_view
+                              ? " "+cuent.cuenta_time : ""}}
+                            </a>
+                          </td>
+                          <td class="td_importes">{{cuent.saldo_cuenta_format}}</td>
+                          <td>
+                            @if (!cuent.select_for_pagos) {---}
+                            @else {
+                              <input class="validate" name="monto_aplicar" type="number" (input)="cuent.select_for_pagos && acree_importe_by_cuenta($event.target,cuent.token_cuenta);" [max]="cuent.saldo_cuenta" 
+                                min="0" step="0.01" placeholder="Monto a aplicar" />
+                            }
+                          </td>
+                        </tr>
+                      </ng-template>
+                      <ng-template pTemplate="emptymessage">
+                        <tr>
+                          <td colspan="6" class="text-center py-4">
+                            <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                            <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                              {{'no_rows' | translate}}
+                            </p>
+                          </td>
+                        </tr>
+                      </ng-template>
+                    </p-table>
+                  </div>
+                  <div class="col-12" [ngClass]="acree_pago_forma_pago != 'por-monedero-electronico' ? 'noneView' : ''" style="margin-top: 5px!important;">
+                    <div class="buscador row" style="margin-top: 10px!important">
+                      <div class="content">
+                        <div class="col-12 col-sm-6 col-md-3 col-lg-2 row_buscador btn-group lista_botones col"
+                          role="group" aria-label="ejemplo">
+                          <a class="btn btn_extend bg-indigo-600" (click)="getMonederosElectronicos();">
+                            <i class="fa-solid fa-rotate" style="margin-left: 5px;"></i>&nbsp;{{'list_updt' | translate}}
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                    <p-table #acrCuentasMonElect [value]="listaCuentasMonederoElectronico" [globalFilterFields]="search_cuentas_monedero_electronico" dataKey="id" showGridlines [resizableColumns]="true" [paginator]="true" [rows]="10"
+                      [rowsPerPageOptions]="[10,20,30,50,100]">
+                      <ng-template #caption>
+                        <div class="flex">
+                          <p-iconfield iconPosition="left" class="ml-auto">
+                            <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                            <input pInputText type="text"
+                              (input)="acrCuentasMonElect.filterGlobal($event.target.value, 'contains')"
+                              placeholder="{{'bus_car' | translate}}" />
+                          </p-iconfield>
+                        </div>
+                      </ng-template>
+                      <ng-template #header>
+                        <tr>
+                          <th class="ultimo"></th>
+                          <th pResizableColumn pSortableColumn="folio_cuenta">Folio&nbsp;<p-sortIcon field="folio_cuenta" /></th>
+                          <th pResizableColumn pSortableColumn="monedero">Monedero&nbsp;<p-sortIcon field="monedero" /></th>
+                          <th pResizableColumn pSortableColumn="cuenta_frontend">Cuenta&nbsp;<p-sortIcon field="cuenta_frontend" /></th>
+                          <th pResizableColumn pSortableColumn="saldo_cuenta_format">Saldo&nbsp;<p-sortIcon field="saldo_cuenta_format" /></th>
+                          <th style="width: 200px!important;">Monto a aplicar</th>
+                        </tr>
+                      </ng-template>
+                      <ng-template #body let-monElect>
+                        <tr>
+                          <td>
+                            <div class="form-check radio_check">
+                              <input class="form-check-input" type="checkbox" name="cuenta_bancaria_selected" [checked]="monElect.select_for_pagos" (click)="select_acree_monedero_electronico($event.target,monElect.token_cuentaMon);">
+                            </div>
+                          </td>
+                          <td>{{monElect.folio_cuenta}}</td>
+                          <td>{{monElect.monedero}}</td>
+                          <td>{{monElect.cuenta_frontend}}</td>
+                          <td class="td_importes">{{monElect.saldo_cuenta_format}}</td>
+                          <td>
+                            @if (!monElect.select_for_pagos) {---}
+                            @else {
+                              <input class="validate" name="monto_aplicar" type="number" (input)="monElect.select_for_pagos && acree_importe_by_monedero($event.target,monElect.token_cuentaMon);" [max]="monElect.monto_real" 
+                                min="0" step="0.01" placeholder="Monto a aplicar" />
+                            }
+                          </td>
+                        </tr>
+                      </ng-template>
+                      <ng-template pTemplate="emptymessage">
+                        <tr>
+                          <td colspan="6" class="text-center py-4">
+                            <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                            <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                              {{'no_rows' | translate}}
+                            </p>
+                          </td>
+                        </tr>
+                      </ng-template>
+                    </p-table>
+                  </div>
+    
+                  <div class="col-12" [ngClass]="acree_pago_forma_pago == 'por-compensacion' || acree_pago_movi_debe_haber == 'debe' ? 'noneView' : ''" style="margin-top: 5px!important;">
+                    <p-table #acrPagosListaXMov [value]="acree_pagos_lista_for_movimientos" [tableStyle]="{ 'min-width': '50rem' }" [globalFilterFields]="search_acreedor_lista_for_movimientos">
+                      <ng-template #caption>
+                        <div class="flex">
+                          <p-iconfield iconPosition="left" class="ml-auto">
+                            <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                            <input pInputText type="text" (input)="acrPagosListaXMov.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+                          </p-iconfield>
+                        </div>
+                      </ng-template>
+                      <ng-template #header>
+                        <tr>
+                          <th rowspan="2" pResizableColumn pSortableColumn="folio_pagos">folio&nbsp;<p-sortIcon field="folio_pagos" /></th>
+                          <th rowspan="2" pResizableColumn pSortableColumn="fecha_contabilizacion">{{'fecha_cont' | translate}}&nbsp;<p-sortIcon field="fecha_contabilizacion" /></th>
+                          <th colspan="2">{{'doc_ant' | translate}}</th>
+                          <th rowspan="2" pResizableColumn pSortableColumn="forma_pago_vinculada">{{'f_pago' | translate}}&nbsp;<p-sortIcon field="forma_pago_vinculada" /></th>
+                          <th rowspan="2" pResizableColumn pSortableColumn="forma_pago_cfdi">{{'f_m_pago_cfdi' | translate}}&nbsp;<p-sortIcon field="forma_pago_cfdi" /></th>
+                          <th rowspan="2" pResizableColumn pSortableColumn="monto_pago">{{'total_import' | translate}}&nbsp;<p-sortIcon field="monto_pago" /></th>
+                          <th rowspan="2" pResizableColumn pSortableColumn="tipo_cambio">{{'mon_tipo_cambio' | translate}}&nbsp;<p-sortIcon field="tipo_cambio" /></th>
+                          <th rowspan="2" pResizableColumn pSortableColumn="observacionesPago">{{'observ' | translate}}&nbsp;<p-sortIcon field="observacionesPago" /></th>
+                          <th rowspan="2"><i class="tiny material-icons">credit_card</i></th>
+                          <th rowspan="2" pResizableColumn pSortableColumn="debe_format">importe restante&nbsp;<p-sortIcon field="debe_format" /></th>
+                        </tr>
+                        <tr>
+                          <th pResizableColumn pSortableColumn="doc_anterior_folio">folio&nbsp;<p-sortIcon field="doc_anterior_folio" /></th>
+                          <th pResizableColumn pSortableColumn="doc_anterior_fecha_contabilizacion">{{'fecha_cont' | translate}}&nbsp;<p-sortIcon field="doc_anterior_fecha_contabilizacion" /></th>
+                        </tr>
+                      </ng-template>
+                      <ng-template #body let-payDone>
+                        <tr>
+                          <td class="name">{{payDone.folio_pagos}}</td>
+                          <td>{{payDone.fecha_contabilizacion}}</td>
+                          <td class="name">{{payDone.doc_anterior_folio}}</td>
+                          <td>{{payDone.doc_anterior_fecha_contabilizacion}}</td>
+                          <td>{{payDone.forma_pago_vinculada}}</td>
+                          <td>{{payDone.forma_pago_cfdi+" / "+payDone.metodo_pago_cfdi}}</td>
+                          <td class="td_importes">{{payDone.monto_pago}}</td>
+                          <td class="td_importes">{{payDone.tipo_cambio}}</td>
+                          <td>{{payDone.observacionesPago}}</td>
+                          <td>
+                            <input class="validate" name="importeOrdenPago" type="number"
+                              [ngClass]="pay_acree_importe == 0 ? 'disabled' : ''" min="0"
+                              [max]="payDone.importe_restante" step="0.01"
+                              [attr.disabled]="pay_acree_importe == 0 ? true : null"
+                              [attr.aria-disabled]="pay_acree_importe == 0 ? true : null"
+                              (keyup)="pay_acree_importe > 0 && keyup_pag_acr_importe($event.target,payDone.token_pagos);">
+                          </td>
+                          <td>{{payDone.debe_format}}</td>
+                        </tr>
+                      </ng-template>
+                      <ng-template pTemplate="emptymessage">
+                        <tr>
+                          <td colspan="11" class="text-center py-4">
+                            <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                            <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                              {{'no_rows' | translate}}
+                            </p>
+                          </td>
+                        </tr>
+                      </ng-template>
+                      <ng-template pTemplate="footer">
+                        <tr>
+                          <td class="td_importes" colspan="10"><strong>Totales</strong></td>
+                          <td class="td_importes"><strong>${{pay_acree_importe != 0 ? calcula_total_pagar_acr() : '0.00'}}</strong></td>
+                        </tr>
+                      </ng-template>
+                    </p-table>
+                  </div>
+
+                  @for (deuInfo of deudorDetalleForCompensacion; track $index) {
+                    <div class="col-12" [ngClass]="acree_pago_forma_pago == 'por-compensacion' ? '' : 'noneView'" style="margin-top: 5px!important;">
+                      <div class="col-12 explain">
+                        <h6 class="title">deudor</h6>
+                        <h6 class="content">{{deuInfo.folio+" "+deuInfo.nombre}}</h6>
+                      </div>
+                      <div class="col-12 explain" *ngIf="deuInfo.nombre_comercial_deudor != ''">
+                        <h6 class="title">Nombre Comercial</h6>
+                        <h6 class="content">{{deuInfo.nombre_comercial_deudor}}</h6>
+                      </div>
+                      <div class="col-12 explain" *ngIf="deuInfo.cuenta_contable != ''">
+                        <h6 class="title">Cuenta contable</h6>
+                        <h6 class="content">{{deuInfo.cuenta_contable}}</h6>
+                      </div>
+                      <div class="col-12 explain">
+                        <h6 class="title">Saldo</h6>
+                        <h6 class="content">{{deuInfo.deu_total_saldo}}</h6>
+                      </div>
+                      <div class="col-12 row">
+                        <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-4 col-xxl-4 input-group">
+                          <label for="fechaVencimientoCompra" class="activeInput">Anticipo aplicado:</label>
+                          <input class="validate datepicker" id="fechaVencimientoCompra" name="fechaVencimientoCompra"
+                            type="number"
+                            (keyup)="aplicacion_saldo_deudor($event.target,deuInfo.token_cat_deudores);">
+                        </div>
+                        <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-8 col-xxl-8 explain" style="margin: 0;justify-content: flex-end;padding: 10px;">
+                          <h6 class="title">Anticipo restante:</h6>
+                          <h6 class="content">{{deuInfo.deu_total_saldo_restante}}</h6>
+                        </div>
+                      </div>
+                    </div>
+                  }
+    
+                  <div class="col-12 input-group" style="margin-bottom: 10px!important;">
+                    <label class="activeInput">{{'observ' | translate}}</label>
+                    <textarea id="pago_acr_large_observ" class="validate" (keyup)="keyupObservacionPagarAcr($event.target);"></textarea>
+                  </div>
+    
+                  <div class="col-12 field_file_drop">
+                    <ngx-file-drop dropZoneLabel="Drop files here" (onFileDrop)="droppedAcr($event)" (onFileOver)="fileOverAcr($event)" (onFileLeave)="fileLeaveAcr($event)">
+                      <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
+                        <a class="btn btn_load_file" type="button" style="color: #0782d0 !important;" (click)="openFileSelector()">
+                          {{'load_files' | translate}} / {{'browse_files' | translate}}
+                        </a>
+                      </ng-template>
+                    </ngx-file-drop>
+                    <table class="white centered" style="margin-top:5px!important;width: 100% !important;">
+                      <thead>
+                        <tr>
+                          <th>{{'file' | translate}}</th>
+                          <th class="ultimo"></th>
+                        </tr>
+                      </thead>
+                      <tbody class="upload-name-style" *ngIf="filespayArc.length != 0">
+                        <tr *ngFor="let item of filespayArc; index as i">
+                          <td><strong>{{ item.relativePath }}</strong></td>
+                          <td class="ultimo">
+                            <a class="btn btn_extend text-bg-danger rounded-3" (click)="deleteAnexosAcr(i);">
+                              <i class="fa-solid fa-xmark"></i>
+                            </a>
+                          </td>
+                        </tr>
+                      </tbody>
+                      <tbody *ngIf="filespayArc.length == 0">
+                        <tr>
+                          <td colspan="2">{{'no_rows' | translate}}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+    
+                  <div class="col-12" style="display: flex !important;justify-content: end!important;margin-top: 5px!important;">
+                    <button class="btn btn_extend text-bg-success rounded-3"
+                      [ngClass]="!pay_acr_to_validate ? 'disabled' : ''"
+                      [attr.disabled]="!pay_acr_to_validate ? true : null"
+                      [attr.aria-disabled]="!pay_acr_to_validate ? true : null">
+                      <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </p-tabpanel>
+          </p-tabpanels>
+        </p-tabs>
+      </div>
+    </div>
+  }
+</p-dialog>

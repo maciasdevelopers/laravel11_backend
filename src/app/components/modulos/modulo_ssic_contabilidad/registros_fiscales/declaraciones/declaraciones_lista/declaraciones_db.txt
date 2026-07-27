@@ -1,0 +1,329 @@
+
+
+      <div class="col-12">
+        <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+          <label for="desgPayConcepto" class="activeInput">Concepto de pago</label>
+          <input id="desgPayConcepto" type="text" name="desgPayConcepto"><!-- (change)="select_fecha_contabilizacion($event.target);"-->
+        </div>
+        <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+          <label for="desgPayACargo" class="activeInput">A cargo</label>
+          <input id="desgPayACargo" type="text" name="desgPayACargo"><!-- (change)="select_fecha_contabilizacion($event.target);"-->
+        </div>
+        <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+          <label for="desgPayRecargos" class="activeInput">Recargos</label>
+          <input id="desgPayRecargos" type="text" name="desgPayRecargos"><!-- (change)="select_fecha_contabilizacion($event.target);"-->
+        </div>
+        <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+          <label for="desgPayCantidadACargo" class="activeInput">Cantidad a cargo</label>
+          <input id="desgPayCantidadACargo" type="text" name="desgPayCantidadACargo"><!-- (change)="select_fecha_contabilizacion($event.target);"-->
+        </div>
+        
+        <p-table #isnList id="tabla_order_pago_list_general" [value]="declaraciones_lista_pagar" showGridlines [resizableColumns]="true" [paginator]="true" [rows]="10" 
+          [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]" [globalFilterFields]="['concepto_pago','a_cargo','recargos','cantidad_a_cargo','cantidad_a_pagar']">
+          <ng-template #caption>
+            <div class="flex" style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;" ngbDropdown>
+              <p-iconfield iconPosition="left" class="ml-auto">
+                <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                <input pInputText type="text" (input)="isnList.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}"/>
+              </p-iconfield>
+            </div>
+          </ng-template>
+          <ng-template #header>
+            <tr>
+              <th class="ultimo"></th>
+              <th pResizableColumn pSortableColumn="concepto_pago">concepto de pago&nbsp;<p-sortIcon field="concepto_pago"/></th>
+              <th pResizableColumn pSortableColumn="a_cargo">A cargo&nbsp;<p-sortIcon field="a_cargo"/></th>
+              <th pResizableColumn pSortableColumn="recargos">Recargos&nbsp;<p-sortIcon field="recargos"/></th>
+              <th pResizableColumn pSortableColumn="cantidad_a_cargo">Cantidad a cargo&nbsp;<p-sortIcon field="cantidad_a_cargo"/></th>
+              <th pResizableColumn pSortableColumn="cantidad_a_pagar">Cantidad a pagar&nbsp;<p-sortIcon field="cantidad_a_pagar"/></th>
+              <th class="ultimo"></th>
+            </tr>
+          </ng-template>
+          <ng-template #body let-ldec let-posicion="rowIndex">
+            <tr>
+              <td>{{posicion + 1}}</td>
+              <td class="name">{{ldec.concepto_pago}}</td>
+              <td class="td_importes">{{ldec.a_cargo}}</td>
+              <td class="td_importes">{{ldec.recargos}}</td>
+              <td class="td_importes">{{ldec.cantidad_a_cargo}}</td>
+              <td class="td_importes">{{ldec.cantidad_a_pagar}}</td>
+              <td class="ultimo">
+                <a class="btn btn_extend text-bg-danger rounded-3" (click)="deleteDeclaracion(posicion);">
+                  <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                </a>
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="17" class="text-center py-4">
+                <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                  {{'no_rows' | translate}}
+                </p>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>					
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+          
+          
+          
+          <div class="col-12">
+            <form [formGroup]="declaracionForm" class="container">
+            
+
+insert into cfdi_vinculacion_reembolsos (comprobante_fiscal,reembolso_vinculado_main,reembolso_vinculado_soli)
+values (1,1,1),(2,1,2),(3,1,3),(4,1,4),(5,1,5),(6,1,6),(7,1,7),(8,1,8),(9,1,9),(10,1,11);
+
+
+
+
+Textos completos
+id
+cfdi_token_uuid
+
+
+CREATE TABLE cfdi_vinculacion_compras (
+  comprobante_fiscal int(10) NOT NULL,
+  compra_vinculada int(10) NOT NULL,
+  foreign key (comprobante_fiscal) references cfdi_comprobantes_fiscales (id),
+  foreign key (compra_vinculada) references eegr_compras (id)
+);
+
+CREATE TABLE cfdi_vinculacion_reembolsos (
+  comprobante_fiscal int(10) NOT NULL,
+  reembolso_vinculado_main int(10) NOT NULL,
+  reembolso_vinculado_soli int(10) NOT NULL,
+  foreign key (comprobante_fiscal) references cfdi_comprobantes_fiscales (id),
+  foreign key (reembolso_vinculado_main) references terc_reembolso_main (id),
+  foreign key (reembolso_vinculado_soli) references terc_reembolso_solicitud (id)
+);
+
+CREATE TABLE cfdi_vinculacion_isn (
+  comprobante_fiscal int(10) NOT NULL,
+  isn_vinculado int(10) NOT NULL,
+  foreign key (comprobante_fiscal) references cfdi_comprobantes_fiscales (id),
+  foreign key (isn_vinculado) references vhum_nominas_impuestos (id)
+);
+
+CREATE TABLE cfdi_vinculacion_nomina (
+  comprobante_fiscal int(10) NOT NULL,
+  nomina_main int(10) NOT NULL,
+	nomina_recibo int(10) NOT NULL,
+	empleado_referenciado int(10) NOT NULL,
+  foreign key (comprobante_fiscal) references cfdi_comprobantes_fiscales (id),
+  foreign key (nomina_main) references vhum_nominas_main (id),
+  foreign key (nomina_recibo) references vhum_nominas_recibos (id),
+  foreign key (empleado_referenciado) references vhum_empleados_catalogo (id)
+);
+
+CREATE TABLE cfdi_vinculacion_aport_seg_social_imss (
+  comprobante_fiscal int(10) NOT NULL,
+  comprobante_tipo varchar(9) NOT NULL,
+  aport_seg_social_vinculado int(10) NOT NULL,
+  foreign key (comprobante_fiscal) references cfdi_comprobantes_fiscales (id),
+  foreign key (aport_seg_social_vinculado) references vhum_aportaciones_seguridad_social_main (id)
+);
+
+CREATE TABLE cfdi_vinculacion_declaraciones (
+  comprobante_fiscal int(10) NOT NULL,
+  declaracion_vinculada int(10) NOT NULL,
+  foreign key (comprobante_fiscal) references cfdi_comprobantes_fiscales (id),
+  foreign key (declaracion_vinculada) references cont_reg_fisc_declaraciones (id)
+);
+
+
+eegr_compras_cfdi_detalle
+cfdi_estructura
+'compra','reembolso','nomina','isn','aportaciones','impuestos_federales'
+
+              <!-- ================= DATOS GENERALES ================= -->
+              <h3>Declaración de Impuestos</h3>
+            
+              <div class="row">
+                <div class="col-md-4">
+                  <label>Empresa</label>
+                  <select class="form-control" formControlName="declaracion_empresa">
+                    <option *ngFor="let emp of empresas" [value]="emp.id">
+                      {{ emp.razon_social }}
+                    </option>
+                  </select>
+                </div>
+            
+                <div class="col-md-4">
+                  <label>Tipo de declaración</label>
+                  <select class="form-control" formControlName="declaracion_tipo">
+                    <option value="Normal">Normal</option>
+                    <option value="Complementaria">Complementaria</option>
+                  </select>
+                </div>
+            
+                <div class="col-md-4">
+                  <label>Periodicidad</label>
+                  <select class="form-control" formControlName="declaracion_periodicidad">
+                    <option value="Mensual">Mensual</option>
+                    <option value="Bimestral">Bimestral</option>
+                    <option value="Anual">Anual</option>
+                  </select>
+                </div>
+              </div>
+            
+              <div class="row mt-3">
+                <div class="col-md-3">
+                  <label>Ejercicio</label>
+                  <input type="number" class="form-control" formControlName="declaracion_ejercicio">
+                </div>
+            
+                <div class="col-md-3">
+                  <label>Periodo</label>
+                  <select class="form-control" formControlName="declaracion_periodo">
+                    <option *ngFor="let mes of meses" [value]="mes.id">
+                      {{ mes.nombre }}
+                    </option>
+                  </select>
+                </div>
+            
+                <div class="col-md-3">
+                  <label>Fecha presentación</label>
+                  <input type="datetime-local" class="form-control"
+                         formControlName="declaracion_fecha_presentacion">
+                </div>
+            
+                <div class="col-md-3">
+                  <label>Medio de presentación</label>
+                  <select class="form-control" formControlName="declaracion_medio_presentacion">
+                    <option value="Internet">Internet</option>
+                    <option value="Ventanilla">Ventanilla</option>
+                  </select>
+                </div>
+              </div>
+            
+              <div class="row mt-3">
+                <div class="col-md-4">
+                  <label>Número de operación SAT</label>
+                  <input type="text" class="form-control"
+                         formControlName="declaracion_numero_operacion">
+                </div>
+            
+                <div class="col-md-4">
+                  <label>Folio interno</label>
+                  <input type="number" class="form-control"
+                         formControlName="declaracion_folio_interior">
+                </div>
+            
+                <div class="col-md-4">
+                  <label>Subfolio</label>
+                  <input type="text" class="form-control"
+                         formControlName="declaracion_subfolio">
+                </div>
+              </div>
+            
+              <div class="row mt-3">
+                <div class="col-md-6">
+                  <label>Fecha de contabilización</label>
+                  <input type="date" class="form-control"
+                         formControlName="aport_ssocial_fecha_contabilizacion">
+                </div>
+            
+                <div class="col-md-6">
+                  <label>Observaciones</label>
+                  <textarea class="form-control"
+                            formControlName="declaracion_observaciones"></textarea>
+                </div>
+              </div>
+            
+              <hr>
+            
+              <!-- ================= DESGLOSE DE IMPUESTOS ================= -->
+              <h4>Desglose de Impuestos</h4>
+            
+              <div formArrayName="desglose">
+                <div *ngFor="let d of desglose.controls; let i = index"
+                     [formGroupName]="i"
+                     class="card p-3 mb-3">
+            
+                  <div class="row">
+                    <div class="col-md-4">
+                      <label>Impuesto</label>
+                      <select class="form-control" formControlName="dec_desglose_impuesto">
+                        <option *ngFor="let imp of impuestos" [value]="imp.id">
+                          {{ imp.nombre }}
+                        </option>
+                      </select>
+                    </div>
+            
+                    <div class="col-md-2">
+                      <label>Impuesto a cargo</label>
+                      <input type="number" step="0.01" class="form-control"
+                             formControlName="dec_desglose_impuesto_a_cargo">
+                    </div>
+            
+                    <div class="col-md-2">
+                      <label>Recargos</label>
+                      <input type="number" step="0.01" class="form-control"
+                             formControlName="dec_desglose_impuesto_recargos">
+                    </div>
+            
+                    <div class="col-md-2">
+                      <label>Cantidad a cargo</label>
+                      <input type="number" step="0.01" class="form-control"
+                             formControlName="dec_desglose_impuesto_cantidad_a_cargo">
+                    </div>
+            
+                    <div class="col-md-2">
+                      <label>Cantidad a pagar</label>
+                      <input type="number" step="0.01" class="form-control"
+                             formControlName="dec_desglose_impuesto_cantidad_a_pagar">
+                    </div>
+                  </div>
+            
+                  <div class="text-end mt-2">
+                    <button type="button"
+                            class="btn btn-danger btn-sm"
+                            (click)="removeDesglose(i)">
+                      Eliminar
+                    </button>
+                  </div>
+                </div>
+              </div>
+            
+              <button type="button"
+                      class="btn btn-secondary mb-3"
+                      (click)="addDesglose()">
+                + Agregar impuesto
+              </button>
+            
+              <hr>
+            
+              <!-- ================= BOTONES ================= -->
+              <div class="text-end">
+                <button type="submit"
+                        class="btn btn-primary"
+                        [disabled]="declaracionForm.invalid">
+                  Guardar declaración
+                </button>
+              </div>
+            
+            </form>
+					</div>

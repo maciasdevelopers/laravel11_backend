@@ -1,0 +1,101 @@
+div.radio{
+  display: flex;
+  justify-content: space-between;
+  height: 30px;
+  margin-bottom: 5px;
+}
+
+div.radio p label{
+  margin: 0;
+}
+
+div.radio p label input{
+  height: 10px;
+  width: 10px;
+  color:#353535!important;
+  opacity: 1;
+  position: relative;
+  margin: 0;
+}
+
+div.radio p label input[type=checkbox]{height: 10px!important;}
+
+div.radio p label span{
+  margin: 0;
+  color: #353535!important;
+  display: contents;
+}
+
+div.radio p label span::before,
+div.radio p label span::after{
+  border:none!important;
+  background-color: transparent!important;
+  display: contents;
+}
+
+label.labelRadio span{
+  font-family: fontAwesome;
+  margin-left: 3px!important;
+  margin-right: 3px!important;
+}
+
+div.radio p,
+p.radio{
+  width: 49%;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  height: 30px;
+  border-radius: 8px;
+}
+
+div.col div.radio p,
+div.col p.radio{
+  width: 100%;
+}
+
+p.radio label{
+  margin: 0;
+  color: #353535;
+  width: auto;
+  padding: 2px;
+  border-radius: 8px;
+  justify-content: center;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+  align-items: center;
+}
+
+p.radio label.errorlabel{
+  background-color: #D32F2F!important;
+  color: #fff!important;
+}
+
+p.radio label.disabled{
+  background-color: #686868!important;
+}
+
+p.radio label input{
+  height: 10px!important;
+  width: 10px!important;
+  color: #353535!important;
+  opacity: 1;
+  position: relative;
+  margin: 0;
+  background-color: transparent!important;
+}
+
+p.radio label span{
+  margin: 0;
+  color: #353535;
+  position: inherit;
+  padding-left: 0;
+}
+
+p.radio label.errorlabel span,
+p.radio label.disabled span{
+  color: #fff!important;
+}

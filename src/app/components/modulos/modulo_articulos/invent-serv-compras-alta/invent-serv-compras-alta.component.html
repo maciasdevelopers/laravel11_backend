@@ -1,0 +1,155 @@
+<div class="col-12 row">
+  <form class="formAddServCat" #formAddServCat="ngForm" autocomplete="off" name="formAddServCat" enctype="multipart/form-data" (ngSubmit)="registraServ(formAddServCat);">
+    <div class="col-12 row" *ngIf="vista_formulario">
+      <div class="col-12 input-group conceptoServ">
+        <label class="activeInput">Concepto / Descripci&oacute;n</label>
+        <input class="validate" name="servicio_regCat" type="text" required (keyup)="conceptoKeyup($event.target);">
+      </div>
+      <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-6 col-xxl-6 input-group">
+        <label class="activeInput">Clasificaci&oacute;n</label>
+        <select name="txtGeneroAltaServ" required class="browser-default" (change)="selectGeneroServ($event.target);">
+          <option value="" disabled selected>{{'opt_select' | translate}}</option>
+          <option *ngFor="let arrayClasifServ of arrayClasifServicios" [value]="arrayClasifServ.token_genero">{{arrayClasifServ.concepto}}</option>
+        </select>
+      </div>
+      <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-6 col-xxl-6 input-group">
+        <label class="activeInput">Vinculaci&oacute;n al cat&aacute;logo de unidades de medida</label>
+        <!--<datalist id="dtListUnidadMedidaSAT"><option *ngFor="let medU of catalogoUnidadesMedINVENT" value="{{medU.nombre}}">{{medU.simbolo+" ("+medU.categoria+")"}}</option></datalist>
+        <input class="validate" list="dtListUnidadMedidaSAT" type="text" id="reem_moneda_entrante" (change)="keyupUnidadMedidaSalidaApiServ($event.target);">-->
+
+        <p-select [options]="catalogoUnidadesMedINVENT" id="selectedUnidadMedidaSAT" optionLabel="concepto" [filter]="true" filterBy="nombre,simbolo,categoria" [showClear]="true"
+          [placeholder]="'opt_select' | translate" class="w-full md:w-56" (onChange)="keyupUnidadMedidaSalidaApiServ($event.value);">
+          <ng-template #selectedItem let-selectedOption>
+            <div class="flex items-center gap-2">
+              <div>{{ selectedOption.nombre }}</div>
+            </div>
+          </ng-template>
+          <ng-template let-medU #item>
+            <div class="flex items-center gap-2">
+              <div>{{medU.nombre+" "+medU.simbolo+" ("+medU.categoria+")"}}</div>
+            </div>
+          </ng-template>
+        </p-select>
+      </div>
+      <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-6 col-xxl-6 input-group">
+        <label for="fechaAltaProd" class="activeInput">Cuenta contable</label>
+        <input class="validate" type="text" (keyup)="keyupValidateCuentaContable($event.target);">
+      </div>
+      <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-6 col-xxl-6 input-group">
+        <label for="Servicio_regCat" id="lblServicio" class="activeInput" style="display:flex;">C&oacute;digo de vinculaci&oacute;n al catalogo del SAT
+          <a class="btn btn_extend bg-blue-600" href="http://pys.sat.gob.mx/PyS/catPyS.aspx" target="_blank" style="margin-left: 3px;height: 15px !important;">
+            <i class="fa-solid fa-globe" style="font-size: 10px;"></i>Sitio web del sat
+          </a>
+        </label>
+        <input class="validate" name="Servicio_regCat" type="text" (keypress)="keyPressNumerico($event)" required (keyup)="keyupSat($event.target);">
+      </div>
+      <p-divider />
+      <h6 style="height: 30px;font-weight: bold;">Vinculaci&oacute;n a proveedores</h6>
+
+      <div class="col-12">
+        <div class="buscador row" style="margin-top: 10px!important">
+          <div class="content">
+            <div class="col-12 col-sm-6 col-md-3 col-lg-2 row_buscador">
+              <a class="btn btn_extend bg-indigo-600" (click)="proveedoresLista();">
+                <i class="fa-solid fa-rotate" style="margin-left: 5px;"></i>&nbsp;{{'list_updt' | translate}}
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <p-table #tableProvServ [value]="arrayCatProv" [globalFilterFields]="buscarCatProv" [paginator]="true"
+          [rows]="10" [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]">
+          <ng-template #caption>
+            <div class="flex">
+              <p-iconfield iconPosition="left" class="ml-auto">
+                <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                <input pInputText type="text" (input)="tableProvServ.filterGlobal($event.target.value, 'contains')"
+                  placeholder="{{'bus_car' | translate}}" />
+              </p-iconfield>
+            </div>
+          </ng-template>
+          <ng-template #header>
+            <tr>
+              <th pSortableColumn="folio">Folio&nbsp;<p-sortIcon field="folio" /></th>
+              <th pSortableColumn="rfc_prov">rfc&nbsp;<p-sortIcon field="rfc_prov" /></th>
+              <th pSortableColumn="nombre">{{'prov' | translate}}&nbsp;<p-sortIcon field="nombre" /></th>
+              <th pSortableColumn="encendido">Activar vinculaci&oacute;n a {{'prov' | translate}} &nbsp;<p-sortIcon
+                  field="encendido" /></th>
+              <th pSortableColumn="tiene_clave">Cuenta con clave alterna&nbsp;<p-sortIcon field="tiene_clave" /></th>
+              <th pSortableColumn="asigned_clave">Clave alterna (asignada por el proveedor)&nbsp;<p-sortIcon
+                  field="asigned_clave" /></th>
+            </tr>
+          </ng-template>
+          <ng-template #body let-prv_row>
+            <tr>
+              <td>{{prv_row.folio}}</td>
+              <td>{{prv_row.rfc_prov}}</td>
+              <td class="name">{{prv_row.nombre}}</td>
+              <td class="ultimo">
+                <div class="form-check form-switch form-check-reverse switch_primario"
+                  style="justify-content: center;flex-direction: column;">
+                  <label class="form-check-label" for="flexSwitchCheckReverse">No</label>
+                  <input class="form-check-input selectSwitchProvProd" name="selectImpProd" type="checkbox"
+                    [checked]="prv_row.encendido == true"
+                    (click)="apagar_encender($event.target,prv_row.token_cat_proveedores);"
+                    style="width: 80%!important;">
+                  <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                </div>
+              </td>
+              <td>
+                <div *ngIf="prv_row.encendido == true" class="form-check form-switch form-check-reverse switch_primario"
+                  style="justify-content: center;flex-direction: column;">
+                  <label class="form-check-label" for="flexSwitchCheckReverse">No</label>
+                  <input class="form-check-input selectSwitchProvProd" name="selectImpProd" type="checkbox"
+                    [checked]="prv_row.tiene_clave == 'true'"
+                    (click)="decideHabilitaClave($event.target,prv_row.token_cat_proveedores);"
+                    style="width: 80%!important;">
+                  <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                </div>
+                <!--style="height: 20px;line-height: 20px;margin: 0;padding: 0;"-->
+                <p *ngIf="prv_row.encendido == false">---</p>
+              </td>
+              <td>
+                <input class="claveServProvAlta txtClave validate" type="text"
+                  *ngIf="prv_row.encendido == true && prv_row.tiene_clave != '' && prv_row.tiene_clave == 'true'"
+                  (keyup)="keyupProvServClave($event.target,prv_row.token_cat_proveedores);"
+                  (keypress)="keypressProvServClave($event);">
+                <p
+                  *ngIf="prv_row.encendido == false || (prv_row.encendido == true && prv_row.tiene_clave == '') || (prv_row.encendido == true && prv_row.tiene_clave != '' && prv_row.tiene_clave == 'false')">
+                  ---</p>
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="7" class="text-center py-4">
+                <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                  {{'no_rows' | translate}}
+                </p>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+
+    <div class="col-12 row" style="margin-top: 5px!important;">
+      <div class="col-12 col-sm-12 col-md-6 col-lg-8 col-xl-8 col-xxl-9"></div>
+      <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3"
+        style="display: flex !important;justify-content: end!important;">
+        <button class="btn btn_extend text-bg-success rounded-3" [ngClass]="!validateServ ? 'disabled' : ''"
+          [attr.disabled]="!validateServ ? true : null" [attr.aria-disabled]="!validateServ ? true : null" type="submit"
+          name="btnAltaServicio2">
+          <!--[disabled]="modelServ.genero == '' || modelServ.marca == '' || modelServ.clasificacion == '' || modelServ.stock_max < modelServ.stock_min"-->
+          <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}</button>
+
+        <div class="demo-container" *ngIf="progressBarRegistro == true">
+          <div class="progress-bar">
+            <div class="progress-bar-value"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,196 @@
+.listas_ps .pendiente{
+    background-color: #cc0000;
+}
+
+.loadingCompras{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 50px!important;
+}
+
+.loadingCompras .loadingprov{
+    padding: 20px!important;
+    border-radius: 25px;
+    width: fit-content;
+    height: 100%;
+    z-index: 999999999;
+    margin: 0;
+    animation-name: fly-cycle;
+    animation-timing-function: steps(10);
+    animation-iteration-count: infinite;
+    animation-duration: 1s;
+    animation-delay: -0.5s; 
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    flex-direction: column;
+    align-content: center;
+    align-items: center;
+    background: linear-gradient(180deg, rgba(0,50,144,1) 25%, rgba(0,63,200,1) 50%, rgba(0,37,106,1)80%);
+    box-shadow: 1px 1px 10px rgba(0,63,200,0.8);
+}
+
+.loadingCompras h6{
+    font-weight: bold;
+    font-size: 2vh;
+}
+.reqPend a,
+.cotPend a{
+    margin-top: 15px;
+    width: 100%!important;
+    background-color: #353535!important;
+    border-radius: 8px!important;
+}
+
+.reqPend a p,
+.cotPend a p{
+    margin: 0;
+    width: 90%!important;
+}
+
+.reqPend a span,
+.cotPend a span{
+    width: 10%!important;
+    font-weight: bold;
+    border-radius: 0 8px 8px 0;
+}
+
+.reqPend a span.realizado,
+.cotPend a span.realizado{
+    color: #353535!important;
+}
+
+pagination-controls pagination-template nav{
+    height: 35px;
+    line-height: 35px;
+    background-color: rgba(0,0,0,0.4);
+    border-radius: 8px;
+}
+
+pagination-controls pagination-template nav li{
+    height: 35px;
+    line-height: 35px;
+}
+
+pagination-controls pagination-template nav li a{
+    height: 35px;
+    line-height: 35px;
+}
+
+pagination-controls pagination-template nav li a:hover{
+    height: 35px;
+    line-height: 35px;
+}
+
+pagination-controls pagination-template nav li.pagination-previous a:hover{
+    border-radius: 8px 0 0 8px;
+}
+
+.radioFact{
+    justify-content: center!important;
+}
+
+.filefact{
+    display: flex;
+    justify-content: space-between;
+}
+
+.filefact .input-field{
+    margin: 0;
+}
+
+.filefact .file-field div.btn,
+.filefact .file-field a.btn_view{
+    width: 100%!important;
+    border-radius: 25px!important;
+}
+
+.filefact .file-field .viewNameDocument{
+    width: auto!important;
+    border: none;
+    font-weight: bold;
+}
+
+.filefact .input-field .file-path-wrapper{
+    width: 100%!important;
+}
+
+.btnCardCompra{
+    width: 43px!important;
+}
+
+.titFoli{
+    width: 45%!important;
+}
+
+.titulosGrandes{
+    width: 60%!important;
+}
+
+.infoComp{
+    margin-top: 1%!important;
+    margin-bottom: 0%!important;
+}
+
+.divTablaPS{
+    width: 100%;
+    max-height: 250px;
+    overflow: overlay;
+}
+
+.divWithModal{
+    margin-block: 10px;
+    padding: 0!important;
+    margin-top: 5px;
+}
+
+.btnwithAdd{
+    margin-block: 15px!important;  
+}
+
+.div-totalcompras .total div.titulo{
+    width: 60%!important;
+}
+
+.div-totalcompras .total div.registro{
+    width: 40%!important;
+}
+
+.div-totalcompras .total div p{
+    width: 100%!important;
+}
+
+.div-totalcompras .total div.registro p{
+    color: #353535;
+}
+
+.tituloCompra{
+    width: 90%!important;
+}
+
+.divWithMargin{
+    margin-block: 15px;
+}
+
+.radiComp{
+    margin-bottom: 3px!important;
+}
+
+.collectionCaja{
+    padding: 0;
+    background-color: transparent;
+}
+
+.collectionCaja li{
+    background-color: #e7e7ea;
+    border-radius: 8px;
+    box-shadow: none!important;
+    border-bottom: 2px solid #353553;
+}
+
+.collectionCaja span,
+.collectionCaja p{
+    text-transform: uppercase;
+    color: #353553;
+}

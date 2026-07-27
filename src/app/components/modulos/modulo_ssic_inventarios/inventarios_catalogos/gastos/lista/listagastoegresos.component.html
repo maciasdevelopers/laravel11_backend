@@ -1,0 +1,71 @@
+<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco" #vContent>
+	<div class="contenido"><app-loader></app-loader>
+		<nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+		<div class="contenidoPagina">
+      <div id="listas_egresos" class="listas_ps revanecer">
+        <div id="listaLote" class="lista-div row">
+          <h4 class="col-12">CATALOGO DE GASTOS</h4>
+
+          <div class="col-12 row" style="padding: 0;">
+						<div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2 row">
+							<a class="btn btnGuardar btnRow btnBlueHead bg-indigo-600" routerLink="../altadeproductos">
+								<i class="fa-solid fa-plus"></i>&nbsp;Registrar nuevo producto
+							</a>
+						</div>
+						<div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2 row">
+							<a (click)="listagastostrue();" class="btn btnGuardar btnRow btnBlueHead bg-indigo-600">
+								<i class="fa-solid fa-rotate" style="margin-left: 5px;"></i>&nbsp;{{'list_updt' | translate}}
+							</a>
+						</div>
+						<!-- *ngIf="arrayProductosDel.length > 0">-->
+						<div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2 row">
+							<a class="btn btnGuardar btnRow btnBlueHead bg-indigo-600" data-bs-toggle="modal" data-bs-target="#modalProdEliminados">
+								<i class="fa-solid fa-rotate" style="margin-left: 5px;"></i>&nbsp;{{'list_updt' | translate}}productos eliminados
+							</a>
+						</div>
+						<div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+						<div class="col-12" *ngIf="view_lista_gastos == true">
+							<table id="list_table_productos" class="display nowrap mdl-data-table white centered" style="width:100%!important;margin:0!important;">
+								<thead>
+									<tr>
+										<th>folio de gasto</th>
+										<th>fecha de gasto</th>
+										<th class="ultimo"></th>
+										<th class="ultimo"></th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr *ngFor="let gastolista of arrayGastosVig">
+										<td class="noneView">{{gastolista.token_gasto}}</td>
+										<td>{{gastolista.folio_gasto}}</td>
+										<td>{{gastolista.fecha_sistema_gasto}}</td>
+										<td><a href="#infoLotesDetailReg" class="btn text-bg-success rounded-3 modal-trigger" (click)="verModalLote(gastolista.token_gasto);"><i class="fa-solid fa-info"></i></a></td>
+										<td><a class="btn btn_extend text-bg-danger rounded-3" (click)="btnDeleteLote(gastolista.token_gasto);"><i class="fa-solid fa-eraser"></i></a></td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+
+						<div class="modal fade bd-example-modal-lg" id="modalProdEliminados" tabindex="-1" role="dialog" aria-labelledby="modalProdEliminadosLabel" aria-hidden="true">
+							<div class="modal-dialog modal-fullscreen" style="margin: 1%;width: 98%!important;">
+								<div class="modal-content">
+									<div class="modal-header">
+										<h1 class="modal-title fs-5 bg-blue-ModalTitle" id="modalProdEliminadosLabel">INFORMACI&Oacute;N DE PRODUCTOS ELIMINADOS</h1>
+										<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: transparent !important;"></button>
+									</div>
+									<div class="modal-body">
+										<table id="list_table_deleted_productos" class="display nowrap mdl-data-table white striped centered" style="width:100%!important;margin:0!important;">
+											
+										</table>
+									</div>
+									<div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div>
+								</div>
+							</div>
+						</div>
+					</div>
+        </div>
+      </div>
+		</div>
+	</div>
+</div>

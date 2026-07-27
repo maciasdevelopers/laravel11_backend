@@ -1,0 +1,51 @@
+<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco" #vContent>
+	<div class="contenido"><app-loader></app-loader>
+		<nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+		<div class="contenidoPagina">
+			<div class="listas_ps">
+				<div class="lista-div lista-divNoFlex">
+          <h4>Aportaciones e impuestos sobre la n&oacute;mina</h4>
+
+					<div class="col-12">
+						<div class="btn-group lista_botones col" role="group" arial-label="Basic example">
+							<a class="btn btn_extend bg-indigo-600" (click)="verRegistroDeclaracionIsn();">
+								<i class="fa-solid fa-plus"></i>&nbsp;Registrar declaraci&oacute;n de ISN
+							</a>
+							<a class="btn btn_extend bg-indigo-600" (click)="verRegistroAportacionSeguridadSocial();">
+								<i class="fa-solid fa-plus"></i>&nbsp;Registrar declaraci&oacute;n de aportaciones de Seguridad Social
+							</a>
+						</div>
+					</div>
+
+          <p-tabs value="0" scrollable>
+            <p-tablist>
+              <p-tab value="0">ISN (impuestos sobre la n&oacute;mina)</p-tab>
+              <p-tab value="1">DASS (Aportaciones de Seguridad Social)</p-tab>
+            </p-tablist>
+            <p-tabpanels>
+              <p-tabpanel value="0">
+								<vhum_isnomina_catalogo></vhum_isnomina_catalogo>
+							</p-tabpanel>
+              <p-tabpanel value="1">
+								<vhum_aportaciones_imss_catalogo></vhum_aportaciones_imss_catalogo>
+							</p-tabpanel>
+            </p-tabpanels>
+          </p-tabs>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!--ISN (Impuestos sobre la nómina)-->
+<p-dialog header="Declaraci&oacute;n de impuestos sobre la n&oacute;mina" [(visible)]="modal_registro_declaracion_isn" [modal]="true" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+	@if (modal_registro_declaracion_isn) {
+		<vhum_impuesto_sobre_nomina_registro></vhum_impuesto_sobre_nomina_registro>
+	}
+</p-dialog>
+
+<!--DASS (Aportaciones de Seguridad Social)-->
+<p-dialog header="Declaraci&oacute;n de aportaciones de Seguridad Social" [(visible)]="modal_registro_aportacion_seguridad_social" [modal]="true" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+	<vhum_aportaciones_de_seguridad_social_registro></vhum_aportaciones_de_seguridad_social_registro>
+</p-dialog>

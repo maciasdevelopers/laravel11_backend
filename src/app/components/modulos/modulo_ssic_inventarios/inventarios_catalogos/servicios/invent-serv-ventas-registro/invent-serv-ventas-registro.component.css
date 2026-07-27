@@ -1,0 +1,7 @@
+.dv_form_alta{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    height: calc(100vh - 65px);
+    align-items: center;
+  }

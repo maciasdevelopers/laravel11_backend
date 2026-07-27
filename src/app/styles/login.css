@@ -1,0 +1,212 @@
+div.modalLoginPrincipal div.progress{margin: 5px!important;}
+div.modalLoginPrincipal div.login_extend{height: 100%;display: block;}
+div.modalLoginPrincipal div.login_collap{display: none;}
+
+div.modalLoginPrincipal div.login_extend ul.collection_login li{
+  min-height: 50px;
+  height: 50px;
+  padding: 5px 0px 5px 60px;
+  border: none!important;
+  color: #e7e7ea;
+  /*padding: 5px 60px;*/
+}
+
+div.modalLoginPrincipal div.login_extend ul.collection_login li:hover,
+div.modalLoginPrincipal div.login_extend ul.collection_login li.active{
+  background-color: rgba(0, 0, 0, 0.7)!important;
+  color: #e7e7ea;
+}
+
+div.modalLoginPrincipal div.login_extend ul.collection_login li.item_click{
+  cursor: pointer;
+}
+
+div.modalLoginPrincipal div.login_extend ul.collection_login li.collection-header,
+div.modalLoginPrincipal div.login_extend ul.collection_login li.reset_pass{
+  padding: 5px!important;
+  height: auto!important;
+  min-height: auto!important;
+}
+
+div.modalLoginPrincipal div.login_extend ul.collection_login li.reset_pass{
+  background-color: #b71c1c!important;
+}
+
+div.modalLoginPrincipal div.login_extend ul.collection_login li.collection-header h5{
+  margin: 0!important;
+  font-family: ubuntu!important;
+  font-weight: bold!important;
+}
+
+div.modalLoginPrincipal div.login_extend ul.collection_login li span{
+  height: 100%;width: 100%;display: flex;align-items: center;font-family: roboto;font-weight: bold;
+}
+
+div.modalLoginPrincipal div.login_extend ul.collection_login li.item_click span{
+  font-size: small;
+}
+
+div.modalLoginPrincipal div.login_extend div.section_access div.secciones,
+div.modalLoginPrincipal div.login_extend div.section_access div.container_login{
+  height: 100%;padding: 0;
+}
+
+div.modalLoginPrincipal div.login_extend div.section_access div.container_login div.container_background{
+  height: 60%;width: 100%;background-attachment: fixed;background-repeat: no-repeat;background-size: cover;overflow: hidden;opacity: 0.5;
+}
+
+div.modalLoginPrincipal div.login_extend div.section_access div.container_login div.section{padding: 0;}
+div.modalLoginPrincipal div.login_extend div.section_access div.container_login div.section div.container{margin: 0;}
+div.modalLoginPrincipal div.login_extend div.section_access div.container_login div.section div.container h4.header{padding: 5px;font-family: roboto_bold;color: #353553;margin: 0;font-size: x-large;}
+
+
+
+div.modalLoginPrincipal div.login_extend div.section_access div.central_data{
+  height: 100%;display: flex;flex-wrap: wrap;justify-content: center;align-items: center;align-content: center;
+}
+
+div.modalLoginPrincipal div.login_extend div.section_access div.central_data div.card_access{
+  margin: 0;
+  box-shadow: none;
+  border-radius: 25px;
+}
+
+div.modalLoginPrincipal div.login_extend div.section_access div.central_data div.card_access div.card-image img{
+  border-radius: 25px 25px 0 0;
+  opacity: 0.5;
+}
+
+div.modalLoginPrincipal div.login_extend div.section_access div.central_data div.card_access div.card-image span.card-title{
+  padding: 10px;
+  font-family: roboto_bold;
+  color: #353553;
+}
+
+div.modalLoginPrincipal div.login_extend div.section_access div.central_data div.card_access .spaceButton{
+  margin-top:10px!important;    
+  margin-bottom: 5px !important;
+}
+
+div.card-login,
+div.envia-registro{
+  min-height: 100%!important;
+  height: auto!important;
+}
+
+div.card-login{
+  display: flex;
+}
+
+div.card-login form,
+div.envia-registro{
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  justify-content: center;
+  padding-top: 2%;
+  padding-bottom: 2%;
+  border-radius: 8px;
+}
+
+/*login*/
+  div.card-login{
+    margin: 0!important;
+    background-color: transparent!important;
+  }
+
+  div.card-login ul.tabs{
+    background-color: transparent!important;
+    height: 30px;
+  }
+  
+  div.card-login ul.tabs li{
+    height: 30px;
+  }
+  
+  div.card-login ul.tabs li a{
+    height: 30px;
+    line-height: 30px;
+    color: #e7e7ea;
+  }
+  
+  div.card-login ul.tabs li a:hover,
+  div.card-login ul.tabs li a.active{
+    background-color: rgba(0,0,0,0.5)!important;
+    font-weight: bold;
+  }
+  
+  div.card-login form{
+    width: 100%;
+    height: 100%;
+    align-content: center;
+  }
+  
+  div.card-login form p.tlog,
+  div.card-login form h6.tlog{
+    width: 100%;
+    text-align: center;
+    color: #fff;
+  }
+  
+  div.card-login form p.tlog{
+    width: 100%;
+    font-family: Arial, FontAwesome;
+    font-size: 15vh;
+    margin: 0;
+    margin-top: 10px;
+    padding: 0;
+    line-height: 1;
+  }
+  
+  div.card-login form h6.tlog{
+    font-family: ubuntu;
+    font-weight: bold;
+  }
+  
+  div.card-login form div.row-field div.input-field{
+    width: 90%;
+    height: 30px;
+    margin-bottom: 10px!important;
+    margin-top: 20px;
+    font-family: ubuntu, FontAwesome;
+  }
+  
+  div.card-login form div.spaceButton{
+    display: flex;
+    justify-content: center;
+  }
+
+  @media screen and (max-width: 600px) {
+    div.modalLoginPrincipal div.login_extend{height: 0px;display: none!important;}
+    div.modalLoginPrincipal div.login_collap{display: block!important;}
+    div.modalLoginPrincipal div.login_collap ul.collapsible li.licollapsible{box-shadow: 1px 1px 5px #353535;}
+    div.modalLoginPrincipal div.login_collap ul.collapsible li.licollapsible div.collapsible-header{background-color: #353535!important;}
+    div.modalLoginPrincipal div.login_collap ul.collapsible li.licollapsible div.collapsible-header .chip{color: wheat!important;}
+    div.modalLoginPrincipal div.login_collap ul.collapsible li.licollapsible:hover div.collapsible-header .chip,
+    div.modalLoginPrincipal div.login_collap ul.collapsible li.active div.collapsible-header .chip{font-weight: bold!important;font-size: small !important;}
+    div.modalLoginPrincipal div.login_collap ul.collapsible li.licollapsible div.collapsible-body{padding: 0!important;}
+    div.modalLoginPrincipal div.login_collap ul.collapsible li.licollapsible div.collapsible-body div.efectoCargandoLogin{padding: 0!important;}
+    div.modalLoginPrincipal div.login_collap ul.collapsible li.licollapsible div.collapsible-body div.efectoCargandoLogin div.recuardoCarga{border-radius: 0 !important;}
+
+    div.modalLoginPrincipal div.login_collap ul.collapsible li.licollapsible div.collapsible-body div.div_alert_pass{border-radius: 0 !important;}
+
+    div.modalLoginPrincipal div.login_collap ul.collapsible li.licollapsible div.collapsible-body .card_access{margin: 0!important;}
+    div.modalLoginPrincipal div.login_collap ul.collapsible li.licollapsible div.collapsible-body .card_access div.card-image span.card-title{
+      padding: 10px;
+      font-family: roboto_bold;
+      color: #353553;
+      font-size: large;
+    }
+
+    div.modalLoginPrincipal div.login_collap ul.collapsible li.licollapsible div.collapsible-body .card_access div.card-content{
+      padding-top: 10px!important;
+      padding-left: 5px!important;
+      padding-right: 5px!important;
+      padding-bottom: 5px!important;
+    }
+
+    div.modalLoginPrincipal div.login_collap ul.collapsible li.licollapsible div.collapsible-body .card_access div.input-field{width: 100%!important;}
+    div.card-login{
+      display: block;
+    }
+  }

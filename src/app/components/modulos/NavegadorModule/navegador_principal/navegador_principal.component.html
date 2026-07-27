@@ -1,0 +1,405 @@
+<p-toast key="toastIgnorarNotif"/>
+<nav class="col-12 navbar navbar-expand-lg bg-body-tertiary inside_navbar"><!-- fixed-top-->
+  <div class="container-fluid">
+    <button class="navbar-toggler" type="button" (click)="sidebarVisible = true">
+      <i class="fa-solid fa-bars" style="color: #ffffff;"></i>
+    </button>
+    <div class="navbar-toggler" style="padding: 0!important;">
+      <!--<img class="circle responsive-img" id="menuDropMn" src="{{identidad.avatar}}" alt="alt" style="border-radius: 50%;padding: 0;height: 25px !important;width: 25px !important;">
+      <a id="btnLoginOut" class="navbar-toggler lgout blue-button" (click)="lgoutFunct();"><i class="fa-solid fa-power-off" style="color: #ffffff;"></i></a>-->
+
+      <ul class="navbar-nav"style="flex-direction: row!important;">
+        <li class="nav-item">
+          <div class="horaest horaestSistema col" style="padding: 0;align-content: center;">
+            <h6 style="font-size:0.6rem; margin:0; text-align:left;color: #ffff;">{{"CDMX "+fechaCDMX_dia+"/"+fechaCDMX_mes+"/"+fechaCDMX_ano+" "+horaCDMX}}</h6>
+            <h6 style="font-size:0.6rem; margin:0; text-align:left;color: #ffff;">{{'hor_loc' | translate}} {{" "+fechaLocal_dia+"/"+fechaLocal_mes+"/"+fechaLocal_ano+" "+horaLocal}}</h6>
+          </div>
+        </li>
+        <li class="nav-item item-sup usuario item-menu">
+          <a class="btn btn_head_menu btn_extend nav-link" aria-current="page"><i class="fa-solid fa-house"></i></a>
+        </li>
+        <li class="nav-item item-sup usuario item-menu emp_data" ngbDropdown style="width: max-content;">
+          @if ((empresa$ | async)) {
+            <div class="horaest horaestSistema col" style="display: flex;justify-content: center;align-items: center;">
+              <p-avatar [image]="empresa_data.logotypo" shape="circle" id="menuUserConfig" ngbDropdownToggle/>
+              <h6 style="color: white;font-weight: bold;width: 100%;height: 20px;line-height: 20px;font-size: smaller;margin: 0;text-align: center;border-radius: 4px;margin-left: 10px;">{{empresa_data.company_name_short}}</h6>
+            </div>
+          } @else {
+            <a class="nav-link" aria-current="page" id="menuUserConfig" ngbDropdownToggle><i class="fa-solid fa-building"></i></a>
+          }
+          <div class="dropdown-menu-end menu-despegable" ngbDropdownMenu="menuUserConfig" style="padding: 0!important;margin: 0!important;width: max-content!important;position: absolute;"> 
+            <p-tree [value]="menuPerfilEmpresa" styleClass="w-full md:w-[30rem]" selectionMode="single" (onNodeSelect)="onNodeSelected($event)"/>
+          </div>
+        </li>
+  
+        <li class="nav-item item-sup usuario item-menu" ngbDropdown>
+          <!--<img class="circle responsive-img" id="menuDropMn" ngbDropdownToggle src="{{identidad.avatar}}" alt="alt">-->
+          <p-avatar [image]="identidad.avatar" shape="circle" id="menuDropMn" ngbDropdownToggle/>
+          <div class="dropdown-menu-end menu-despegable" ngbDropdownMenu="menuDropMn" style="padding: 0!important;margin: 0!important;width: max-content!important;position: absolute;"> 
+            <p-tree [value]="menuPerfilUsuario" styleClass="w-full md:w-[30rem]" selectionMode="single" (onNodeSelect)="onNodeSelected($event)"/>
+          </div>
+          <!--<a class="nav-link" id="menuDropMn" ngbDropdownToggle>{{'lang' | translate}}</a> 
+          <div ngbDropdownMenu="menuDropMn" style="padding: 0!important;margin: 0!important;width: max-content!important;"> 
+            <a ngbDropdownItem>{{'espa' | translate}}</a> 
+            <a ngbDropdownItem>{{'engl' | translate}}</a> 
+          </div>-->
+        </li>
+        <!--<li class="nav-item">
+          <a class="nav-link" href="#">{{identidad.name}}</a>
+        </li>-->
+        <li class="nav-item botones">
+          <a id="btnLoginOut" class="nav-link lgout blue-button" (click)="lgoutFunct();"><i class="fa-solid fa-power-off"></i></a>
+        </li>
+      </ul>
+    </div>
+    <div [ngbCollapse]="isCollapsedNavegador" class="collapse navbar-collapse" id="navbarSupportedContent" style="width: 100%;justify-content: center;">
+      <ul class="navbar-nav">
+        @for (mdl of listaModulos; track $index) {
+          <li class="nav-item dropdown item-menu" ngbDropdown>
+            <a class="btn btn_head_menu btn_extend nav-link" [ngClass]="empresa_to_access && mdl.modulo_acceso && !mdl.modulo_mantenimiento ? 'dropdown-toggle' : 'disabled'" 
+              aria-current="page" [attr.disabled]="empresa_to_access && mdl.modulo_acceso && !mdl.modulo_mantenimiento ? false : true" ngbDropdownToggle id="menuUser{{mdl.modulo_nombre}}" 
+              [attr.aria-disabled]="empresa_to_access && mdl.modulo_acceso && !mdl.modulo_mantenimiento ? false : true">{{mdl.modulo_nombre | translate}}</a>
+    
+            @if (empresa_to_access && mdl.modulo_nombre == 'ssic' && mdl.modulo_acceso && !mdl.modulo_mantenimiento) {
+              <div class="menu-despegable" ngbDropdownMenu="menuUserssic" style="padding: 0!important;margin: 0!important;width: max-content!important;">
+                @if (menuSSIC) {
+                  <p-tree 
+                    class="menu_nav" 
+                    [value]="menuSSIC" 
+                    styleClass="w-full md:w-[30rem]" 
+                    selectionMode="single" 
+                    (onNodeSelect)="onNodeSelected($event);" 
+                    (onNodeExpand)="onNodeExpand($event,menuSSIC);" 
+                    (onNodeCollapse)="onNodeCollapse($event);"
+                  >
+                    <ng-template let-node pTemplate="url">
+                      <a [href]="node.data" target="_blank" rel="noopener noreferrer" class="text-surface-700 dark:text-surface-100 hover:text-primary">{{ node.label | translate}}</a>
+                    </ng-template>
+                    <ng-template let-node pTemplate="default">
+                      <b>{{ node.label | translate}}</b>
+                    </ng-template>
+                  </p-tree>
+                }
+              </div>
+            }
+    
+            @if (mdl.modulo_nombre == 'ter_asoc' && mdl.modulo_acceso && !mdl.modulo_mantenimiento) {
+              <div class="menu-despegable" ngbDropdownMenu="menuUserter_asoc" style="padding: 0!important;margin: 0!important;width: max-content!important;"> 
+                <p-tree 
+                  class="menu_nav" 
+                  [value]="menuTercAssoc" 
+                  styleClass="w-full md:w-[30rem]" 
+                  selectionMode="single" 
+                  (onNodeSelect)="onNodeSelected($event);" 
+                  (onNodeExpand)="onNodeExpand($event,menuTercAssoc);" 
+                  (onNodeCollapse)="onNodeCollapse($event);"
+                  >
+                  <ng-template let-node pTemplate="url">
+                    <a [href]="node.data" target="_blank" rel="noopener noreferrer" class="text-surface-700 dark:text-surface-100 hover:text-primary">{{ node.label | translate}}</a>
+                  </ng-template>
+                  <ng-template let-node pTemplate="default">
+                    <b>{{ node.label | translate}}</b>
+                  </ng-template>
+                </p-tree>
+              </div>
+            }
+    
+            @if (mdl.modulo_nombre == 'ter_cli' && mdl.modulo_acceso && !mdl.modulo_mantenimiento) {
+              <div class="menu-despegable" ngbDropdownMenu="menuUserter_cli" style="padding: 0!important;margin: 0!important;width: max-content!important;"> 
+                <p-tree 
+                  class="menu_nav" 
+                  [value]="menuTercClientes" 
+                  styleClass="w-full md:w-[30rem]" 
+                  selectionMode="single" 
+                  (onNodeSelect)="onNodeSelected($event);" 
+                  (onNodeExpand)="onNodeExpand($event,menuTercClientes);" 
+                  (onNodeCollapse)="onNodeCollapse($event);"
+                  >
+                  <ng-template let-node pTemplate="url">
+                    <a [href]="node.data" target="_blank" rel="noopener noreferrer" class="text-surface-700 dark:text-surface-100 hover:text-primary">{{ node.label | translate}}</a>
+                  </ng-template>
+                  <ng-template let-node pTemplate="default">
+                    <b>{{ node.label | translate}}</b>
+                  </ng-template>
+                </p-tree>
+              </div>
+            }
+  
+            @if (mdl.modulo_nombre == 'cotizaciones' && mdl.modulo_acceso && !mdl.modulo_mantenimiento) {
+              <div class="menu-despegable" ngbDropdownMenu="menuUsercotizaciones" style="padding: 0!important;margin: 0!important;width: max-content!important;"> 
+                <p-tree 
+                  class="menu_nav" 
+                  [value]="menuUserCotizaciones" 
+                  styleClass="w-full md:w-[30rem]" 
+                  selectionMode="single" 
+                  (onNodeSelect)="onNodeSelected($event);" 
+                  (onNodeExpand)="onNodeExpand($event,menuUserCotizaciones);" 
+                  (onNodeCollapse)="onNodeCollapse($event);"
+                  >
+                  <ng-template let-node pTemplate="url">
+                    <a [href]="node.data" target="_blank" rel="noopener noreferrer" class="text-surface-700 dark:text-surface-100 hover:text-primary">{{ node.label | translate}}</a>
+                  </ng-template>
+                  <ng-template let-node pTemplate="default">
+                    <b>{{ node.label | translate}}</b>
+                  </ng-template>
+                </p-tree>
+              </div>
+            }
+    
+            @if (mdl.modulo_nombre == 'ter_prv' && mdl.modulo_acceso && !mdl.modulo_mantenimiento) {
+              <div class="menu-despegable" ngbDropdownMenu="menuUserter_prv" style="padding: 0!important;margin: 0!important;width: max-content!important;"> 
+                <p-tree 
+                  class="menu_nav" 
+                  [value]="menuTercProveedores" 
+                  styleClass="w-full md:w-[30rem]" 
+                  selectionMode="single" 
+                  (onNodeSelect)="onNodeSelected($event);" 
+                  (onNodeExpand)="onNodeExpand($event,menuTercProveedores);" 
+                  (onNodeCollapse)="onNodeCollapse($event);"
+                  >
+                  <ng-template let-node pTemplate="url">
+                    <a [href]="node.data" target="_blank" rel="noopener noreferrer" class="text-surface-700 dark:text-surface-100 hover:text-primary">{{ node.label | translate}}</a>
+                  </ng-template>
+                  <ng-template let-node pTemplate="default">
+                    <b>{{ node.label | translate}}</b>
+                  </ng-template>
+                </p-tree>
+              </div>
+            }
+    
+            @if (mdl.modulo_nombre == 'logistica' && mdl.modulo_acceso && !mdl.modulo_mantenimiento) {
+              <div class="menu-despegable" ngbDropdownMenu="menuUserlogistica" style="padding: 0!important;margin: 0!important;width: max-content!important;"> 
+                <p-tree 
+                  class="menu_nav" 
+                  [value]="menuLogistica" 
+                  styleClass="w-full md:w-[30rem]" 
+                  selectionMode="single" 
+                  (onNodeSelect)="onNodeSelected($event);" 
+                  (onNodeExpand)="onNodeExpand($event,menuLogistica);" 
+                  (onNodeCollapse)="onNodeCollapse($event);"
+                  >
+                  <ng-template let-node pTemplate="url">
+                    <a [href]="node.data" target="_blank" rel="noopener noreferrer" class="text-surface-700 dark:text-surface-100 hover:text-primary">{{ node.label | translate}}</a>
+                  </ng-template>
+                  <ng-template let-node pTemplate="default">
+                    <b>{{ node.label | translate}}</b>
+                  </ng-template>
+                </p-tree>
+              </div>
+            }
+    
+            @if (mdl.modulo_nombre == 'ter_emp' && mdl.modulo_acceso && !mdl.modulo_mantenimiento) {
+              <div class="menu-despegable" ngbDropdownMenu="menuUserter_emp" style="padding: 0!important;margin: 0!important;width: max-content!important;"> 
+                <p-tree 
+                  class="menu_nav" 
+                  [value]="menuTercEmpleados" 
+                  styleClass="w-full md:w-[30rem]" 
+                  selectionMode="single" 
+                  (onNodeSelect)="onNodeSelected($event);" 
+                  (onNodeExpand)="onNodeExpand($event,menuTercEmpleados);" 
+                  (onNodeCollapse)="onNodeCollapse($event);"
+                  >
+                  <ng-template let-node pTemplate="url">
+                    <a [href]="node.data" target="_blank" rel="noopener noreferrer" class="text-surface-700 dark:text-surface-100 hover:text-primary">{{ node.label | translate}}</a>
+                  </ng-template>
+                  <ng-template let-node pTemplate="default">
+                    <b>{{ node.label | translate}}</b>
+                  </ng-template>
+                </p-tree>
+              </div>
+            }
+  
+            @if (mdl.modulo_nombre == 'descarga_xml' && mdl.modulo_acceso && !mdl.modulo_mantenimiento) {
+              <div class="menu-despegable" ngbDropdownMenu="menuUserdescarga_xml" style="padding: 0!important;margin: 0!important;width: max-content!important;"> 
+                <p-tree 
+                  class="menu_nav" 
+                  [value]="menuDescargaXML" 
+                  styleClass="w-full md:w-[30rem]" 
+                  selectionMode="single" 
+                  (onNodeSelect)="onNodeSelected($event);" 
+                  (onNodeExpand)="onNodeExpand($event,menuDescargaXML);" 
+                  (onNodeCollapse)="onNodeCollapse($event);"
+                  >
+                  <ng-template let-node pTemplate="url">
+                    <a [href]="node.data" target="_blank" rel="noopener noreferrer" class="text-surface-700 dark:text-surface-100 hover:text-primary">{{ node.label | translate}}</a>
+                  </ng-template>
+                  <ng-template let-node pTemplate="default">
+                    <b>{{ node.label | translate}}</b>
+                  </ng-template>
+                </p-tree>
+              </div>
+            }
+            
+            @if (mdl.modulo_nombre == 'gestion_proyectos' && mdl.modulo_acceso && !mdl.modulo_mantenimiento) {
+              <div class="menu-despegable" ngbDropdownMenu="menuUsergestion_proyectos" style="padding: 0!important;margin: 0!important;width: max-content!important;"> 
+                <p-tree 
+                  class="menu_nav" 
+                  [value]="menuGestionProyectos" 
+                  styleClass="w-full md:w-[30rem]" 
+                  selectionMode="single" 
+                  (onNodeSelect)="onNodeSelected($event);" 
+                  (onNodeExpand)="onNodeExpand($event,menuGestionProyectos);" 
+                  (onNodeCollapse)="onNodeCollapse($event);"
+                  >
+                  <ng-template let-node pTemplate="url">
+                    <a [href]="node.data" target="_blank" rel="noopener noreferrer" class="text-surface-700 dark:text-surface-100 hover:text-primary">{{ node.label | translate}}</a>
+                  </ng-template>
+                  <ng-template let-node pTemplate="default">
+                    <b>{{ node.label | translate}}</b>
+                  </ng-template>
+                </p-tree>
+              </div>
+            }
+          </li>
+        }
+        <li class="nav-item item_usuario rou">
+          <div class="horaest horaestSistemaMax col">
+            <h6 class="location">CDMX</h6>
+            <!--<h6 style="font-size:12px; margin:0; text-align:center;color: #ffff;">{{fechaCDMX_dia+"/"+fechaCDMX_mes+"/"+fechaCDMX_ano}}</h6>
+            <h6 style="color: white;font-weight: bold;width: 100%;height: 20px;line-height: 20px;font-size: smaller;margin: 0;text-align: center;border-radius: 4px;margin: 3px;">{{horaCDMX}}</h6>-->
+            <h6 class="date_time">
+              <span>{{fechaCDMX_dia + '/' + fechaCDMX_mes + '/' + fechaCDMX_ano}}</span>
+              <span class="span_time">{{horaCDMX}}</span>
+            </h6>
+          </div>
+        </li>
+        <li class="nav-item item_usuario">
+          <div class="horaest horaestSistemaMax col">
+            <h6 class="location">{{'hor_loc' | translate}}</h6>
+            <!--<h6 style="font-size:12px; margin:0; text-align:center;color: #ffff;">{{fechaLocal_dia+"/"+fechaLocal_mes+"/"+fechaLocal_ano}}</h6>
+            <h6 style="color: white;font-weight: bold;width: 100%;height: 20px;line-height: 20px;font-size: smaller;margin: 0;text-align: center;border-radius: 4px;margin: 3px;">{{horaLocal}}</h6>-->
+            <h6 class="local_date_time">
+              <span>{{fechaLocal_dia+"/"+fechaLocal_mes+"/"+fechaLocal_ano}}</span>
+              <span class="span_time">{{horaLocal}}</span>
+            </h6>
+          </div>
+        </li>
+        <li class="nav-item item-sup item_usuario usuario item-menu">
+          <a  class="btn btn_head_menu btn_extend nav-link" aria-current="page"><i class="fa-solid fa-house"></i></a>
+        </li>
+        <li class="nav-item item-sup item_usuario usuario item-menu" ngbDropdown style="width: max-content;">
+          @if ((empresa$ | async)) {
+            <div class="horaest horaestSistema col" style="display: flex;justify-content: center;align-items: center;">
+              <p-avatar [image]="empresa_data.logotypo" shape="circle" id="menuUserConfig" ngbDropdownToggle/>
+              <h6 style="color: white;font-weight: bold;width: 100%;height: 20px;line-height: 20px;font-size: smaller;margin: 0;text-align: center;border-radius: 4px;margin-left: 10px;">{{empresa_data.company_name_short}}</h6>
+            </div>
+          } @else {
+            <a class="nav-link" aria-current="page" id="menuUserConfig" ngbDropdownToggle><i class="fa-solid fa-building"></i></a>
+          }
+
+          <div class="dropdown-menu-end menu-despegable" ngbDropdownMenu="menuUserConfig" style="padding: 0!important;margin: 0!important;width: max-content!important;"> 
+            <p-tree [value]="menuPerfilEmpresa" styleClass="w-full md:w-[30rem]" selectionMode="single" (onNodeSelect)="onNodeSelected($event)"/>
+          </div>
+        </li>
+  
+        <li class="nav-item item-sup item_usuario usuario item-menu" ngbDropdown>
+          <!--<img class="circle responsive-img" id="menuDropMn" ngbDropdownToggle src="{{identidad.avatar}}" alt="alt">-->
+          <p-avatar [image]="identidad.avatar" shape="circle" id="menuDropMn" ngbDropdownToggle/>
+          <div class="dropdown-menu-end menu-despegable" ngbDropdownMenu="menuDropMn" style="padding: 0!important;margin: 0!important;width: max-content!important;"> 
+            <p-tree [value]="menuPerfilUsuario" styleClass="w-full md:w-[30rem]" selectionMode="single" (onNodeSelect)="onNodeSelected($event)"/>
+          </div>
+        </li>
+        <li class="nav-item item-sup item_usuario usuario item-menu" ngbDropdown>
+          <a id="menuDropNotif" class="nav-link" ngbDropdownToggle>
+            <i class="fa fa-bell fa-lg"></i>
+            @if (notificaciones_sin_leer> 0) {
+              <span class="badge">{{notificaciones_sin_leer}}</span>
+            }
+          </a>
+          <!-- Dropdown de notificaciones -->
+          <div class="dropdown-menu-end menu-despegable" ngbDropdownMenu="menuDropNotif" style="padding: 0!important; margin: 0!important; width: max-content!important; max-height: 400px; overflow-y: auto;">
+            @for (noti of notificacionesList; track $index) {
+              <div class="noti-item p-2 border-bottom flex justify-between items-start">
+                <div class="noti-text">
+                  <strong>{{noti.type}}</strong>
+                  <p class="text-sm">{{noti.asunto || '' }}</p>
+                </div>
+                <div class="noti-buttons flex flex-col gap-1">
+                  <a class="btn text-bg-success rounded-3 btn-sm" style="font-size: smaller!important;font-family: ubuntu, FontAwesome!important;border-radius: 4px!important;" (click)="verificarNotificacion(noti.id,noti.data)">Verificar</a>
+                  <a class="btn text-bg-danger rounded-3 btn-sm" [ngClass]="noti.visto ? 'disabled' : ''" style="font-size: smaller!important;font-family: ubuntu, FontAwesome!important;border-radius: 4px!important;"
+                    [attr.disabled]="noti.visto ? true : null" [attr.aria-disabled]="noti.visto ? true : null"
+                    (click)="!noti.visto && ignorarNotificacion(noti.id)">Ignorar</a><!---->
+                </div>
+              </div>
+            }
+            @if (notificacionesList.length === 0) {
+              <div class="p-2 text-center text-gray-500">No hay notificaciones sin leer</div>
+            }
+          </div>
+        </li>
+        <!--<li class="nav-item">
+          <a class="nav-link" href="#">{{identidad.name}}</a>
+        </li>-->
+        <li class="nav-item item_usuario botones">
+          <a id="btnLoginOut" class="nav-link lgout blue-button" (click)="lgoutFunct();"><i class="fa-solid fa-power-off"></i></a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<p-drawer [(visible)]="sidebarVisible" [header]="'menu' | translate" styleClass="drawer-dark">
+  <div class="drawer-content">
+    <ul class="navbar-nav">
+      @for (mdl of listaModulos; track $index) {
+        <li class="nav-item mb-2">
+          <button class="btn btn_drawer_menu w-full text-left"
+            [ngClass]="empresa_to_access && mdl.modulo_acceso && !mdl.modulo_mantenimiento ? '' : 'disabled'"
+            (click)="mdl.expanded = !mdl.expanded">
+            {{mdl.modulo_nombre | translate}}
+            <i class="fa-solid float-right" [ngClass]="mdl.expanded ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+          </button>
+
+          @if (mdl.expanded) {
+            <div class="drawer-submenu mt-2">
+              @let menuValue = getMenuForModule(mdl.modulo_nombre);
+
+              @if (menuValue) {
+                <p-tree
+                  [value]="menuValue"
+                  selectionMode="single"
+                  (onNodeSelect)="onNodeSelected($event); sidebarVisible = false"
+                >
+                  <ng-template let-node pTemplate="url">
+                    <a [href]="node.data" target="_blank" rel="noopener noreferrer" style="color: white;">{{ node.label | translate}}</a>
+                  </ng-template>
+                  <ng-template let-node pTemplate="default">
+                    <b>{{ node.label | translate}}</b>
+                  </ng-template>
+                </p-tree>
+              }
+            </div>
+          }
+        </li>
+      }
+    </ul>
+  </div>
+</p-drawer>
+
+<p-dialog header="{{'company_vinc' | translate}}" [(visible)]="modalEmpresasVinculadasAlUsuarioVisible" [modal]="true" [dismissableMask]="true" [style]="{ width: '30vw' }" 
+  [contentStyle]="{ 'background-color': '#37526c', color: '#fff' }" [styleClass]="'modal_empresas_vinculadas'" [closable]="true">
+  <div class="col-12 row">
+    <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-6 col-xxl-7">
+      <!--<img src="./assets/images/modals/modal_welcome.png" class="img-fluid" alt="..." style="height: 70%!important;">-->
+    </div>
+    <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-6 col-xxl-5 select_emp_form">
+      <ul class="list-group">
+        <!-- style="height: 20vh;max-height: 250px;overflow:overlay"-->
+        <li class="list-group-item" *ngFor="let emplist of listEmpresasVinc"style="padding: 5px!important;border: none;border-bottom: 1px solid rgba(0,0,0,.125);">
+          <div class="form-check form-switch form-check-reverse switch_primario" style="padding-right: 0!important;">
+            <label class="form-check-label" for="flexSwitchCheckReverse" style="text-align: right;font-size: smaller;">{{emplist.name_abrev+" - "+emplist.company_name}}</label>
+            <input class="form-check-input" type="checkbox" [checked]="empresa_vinculada_token(emplist.empresa_token) ? true : false" [ngClass]="empresa_vinculada_token(emplist.empresa_token) ? 'disabled' : ''" 
+              [attr.disabled]="empresa_vinculada_token(emplist.empresa_token) ? true : null" [attr.aria-disabled]="empresa_vinculada_token(emplist.empresa_token) ? true : null" 
+              (click)="!empresa_vinculada_token(emplist.empresa_token) && cambiarEmpresa(emplist.empresa_token);">
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</p-dialog>
+
+<p-dialog header="Notificaciones" [(visible)]="modalNotificacionesAlUsuarioVisible" [modal]="true" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+	<div class="col-12 row">
+
+  </div>
+</p-dialog>

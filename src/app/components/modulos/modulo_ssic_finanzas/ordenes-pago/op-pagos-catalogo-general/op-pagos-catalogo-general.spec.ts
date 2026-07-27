@@ -1,0 +1,53 @@
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideZonelessChangeDetection } from '@angular/core';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { TranslateModule } from '@ngx-translate/core';
+import { TableModule } from 'primeng/table';
+import { DialogModule } from 'primeng/dialog';
+import { DatePickerModule } from 'primeng/datepicker';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
+import { InputTextModule } from 'primeng/inputtext';
+import { ButtonModule } from 'primeng/button';
+import { FormsModule } from '@angular/forms';
+import { MessageService } from 'primeng/api';
+
+import { OpPagosCatalogoGeneral } from './op-pagos-catalogo-general';
+
+describe('OpPagosCatalogoGeneral', () => {
+  let component: OpPagosCatalogoGeneral;
+  let fixture: ComponentFixture<OpPagosCatalogoGeneral>;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      declarations: [OpPagosCatalogoGeneral],
+      imports: [
+        TranslateModule.forRoot(),
+        TableModule,
+        DatePickerModule,
+        IconFieldModule,
+        InputIconModule,
+        InputTextModule,
+        DialogModule,
+        ButtonModule,
+        FormsModule
+      ],
+      providers: [
+        provideZonelessChangeDetection(),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        MessageService
+      ]
+    })
+    .compileComponents();
+
+    fixture = TestBed.createComponent(OpPagosCatalogoGeneral);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});

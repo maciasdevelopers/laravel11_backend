@@ -1,0 +1,138 @@
+<p-table #inventListArts [value]="listaProductosInventarios" [globalFilterFields]="buscList_prod" dataKey="id"
+  [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]">
+  <ng-template #caption>
+    <div class="flex" style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;" ngbDropdown>
+      <a class="btn btn_extend" [ngClass]="indicadorProductosList == 'hoy' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="mostrar_productos_inventario('hoy');">
+        <i class="fa-solid fa-calendar-days"></i>&nbsp;Hoy
+      </a>
+      <a class="btn btn_extend" [ngClass]="indicadorProductosList == 'esta_semana' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="mostrar_productos_inventario('esta_semana');">
+        <i class="fa-solid fa-calendar-days"></i>&nbsp;Esta semana
+      </a>
+      <a class="btn btn_extend" [ngClass]="indicadorProductosList == 'este_mes' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="mostrar_productos_inventario('este_mes');">
+        <i class="fa-solid fa-calendar"></i>&nbsp;Este mes
+      </a>
+      <a class="btn btn_extend" [ngClass]="indicadorProductosList == 'mes_anterior' ? ' bg-indigo-600' : ' bg-blue-600'" style="margin-right:5px!important;" (click)="mostrar_productos_inventario('mes_anterior');">
+        <i class="fa-solid fa-arrow-left"></i>&nbsp;mes anterior
+      </a>
+      <a id="menuDropProdRangos" class="btn btn_extend" [ngClass]="indicadorProductosList == 'otras_fechas' ? ' bg-indigo-600' : 'bg-blue-600'" style="margin-right:5px!important;" ngbDropdownToggle>
+        <i class="fa-solid fa-list-ul"></i>&nbsp;otras fechas
+      </a>
+      <div class="dropdown-menu-end menu-despegable" ngbDropdownMenu="menuDropProdRangos" style="padding: 0!important; margin: 0!important; width: max-content!important; max-height: 400px; overflow-y: auto;">
+        <div class="col-12 input-group">
+          <label for="prod_inventario_otras_fechas" class="activeInput">Periodo de fechas</label>
+          <p-datepicker id="prod_inventario_otras_fechas" name="prod_inventario_otras_fechas" [(ngModel)]="rangoPeriodoProductos" appendTo="body" dateFormat="dd/mm/yy" placeholder="dd/mm/aaaa" selectionMode="range" 
+            (onSelect)="mostrar_productos_inventario('otras_fechas');" />
+        </div>
+      </div>
+      <a class="btn btn_extend" [ngClass]="indicadorProductosList == 'all_partidas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="mostrar_productos_inventario('all_partidas');">
+        <i class="fa-solid fa-list-ul"></i>&nbsp;todos los registros
+      </a>
+      <p-iconfield iconPosition="left" class="ml-auto">
+        <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+        <input pInputText type="text" (input)="inventListArts.filterGlobal($event.target.value, 'contains')"
+          placeholder="{{'bus_car' | translate}}" />
+      </p-iconfield>
+    </div>
+  </ng-template>
+  <ng-template #header>
+    <tr>
+      <th class="ultimo"></th>
+      <th pSortableColumn="folio_prod">Folio &nbsp;<p-sortIcon field="Folio"/></th>
+      <th pSortableColumn="producto" class="name">Producto &nbsp;<p-sortIcon field="Producto"/></th>
+      <th pSortableColumn="familia">Familia &nbsp;<p-sortIcon field="familia"/></th>
+      <th pSortableColumn="clasificacion" class="name">Clasificaci&oacute;n &nbsp;<p-sortIcon field="clasificacion"/></th>
+      <th pSortableColumn="genero">Genero &nbsp;<p-sortIcon field="genero"/></th>
+      <th pSortableColumn="marca">Marca &nbsp;<p-sortIcon field="marca"/></th>
+      <th pSortableColumn="stock_actual" class="name">Stock actual &nbsp;<p-sortIcon field="genero"/></th>
+      <th pSortableColumn="stock_minimo_registrado" class="name">Stock m&iacute;nimo registrado &nbsp;<p-sortIcon field="stock_minimo_registrado"/></th>
+      <th pSortableColumn="stock_maximo_registrado" class="name">Stock m&aacute;ximo registrado &nbsp;<p-sortIcon field="stock_maximo_registrado"/></th>
+      <th pSortableColumn="metodo_costeo" class="name">M&eacute;todo de costeo &nbsp;<p-sortIcon field="metodo_costeo"/></th>
+      <th pSortableColumn="unidad_medida_entrada_clave" class="name">Unidad de medida de entrada &nbsp;<p-sortIcon field="unidad_medida_entrada_clave"/></th>
+      <th pSortableColumn="unidad_medida_salida_clave" class="name">Unidad de medida de salida &nbsp;<p-sortIcon field="unidad_medida_salida_clave"/></th>
+      <th pSortableColumn="moneda_aplicable_clave">Moneda &nbsp;<p-sortIcon field="moneda_aplicable_clave"/></th>
+      <th pSortableColumn="uso_producto">Uso del producto &nbsp;<p-sortIcon field="uso_producto"/></th>
+      <th pSortableColumn="num_serie">Clasificaci&oacute;n en almacen por serie &nbsp;<p-sortIcon field="num_serie"/></th>
+      <th pSortableColumn="num_lote">Clasificaci&oacute;n en almacen por lote &nbsp;<p-sortIcon field="num_lote"/></th>
+      <th pSortableColumn="importado">Clasificaci&oacute;n en almacen por pedimento aduanal &nbsp;<p-sortIcon field="importado"/></th>
+      <th pSortableColumn="sat_clave_code">catalogo de sat &nbsp;<p-sortIcon field="sat_clave_code de sat"/></th>
+      <th pSortableColumn="costo_aplicable">Costo aplicable &nbsp;<p-sortIcon field="costo_aplicable"/></th>
+      <th class="ultimo"></th>
+      <th class="ultimo"></th>
+      <th class="ultimo"></th>
+      <th class="ultimo"></th>
+      <th class="ultimo"></th>
+    </tr>
+  </ng-template>
+  <ng-template #body let-rowProd>
+    <tr>
+      <td class="img_dat">
+        <div class="col-12"><img class="circle optimizedImage" fill ngSrc="./assets/images/catalogos/default_producto.jpg" alt=""></div>
+      </td>
+      <td>{{rowProd.folio_prod}}</td>
+      <td class="name">{{rowProd.producto}}</td>
+      <td>{{rowProd.familia}}</td>
+      <td>{{rowProd.clasificacion}}</td>
+      <td>{{rowProd.genero}}</td>
+      <td>{{rowProd.marca}}</td>
+      <td>{{rowProd.stock_actual}}</td>
+      <td>{{rowProd.stock_minimo_registrado}}</td>
+      <td>{{rowProd.stock_maximo_registrado}}</td>
+      <td>{{rowProd.metodo_costeo}}</td>
+      <td>{{rowProd.unidad_medida_entrada_clave}}</td>
+      <td>{{rowProd.unidad_medida_salida_clave}}</td>
+      <td>{{rowProd.moneda_aplicable_clave}}</td>
+      <td>{{rowProd.uso_producto}}</td>
+      <td>{{rowProd.num_serie | translate}}</td>
+      <td>{{rowProd.num_lote | translate}}</td>
+      <td>{{rowProd.importado | translate}}</td>
+      <td>{{rowProd.sat_clave_code}}</td>
+      <td>{{rowProd.costo_aplicable}}</td>
+      <td class="ultimo">
+        <a class="btn bg-teal-700" data-bs-toggle="modal"
+          [attr.data-bs-target]="'#modalDetalle'+rowProd.ventanas+'Prd'"
+          (click)="verGeneralesProd(rowProd.token_cat_productos);">
+          <i class="fa-solid fa-folder-open"></i>
+        </a>
+      </td>
+      <td class="ultimo">
+        <a class="btn bg-teal-700" data-bs-toggle="modal"
+          [attr.data-bs-target]="'#modalAlmacen'+rowProd.ventanas+'Prd'"
+          (click)="verAlmacenamientoProd(rowProd.token_cat_productos);">
+          <i class="fa-solid fa-boxes-stacked"></i>
+        </a>
+      </td>
+      <td class="ultimo">
+        <a class="btn bg-teal-700" data-bs-toggle="modal"
+          [attr.data-bs-target]="'#modalKardex'+rowProd.ventanas+'Prd'"
+          (click)="verKardexProd(rowProd.token_cat_productos);">
+          <i class="fa-solid fa-chart-line"></i>
+        </a>
+      </td>
+      <td class="ultimo">
+        <a class="btn btn_extend rounded-3" [ngClass]="rowProd.authorized ? 'text-bg-success' : 'text-bg-primary'"
+          [attr.disabled]="rowProd.authorized ? true : null" [attr.aria-disabled]="rowProd.authorized ? true : null"
+          (click)="!rowProd.authorized && solicita_auth_producto(rowProd.token_cat_productos);">
+          <i class="fa-solid" [ngClass]="rowProd.authorized ? 'fa-check' : 'fa-check-double'"></i>
+          {{rowProd.authorized ? rowProd.authorized_fecha : ('auth_solicita' | translate)}}
+        </a>
+      </td>
+      <td class="ultimo">
+        <a class="btn btn_extend text-bg-danger rounded-3" [class.disabled]="rowProd.utilizado"
+          [attr.disabled]="rowProd.utilizado ? true : null" [attr.aria-disabled]="rowProd.utilizado ? 'true' : null"
+          (click)="!rowProd.utilizado && btnDeleteProducto(rowProd.token_cat_productos);">
+          <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+        </a>
+      </td>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td colspan="25" class="text-center py-4">
+        <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+        <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+          {{'no_rows' | translate}}
+        </p>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>

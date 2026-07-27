@@ -1,0 +1,47 @@
+<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco" #vContent>
+  <div class="contenido">
+    <app-loader></app-loader>
+    <nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+    <main class="contenidoPagina">
+      <div class="listas_ps revanecer">
+        <div id="listaClientes" class="lista-div lista-divNoFlex row">
+          <h4 class="col-12">{{'comi' | translate}}</h4>
+          <div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+					<div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+						<a style="color: white;font-family: roboto_cr;border-radius: 25px;width: 100%!important;"
+						 	(click)="lista_comisiones_general();" class="btn btnGuardar btnRow btnBlueHead bg-blue-600">&nbsp;{{'list_updt' | translate}} 
+              <i class="fa-solid fa-rotate" style="margin-left: 5px;"></i>
+            </a>
+					</div>
+					<div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+					<div class="col-12" *ngIf="comi_all_view == true">
+						<table id="table_egr_prov_out" class="display nowrap mdl-data-table white centered" style="width:100%!important;margin:0!important;">
+							<thead>
+								<tr>
+									<th>folio</th>
+									<th>{{'proy' | translate}}</th>
+									<th class="ultimo"></th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr *ngFor="let lcomi of list_comi_soliaper">
+									<td>{{lcomi.folio_comision}}</td>
+									<td>{{lcomi.comision_proyecto}}</td>
+									<td class="ultimo">
+										<!--<a class="btn btn_extend btn_extend_red text-bg-danger rounded-3" (click)="validarComision(lcomi.token_comision_main);">
+											{{lcomi.solicitudes}} <i class="fa-regular fa-circle-check"></i> {{'prov_validate' | translate}}
+										</a>-->
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+
+        </div>
+      </div>
+    </main>
+    <app-footer-inside></app-footer-inside>
+  </div>
+</div>
+

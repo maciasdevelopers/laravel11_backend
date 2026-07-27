@@ -1,0 +1,86 @@
+<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco noneView" #vContent>
+	<div class="contenido">
+    <header class="sticky-top">
+			<nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+		</header>
+		<main id="mainContenidoModProyectos" class="contenidoPagina contenidoModProyectos">
+			<article class="listas_ps revanecer">
+        <div class="fmAlta lista-divNoFlex row">
+          <div class="col-12 row">
+            <h6 class="col-12">{{'cal_act_proy' | translate}}</h6>
+            <div class="listEventos col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3" style="padding:0!important;">
+              <div class="demo-app-sidebar">
+                <div class="demo-app-sidebar-section" style="width: 100%" *ngIf="boolean_permiso_proyectos == true">
+                  <h2>Eventos ({{currentEvents.length}})</h2>
+                  <h6>Personal</h6>
+                  <select class="browser-default" name="txtPersonalCalandar"
+                    (change)="selectPersonalCalendar($event.target);">
+                    <option value="" disabled selected>{{'opt_select' | translate}}</option>
+                    <option *ngFor="let people of arrayEmpleados" value="{{people.token_empleado_inside}}">
+                      {{people.nombre_completo}}</option>
+                  </select>
+          
+                  <form>
+                    <p>
+                      <label>
+                        <input id="radioEvtProyPers" name="listaEventosPorProyPersFunct" type="radio" class="noneView"
+                          (click)="listaEventosPorProyPersFunct();" />
+                        <span>Eventos por proyectos</span>
+                      </label>
+                    </p>
+                    <p>
+                      <label>
+                        <input id="radioEvtTarePers" name="listaEventosPorTarePersFunct" type="radio" class="noneView"
+                          (click)="listaEventosPorTarePersFunct();" />
+                        <span>Eventos por tareas</span>
+                      </label>
+                    </p>
+                  </form>
+                </div>
+          
+                <div class="demo-app-sidebar-section" style="width: 100%" *ngIf="boolean_permiso_proyectos == false">
+                  <h2>Eventos ({{currentEvents.length}})</h2>
+                  <form action="#">
+                    <p>
+                      <label>
+                        <input id="radioEvtMeAll" name="listaEventosMeFunctPorProyecto" type="radio" class="noneView"
+                          (click)="recargaEventosProyFunct();" checked />
+                        <span>todos los eventos</span>
+                      </label>
+                    </p>
+                    <p>
+                      <label>
+                        <input id="radioEvtMeProyecto" name="listaEventosMeFunctPorProyecto" type="radio"
+                          class="noneView" (click)="listaEventosMeFunctPorProyecto();" />
+                        <span>Eventos por proyectos</span>
+                      </label>
+                    </p>
+                    <p>
+                      <label>
+                        <input id="radioEvtMeTarea" name="listaEventosMeFunctPorTarea" type="radio" class="noneView"
+                          (click)="listaEventosMeFunctPorTarea();" />
+                        <span>Eventos por tareas</span>
+                      </label>
+                    </p>
+                  </form>
+                </div>
+              </div>
+            </div>
+          
+            <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9">
+              <div class="demo-app-main" style="padding:10px!important;">
+                <full-calendar *ngIf="calendarVisible" [options]="calendarOptions">
+                  <ng-template #eventContent let-arg>
+                    <b>{{ arg.timeText }}</b>
+                    <i>{{ arg.event.title }}</i>
+                  </ng-template>
+                </full-calendar>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+		</main>
+	</div>
+</div>

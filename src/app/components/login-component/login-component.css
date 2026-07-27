@@ -1,0 +1,68 @@
+.imagen_fondo_login,
+.imagen_fondo_reset_pass{
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  flex-wrap: wrap;
+}
+
+.imagen_fondo_reset_pass{
+  flex-direction: row;
+}
+
+.imagen_fondo_login img,
+.imagen_fondo_reset_pass img{
+  width: 75%!important;
+}
+
+.formulario div.form-text,
+.formulario a.forgot_pass{
+  text-align: justify;
+  word-break: break-word;
+  font-size: smaller;
+}
+
+.formulario a.forgot_pass{
+  text-align: center;
+  font-family: lato !important;
+  color: #007bff !important;
+}
+
+.underlineHover {
+  display:inline-block;
+  text-decoration: none;
+  font-weight: 400;
+  cursor: pointer;
+  font-size: inherit;
+  font-family: lato !important;
+}
+
+.underlineHover:after {
+  display: block;
+  left: 0;
+  bottom: -10px;
+  width: 0;
+  height: 2px;
+  background-color: #56baed;
+  content: "";
+  transition: width 0.2s;
+}
+
+.underlineHover:hover {
+  color: #0d0d0d;
+}
+
+.underlineHover:hover:after{
+  width: 100%;
+}
+
+div:where(.swal2-container) {
+  z-index: 4000!important;
+}
+
+@media screen and (max-width: 600px) {
+  .imagen_fondo_login img,
+  .imagen_fondo_reset_pass img{
+    width: 65%!important;
+  }
+}

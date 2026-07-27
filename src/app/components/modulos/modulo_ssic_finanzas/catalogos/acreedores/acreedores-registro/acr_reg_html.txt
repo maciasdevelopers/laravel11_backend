@@ -1,0 +1,102 @@
+<div class="form data-reg row"><!-- noneView-->
+  <div class="container col-12 row" style="padding: 0!important;margin: 0!important;">
+    <form class="row formRegAcreedores" #formRegAcreedores="ngForm" autocomplete="off" name="formRegAcreedores" enctype="multipart/form-data" (ngSubmit)="registrarAcreedor();">
+      <div class="col-12">
+        <label class="activeInput">Tipo de acreedor</label>
+        <div class="col-12 form-check radio_check">
+          <input class="form-check-input" type="radio" (change)="tipoSeleccionado('nacional', '')" name="tipoAcree">
+          <label class="form-check-label">Nacional</label>
+        </div>
+        <div class="col-12 form-check radio_check">
+          <input class="form-check-input" type="radio" (change)="tipoSeleccionado('extranjero', '')" name="tipoAcree">
+          <label class="form-check-label">Extranjero</label>
+        </div>
+      </div>
+  
+      <div class="col-12">
+        <label class="activeInput">Tipo de persona</label>
+        <div class="col-12 form-check radio_check">
+          <input class="form-check-input" type="radio" [ngClass]="!formAcreedor.get('tipoAcree')?.value ? 'disabled' : ''" [attr.disabled]="!formAcreedor.get('tipoAcree')?.value ? true : null"
+          [attr.aria-disabled]="!formAcreedor.get('tipoAcree')?.value ? true : null" (change)="formAcreedor.patchValue({ subtipoAcree: 'acreeFisica' });validaAcreeRfc();" name="subtipoAcree">
+          <label class="form-check-label">Persona física</label>
+        </div>
+        <div class="col-12 form-check radio_check">
+          <input class="form-check-input" type="radio" [ngClass]="!formAcreedor.get('tipoAcree')?.value ? 'disabled' : ''" [attr.disabled]="!formAcreedor.get('tipoAcree')?.value ? true : null"
+          [attr.aria-disabled]="!formAcreedor.get('tipoAcree')?.value ? true : null" (change)="formAcreedor.patchValue({ subtipoAcree: 'acreeMoral' });validaAcreeRfc();" name="subtipoAcree">
+          <label class="form-check-label">Persona moral</label>
+        </div>
+      </div>
+  
+      <div class="col-12 row">
+        <!-- RFC (solo nacional) -->
+        <div class="input-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6">
+          <label class="activeInput form-label">RFC con Homoclave</label>
+          <input id="verif_rfcAcree" class="verif_rfc validate inputWthPass rfcMayus" type="text" formControlName="rfc" placeholder="Ej. ABCD000000XXX" minlength="12" maxlength="13" (input)="limitarLongitudRfc($event,13);validaAcreeRfc();">
+          <div *ngIf="formAcreedor.get('rfc')?.invalid && formAcreedor.get('rfc')?.touched" class="text-danger">RFC inválido o faltante</div>
+        </div>
+    
+        <!-- Tax ID (solo extranjero) *ngIf="esNacional || esExtranjero" -->
+        <div class="input-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6" *ngIf="esExtranjero">
+          <label class="activeInput form-label">Tax ID</label>
+          <input id="verif_taxIDAcree" type="text" class="verif_rfc validate inputWthPass rfcMayus" formControlName="taxID" placeholder="Ej. 123456789">
+          <div *ngIf="formAcreedor.get('taxID')?.invalid && formAcreedor.get('taxID')?.touched" class="text-danger">Tax ID requerido (mínimo 9 caracteres)</div>
+        </div>
+    
+        <!-- Nombre o razón social -->
+        <div class="input-group col-12">
+          <label class="activeInput form-label">Nombre / Raz&oacute;n social</label>
+          <input id="verifNameAcreedor" type="text" class="validate" formControlName="nombre" (keyup)="keyupNombreAcree();">
+          <div *ngIf="formAcreedor.get('nombre')?.invalid && formAcreedor.get('nombre')?.touched" class="text-danger">Este campo es obligatorio</div>
+        </div>
+    
+        <div class="input-group col-12" *ngIf="personal_filtrado.length > 0">
+          <div class="prime_listbox">
+            <label class="activeInput form-label">Nombres relacionados</label>
+            <p-listbox class="card card_main" formControlName="empleado_vinculado" [(ngModel)]="selectedEmpleado" [options]="personal_filtrado" optionLabel="nombre_completo" [checkmark]="true" [highlightOnSelect]="false" class="w-full md:w-56"/>
+          </div>
+        </div>
+
+        <!-- Nombre o razón social -->
+        <div class="input-group col-12">
+          <label class="activeInput form-label">Nombre Comercial</label>
+          <input id="verifNameComercialAcreedor" type="text" class="validate" formControlName="nombre_comercial" (keyup)="keyupNombreComercialAcree();">
+          <div *ngIf="formAcreedor.get('nombre_comercial')?.invalid && formAcreedor.get('nombre_comercial')?.touched" class="text-danger">Este campo es obligatorio</div>
+        </div>
+    
+        <!-- Nombre o razón social -->
+        <div class="input-group col-12">
+          <label class="activeInput form-label">{{'email' | translate}}</label>
+          <input id="verifNameEmailAcreedor" type="email" class="validate" formControlName="correo_electronico" (keyup)="keyupMailAcree();">
+        </div>
+
+        <div class="input-group col-12">
+          <label for="fechaAltaProd" class="activeInput">Cuenta contable</label>
+          <input id="verifccontableAcreedor" class="validate" type="text" formControlName="cuenta_contable" (keyup)="keyupCuentaContableAcree();">
+        </div>
+      </div>
+  
+      <div class="col-12">
+        <label class="activeInput">Accesos</label>
+        <div class="col-12 form-check radio_check">
+          <input class="form-check-input" type="radio" formControlName="habilita_reembolsos">
+          <label class="form-check-label">Reembolsos</label>
+        </div>
+      </div>
+
+      <!-- Botón enviar -->
+      <div class="col-12 row" style="padding:0!important;">
+        <div class="col-12 col-sm-12 col-md-6 col-lg-8 col-xl-8 col-xxl-8"></div>
+        <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-4" style="padding: 0!important;display: flex;justify-content: end;">
+          <button 
+            id="btnBuscaProvDB" 
+            class="btn btn_extend text-bg-success rounded-3" 
+            [ngClass]="!validaAcreedorRegistro ? 'disabled' : ''" 
+            [attr.disabled]="!validaAcreedorRegistro ? true : null" 
+            [attr.aria-disabled]="!validaAcreedorRegistro ? true : null">
+            <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

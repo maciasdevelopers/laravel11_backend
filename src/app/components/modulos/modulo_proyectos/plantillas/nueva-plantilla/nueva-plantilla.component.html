@@ -1,0 +1,265 @@
+<div id="loadingSeccion" class="progress loadingpage loadingBlue" #loadingBlue>
+	<div class="preloader"></div>
+	<h6 class="h6loadingSeccion" #h6loadingSeccion>usuario verificado, ¡Bienvenido!</h6>
+</div>
+<!--<header><h1>Encabezado</h1></header>-->
+<div id="vContent" class="marco noneView" #vContent>
+	<div class="contenido">
+    <header class="sticky-top">
+			<nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+		</header>
+		<main id="mainContenidoModProyectos" class="contenidoPagina contenidoModProyectos">
+			<article class="listas_ps revanecer">
+        <div class="fmAlta lista-divNoFlex row">
+          <div class="modal fade bd-example-modal-lg" id="modalTeamNewProject" tabindex="-1" role="dialog" aria-labelledby="modalTeamNewProjectLabel" aria-hidden="true">
+            <div class="modal-dialog modal-fullscreen" style="margin: 1%;width: 98%!important;">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="modalTeamNewProjectLabel">{{'proy_teamwork' | translate}}</h1>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: transparent !important;"></button>
+                </div>
+                <div class="modal-body">
+                  <div class="col-12 form row">
+                    <div class="col-12 col-sm-1 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+                    <div class="col-12 col-sm-10 col-md-3 col-lg-20col-xl-2 col-xxl-20">
+                      <table id="datatable_TeamNewProject" class="display nowrap mdl-data-table white centered table_show_register" style="width:100%!important;margin:0!important;">
+                        <thead>
+                          <tr>
+                            <th>{{'name' | translate}}</th>
+                            <th class="ultimo ultimo-buttons"></th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr *ngFor="let people of plantilla_equipo_trabajo">
+                            <td>{{people.nombre_completo}}</td>
+                            <td class="ultimo ultimo-buttons"><p class="radio"><label><input type="checkbox" (click)="validaEquipoProyecto($event.target);" [value]="people.token_empleado_inside"/></label></p></td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <div class="col-12 col-sm-1 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+                  </div>
+                </div>
+                <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12">
+            <!--plantillas-->
+            <div class="col-12 card card_registro row">
+              <div class="card-content" style="height: 100%;display: flex;flex-wrap: wrap;align-items: center;">
+                <span class="card-title" style="margin-bottom: 5px;font-weight: bold;text-transform: capitalize;color:#353535;">Plantillas predeterminadas</span>
+                <div class="col-12 row">
+                  <div class="col-12 input-group">
+                    <label class="activeInput">Titulo</label>
+                    <input id="txtPlantillaTitulo" class="validate" name="txtNameProyecto" type="text" (keyup)="validaNamePlantilla($event.target);">
+                  </div>
+          
+                  <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6 form-check form-switch form-check-reverse switch_primario" style="padding-right: 20px !important;">
+                    <label class="form-check-label" for="flexSwitchCheckReverse" style="font-size: smaller!important;"><i class="fa-solid fa-file-arrow-up"></i>&nbsp;{{'upload_evid' | translate}} {{'disabled' | translate}}</label>
+                    <input class="form-check-input" type="checkbox" (click)="evidUploadCheck();">
+                    <label class="form-check-label" for="flexSwitchCheckReverse" style="font-size: smaller!important;margin-left: 3px!important;">{{'enabled' | translate}}</label>
+                  </div>
+          
+                  <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6 form-check form-switch form-check-reverse switch_primario" style="padding-right: 10px !important;">
+                    <label class="form-check-label" for="flexSwitchCheckReverse" style="font-size: smaller!important;"><i class="fa-solid fa-file-arrow-up"></i>&nbsp;{{'del_evid_auth_perm' | translate}} {{'not_allowed' | translate}}</label>
+                    <input class="form-check-input" type="checkbox" (click)="evidDeleteUploadedCheck();">
+                    <label class="form-check-label" for="flexSwitchCheckReverse" style="font-size: smaller!important;">{{'allowed' | translate}}</label>
+                  </div>
+          
+                  <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 input-group">
+                    <label class="activeInput">{{'proy_manager' | translate}}</label>
+                    <select id="txtPlantillaResponsable" class="browser-default" name="txtResponsableProyecto" (change)="validaResponsablePlantilla($event.target);">
+                      <option value="" disabled selected>{{'opt_select' | translate}}</option>
+                      <option *ngFor="let people of arrayEmpleados" value="{{people.token_empleado_inside}}">
+                        {{people.nombre_completo}}</option>
+                    </select>
+                  </div>
+          
+                  <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 input-group">
+                    <a *ngIf="plantilla_equipo_trabajo.length == 0" style="height: 30px!important;" class="btn btnSaveRow bg-blue-300 disabled" disabled aria-disabled="true">
+                      <i class="fa-solid fa-eye"></i> {{'proy_teamwork' | translate}}
+                    </a>
+                    <a *ngIf="plantilla_equipo_trabajo.length != 0" style="height: 30px!important;" class="btn btnSaveRow bg-blue-300" data-bs-toggle="modal" data-bs-target="#modalTeamNewProject"><i class="fa-solid fa-eye"></i> {{'proy_teamwork' | translate}}
+                    </a>
+                  </div>
+          
+                  <div class="col-12 row" style="padding: 0!important;margin-top: 5px!important;padding-top: 5px!important;border-top: solid 2px;">
+                    <div class="col-12 col-sm-4 col-md-4 col-lg-6 col-xl-6 col-xxl-6 input-group">
+                      <label class="activeInput">{{'tar_name' | translate}}</label>
+                      <textarea class="validate register" name="txtDescripTar" style="max-height: 80px!important;" (keyup)="validaPlantillaTarNombre($event.target);" id="txtNameTar"></textarea>
+                    </div>
+          
+                    <div class="col-12 col-sm-4 col-md-4 col-lg-6 col-xl-6 col-xxl-6 input-group">
+                      <label class="activeInput">{{'tar_desc' | translate}}</label>
+                      <textarea class="validate register" name="txtDescripTar" style="max-height: 80px!important;" (keyup)="validaPlantillaTarDesc($event.target);" id="txtDescripTar"></textarea>
+                    </div>
+          
+                    <div class="col-12 col-sm-4 col-md-4 col-lg-6 col-xl-6 col-xxl-6 input-group">
+                      <label class="activeInput">{{'tar_manager' | translate}} {{plantilla_proy_tarea_lider_nombre}}</label>
+                      <select id="txtPlantillaResponsable" class="browser-default" [disabled]="plantilla_equipo_trabajo_selected.length == 0" name="txtResponsableProyecto" (change)="validaResponsablePlantilla($event.target);">
+                        <option value="" disabled selected>{{'opt_select' | translate}}</option>
+                        <option *ngFor="let team of plantilla_equipo_trabajo_selected" value="{{team.token_empleado_inside}}">{{team.nombre_completo}}</option>
+                      </select>
+                    </div>
+          
+                    <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 input-group">
+                      <label class="activeInput">repetir</label>
+                      <input class="validate" name="txtPlantillaTareaIterar" (keyup)="validaTarRepeticionPlantilla($event.target);" type="number" id="txtPlantillaTareaIterar">
+                    </div>
+          
+                    <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 input-group">
+                      <a style="height: 30px!important;" class="btn btnSaveRow bg-blue-300 disabled" disabled aria-disabled="true" 
+                        *ngIf="plantilla_proy_tarea_inicial == '' || plantilla_proy_tarea_desc == '' || plantilla_proy_tarea_repeticion == 0">
+                        <i class="fa-solid fa-eye"></i> {{'genera_list' | translate}}
+                      </a>
+                      <a style="height: 30px!important;" class="btn btnSaveRow bg-blue-300"
+                        *ngIf="plantilla_proy_tarea_inicial != '' && plantilla_proy_tarea_desc != '' && plantilla_proy_tarea_repeticion > 0" 
+                        (click)="llenarTablaTareasPlantilla();"><i class="fa-solid fa-circle-plus"></i> {{'genera_list' | translate}}</a>
+                    </div>
+          
+                    <div class="col-12" style="margin-bottom: 10px;">
+                      <table id="datatable_ListaTareas" class="display nowrap mdl-data-table white centered" style="width:100%!important;margin:0!important;">
+                        <thead>
+                          <tr>
+                            <th>No.</th>
+                            <th>{{'tar_name' | translate}}</th>
+                            <th>{{'tar_desc' | translate}}</th>
+                            <th>{{'tar_manager' | translate}}</th>
+                            <th>{{'proy_teamwork' | translate}}</th>
+                            <th class="ultimo"></th>
+                            <th class="ultimo"></th>
+                          </tr>
+                        </thead>
+                        <tbody class="registro_tarea">
+                          <tr *ngFor="let tar of plantilla_lista_tareas">
+                            <td>{{tar.posicion+1}}</td>
+                            <td>
+                              <div class="col-12 text_area">
+                                <textarea class="validate register" name="txtDescripTar" style="max-height: 80px!important;" (keyup)="validaTarListados($event.target,tar.posicion);" id="txtNameTar">{{tar.tarea}}</textarea>
+                              </div>
+                            </td>
+                            <td>
+                              <div class="col-12 text_area">
+                                <textarea class="validate register" name="txtDescripTar" style="max-height: 80px!important;" (keyup)="validaDescNewTarea($event.target);" id="txtDescripTar">{{tar.descripcion}}</textarea>
+                              </div>
+                            </td>
+                            <td>{{tar.lider_nombre}}</td>
+                            <td>
+                              <a class="btn btnSaveRow bg-blue-500" [ngClass]="plantilla_equipo_trabajo_selected.length == 0 ? 'disabled' : ''" [attr.disabled]="plantilla_equipo_trabajo_selected.length == 0 ? true : null" 
+                                data-bs-toggle="modal" data-bs-target="#modalRespNewTarea" [attr.aria-disabled]="plantilla_equipo_trabajo_selected.length == 0 ? true : null">
+                                <i class="fa-solid fa-people-group"></i>
+                              </a> 
+            
+                              <div class="modal fade bd-example-modal-lg" id="modalRespNewTarea" tabindex="-1" role="dialog" aria-labelledby="modalRespNewTareaLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-fullscreen" style="margin: 1%;width: 98%!important;">
+                                  <div class="modal-content">
+                                    <div class="modal-header">
+                                      <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="modalRespNewTareaLabel">{{'proy_teamwork' | translate}}</h1>
+                                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: transparent !important;"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                      <div class="col-12 form row">
+                                        <div class="col-12 division_update">
+                                          <div class="col-12 row">
+                                            <div class="col-12" style="display: flex;justify-content: center;flex-wrap: wrap;align-content: center;align-items: center;height: 100%;">
+                                              <h6>{{'tar_name' | translate}} {{tar.tarea}}</h6>
+                                              
+                                              <table id="datatable_TeamNewTarea" class="display nowrap mdl-data-table white centered table_show_register" style="width:100%!important;margin:0!important;">
+                                                <thead>
+                                                  <tr>
+                                                    <th>#</th>
+                                                    <th class="ultimo ultimo-buttons"></th>
+                                                    <th>Personal</th>
+                                                    <th class="ultimo ultimo-buttons"></th>
+                                                  </tr>
+                                                </thead>
+                                                <tbody>
+                                                  <tr *ngFor="let team_tar of plantilla_equipo_trabajo_selected;index as iteam" class="tr-selected-{{team_tar.selected}}">
+                                                    <td>{{iteam+1}}</td>
+                                                    <td class="ultimo"><p *ngIf="team_tar.selected == true" class="btn waves-effect waves-light blue darken-4"><i class="fa-solid fa-check-double"></i></p></td>
+                                                    <td>{{team_tar.nombre_completo}}</td>
+                                                    <td class="ultimo">
+                                                      <a *ngIf="team_tar.selected == false" class="btn bg-blue-300" (click)="addResponsableTarea(tar.posicion,team_tar.token_empleado_inside);">
+                                                        <i class="fa-solid fa-check"></i></a>
+                                                      <a *ngIf="team_tar.selected == true" class="btn btn_extend text-bg-danger rounded-3" (click)="deleteResponsableTarea(tar.posicion,team_tar.token_empleado_inside);">
+                                                        <i class="fa-solid fa-user-xmark"></i></a>
+                                                    </td>
+                                                  </tr>
+                                                </tbody>
+                                              </table>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div>
+                                  </div>
+                                </div>
+                              </div>
+                            </td>
+                            <td class="ultimo ultimo-buttons">
+                              <a class="btn waves-effect waves-light blue lighten-2" disabled><i class="fa-solid fa-list-ol"></i></a>
+                              <!--<a class="btn waves-effect waves-light blue lighten-2 sidenav-trigger" 
+                                data-target="slide_out_new_tar" *ngIf="proy.tarea_list.length > 0"><i class="fa-solid fa-list-ol"></i></a>
+            
+                              <ul id="slide_out_new_tar" class="sidenav side_tareas_nav amber lighten-1">
+                                <li class="header">
+                                  <div class="content">
+                                    <h6 class="name">Listado de tareas registradas anteriormente</h6>
+                                  </div>
+                                </li>
+                                <li><div class="divider"></div></li>
+                                <li style="padding: 5px;">
+                                  <table id="table_out_new_tar{{proylist.folio_proy}}" class="display nowrap mdl-data-table white centered" style="width:100%!important;margin:0!important;">
+                                    <thead>
+                                      <tr>
+                                        <th class="ultimo"></th>
+                                        <th>{{'tar_name' | translate}}</th>
+                                        <th class="ultimo ultimo-buttons"></th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      <tr *ngFor="let rowtar of proy.tarea_list;index as newpos">
+                                        <td>{{newpos+1}}</td>
+                                        <td>{{rowtar.folio_tar+" "+rowtar.tarea_nombre}}</td>
+                                        <td class="ultimo">
+                                          <p class="radio"><label><input type="checkbox" (click)="addDependeTarea($event.target);" [value]="rowtar.token_tarea"/></label></p>
+                                        </td>
+                                      </tr>
+                                    </tbody>
+                                  </table>
+                                </li>
+                              </ul>-->
+            
+                            </td>
+                            <td class="ultimo"><a (click)="removerTarea(tar.posicion);"class="btn btn_extend text-bg-danger rounded-3 btnRemoveTarea"><i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}</a></td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+          
+                  <div class="col-12 row" style="padding: 0!important;margin-top: 5px!important;padding-top: 5px!important;border-top: solid 2px;">
+                    <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9"></div>
+                    <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3" style="padding: 0;">
+                      <div class="col-12 botones_accion">
+                        <a class="btn btn_extend bg-blue-300 disabled" disabled aria-disabled="true" type="submit"
+                          *ngIf="plantilla_proy_titulo == '' || plantilla_proy_lider_ktn == '' || plantilla_equipo_trabajo_selected.length == 0 || plantilla_proy_validate_tareas == false"><i class="fa-solid fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}</a>
+          
+                        <a class="btn btn_extend bg-blue-300" type="submit" 
+                          *ngIf="plantilla_proy_titulo != '' && plantilla_proy_lider_ktn != '' && plantilla_equipo_trabajo_selected.length > 0 && plantilla_proy_validate_tareas == true" (click)="registrarProyecto();"><i class="fa-solid fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}</a>
+                      </div>
+                    </div>
+                  </div>
+          
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+		</main>
+	</div>
+</div>

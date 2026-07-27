@@ -1,0 +1,18 @@
+div.listas_ps div.data-reg div.logotipo{
+    display: flex;
+    justify-content: center!important;
+    margin-bottom: 5px;
+}
+
+div.listas_ps div.data-reg div.logotipo img{
+    height: 60px;
+    border-radius: 8px;
+}
+
+div.listas_ps div.data-reg div.infoNewServ{
+    width: 100%!important;
+}
+
+.select-wrapper{
+    background-color: blue;
+}

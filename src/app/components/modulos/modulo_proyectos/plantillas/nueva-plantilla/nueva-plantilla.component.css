@@ -1,0 +1,11 @@
+.card_registro{
+  margin-top: 10px!important;
+  margin-bottom: 20px!important;
+  box-shadow: 0 10px 15px rgba(92, 99, 105, .2)!important;
+}
+
+.card_registro .botones_accion{
+  display: flex;
+  justify-content: end;
+  padding: 0;
+}

@@ -1,0 +1,20 @@
+table.tabla_kardex thead tr th.thKardex div.thead{
+    width: 100%!important;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: space-around;
+    height: 40px;
+    margin: 0;
+    padding: 0;
+}
+
+table.tabla_kardex thead tr th.thKardex div.thead p.titulo{
+    width: 100%!important;
+    margin: 0;
+}
+
+table.tabla_kardex thead tr th.thKardex div.thead p.dat{
+    width: 50%!important;
+    margin: 0;
+}

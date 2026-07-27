@@ -1,0 +1,398 @@
+@if (orden_pago_nomina_especie_form) {
+  <form class="formRegistroPagoESNomina" #formRegistroPagoESNomina="ngForm" autocomplete="off" name="formRegistroPagoESNomina" enctype="multipart/form-data" (ngSubmit)="validate_pago_for_nomina_especie && onSavePagoNominaEspecie(formRegistroPagoESNomina);">
+    <div class="col-12">
+      <div class="col-12 explain">
+        <h6 class="title">Deuda total</h6>
+        <h6 class="content">{{ordenPagoAdeudoNomiEspecieFormat()}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">Pagos anteriormente registrados</h6>
+        <h6 class="content">{{pagos_anteriores()}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">Deuda actualizada</h6>
+        <h6 class="content">{{deuda_menos_pagos()}}</h6>
+      </div>
+      <p-divider />
+      <div class="col-12 explain">
+        <h6 class="title">Pago total para aplicar</h6>
+        <h6 class="content">{{calculaTotalParaAplicar()}}
+          @if (pay_order_importe > 0 && pay_order_importe <= importe_total_deuda_restante) {
+            <i class="fa-solid fa-check-double" style="color: rgb(0, 134, 93);"></i>
+          } @else {
+            <i class="fa-solid fa-circle-xmark" style="color: rgb(255, 0, 0);"></i>
+          }
+        </h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">Pago cubierto</h6>
+        <h6 class="content">${{pay_order_importe != 0 ? calculaTotalPagandoEspecieNomina() : '0.00'}}</h6>
+        <h6 class="content">${{pay_order_importe != 0 ? calculaTotalPagandoEspecieNominaFormat() : '0.00'}}
+          @if (pay_order_importe != 0 && calculaTotalPagandoEspecieNomina() === pay_order_importe) {
+            <i class="fa-solid fa-check-double" style="color: rgb(0, 134, 93);"></i>
+          } @else {
+            <i class="fa-solid fa-circle-xmark" style="color: rgb(255, 0, 0);"></i>
+          }
+        </h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">Saldo</h6>
+        <h6 class="content">${{pay_order_importe != 0 ? calculaTotalEspecieNominaSaldo() : '0.00 '+pay_order_moneda_code}}</h6>
+      </div>
+
+      <div class="col-12 row" style="margin: 0!important;">
+        <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+          <label class="activeInput">{{'fecha_cont' | translate}}</label>
+          <input id="fechaContabilizacionPago" name="fechaContabilizacionCompra" type="date"
+            (change)="select_fecha_contabilizacion($event.target);">
+        </div>
+        <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+          <label for="fechaAltaProd" class="activeInput">{{'mon_name' | translate}}</label>
+          <p-select [options]="catalogo_monedas_api" [(ngModel)]="pay_order_moneda_opcion"
+            name="pay_order_moneda_opcion" id="selectedMonedaCode" optionLabel="_filtro_busqueda" [filter]="true"
+            filterBy="_filtro_busqueda" [showClear]="true" [placeholder]="'opt_select' | translate"
+            class="w-full md:w-56" (onChange)="keyupMonedaPagoSave($event.value);">
+            <ng-template #selectedItem let-selectedOption>
+              <div class="flex items-center gap-2">
+                <div>{{selectedOption.code+" "+selectedOption.langEN}}</div>
+              </div>
+            </ng-template>
+            <ng-template let-mon #item>
+              <div class="flex items-center gap-2">
+                <div>{{mon.code+" "+mon.langEN}}</div>
+              </div>
+            </ng-template>
+          </p-select>
+        </div>
+        <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+          <label class="activeInput">{{'mon_tipo_cambio' | translate}}</label>
+          <input class="validate" [ngClass]="pay_order_moneda_code == emp_moneda_code ? 'disabled' : ''"
+            [attr.disabled]="pay_order_moneda_code == emp_moneda_code ? true : null"
+            [attr.aria-disabled]="pay_order_moneda_code == emp_moneda_code ? true : null"
+            [attr.value]="pay_order_moneda_code == emp_moneda_code ? '1.00' : ''" id="pagos_esp_tipo_cambio"
+            type="number" min="1" max="100000000000000" (keyup)="editTipoCambio($event.target);">
+        </div>
+        <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+          <label for="fechaAltaProd" class="activeInput">{{'f_pago' | translate}}</label>
+          <select id="pagos_forma_pago" class="browser-default"
+            [ngClass]="pay_order_moneda_code == '' ? 'disabled' : ''"
+            [attr.disabled]="pay_order_moneda_code == '' ? true : null"
+            [attr.aria-disabled]="pay_order_moneda_code == '' ? true : null"
+            (change)="pay_order_moneda_code != '' && selectFormaPagoSave($event.target);">
+            <option value="" disabled selected>{{'bus_car_por' | translate}}</option>
+            <option value="por-caja" *ngIf="listaCajasRegistradas.length > 0">por caja</option>
+            <option value="por-cuenta-bancaria" *ngIf="listaCuentasBancarias.length > 0">por cuenta bancaria</option>
+            <option value="por-monedero-electronico" *ngIf="listaCuentasMonederoElectronico.length > 0">por monedero electr&oacute;nico</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="col-12" *ngIf="pay_order_forma_pago == 'por-caja'" style="margin-top: 5px!important;">
+        <div class="buscador row" style="margin-top: 10px!important">
+          <div class="content">
+            <div class="col-12 col-sm-6 col-md-3 col-lg-2 row_buscador btn-group lista_botones col" role="group"
+              aria-label="ejemplo">
+              <a class="btn btn_extend bg-indigo-600" (click)="showCajasRegistradas();">
+                <i class="fa-solid fa-rotate" style="margin-left: 5px;"></i>&nbsp;{{'list_updt' | translate}}
+              </a>
+            </div>
+          </div>
+        </div>
+        <p-table #opEspCajasLista [value]="listaCajasRegistradas" [globalFilterFields]="search_cajas_registradas"
+          dataKey="id" showGridlines [resizableColumns]="true" [paginator]="true" [rows]="10"
+          [rowsPerPageOptions]="[10,20,30,50,100]">
+          <ng-template #caption>
+            <div class="flex">
+              <p-iconfield iconPosition="left" class="ml-auto">
+                <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                <input pInputText type="text" (input)="opEspCajasLista.filterGlobal($event.target.value, 'contains')"
+                  placeholder="{{'bus_car' | translate}}" />
+              </p-iconfield>
+            </div>
+          </ng-template>
+          <ng-template #header>
+            <tr>
+              <th class="ultimo"></th>
+              <th pResizableColumn pSortableColumn="caja_folio">Caja&nbsp;<p-sortIcon field="caja_folio" /></th>
+              <th pResizableColumn pSortableColumn="establecimiento">Establecimiento&nbsp;<p-sortIcon field="establecimiento" /></th>
+              <th pResizableColumn pSortableColumn="salDoCaja">Saldo&nbsp;<p-sortIcon field="salDoCaja" /></th>
+              <th style="width: 200px!important;">Monto a aplicar</th>
+            </tr>
+          </ng-template>
+          <ng-template #body let-caj>
+            <tr>
+              <td>
+                <div class="form-check radio_check">
+                  <input class="form-check-input" type="checkbox" name="caja_select" [checked]="caj.select_for_pagos"
+                    (click)="selectCajaDisp($event.target,caj.token_caja);">
+                </div>
+              </td>
+              <td>{{caj.caja_folio+" "+caj.caja_alias}}</td>
+              <td>{{caj.establecimiento}}</td>
+              <td class="td_importes">{{caj.salDoCaja}}</td>
+              <td>
+                {{!caj.select_for_pagos ? '---' : ''}}
+                <input class="validate" name="monto_aplicar" *ngIf="caj.select_for_pagos" type="number"
+                  (input)="caj.select_for_pagos && importeByCaja($event.target,caj.token_caja);" [max]="caj.saldofloat"
+                  min="0" step="0.01" placeholder="Monto a aplicar" />
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="5" class="text-center py-4">
+                <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                  {{'no_rows' | translate}}
+                </p>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+      <div class="col-12" *ngIf="pay_order_forma_pago == 'por-cuenta-bancaria'" style="margin-top: 5px!important;">
+        <div class="buscador row" style="margin-top: 10px!important">
+          <div class="content">
+            <div class="col-12 col-sm-6 col-md-3 col-lg-2 row_buscador btn-group lista_botones col" role="group"
+              aria-label="ejemplo">
+              <a class="btn btn_extend bg-indigo-600" (click)="getCuentasBancarias();">
+                <i class="fa-solid fa-rotate" style="margin-left: 5px;"></i>&nbsp;{{'list_updt' | translate}}
+              </a>
+            </div>
+          </div>
+        </div>
+        <p-table #tableEspCuentasBancarias [value]="listaCuentasBancarias"
+          [globalFilterFields]="search_cuentas_bancarias" dataKey="id" showGridlines [resizableColumns]="true"
+          [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]">
+          <ng-template #caption>
+            <div class="flex">
+              <p-iconfield iconPosition="left" class="ml-auto">
+                <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                <input pInputText type="text"
+                  (input)="tableEspCuentasBancarias.filterGlobal($event.target.value, 'contains')"
+                  placeholder="{{'bus_car' | translate}}" />
+              </p-iconfield>
+            </div>
+          </ng-template>
+          <ng-template #header>
+            <tr>
+              <th class="ultimo"></th>
+              <th pResizableColumn pSortableColumn="folio_cuenta">folio&nbsp;<p-sortIcon field="folio_cuenta" /></th>
+              <th pResizableColumn pSortableColumn="banco_nombre_comercial">banco&nbsp;<p-sortIcon field="banco_nombre_comercial" /></th>
+              <th class="ultimo" pResizableColumn pSortableColumn="cuenta_bancaria">cuenta&nbsp;<p-sortIcon field="cuenta_bancaria" /></th>
+              <th pResizableColumn pSortableColumn="saldo_cuenta_format">Saldo&nbsp;<p-sortIcon field="saldo_cuenta_format" /></th>
+              <th style="width: 200px!important;">Monto a aplicar</th>
+            </tr>
+          </ng-template>
+          <ng-template #body let-cuent>
+            <tr>
+              <td>
+                <div class="form-check radio_check">
+                  <input class="form-check-input" type="checkbox" name="cuenta_bancaria_selected"
+                    [checked]="cuent.select_for_pagos" (click)="selectCuentaDisp($event.target,cuent.token_cuenta);">
+                </div>
+              </td>
+              <td>{{cuent.folio_cuenta}}</td>
+              <td>{{cuent.banco_clave+' '+cuent.banco_nombre_comercial}}</td>
+              <td>
+                <a class="btn btn_extend bg-blue-600" (click)="functCuentaNumber(cuent.token_cuenta);">
+                  {{cuent.cuenta_bancaria}}&nbsp;<i class="fa-solid"
+                    [ngClass]="cuent.cuenta_view ? 'fa-user-clock' : 'fa-eye'"></i>&nbsp;{{cuent.cuenta_view ? "
+                  "+cuent.cuenta_time : ""}}
+                </a>
+              </td>
+              <td class="td_importes">{{cuent.saldo_cuenta_format}}</td>
+              <td>
+                {{!cuent.select_for_pagos ? '---' : ''}}
+                <input class="validate" *ngIf="cuent.select_for_pagos" name="monto_aplicar" type="number"
+                  (input)="cuent.select_for_pagos && importeByCuenta($event.target,cuent.token_cuenta);"
+                  [max]="cuent.saldo_cuenta" min="0" step="0.01" placeholder="Monto a aplicar" />
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="6" class="text-center py-4">
+                <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                  {{'no_rows' | translate}}
+                </p>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+      <div class="col-12" *ngIf="pay_order_forma_pago == 'por-monedero-electronico'" style="margin-top: 5px!important;">
+        <div class="buscador row" style="margin-top: 10px!important">
+          <div class="content">
+            <div class="col-12 col-sm-6 col-md-3 col-lg-2 row_buscador btn-group lista_botones col" role="group"
+              aria-label="ejemplo">
+              <a class="btn btn_extend bg-indigo-600" (click)="getMonederosElectronicos();">
+                <i class="fa-solid fa-rotate" style="margin-left: 5px;"></i>&nbsp;{{'list_updt' | translate}}
+              </a>
+            </div>
+          </div>
+        </div>
+        <p-table #tableEspCuentasMonElect [value]="listaCuentasMonederoElectronico"
+          [globalFilterFields]="search_cuentas_monedero_electronico" dataKey="id" showGridlines
+          [resizableColumns]="true" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]">
+          <ng-template #caption>
+            <div class="flex">
+              <p-iconfield iconPosition="left" class="ml-auto">
+                <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                <input pInputText type="text"
+                  (input)="tableEspCuentasMonElect.filterGlobal($event.target.value, 'contains')"
+                  placeholder="{{'bus_car' | translate}}" />
+              </p-iconfield>
+            </div>
+          </ng-template>
+          <ng-template #header>
+            <tr>
+              <th class="ultimo"></th>
+              <th pResizableColumn pSortableColumn="folio_cuenta">Folio&nbsp;<p-sortIcon field="folio_cuenta" /></th>
+              <th pResizableColumn pSortableColumn="monedero">Monedero&nbsp;<p-sortIcon field="monedero" /></th>
+              <th pResizableColumn pSortableColumn="cuenta_frontend">Cuenta&nbsp;<p-sortIcon field="cuenta_frontend" /></th>
+              <th pResizableColumn pSortableColumn="saldo_cuenta_format">Saldo&nbsp;<p-sortIcon field="saldo_cuenta_format" /></th>
+              <th style="width: 200px!important;">Monto a aplicar</th>
+            </tr>
+          </ng-template>
+          <ng-template #body let-monElect>
+            <tr>
+              <td>
+                <div class="form-check radio_check">
+                  <input class="form-check-input" type="checkbox" name="cuenta_bancaria_selected"
+                    [checked]="monElect.select_for_pagos"
+                    (click)="selectMonederoElectronicoDisp($event.target,monElect.token_cuentaMon);">
+                </div>
+              </td>
+              <td>{{monElect.folio_cuenta}}</td>
+              <td>{{monElect.monedero}}</td>
+              <td>{{monElect.cuenta_frontend}}</td>
+              <td class="td_importes">{{monElect.saldo_cuenta_format}}</td>
+              <td>
+                {{!monElect.select_for_pagos ? '---' : ''}}
+                <input class="validate" *ngIf="monElect.select_for_pagos" name="monto_aplicar" type="number"
+                  (input)="monElect.select_for_pagos && importeByMonedero($event.target,monElect.token_cuentaMon);"
+                  [max]="monElect.monto_real" min="0" step="0.01" placeholder="Monto a aplicar" />
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="6" class="text-center py-4">
+                <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                  {{'no_rows' | translate}}
+                </p>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+
+      <div class="col-12" style="margin-top: 5px!important;">
+        <p-table #opListaProceso [value]="ordenes_pago_listaProceso" [globalFilterFields]="searchPagolistaProceso"
+          showGridlines [resizableColumns]="true" [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }"
+          [rowsPerPageOptions]="[10,20,30,50,100]">
+          <ng-template #caption>
+            <div class="flex">
+              <p-iconfield iconPosition="left" class="ml-auto">
+                <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                <input pInputText type="text" (input)="opListaProceso.filterGlobal($event.target.value, 'contains')"
+                  placeholder="{{'bus_car' | translate}}" />
+              </p-iconfield>
+            </div>
+          </ng-template>
+          <ng-template #header>
+            <tr>
+              <th pSortableColumn="nomina_empleado_nombre">trabajador&nbsp;<p-sortIcon field="nomina_empleado_nombre" /></th>
+              <th pSortableColumn="nomina_empleado_cbankCuenta">No. de cuenta&nbsp;<p-sortIcon field="nomina_empleado_cbankCuenta" /></th>
+              <th pSortableColumn="nomina_total_en_especie">total en especie&nbsp;<p-sortIcon field="nomina_total_en_especie" /></th>
+              <th pSortableColumn="pagos_realizados_format">pagos realizados&nbsp;<p-sortIcon field="pagos_realizados_format" /></th>
+              <th><i class="tiny material-icons">credit_card</i></th>
+              <th pResizableColumn pSortableColumn="debe_format">debe&nbsp;<p-sortIcon field="debe_format" /></th>
+            </tr>
+          </ng-template>
+          <ng-template #body let-lNomEsp>
+            <tr>
+              <td>{{lNomEsp.nomina_empleado_nombre}}</td>
+              <td>{{lNomEsp.nomina_empleado_cbankBancoNombre+" "+lNomEsp.nomina_empleado_cbankCuenta}}</td>
+              <td class="td_importes">{{lNomEsp.nomina_total_en_especie}}</td>
+              <td class="td_importes">{{lNomEsp.pagos_realizados_format}}</td>
+              <td>
+                <input class="validate" name="importeOrdenPago" type="number"
+                  [ngClass]="pay_order_importe == 0 ? 'disabled' : ''" min="0" [max]="lNomEsp.importe_restante" step="0.01"
+                  [attr.disabled]="pay_order_importe == 0 ? true : null"
+                  [attr.aria-disabled]="pay_order_importe == 0 ? true : null"
+                  (keyup)="pay_order_importe > 0 && keyupOrdenPImporteEspeciePorPagar($event.target,lNomEsp.token_especie_desglose);">
+              </td>
+              <td>{{lNomEsp.debe_format}}</td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="6" class="text-center py-4">
+                <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                  {{'no_rows' | translate}}
+                </p>
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="footer">
+            <tr>
+              <td class="td_importes" colspan="5"><strong>Total:</strong></td>
+              <td class="td_importes"><strong>${{pay_order_importe != 0 ? calculaTotalPagandoEspecieNomina() : '0.00'}}</strong></td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+      <div class="col-12 input-group" style="margin-bottom: 10px!important;">
+        <label class="activeInput">{{'observ' | translate}}</label>
+        <textarea id="pago_large_observ" class="validate" (keyup)="keyupObservacionPago($event.target);"></textarea>
+      </div>
+
+      <div class="col-12 field_file_drop">
+        <ngx-file-drop dropZoneLabel="Drop files here" (onFileDrop)="droppedPagoOrden($event)" (onFileOver)="fileOverPagoOrden($event)" (onFileLeave)="fileLeavePagoOrden($event)">
+          <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
+            <a class="btn btn_load_file" type="button" style="color: #0782d0 !important;" (click)="openFileSelector()">
+              {{'load_files' | translate}} / {{'browse_files' | translate}}
+            </a>
+          </ng-template>
+        </ngx-file-drop>
+        <table class="white centered" style="margin-top:5px!important;width: 100% !important;">
+          <thead>
+            <tr>
+              <th>{{'file' | translate}}</th>
+              <th class="ultimo"></th>
+            </tr>
+          </thead>
+          <tbody class="upload-name-style" *ngIf="filespayOrder.length != 0">
+            <tr *ngFor="let item of filespayOrder; index as i">
+              <td><strong>{{ item.relativePath }}</strong></td>
+              <td class="ultimo">
+                <a class="btn btn_extend text-bg-danger rounded-3" (click)="deleteAnexosPagoOrden(i);">
+                  <i class="fa-solid fa-xmark"></i>
+                </a>
+              </td>
+            </tr>
+          </tbody>
+          <tbody *ngIf="filespayOrder.length == 0">
+            <tr>
+              <td colspan="2">{{'no_rows' | translate}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="col-12" style="display: flex !important;justify-content: end!important;margin-top: 5px!important;">
+        <button class="btn btn_extend text-bg-success rounded-3"
+          [ngClass]="!validate_pago_for_nomina_especie ? 'disabled' : ''"
+          [attr.disabled]="!validate_pago_for_nomina_especie ? true : null"
+          [attr.aria-disabled]="!validate_pago_for_nomina_especie ? true : null">
+          <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+        </button>
+      </div>
+    </div>
+  </form>
+}

@@ -1,0 +1,90 @@
+<div class="col-12" style="/* height: -webkit-fill-available; */overflow: overlay;">
+	<div class="card card_white" style="height: 100%;">
+		<div class="card-content" style="height: 100%;">
+			<span class="card-title" style="margin-bottom: 5px;font-weight: bold;text-transform: capitalize;color:#353535;">{{'politic_comi' | translate}}</span>
+			<div style="width: 100%!important;display: flex;flex-wrap: wrap;justify-content: center;">
+				<div class="col-12">
+					<div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2 row">
+						<a style="color: white;font-family: roboto_cr;border-radius: 25px;width: 100%!important;" (click)="lista_politicas_cont_comi();" class="btn btnGuardar btnRow btnBlueHead bg-blue-600">&nbsp;{{'list_updt' | translate}} 
+						<i class="fa-solid fa-rotate" style="margin-left: 5px;"></i>
+						</a>
+					</div>
+					<div class="col-12 col-sm-9 col-md-3 col-lg-20col-xl-2 col-xxl-20"></div>
+				</div>
+				<div class="col-12" *ngIf="bool_list_comi == true">
+					<table id="cont_table_politics_comi" class="display nowrap white centered" style="width:100%!important;margin:0!important;">
+						<thead>
+							<tr>
+								<th class="ultimo"></th>
+								<th>folio</th>
+								<th>{{'concept' | translate}}</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr *ngFor="let pol_comi of list_politicas_cont_comi">
+								<td>
+									<a class="btn bg-blue-600" routerLink="/sos_inside/contabilidad/politicas_info/{{pol_comi.token_politicas}}"><i class="fa-solid fa-info"></i></a>
+								</td>
+								<td>{{pol_comi.folio_politicas}}</td>
+								<td>{{pol_comi.concepto_politica}}</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="col-12" style="/* height: -webkit-fill-available; */margin-top:10px;overflow: overlay;">
+	<div class="card card_white">
+		<div class="card-content" style="height: 100%;display: flex;flex-wrap: wrap;align-items: center;">
+			<span class="card-title" style="margin-bottom: 5px;font-weight: bold;text-transform: capitalize;color:#353535;">{{'politic_comi' | translate}}</span>
+			<div class="col-12 input-field text_area_field">
+				<textarea name="large_descript" id="concepto_comi_polit" class="validate" (keyup)="keyupConceptoPoliticaComi($event.target);"></textarea>
+				<label class="activeInput">{{'concept' | translate}}</label>
+			</div>
+
+			<div class="col-12 field_file_drop">
+				<ngx-file-drop dropZoneLabel="Drop files here" (onFileDrop)="droppedPolitComi($event)" (onFileOver)="fileOverPolitComi($event)" (onFileLeave)="fileLeavePolitComi($event)">
+					<ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
+						<a class="btn btn_load_file" type="button" style="color: #0782d0 !important;" (click)="openFileSelector()">
+							{{'load_files' | translate}} / {{'browse_files' | translate}}
+						</a>
+					</ng-template>
+				</ngx-file-drop>
+				<table class="white centered" style="margin-top: 5px!important; width: 100% !important;">
+					<thead>
+						<tr>
+							<th>{{'file' | translate}}</th>
+							<th class="ultimo"></th>
+						</tr>
+					</thead>
+					<tbody class="upload-name-style" *ngIf="new_politica_comi_files.length != 0">
+						<tr *ngFor="let item of new_politica_comi_files; index as i">
+							<td><strong>{{ item.relativePath }}</strong></td>
+							<td class="ultimo">
+								<a class="btn btn_extend text-bg-danger rounded-3"
+									(click)="deleteAnexosPolitComi(i);">
+									<i class="fa-solid fa-xmark"></i>
+								</a>
+							</td>
+						</tr>
+					</tbody>
+					<tbody *ngIf="new_politica_comi_files.length == 0">
+						<tr><td colspan="2">{{'no_rows' | translate}}</td></tr>
+					</tbody>
+				</table>
+			</div>
+
+			<div class="col-12">
+        <div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+        <div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+          <a *ngIf="new_politica_comi_concepto != '' && new_politica_comi_anexos.length != 0" class="btn btnGuardar btnSaveRow waves-light" (click)="onSavePoliticaComi();"><i class="fa-regular fa-floppy-disk"></i> {{'save' | translate}}</a>
+        </div>
+        <div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+			</div>
+
+		</div>
+	</div>
+</div>

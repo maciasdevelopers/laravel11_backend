@@ -1,0 +1,241 @@
+<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco" #vContent>
+  <div class="contenido"><app-loader></app-loader>
+    <nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+    <div class="contenidoPagina">
+      <div class="listas_ps">
+        <div class="lista-div lista-divNoFlex">
+          <h4>Federaci&oacute;n estados y municipios</h4>
+          <div class="col-12">
+            <div class="btn-group lista_botones col" role="group" arial-label="Basic example">
+              <a class="btn btn_extend bg-indigo-600" (click)="listadoCatalogo();listadoDeletedCatalogo();">
+                <i class="fa-solid fa-rotate"></i>&nbsp;{{'list_updt' | translate}}
+              </a>
+              <a class="btn btn_extend bg-indigo-600" (click)="fedVerFormReg();">
+                <i class="fa-solid fa-plus"></i>&nbsp;Federac&oacute;n estados y municipios - registro
+              </a>
+              <a class="btn btn_extend bg-indigo-600" [ngClass]="fed_catalogo_eliminados.length == 0 ? 'disabled' : ''"
+                [attr.disabled]="fed_catalogo_eliminados.length == 0 ? true : null"
+                [attr.aria-disabled]="fed_catalogo_eliminados.length == 0 ? true : null"
+                (click)="fed_catalogo_eliminados.length > 0 && listadoDeletedCatalogo();verVentanaFedEliminados();">
+                <i class="fa-solid fa-trash" style="margin-left: 5px;"></i>&nbsp;Registros eliminados
+              </a>
+              <a class="btn btn_extend bg-green-600 descarga_lista_excel"
+                [ngClass]="fed_catalogo_activo.length == 0 ? 'disabled' : ''"
+                [attr.disabled]="fed_catalogo_activo.length == 0 ? true : null"
+                [attr.aria-disabled]="fed_catalogo_activo.length == 0 ? true : null"
+                (click)="fed_catalogo_activo.length > 0 && descarga_excel_federaciones();">
+                <i class="fa-solid fa-file-excel" style="margin-left: 5px;"></i>&nbsp;descargar
+              </a>
+            </div>
+          </div>
+
+          <p-dialog header="Federaci&oacute;n estados y municipios - registro" [(visible)]="fed_ver_registro_form"
+            [modal]="true" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }"
+            [maximizable]="true">
+            @if (fed_registro_form) {
+            <form class="formAportSegSocial" #formAportSegSocial="ngForm" autocomplete="off" name="formAportSegSocial"
+              enctype="multipart/form-data"
+              (ngSubmit)="validaFedEstMunRegistro && fedEstMunRegistro(formAportSegSocial);">
+              <div class="col-12 row" style="padding: 0!important;">
+                <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+                  <label class="activeInput">{{'fecha_cont' | translate}}</label>
+                  <input class="validate" type="date" name="contribNominaFechaPago"
+                    (change)="changeFechaContabilizacion($event.target);">
+                </div>
+                <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6 input-group">
+                  <label class="activeInput">Federaci&oacute;n, estado o municipio</label>
+                  <input class="validate" type="text" name="fedEstMunName" (keyup)="keyupFedEstMunName($event.target);">
+                </div>
+                <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+                  <label class="activeInput">Rfc</label>
+                  <input class="validate" type="text" name="fedEstMunRfc" data-length="12"
+                    placeholder="Ej. ABC000000XXX" maxlength="12" (keyup)="keyupFedEstMunRfc($event.target);">
+                </div>
+                <div class="col-12 input-group">
+                  <label class="activeInput">{{'observ' | translate}}</label>
+                  <textarea id="pago_large_observ" name="pago_large_observ" class="validate"
+                    (keyup)="keyupFedEstMunObservacion($event.target);"></textarea>
+                </div>
+                <div class="col-12"
+                  style="display: flex !important;justify-content: end!important;margin-top: 5px!important;">
+                  <button class="btn btn_extend text-bg-success rounded-3"
+                    [ngClass]="!validaFedEstMunRegistro ? 'disabled' : ''"
+                    [attr.disabled]="!validaFedEstMunRegistro ? true : null"
+                    [attr.aria-disabled]="!validaFedEstMunRegistro ? true : null">
+                    <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+                  </button>
+                </div>
+              </div>
+            </form>
+            }
+          </p-dialog>
+
+          <div class="col-12">
+            <p-table #listFederacionTable id="tabla_federacion_gral" [value]="fed_catalogo_activo" dataKey="id"
+              [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]"
+              [globalFilterFields]="['fed_est_mun_folio','fed_est_mun_fecha_contabilizacion','fed_est_mun_entidad','fed_est_mun_rfc','fed_est_mun_observaciones']">
+              <ng-template #caption>
+                <div class="flex">
+                  <p-iconfield iconPosition="left" class="ml-auto">
+                    <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                    <input pInputText type="text"
+                      (input)="listFederacionTable.filterGlobal($event.target.value, 'contains')"
+                      placeholder="{{'bus_car' | translate}}" />
+                  </p-iconfield>
+                </div>
+              </ng-template>
+              <ng-template #header>
+                <tr>
+                  <th class="ultimo"></th>
+                  <th pSortableColumn="fed_est_mun_folio">Folio&nbsp;<p-sortIcon field="fed_est_mun_folio" /></th>
+                  <th pSortableColumn="fed_est_mun_fecha_contabilizacion">{{'fecha_cont' | translate}}&nbsp;<p-sortIcon
+                      field="fed_est_mun_fecha_contabilizacion" /></th>
+                  <th pSortableColumn="fed_est_mun_entidad">Federaci&oacute;n, estado o municipio&nbsp;<p-sortIcon
+                      field="fed_est_mun_entidad" /></th>
+                  <th pSortableColumn="fed_est_mun_rfc">rfc&nbsp;<p-sortIcon field="fed_est_mun_rfc" /></th>
+                  <th pSortableColumn="fed_est_mun_observaciones">{{'observ' | translate}}&nbsp;<p-sortIcon
+                      field="fed_est_mun_observaciones" /></th>
+                  <th class="ultimo"></th>
+                </tr>
+              </ng-template>
+              <ng-template #body let-fsm>
+                <tr>
+                  <td class="ultimo">
+                    <a class="btn bg-blue-600" (click)="detalleFedEstMun(fsm.fed_est_mun_token);">
+                      <i class="fa-solid fa-info"></i>
+                    </a>
+                  </td>
+                  <td class="name">{{fsm.fed_est_mun_folio}}</td>
+                  <td class="name">{{fsm.fed_est_mun_fecha_contabilizacion}}</td>
+                  <td class="name">{{fsm.fed_est_mun_entidad}}</td>
+                  <td class="name">{{fsm.fed_est_mun_rfc}}</td>
+                  <td class="name">{{fsm.fed_est_mun_observaciones}}</td>
+                  <td class="ultimo">
+                    @if (!fsm.fed_est_mun_protegido) {
+                    <a class="btn btn_extend text-bg-danger rounded-3" [ngClass]="!fsm.puede_eliminar ? 'disabled' : ''"
+                      [attr.disabled]="!fsm.puede_eliminar ? true : null"
+                      [attr.aria-disabled]="!fsm.puede_eliminar ? true : null"
+                      (click)="fsm.puede_eliminar && deleteFedEstMun(fsm.fed_est_mun_token);">
+                      <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                    </a>
+                    }
+                  </td>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td colspan="7" class="text-center py-4">
+                    <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                    <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                      {{'no_rows' | translate}}
+                    </p>
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p-dialog header="Informaci&oacute;n de cajas registradas" [(visible)]="ver_ventana_fed_detalle" [modal]="true"
+  [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  @if (ver_info_fed_form) {
+  @for (fedet of fed_detalle; track $index) {
+  <form class="formAportSegSocial" #formAportSegSocial="ngForm" autocomplete="off" name="formAportSegSocial"
+    enctype="multipart/form-data"
+    (ngSubmit)="validaFedEstMunUpdate(fedet.fed_est_mun_token) && actualizaFedEstMun(fedet.fed_est_mun_token);">
+    <div class="col-12 row" style="padding: 0!important;">
+      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+        <label class="activeInput">{{'fecha_cont' | translate}}</label>
+        <input class="validate" type="date" name="contribNominaFechaPago"
+          [value]="fedet.fed_est_mun_fecha_contabilizacion_edit"
+          (change)="detFedEstMunFechaCont($event.target,fedet.fed_est_mun_token);">
+      </div>
+      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6 input-group">
+        <label class="activeInput">Federaci&oacute;n, estado o municipio</label>
+        <input class="validate" type="text" name="fedEstMunName" [value]="fedet.fed_est_mun_entidad"
+          (keyup)="detFedEstMunName($event.target,fedet.fed_est_mun_token);">
+      </div>
+      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+        <label class="activeInput">Rfc</label>
+        <input class="validate" type="text" name="fedEstMunRfc" data-length="12" placeholder="Ej. ABC000000XXX"
+          maxlength="12" [value]="fedet.fed_est_mun_rfc"
+          (keyup)="detFedEstMunRfc($event.target,fedet.fed_est_mun_token);">
+      </div>
+      <div class="col-12 input-group">
+        <label class="activeInput">{{'observ' | translate}}</label>
+        <textarea id="pago_large_observ" name="pago_large_observ" class="validate"
+          [value]="fedet.fed_est_mun_observaciones"
+          (keyup)="detFedEstMunObservacion($event.target,fedet.fed_est_mun_token);"></textarea>
+      </div>
+      <div class="col-12" style="display: flex !important;justify-content: end!important;margin-top: 5px!important;">
+        <button class="btn btn_extend text-bg-success rounded-3"
+          [ngClass]="!validaFedEstMunUpdate(fedet.fed_est_mun_token) ? 'disabled' : ''"
+          [attr.disabled]="!validaFedEstMunUpdate(fedet.fed_est_mun_token) ? true : null"
+          [attr.aria-disabled]="!validaFedEstMunUpdate(fedet.fed_est_mun_token) ? true : null">
+          <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+        </button>
+      </div>
+    </div>
+  </form>
+  }
+  }
+</p-dialog>
+
+<p-dialog header="Informaci&oacute;n de cajas eliminadas" [(visible)]="ver_ventana_fed_deleted" [modal]="true"
+  [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  <p-table #listCajasTable id="tabla_cajas_gral" [value]="fed_catalogo_eliminados" dataKey="id" [paginator]="true"
+    [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]"
+    [globalFilterFields]="['fed_est_mun_folio','fed_est_mun_fecha_contabilizacion','fed_est_mun_entidad','fed_est_mun_rfc','fed_est_mun_observaciones']">
+    <ng-template #caption>
+      <div class="flex">
+        <p-iconfield iconPosition="left" class="ml-auto">
+          <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+          <input pInputText type="text" (input)="listCajasTable.filterGlobal($event.target.value, 'contains')"
+            placeholder="{{'bus_car' | translate}}" />
+        </p-iconfield>
+      </div>
+    </ng-template>
+    <ng-template #header>
+      <tr>
+        <th pSortableColumn="fed_est_mun_folio">Folio&nbsp;<p-sortIcon field="fed_est_mun_folio" /></th>
+        <th pSortableColumn="fed_est_mun_fecha_contabilizacion">{{'fecha_cont' | translate}}&nbsp;<p-sortIcon
+            field="fed_est_mun_fecha_contabilizacion" /></th>
+        <th pSortableColumn="fed_est_mun_entidad">Federaci&oacute;n, estado o municipio&nbsp;<p-sortIcon
+            field="fed_est_mun_entidad" /></th>
+        <th pSortableColumn="fed_est_mun_rfc">rfc&nbsp;<p-sortIcon field="fed_est_mun_rfc" /></th>
+        <th pSortableColumn="fed_est_mun_observaciones">{{'observ' | translate}}&nbsp;<p-sortIcon
+            field="fed_est_mun_observaciones" /></th>
+        <th class="ultimo"></th>
+        <th class="ultimo"></th>
+      </tr>
+    </ng-template>
+    <ng-template #body let-fsm>
+      <tr>
+        <td class="name">{{fsm.fed_est_mun_folio}}</td>
+        <td class="name">{{fsm.fed_est_mun_fecha_contabilizacion}}</td>
+        <td class="name">{{fsm.fed_est_mun_entidad}}</td>
+        <td class="name">{{fsm.fed_est_mun_rfc}}</td>
+        <td class="name">{{fsm.fed_est_mun_observaciones}}</td>
+        <td><a class="btn btn_extend text-bg-success rounded-3" (click)="restoreFedEstMun(fsm.fed_est_mun_token);"><i
+              class="fa-solid fa-trash-arrow-up"></i>&nbsp;{{'restore_row' | translate}}</a></td>
+        <td><a class="btn btn_extend text-bg-danger rounded-3" (click)="deletePermFedEstMun(fsm.fed_est_mun_token);"><i
+              class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}</a></td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="7" class="text-center py-4">
+          <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+          <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+            {{'no_rows' | translate}}
+          </p>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</p-dialog>

@@ -1,0 +1,672 @@
+<!--principal-->
+<ul id="mobile-menu" class="sidenav">
+  <li class="item-sup usuario">
+    <div class="container">
+      <div class="logo-user" style="display: flex;justify-content: center;margin-top:10px;">
+        <img class="circle responsive-img" style="width: 30%;" src="{{identidad.avatar}}" alt="alt">
+      </div>
+      <div class="data-user">
+        <h6 style="text-align:center;" class="temp area-cargo">{{identidad.com_pany_name}}</h6>
+        <h6 style="text-align:center;" class="temp nombre">{{identidad.name}}</h6>
+      </div>
+    </div>
+  </li>
+  <li class="item-sup" style="display: flex;justify-content: center;">
+    <a class="lgout blue-button" (click)="lgoutFunct(identidad);">&#xf011;</a>
+  </li>
+  <li style="padding-left: 5px;padding-right: 5px;">
+    <p-accordion value="0">
+      <p-accordion-panel *ngFor="let not of arrayNotificaciones" value="0">
+        <p-accordion-header>{{not.emisor}}</p-accordion-header>
+        <p-accordion-content>
+          <p class="m-0">{{not.fecha_notificacion+" "+not.cuerpo}}</p>
+        </p-accordion-content>
+      </p-accordion-panel>
+    </p-accordion>
+  </li>
+</ul>
+<app-loader></app-loader>
+<nav class="nav-extended">
+  <div class="nav-wrapper">
+    <div class="brand-logo">
+      <img class="circle responsive-img" src="{{identidad.logotypo}}" alt="">
+    </div>
+    <a data-target="mobile-menu" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+    <ul id="nav-mobile" class="right hide-on-med-and-down">
+      <li class="item-sup usuario">
+        <div class="container">
+          <div class="data-user">
+            <h6 class="temp nombre">{{identidad.name}}</h6>
+            <h6 class="temp area-cargo">{{identidad.com_pany_name}}</h6>
+          </div>
+          <div class="logo-user">
+            <img class="circle responsive-img" src="{{identidad.avatar}}" alt="alt">
+          </div>
+        </div>
+      </li>
+      <li class="item-sup" *ngIf="number_notificaciones > 0" style="margin-right: 3px;">
+        <a class="lgout blue-button" (click)="verListNotificaciones();">&#xf0f3;
+          <span class="notificacion">{{number_notificaciones}}</span>
+        </a>
+        <ul id="listNotificaciones" class="listNotificaciones">
+          <li *ngIf="number_notificaciones >= 5">
+            <a class="btnRow lgout ViewNotif" style="width: 100%!important;" (click)="notificacionesAll();" *ngIf="arrayNotificaciones.length == 5">Ver todas las notificaciones</a>
+            <a class="btnRow lgout ViewNotif" style="width: 100%!important;" (click)="notificacionesMin();" *ngIf="arrayNotificaciones.length > 5">Ver primeras notificaciones</a>
+          </li>
+          <li href="#modalNotificaciones" *ngFor="let not of arrayNotificaciones;index as posicion"
+            class="li-notif row">
+            <div class="col s11">
+              <p>{{not.fecha_notificacion}}</p>
+              <h6>{{not.mensaje_completo}}</h6>
+            </div>
+            <div class="col s1 divDeleteNotif">
+              <a class="lgout blue-button " (click)="verNotificacion(not.token_notificacion);"><i class="fa-solid fa-xmark"></i></a>
+            </div>
+          </li>
+        </ul>
+      </li>
+      <li class="item-sup" *ngIf="number_notificaciones == 0" style="margin-right: 3px;">
+        <a class="lgout blue-button" disabled>&#xf0f3;</a>
+      </li>
+      <li class="item-sup">
+        <a class="lgout blue-button" (click)="lgoutFunct(identidad);">&#xf011;</a>
+      </li>
+    </ul>
+  </div>
+  <div class="nav-content">
+    
+    <p-tabs value="0">
+      <p-tablist>
+        <p-tab value="0">Ordenes de producci&oacute;n en proceso</p-tab>
+        <p-tab value="1">Ordenes de producci&oacute;n entregadas</p-tab>
+      </p-tablist>
+      <p-tabpanels>
+        <p-tabpanel value="0">
+          <div class="col-12">
+            <div class="busqueda row">
+              <div class="col s4 m6 col-md-3 col-lg-2"></div>
+              <div class="col s8 m6 col-md-3 col-lg-2">
+                <input class="datasearch" type="text" [(ngModel)]="logisticasearchProd" autocomplete="on" placeholder="{{'bus_car' | translate}}">
+              </div>
+            </div>
+        
+            <p-accordion value="0">
+              <!-- | filtro_Busqueda:logisticasearchProd-->
+              <p-accordion-panel *ngFor="let ord_lt of logisticaarrayOrdenes;index as i" [value]="i">
+                <p-accordion-header>{{ord_lt.folio_produccion+" - "+ord_lt.upc}}</p-accordion-header>
+                <p-accordion-content>
+                  <div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                    <div class="collection">
+                      <a id="btnDataGeneral{{i}}" (click)="cerrarColecctionsLogistica(i,'btnDataGeneral','viewDataGeneral');" class="collection-item active">Datos generales de orden</a>
+        
+                      <a id="btnConfirmaRecept{{i}}" (click)="cerrarColecctionsLogistica(i,'btnConfirmaRecept','viewSaveConfirmRecept');"
+                        class="collection-item">Ordenes de recepci&oacute;n <span class="notificacion" *ngIf="ord_lt.soli_recep_aduana.length">{{ord_lt.soli_recep_aduana.length}}</span>
+                        <span class="notificacion" *ngIf="ord_lt.soli_recep_almacen.length > 0">{{ord_lt.soli_recep_almacen.length}}</span>
+                      </a>
+        
+                      <a id="btnDescargarOrd{{i}}" (click)="cerrarColecctionsLogistica(i,'btnDescargarOrd','viewSaveDescargarOrd');"
+                        class="collection-item">Ordenes de descarga <span class="notificacion" *ngIf="ord_lt.soli_descarga.length > 0">{{ord_lt.soli_descarga.length}}</span></a>
+        
+                      <a id="btnConfirmaEntrega{{i}}" (click)="cerrarColecctionsLogistica(i,'btnConfirmaEntrega','viewSaveConfirmEntrega');"
+                        class="collection-item">Ordenes de entrega <span class="notificacion" *ngIf="ord_lt.soli_entrega.length > 0">{{ord_lt.soli_entrega.length}}</span></a>
+        
+                      <a id="btnEstadoOrden{{i}}" (click)="cerrarColecctionsLogistica(i,'btnEstadoOrden','viewEstadoOrden');" class="collection-item">Ver estado de orden</a>
+                    </div>
+                  </div>
+                  <div class="col-12 col-sm-8 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                    <div id="viewDataGeneral{{i}}" class="col-12">
+                      <div class="card blue">
+                        <div class="card-content">
+                          <div class="row">
+                            <div class="columna col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <h6 class="active">Descripci&oacute;n de orden</h6>
+                              <h6>{{ord_lt.descripcion}}</h6>
+                            </div>
+                            <div class="columna col-12 col-sm-12 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <h6 class="active">Upc</h6>
+                              <h6>{{ord_lt.upc}}</h6>
+                            </div>
+                            <div class="columna col-12 col-sm-12 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <h6 class="active">Sku</h6>
+                              <h6>{{ord_lt.sku}}</h6>
+                            </div>
+                          </div>
+        
+                          <div class="row">
+                            <div class="columna col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <h6 class="active">Cantidad</h6>
+                              <h6>{{ord_lt.cantidad}}</h6>
+                            </div>
+                            <div class="columna col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <h6 class="active">{{'uni_med' | translate}}</h6>
+                              <h6>{{ord_lt.unidad_medida}}</h6>
+                            </div>
+                            <div class="columna col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <h6 class="active">Procedencia</h6>
+                              <h6>{{ord_lt.procedencia}}</h6>
+                            </div>
+                            <div class="columna col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <h6 class="active">Destino</h6>
+                              <h6>{{ord_lt.destino}}</h6>
+                            </div>
+                          </div>
+        
+                          <div class="row">
+                            <div class="columna col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <h6 class="active">Fecha de salida estimada</h6>
+                              <h6>{{ord_lt.tentativa_salida}}</h6>
+                            </div>
+                            <div class="columna col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <h6 class="active">Fecha de salida final</h6>
+                              <h6 *ngIf="ord_lt.fecha_salida != null">{{ord_lt.fecha_salida}}</h6>
+                              <h6 *ngIf="ord_lt.fecha_salida == null">sin fecha de salida</h6>
+                            </div>
+                            <div class="columna col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <h6 class="active">Fecha de llegada estimada</h6>
+                              <h6>{{ord_lt.tentativa_llegada}}</h6>
+                            </div>
+                            <div class="columna col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <h6 class="active">Fecha de llegada final</h6>
+                              <h6 *ngIf="ord_lt.fecha_llegada != null">{{ord_lt.fecha_salida}}</h6>
+                              <h6 *ngIf="ord_lt.fecha_llegada == null">sin fecha de llegada</h6>
+                            </div>
+                            <div class="columna col-12">
+                              <h6 class="active">Observaciones de maquila</h6>
+                              <h6>{{ord_lt.observaciones}}</h6>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+        
+                    <div id="viewSaveConfirmRecept{{i}}" class="col-12 noneView">
+                      <div class="card blue" *ngIf="ord_lt.soli_recep_aduana.length != 0">
+                        <div class="card-content">
+                          <div class="row">
+                            <div class="columna col-12">
+                              <h6 class="active">Solicitud de recepci&oacute;n de orden en aduana</h6>
+                            </div>
+                            <div class="columna col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <h6 class="active">Descripci&oacute;n de orden</h6>
+                              <h6>{{ord_lt.descripcion}}</h6>
+                            </div>
+                            <div class="columna col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <h6 class="active">Upc</h6>
+                              <h6>{{ord_lt.upc}}</h6>
+                            </div>
+                            <div class="columna col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <h6 class="active">Sku</h6>
+                              <h6>{{ord_lt.sku}}</h6>
+                            </div>
+                            <div class="columna col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <h6 class="active">Cantidad</h6>
+                              <h6>{{ord_lt.cantidad}}</h6>
+                            </div>
+                          </div>
+                        </div>
+        
+                        <div class="card-content" *ngFor="let soli of ord_lt.soli_recep_aduana;index as s">
+                          <div *ngIf="soli.origen == 'ori'" class="row">
+                            <div class="columna input-field col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <input id="descChofer{{i}}" type="text" class="validate" (keyup)="valida_chofer($event.target);">
+                              <label class="active activeInput" for="descOrden">Chofer</label>
+                            </div>
+                            <div class="columna input-field col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <input id="descCamion{{i}}" type="text" class="validate" (keyup)="valida_camion($event.target);">
+                              <label class="active activeInput" for="descOrden">Camion</label>
+                            </div>
+                            <div class="columna input-field col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <input id="descPlacas{{i}}" type="text" class="validate" (keyup)="valida_placas($event.target);">
+                              <label class="active activeInput" for="descOrden">Placas</label>
+                            </div>
+                            <div class="columna file-field input-field col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <div class="btn">
+                                <span><i class="fa-solid fa-file-arrow-up"></i></span>
+                                <input type="file" multiple (change)="changeFileEvidencias($event);">
+                              </div>
+                              <div class="file-path-wrapper">
+                                <input class="file-path validate" type="text" placeholder="Upload one or more files">
+                              </div>
+                            </div>
+        
+                            <div class="columna col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+                            <div class="columna col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <a class="btn btnGuardar btnRow btnDark waves-light" *ngIf="orden_conf_chofer != '' && orden_conf_camion != '' &&
+                                orden_conf_placas != '' && imagenEvidenciasReceptAduana.length != 0"
+                              (click)="confirmarRecepcionAduana(ord_lt.token_produccion,soli.token_solicitud,s);"><i class="fa-regular fa-floppy-disk"></i> Confirmar recepci&oacute;n</a>
+                            </div>
+                            <div class="columna col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+                          </div>
+                        </div>
+                      </div>
+        
+                      <div class="card blue" *ngIf="ord_lt.soli_recep_almacen.length != 0">
+                        <div class="card-content">
+                          <div class="row">
+                            <div class="columna col-12">
+                              <h6 class="active">Solicitud de recepci&oacute;n de orden en almacen</h6>
+                            </div>
+                            <div class="columna col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <h6 class="active">Descripci&oacute;n de orden</h6>
+                              <h6>{{ord_lt.descripcion}}</h6>
+                            </div>
+                            <div class="columna col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <h6 class="active">Upc</h6>
+                              <h6>{{ord_lt.upc}}</h6>
+                            </div>
+                            <div class="columna col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <h6 class="active">Sku</h6>
+                              <h6>{{ord_lt.sku}}</h6>
+                            </div>
+                            <div class="columna col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <h6 class="active">Cantidad</h6>
+                              <h6>{{ord_lt.cantidad}}</h6>
+                            </div>
+                          </div>
+                        </div>
+        
+                        <div class="card-content" *ngFor="let soli of ord_lt.soli_recep_almacen;index as s">
+                          <div *ngIf="soli.origen == 'ori'" class="row">
+                            <div class="columna input-field col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <input id="descChofer{{i}}" type="text" class="validate" (keyup)="valida_chofer($event.target);">
+                              <label class="active activeInput" for="descOrden">Chofer</label>
+                            </div>
+                            <div class="columna input-field col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <input id="descCamion{{i}}" type="text" class="validate" (keyup)="valida_camion($event.target);">
+                              <label class="active activeInput" for="descOrden">Camion</label>
+                            </div>
+                            <div class="columna input-field col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <input id="descPlacas{{i}}" type="text" class="validate" (keyup)="valida_placas($event.target);">
+                              <label class="active activeInput" for="descOrden">Placas</label>
+                            </div>
+                            <div class="columna file-field input-field col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <div class="btn">
+                                <span><i class="fa-solid fa-file-arrow-up"></i></span>
+                                <input type="file" multiple (change)="changeFileEvidencias($event);">
+                              </div>
+                              <div class="file-path-wrapper">
+                                <input class="file-path validate" type="text" placeholder="Upload one or more files">
+                              </div>
+                            </div>
+        
+                            <div class="columna col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+                            <div class="columna col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <a class="btn btnGuardar btnRow btnDark waves-light" *ngIf="orden_conf_chofer != '' && orden_conf_camion != '' &&
+                                orden_conf_placas != '' && imagenEvidenciasReceptAduana.length != 0"
+                              (click)="confirmarRecepcionAlmacen(ord_lt.token_produccion,soli.token_solicitud,s);"><i class="fa-regular fa-floppy-disk"></i> Confirmar recepci&oacute;n</a>
+                            </div>
+                            <div class="columna col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+                          </div>
+                          <div *ngIf="soli.origen == 'maq'" class="row">
+                            <div class="columna input-field col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <input id="descChofer{{i}}" type="text" class="validate" (keyup)="valida_chofer($event.target);">
+                              <label class="active activeInput" for="descOrden">Chofer</label>
+                            </div>
+                            <div class="columna input-field col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <input id="descCamion{{i}}" type="text" class="validate" (keyup)="valida_camion($event.target);">
+                              <label class="active activeInput" for="descOrden">Camion</label>
+                            </div>
+                            <div class="columna input-field col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <input id="descPlacas{{i}}" type="text" class="validate" (keyup)="valida_placas($event.target);">
+                              <label class="active activeInput" for="descOrden">Placas</label>
+                            </div>
+                            <div class="columna file-field input-field col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <div class="btn">
+                                <span>File</span>
+                                <input type="file" multiple (change)="changeFileEvidencias($event);">
+                              </div>
+                              <div class="file-path-wrapper">
+                                <input class="file-path validate" type="text" placeholder="Upload one or more files">
+                              </div>
+                            </div>
+        
+                            <div class="columna col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+                            <div class="columna col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <a class="btn btnGuardar btnRow waves-light" *ngIf="orden_conf_chofer != '' && orden_conf_camion != '' &&
+                                orden_conf_placas != '' && imagenEvidenciasReceptAduana.length != 0"
+                              ><i class="fa-regular fa-floppy-disk"></i> Registrar orden</a>
+                            </div>
+                            <div class="columna col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+                          </div>
+                        </div>
+                      </div>
+        
+                      <div class="card blue" *ngIf="ord_lt.soli_recep_aduana.length == 0 && ord_lt.soli_recep_almacen.length == 0">
+                        <div class="card-content" style="height: 250px;display: flex;justify-content: center;align-items: center;">
+                          <h6 style="margin: 0;color: #fff;font-weight: bold;">NO TIENES SOLICITUDES</h6>
+                        </div>
+                      </div>
+                    </div>
+        
+                    <div id="viewSaveDescargarOrd{{i}}" class="col-12 noneView">
+                      <div class="card blue" *ngIf="ord_lt.soli_descarga.length != 0">
+                        <div class="card-content" *ngFor="let cantDown of ord_lt.soli_descarga">
+                          <div class="row">
+                            <div class="columna col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <h6 class="active">Descripci&oacute;n de orden</h6>
+                              <h6>{{ord_lt.descripcion}}</h6>
+                            </div>
+                            <div class="columna col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <h6 class="active">Upc</h6>
+                              <h6>{{ord_lt.upc}}</h6>
+                            </div>
+                            <div class="columna col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <h6 class="active">Sku</h6>
+                              <h6>{{ord_lt.sku}}</h6>
+                            </div>
+                            <div class="columna col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <h6 class="active">Cantidad</h6>
+                              <h6>{{ord_lt.cantidad+" Restante: "+cantDown.por_descargar}}</h6>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="columna input-field col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <input id="descChofer{{i}}" type="number" class="validate" [value]="cantidad_descarga" (keyup)="valida_cantidad_descarga($event.target);">
+                              <label class="active activeInput" for="descOrden">Cantidad</label>
+                            </div>
+                            <div class="columna file-field input-field col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <div class="btn">
+                                <span><i class="fa-solid fa-file-arrow-up"></i></span>
+                                <input type="file" multiple (change)="changeFileDescargaEvidencias($event);">
+                              </div>
+                              <div class="file-path-wrapper">
+                                <input class="file-path validate" type="text" placeholder="Upload one or more files">
+                              </div>
+                            </div>
+        
+                            <div class="columna col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+                            <div class="columna col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <a class="btn btnGuardar btnRow btnDark waves-light" *ngIf="cantidad_descarga != '' && imagenEvidenciasDescarga.length != 0"
+                              (click)="confirmarDescargaLogistica(ord_lt.token_produccion,cantDown.token_solicitud,i);"><i class="fa-regular fa-floppy-disk"></i> Registrar descarga</a>
+                            </div>
+                            <div class="columna col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="card blue" *ngIf="ord_lt.soli_descarga.length == 0">
+                        <div class="card-content" style="height: 250px;display: flex;justify-content: center;align-items: center;">
+                          <h6 style="margin: 0;color: #fff;font-weight: bold;">NO HAY DESCARGAS PENDIENTES</h6>
+                        </div>
+                      </div>
+                    </div>
+        
+                    <div id="viewSaveConfirmEntrega{{i}}" class="col-12 noneView">
+                      <div class="card blue" *ngIf="ord_lt.soli_entrega.length != 0">
+                        <div class="card-content">
+                          <div class="row">
+                            <div class="columna col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <h6 class="active">Descripci&oacute;n de orden</h6>
+                              <h6>{{ord_lt.descripcion}}</h6>
+                            </div>
+                            <div class="columna col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <h6 class="active">Upc</h6>
+                              <h6>{{ord_lt.upc}}</h6>
+                            </div>
+                            <div class="columna col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <h6 class="active">Sku</h6>
+                              <h6>{{ord_lt.sku}}</h6>
+                            </div>
+                            <div class="columna col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <h6 class="active">Cantidad</h6>
+                              <h6>{{ord_lt.cantidad}}</h6>
+                            </div>
+                          </div>
+                        </div>
+        
+                        <div class="card-content" *ngFor="let soli of ord_lt.soli_entrega;index as s">
+                          <div *ngIf="soli.origen == 'ori'" class="row">
+                            <div class="columna input-field col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <input id="descChofer{{i}}" type="text" class="validate" (keyup)="valida_chofer($event.target);">
+                              <label class="active activeInput" for="descOrden">Chofer</label>
+                            </div>
+                            <div class="columna input-field col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <input id="descCamion{{i}}" type="text" class="validate" (keyup)="valida_camion($event.target);">
+                              <label class="active activeInput" for="descOrden">Camion</label>
+                            </div>
+                            <div class="columna input-field col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <input id="descPlacas{{i}}" type="text" class="validate" (keyup)="valida_placas($event.target);">
+                              <label class="active activeInput" for="descOrden">Placas</label>
+                            </div>
+                            <div class="columna file-field input-field col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <div class="btn">
+                                <span><i class="fa-solid fa-file-arrow-up"></i></span>
+                                <input type="file" multiple (change)="changeFileEvidencias($event);">
+                              </div>
+                              <div class="file-path-wrapper">
+                                <input class="file-path validate" type="text" placeholder="Upload one or more files">
+                              </div>
+                            </div>
+        
+                            <div class="columna col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+                            <div class="columna col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <a class="btn btnGuardar btnRow btnDark waves-light" *ngIf="orden_conf_chofer != '' && orden_conf_camion != '' &&
+                                orden_conf_placas != '' && imagenEvidenciasReceptAduana.length != 0"><i class="fa-regular fa-floppy-disk"></i> Confirmar recepci&oacute;n</a>
+                                <!--(click)="confirmarRecepcionLogistica(ord_lt.token_produccion,soli.token_solicitud,s);"-->
+                            </div>
+                            <div class="columna col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+                          </div>
+                          <div *ngIf="soli.origen == 'maq'" class="row">
+                            <div class="columna input-field col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <input id="descCantEntMaq{{i}}" type="number" class="validate"
+                                (keyup)="logistica_valida_cantidad_entrega($event.target,ord_lt.token_produccion,soli.token_solicitud);">
+                              <label class="active activeInput" for="descOrden">Cantidad</label>
+                            </div>
+                            <div class="columna file-field input-field col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <div class="btn">
+                                <span>File</span>
+                                <input type="file" id="evidenciasEntMaq{{i}}" multiple (change)="logistica_valida_evidencias_entrega($event);">
+                              </div>
+                              <div class="file-path-wrapper">
+                                <input class="file-path validate" type="text" placeholder="Upload one or more files">
+                              </div>
+                            </div>
+                            <div class="columna col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+                            <div class="columna col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <a class="btn btnGuardar btnRow waves-light" *ngIf="soli.cantidad_new != '' && imagenEvidenciasEntregaToMaq != []"
+                              (click)="confirmarEntrega_logisticatomaquilador(ord_lt.token_produccion,soli.token_solicitud,soli.cantidad_new,i)"><i class="fa-regular fa-floppy-disk"></i> Registrar orden</a>
+                            </div>
+                            <div class="columna col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="card blue" *ngIf="ord_lt.soli_entrega.length == 0">
+                        <div class="card-content" style="height: 250px;display: flex;justify-content: center;align-items: center;">
+                          <h6 style="margin: 0;color: #fff;font-weight: bold;">NO TIENES SOLICITUDES</h6>
+                        </div>
+                      </div>
+                    </div>
+        
+                    <div id="viewEstadoOrden{{i}}" class="col-12 noneView">
+                      <table>
+                        <thead>
+                          <tr>
+                            <th class="ultimo">#</th>
+                            <th>Fecha</th>
+                            <th>acci&oacute;n</th>
+                          </tr>
+                        </thead>
+                        <tbody *ngIf="ord_lt.estado_orden.length > 0">
+                          <tr *ngFor="let ordst of ord_lt.estado_orden;index as i_s">
+                            <td class="ultimo">{{i_s+1}}</td>
+                            <td>{{ordst.fecha}}</td>
+                            <td>{{ordst.accion}}</td>
+                          </tr>
+                        </tbody>
+                        <tbody *ngIf="ord_lt.estado_orden.length == 0">
+                          <tr><td colspan="3">{{'no_rows' | translate}}</td></tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </p-accordion-content>
+              </p-accordion-panel>
+            </p-accordion>
+          </div>
+        </p-tabpanel>
+        <p-tabpanel value="1">
+          <div class="col-12">
+            <div class="busqueda row">
+              <div class="col s4 m6 col-md-3 col-lg-2"></div>
+              <div class="col s8 m6 col-md-3 col-lg-2">
+                <input class="datasearch" type="text" [(ngModel)]="logisticasearchProd" autocomplete="on" placeholder="{{'bus_car' | translate}}">
+              </div>
+            </div>
+        
+            <p-accordion value="0">
+              <!-- | filter:logisticasearchProd-->
+              <p-accordion-panel *ngFor="let ord_lt of logisticaarrayOrdenes;index as i" [value]="i">
+                <p-accordion-header>{{ord_lt.folio_produccion+" - "+ord_lt.upc}}</p-accordion-header>
+                <p-accordion-content>
+                  <div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                    <div class="collection">
+                      <a id="btnDataGeneral{{i}}" (click)="cerrarColecctionsLogistica(i,'btnDataGeneral','viewDataGeneral');" class="collection-item active">Datos generales de orden</a>
+                      <a id="btnConfirmaRecept{{i}}" (click)="cerrarColecctionsLogistica(i,'btnConfirmaRecept','viewSaveConfirmRecept');" class="collection-item">Establecer fecha de salida final</a>
+                      <a id="btnConfirmaEntrega{{i}}" (click)="cerrarColecctionsLogistica(i,'btnConfirmaEntrega','viewSaveConfirmEntrega');" class="collection-item">Establecer fecha de salida final</a>
+                      <a id="btnEstadoOrden{{i}}" (click)="cerrarColecctionsLogistica(i,'btnEstadoOrden','viewEstadoOrden');" class="collection-item">Ver estado de orden</a>
+                    </div>
+                  </div>
+                  <div class="col-12 col-sm-8 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                    <div id="viewDataGeneral{{i}}" class="col-12">
+                      <div class="card blue">
+                        <div class="card-content">
+                          <div class="row">
+                            <div class="columna col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <h6 class="active">Descripci&oacute;n de orden</h6>
+                              <h6>{{ord_lt.descripcion}}</h6>
+                            </div>
+                            <div class="columna col-12 col-sm-12 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <h6 class="active">Upc</h6>
+                              <h6>{{ord_lt.upc}}</h6>
+                            </div>
+                            <div class="columna col-12 col-sm-12 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <h6 class="active">Sku</h6>
+                              <h6>{{ord_lt.sku}}</h6>
+                            </div>
+                          </div>
+        
+                          <div class="row">
+                            <div class="columna col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <h6 class="active">Cantidad</h6>
+                              <h6>{{ord_lt.cantidad}}</h6>
+                            </div>
+                            <div class="columna col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <h6 class="active">{{'uni_med' | translate}}</h6>
+                              <h6>{{ord_lt.unidad_medida}}</h6>
+                            </div>
+                            <div class="columna col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <h6 class="active">Procedencia</h6>
+                              <h6>{{ord_lt.procedencia}}</h6>
+                            </div>
+                            <div class="columna col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <h6 class="active">Destino</h6>
+                              <h6>{{ord_lt.destino}}</h6>
+                            </div>
+                          </div>
+        
+                          <div class="row">
+                            <div class="columna col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <h6 class="active">Fecha de salida estimada</h6>
+                              <h6>{{ord_lt.tentativa_salida}}</h6>
+                            </div>
+                            <div class="columna col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <h6 class="active">Fecha de salida final</h6>
+                              <h6 *ngIf="ord_lt.fecha_salida != null">{{ord_lt.fecha_salida}}</h6>
+                              <h6 *ngIf="ord_lt.fecha_salida == null">sin fecha de salida</h6>
+                            </div>
+                            <div class="columna col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <h6 class="active">Fecha de llegada estimada</h6>
+                              <h6>{{ord_lt.tentativa_llegada}}</h6>
+                            </div>
+                            <div class="columna col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <h6 class="active">Fecha de llegada final</h6>
+                              <h6 *ngIf="ord_lt.fecha_llegada != null">{{ord_lt.fecha_salida}}</h6>
+                              <h6 *ngIf="ord_lt.fecha_llegada == null">sin fecha de llegada</h6>
+                            </div>
+                            <div class="columna col-12">
+                              <h6 class="active">Observaciones de maquila</h6>
+                              <h6>{{ord_lt.observaciones}}</h6>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div id="viewSaveConfirmRecept{{i}}" class="col-12 noneView">
+                      <div class="card blue">
+                        <div class="card-content">
+                          <div *ngIf="ord_lt.fecha_llegada == null" class="row">
+                            <div class="columna input-field col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <input class="datepicker" name="fechaAltaProd" type="date" (change)="validaFechaSalidaFinal($event.target);" id="txtFechaSalidafinal{{i}}">
+                              <label class="active activeInput" for="txtFechaSalidafinal">Fecha de salida final</label>
+                            </div>
+                            <div class="columna col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <a class="btn btnGuardar btnRow waves-light" *ngIf="txt_fecha_salida_final != ''"
+                              (click)="registraOrdenSalidaFinal(ord_lt.token_produccion,i);"><i class="fa-regular fa-floppy-disk"></i> Registrar orden</a>
+                            </div>
+                          </div>
+        
+                          <div class="row" *ngIf="ord_lt.fecha_llegada != null">
+                            <div class="columna col-12">
+                              <h6 class="active">Fecha de llegada final</h6>
+                              <h6>{{ord_lt.fecha_salida}}</h6>
+                            </div>
+                          </div>
+        
+                        </div>
+                      </div>
+                    </div>
+                    <div id="viewSaveConfirmEntrega{{i}}" class="col-12 noneView">
+                      <div class="card blue">
+                        <div class="card-content">
+                          <div *ngIf="ord_lt.fecha_llegada == null" class="row">
+                            <div class="columna input-field col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <input class="datepicker" name="fechaAltaProd" type="date"(change)="validaFechaSalidaFinal($event.target);" id="txtFechaSalidafinal{{i}}">
+                              <label class="active activeInput" for="txtFechaSalidafinal">Fecha de salida final</label>
+                            </div>
+                            <div class="columna col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <a class="btn btnGuardar btnRow waves-light" *ngIf="txt_fecha_salida_final != ''"
+                              (click)="registraOrdenSalidaFinal(ord_lt.token_produccion,i);"><i class="fa-regular fa-floppy-disk"></i> Registrar orden</a>
+                            </div>
+                          </div>
+        
+                          <div class="row" *ngIf="ord_lt.fecha_llegada != null">
+                            <div class="columna col-12">
+                              <h6 class="active">Fecha de llegada final</h6>
+                              <h6>{{ord_lt.fecha_salida}}</h6>
+                            </div>
+                          </div>
+        
+                        </div>
+                      </div>
+                    </div>
+                    <div id="viewEstadoOrden{{i}}" class="col-12 noneView">
+                      <table>
+                        <thead>
+                          <tr>
+                            <th class="ultimo">#</th>
+                            <th>Fecha</th>
+                            <th>acci&oacute;n</th>
+                          </tr>
+                        </thead>
+                        <tbody *ngIf="ord_lt.estado_orden.length > 0">
+                          <tr *ngFor="let ordst of ord_lt.estado_orden;index as i_s">
+                            <td class="ultimo">{{i_s+1}}</td>
+                            <td>{{ordst.fecha}}</td>
+                            <td>{{ordst.accion}}</td>
+                          </tr>
+                        </tbody>
+                        <tbody *ngIf="ord_lt.estado_orden.length == 0">
+                          <tr><td colspan="3">{{'no_rows' | translate}}</td></tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </p-accordion-content>
+              </p-accordion-panel>
+            </p-accordion>
+          </div>
+        </p-tabpanel>
+      </p-tabpanels>
+    </p-tabs>
+
+  </div>
+</nav>

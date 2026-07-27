@@ -1,0 +1,858 @@
+<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco" #vContent>
+  <div class="contenido"><app-loader></app-loader>
+    <nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+    <div class="contenidoPagina">
+      <div class="listas_ps revanecer">
+        <div id="listaServ" class="lista-div lista-divNoFlex row">
+          <h4 class="col-12">SERVICIOS</h4>
+          <div class="col-12">
+            <div class="btn-group lista_botones col" role="group" aria-label="Basic example"
+              style="margin-bottom: 5px!important;">
+              <a class="btn btn_extend bg-indigo-600" (click)="listaGeneralServicios();">
+                <i class="fa-solid fa-rotate" style="margin-left: 5px;"></i>&nbsp;{{'list_updt' | translate}}
+              </a>
+              <a class="btn btn_extend bg-indigo-600" (click)="verSeccionServiciosInventarioComprasReg()">
+                <i class="fa-solid fa-plus" style="margin-left: 5px;"></i>&nbsp;Registrar nuevo servicio para compras
+              </a>
+              <a class="btn btn_extend bg-indigo-600" (click)="verSeccionServiciosInventarioVentasReg()">
+                <i class="fa-solid fa-plus" style="margin-left: 5px;"></i>&nbsp;Registrar nuevo servicio para ventas
+              </a>
+              <a class="btn btn_extend bg-indigo-600" (click)="verSeccionServiciosInventarioMostradorVentasReg()">
+                <i class="fa-solid fa-plus" style="margin-left: 5px;"></i>&nbsp;Registrar nuevo servicio para ventas de
+                mostrador
+              </a>
+              <a class="btn btn_extend bg-indigo-600" data-bs-toggle="modal" data-bs-target="#infoServComprasEliminados"
+                (click)="listaEliminadosServicios();">
+                <i class="fa-solid fa-trash" style="margin-left: 5px;"></i>&nbsp;Servicios eliminados
+              </a>
+              <!--<a class="btn btn_extend bg-indigo-600" data-bs-toggle="modal" data-bs-target="#bitacoraModalComprasServ" >
+								<i class="fa-solid fa-timeline" style="margin-left: 5px;"></i>&nbsp;Ver bitacora de actividad 
+							</a>-->
+              <a class="btn btn_extend bg-green-600 descarga_lista_excel" (click)="descarga_excel_servicios();">
+                <i class="fa-solid fa-file-excel" style="margin-left: 5px;"></i>&nbsp;descargar
+              </a>
+            </div>
+
+            <p-dialog header="Registrar nuevo servicio para compras" [(visible)]="viewSeccionServInventComprasReg"
+              [modal]="true" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [style]="{ width: '50vw' }"
+              [draggable]="false" [resizable]="false">
+              <app-invent-serv-compras-alta></app-invent-serv-compras-alta>
+            </p-dialog>
+            <p-dialog header="Registrar nuevo servicio para ventas" [(visible)]="viewSeccionServInventVentasReg"
+              [modal]="true" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [style]="{ width: '50vw' }"
+              [draggable]="false" [resizable]="false">
+              <app-inventarios-servicios-ventas-registro></app-inventarios-servicios-ventas-registro>
+            </p-dialog>
+            <p-dialog header="Registrar nuevo servicio para ventas a mostrador"
+              [(visible)]="viewSeccionServInventMostradorVentasReg" [modal]="true"
+              [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [style]="{ width: '50vw' }" [draggable]="false"
+              [resizable]="false">
+              <app-inventarios-servicios-ventas-mostrador-registro></app-inventarios-servicios-ventas-mostrador-registro>
+            </p-dialog>
+
+            <p-tabs value="0">
+              <p-tablist>
+                <p-tab value="0">Cat&aacute;logo general de servicios</p-tab>
+                <p-tab value="1">Cat&aacute;logo de servicios para compras</p-tab>
+                <p-tab value="2">Cat&aacute;logo de servicios para ventas</p-tab>
+                <p-tab value="3">Cat&aacute;logo de servicios para ventas de mostrador</p-tab>
+              </p-tablist>
+              <p-tabpanels>
+                <p-tabpanel value="0">
+                  <p-table #servGralListaTRUE id="tableGeneralServiciosTrue" [value]="listaGeneralServiciosTRUE"
+                    dataKey="id" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]"
+                    [globalFilterFields]="['proceso','modulo_mostrador','token_cat_servicios','folio_sistema','servicio','catalogo_sat','cuenta_contable','utilizado']">
+                    <ng-template #caption>
+                      <div class="flex">
+                        <p-iconfield iconPosition="left" class="ml-auto">
+                          <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                          <input pInputText type="text"
+                            (input)="servGralListaTRUE.filterGlobal($event.target.value, 'contains')"
+                            placeholder="{{'bus_car' | translate}}" />
+                        </p-iconfield>
+                      </div>
+                    </ng-template>
+                    <ng-template #header>
+                      <tr>
+                        <th class="ultimo"></th>
+                        <th class="ultimo"></th>
+                        <th pSortableColumn="folio_sistema">folio&nbsp;<p-sortIcon field="folio_sistema" /></th>
+                        <th pSortableColumn="servicio">servicio&nbsp;<p-sortIcon field="servicio" /></th>
+                        <th pSortableColumn="catalogo_sat">catalogo de sat&nbsp;<p-sortIcon field="catalogo_sat" /></th>
+                        <th pSortableColumn="cuenta_contable">Cuenta contable&nbsp;<p-sortIcon
+                            field="cuenta_contable" /></th>
+                        <th class="ultimo"></th>
+                      </tr>
+                    </ng-template>
+                    <ng-template #body let-srv>
+                      <tr>
+                        <td class="ultimo">
+                          <a class="btn bg-blue-600" data-bs-toggle="modal"
+                            [attr.data-bs-target]="srv.proceso == 'compra' ? '#windowServicioDetalle' : (!srv.modulo_mostrador ? '#windowServicioVentasDetalle' : '#windowServicioMostradorVentasDetalle')"
+                            (click)="srv.proceso == 'compra' ? verServicioCompras(srv.token_cat_servicios) : (!srv.modulo_mostrador ? verServicioVentasAll(srv.token_cat_servicios) : verServicioVentasMostrador(srv.token_cat_servicios));">
+                            <!-- routerLink="../servicioscomprascatalogo_perfil/{{srv.token_cat_servicios}}"-->
+                            <i class="fa-solid fa-info"></i>
+                          </a>
+                        </td>
+                        <td class="img_dat">
+                          <div class="col-12">
+                            <img class="circle optimizedImage" src="{{srv.logotipo}}" alt="">
+                          </div>
+                        </td>
+                        <td class="name">{{srv.folio_sistema}}</td>
+                        <td class="name">{{srv.servicio}}</td>
+                        <td class="name">{{srv.catalogo_sat}}</td>
+                        <td class="name">{{srv.cuenta_contable}}</td>
+                        <td class="ultimo">
+                          <a class="btn btn_extend text-bg-danger rounded-3" [ngClass]="srv.utilizado ? 'disabled' : ''"
+                            [attr.disabled]="srv.utilizado ? true : null"
+                            [attr.aria-disabled]="srv.utilizado ? true : null"
+                            (click)="!srv.utilizado && funcDeleteServEgr(srv.token_cat_servicios);">
+                            <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}</a>
+                        </td>
+                      </tr>
+                    </ng-template>
+                    <ng-template pTemplate="emptymessage">
+                      <tr>
+                        <td colspan="7" class="text-center py-4">
+                          <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                          <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                            {{'no_rows' | translate}}
+                          </p>
+                        </td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
+                </p-tabpanel>
+                <p-tabpanel value="1">
+                  <app-invent-serv-compras-lista></app-invent-serv-compras-lista>
+                </p-tabpanel>
+                <p-tabpanel value="2">
+                  <app-invent-serv-ventas-lista></app-invent-serv-ventas-lista>
+                </p-tabpanel>
+                <p-tabpanel value="3">
+                  <app-invent-serv-mostrador-ventas-lista></app-invent-serv-mostrador-ventas-lista>
+                </p-tabpanel>
+              </p-tabpanels>
+            </p-tabs>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade bd-example-modal-lg" id="windowServicioDetalle" tabindex="-1" role="dialog"
+  aria-labelledby="windowServicioDetalleLabel" aria-hidden="true">
+  <div class="modal-dialog modal-fullscreen" style="margin: 1%;width: 98%!important;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="windowServicioDetalleLabel">INFORMACI&Oacute;N DE SERVICIOS
+          REGISTRADOS</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+          style="background-color: transparent !important;"></button>
+      </div>
+      <div class="modal-body">
+        <div class="col-12" *ngFor="let srv of datosDetalleServCompras">
+          <div class="col-12 explain">
+            <h6 class="title">folio</h6>
+            <h6 class="content">{{srv.folio_sistema}}</h6>
+          </div>
+          <form class="row formPerfilServCat" #formPerfilServCat="ngForm" autocomplete="off" [formGroup]="infoForm"
+            name="formPerfilServCat" enctype="multipart/form-data"
+            (ngSubmit)="servicioValidate && actualizaGeneralesServ(formPerfilServCat,srv.token_cat_servicios);">
+            <div class="col-12 row" style="padding: 0!important;">
+              <div class="col-12 input-group conceptoServ">
+                <label class="activeInput">Concepto / Descripci&oacute;n</label>
+                <input class="validate" name="servicio_regCat" type="text" [value]="srv.servicio" required
+                  (keyup)="conceptoKeyup($event.target);">
+              </div>
+              <div class="col-12 col-sm-6 col-md-6 col-ld-6 col-xl-6 col-xxl-6 input-group">
+                <label class="activeInput">Clasificaci&oacute;n</label>
+                <select name="txtGeneroAltaServ" required class="browser-default"
+                  (change)="selectGeneroServ($event.target);">
+                  <option value="">{{'opt_select' | translate}}</option>
+                  <option *ngFor="let clase of listaServClasificacion" [value]="clase.token_genero"
+                    [attr.disabled]="servicioModelo.genero == clase.token_genero ? true : null"
+                    [attr.selected]="servicioModelo.genero == clase.token_genero ? true : null">{{clase.concepto}}
+                  </option>
+                </select>
+              </div>
+              <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-6 col-xxl-6 input-group">
+                <label class="activeInput">Vinculaci&oacute;n al cat&aacute;logo de unidades de medida</label>
+                <!--<datalist id="dtListUnidadMedidaSAT"><option *ngFor="let medU of catalogoUnidadesMedINVENT" [value]="medU.nombre">{{medU.simbolo+" ("+medU.categoria+")"}}</option></datalist>
+								<input class="validate" type="text" name="medida_servicio" list="dtListUnidadMedidaSAT" [value]="servicioModelo.unidad_medida_clave" (change)="keyupUnidadMedidaSalidaApiServ($event.target);">-->
+                <p-select [options]="catalogoUnidadesMedINVENT" id="selectedInfoUnidadMedidaSAT"
+                  formControlName="serv_medida_unidad" optionValue="nombre" optionLabel="nombre" [filter]="true"
+                  filterBy="nombre,simbolo,categoria" [showClear]="true" [placeholder]="'opt_select' | translate"
+                  class="w-full md:w-56" (onChange)="keyupUnidadMedidaSalidaApiServ($event.value);">
+                  <ng-template #selectedItem let-selectedOption>
+                    <div class="flex items-center gap-2">
+                      <div>{{ selectedOption.nombre }}</div>
+                    </div>
+                  </ng-template>
+                  <ng-template let-medU #item>
+                    <div class="flex items-center gap-2">
+                      <div>{{medU.nombre+" "+medU.simbolo+" ("+medU.categoria+")"}}</div>
+                    </div>
+                  </ng-template>
+                </p-select>
+              </div>
+              <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-10 col-xxl-11 input-group">
+                <label for="" class="activeInput">C&oacute;digo de vinculaci&oacute;n al catalogo del SAT</label>
+                <input class="validate" type="text" name="Servicio_regCat" maxlength="8"
+                  [value]="servicioModelo.clave_sat" (keypress)="keyPressNumerico($event)" required
+                  (keyup)="keyupSat($event.target);">
+              </div>
+              <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-2 col-xxl-1"
+                style="padding-left: 0!important;display:flex;align-items: center;justify-content: end;height: 30px;">
+                <a class="btn btn_extend bg-blue-600" href="http://pys.sat.gob.mx/PyS/catPyS.aspx" target="_blank">
+                  <i class="fa-solid fa-globe"></i> Sitio web del sat
+                </a>
+              </div>
+              <p-divider />
+              <h6 style="height: 30px;font-weight: bold;">Vinculaci&oacute;n a proveedores</h6>
+
+              <p-tabs value="0">
+                <p-tablist>
+                  <p-tab value="0">Proveedores vinculados</p-tab>
+                  <p-tab value="1">Proveedores para vincular</p-tab>
+                </p-tablist>
+                <p-tabpanels>
+                  <p-tabpanel value="0">
+                    <div class="col-12">
+                      <p-table #srvProvVinc [value]="srv.proveedores" dataKey="id" [paginator]="true" [rows]="10"
+                        [rowsPerPageOptions]="[10,20,30,50,100]" [globalFilterFields]="buscarSRVPrvVinc">
+                        <ng-template #caption>
+                          <div class="flex">
+                            <p-iconfield iconPosition="left" class="ml-auto">
+                              <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                              <input pInputText type="text"
+                                (input)="srvProvVinc.filterGlobal($event.target.value, 'contains')"
+                                placeholder="{{'bus_car' | translate}}" />
+                            </p-iconfield>
+                          </div>
+                        </ng-template>
+                        <ng-template #header>
+                          <tr>
+                            <th pSortableColumn="folio">Folio&nbsp;<p-sortIcon field="folio" /></th>
+                            <th pSortableColumn="rfc_prov">rfc&nbsp;<p-sortIcon field="rfc_prov" /></th>
+                            <th pSortableColumn="nombre">{{'prov' | translate}}&nbsp;<p-sortIcon field="nombre" /></th>
+                            <th pSortableColumn="tiene_clave">cuenta con clave alterna&nbsp;<p-sortIcon
+                                field="tiene_clave" /></th>
+                            <th pSortableColumn="asigned_clave">clave alterna (asignada por el
+                              proveedor)&nbsp;<p-sortIcon field="asigned_clave" /></th>
+                            <th class="ultimo"><i class="fa-solid fa-eraser"></i></th>
+                          </tr>
+                        </ng-template>
+                        <ng-template #body let-prv>
+                          <tr>
+                            <td>{{prv.folio}}</td>
+                            <td>{{prv.rfc_prov}}</td>
+                            <td class="name">{{prv.nombre}}</td>
+                            <td>
+                              <div class="form-check form-switch form-check-reverse switch_primario"
+                                style="justify-content: center;flex-direction: column;">
+                                <label class="form-check-label" for="flexSwitchCheckReverse">No</label>
+                                <input class="form-check-input selectSwitchProvProd" name="selectImpProd"
+                                  type="checkbox" [checked]="prv.tiene_clave == 'true'"
+                                  [ngClass]="prv.eliminacion_proceso ? 'disabled' : ''"
+                                  [attr.disabled]="prv.eliminacion_proceso ? true : null"
+                                  [attr.aria-disabled]="prv.eliminacion_proceso ? true : null"
+                                  (click)="!prv.eliminacion_proceso && habilitarClave_vinc($event.target,prv.token_serv_claves);"
+                                  style="width: 80%!important;">
+                                <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' |
+                                  translate}}</label>
+                              </div>
+                            </td>
+                            <td>
+                              <p
+                                *ngIf="prv.encendido == false || (prv.encendido == true && prv.tiene_clave == '') || (prv.encendido == true && prv.tiene_clave != '' && prv.tiene_clave == 'false')">
+                                ---</p>
+                              <input class="claveServProvAlta txtClave validate" type="text"
+                                [ngClass]="prv.eliminacion_proceso ? 'disabled' : ''"
+                                [attr.disabled]="prv.eliminacion_proceso ? true : null"
+                                [attr.aria.disabled]="prv.eliminacion_proceso ? true : null"
+                                *ngIf="prv.encendido == true && prv.tiene_clave != '' && prv.tiene_clave == 'true'"
+                                [value]="prv.asigned_clave"
+                                (keyup)="ediClav_asigVinc($event.target,prv.token_serv_claves);"
+                                (keypress)="keypressProvServClave($event);">
+                            </td>
+                            <td>
+                              <div class="form-check form-switch form-check-reverse switch_primario switch_delete"
+                                style="justify-content: center;flex-direction: column;">
+                                <input class="form-check-input selectSwitchProvProd" name="selectImpProd"
+                                  type="checkbox" [checked]="prv.eliminacion_proceso == true"
+                                  (click)="actionBotonVinc($event.target,prv.token_serv_claves);"
+                                  style="width: 80%!important;">
+                              </div>
+                            </td>
+                          </tr>
+                        </ng-template>
+                        <ng-template pTemplate="emptymessage">
+                          <tr>
+                            <td colspan="6" class="text-center py-4">
+                              <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                              <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                {{'no_rows' | translate}}
+                              </p>
+                            </td>
+                          </tr>
+                        </ng-template>
+                      </p-table>
+                    </div>
+                  </p-tabpanel>
+                  <p-tabpanel value="1">
+                    <div class="col-12">
+                      <div class="buscador row" style="margin-top: 10px!important">
+                        <div class="content content_light">
+                          <div class="col-12 col-sm-6 col-md-3 col-lg-2 btn-group lista_botones">
+                            <a class="btn btn_extend bg-indigo-600" (click)="llenarProvClavesNuevasList();">
+                              <i class="fa-solid fa-rotate" style="margin-left: 5px;"></i>&nbsp;{{'list_updt' |
+                              translate}}
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                      <p-table #servProvNewClav [value]="catProvNewClaves" [globalFilterFields]="buscarSRVPrvList"
+                        dataKey="id" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]">
+                        <ng-template #caption>
+                          <div class="flex">
+                            <p-iconfield iconPosition="left" class="ml-auto">
+                              <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                              <input pInputText type="text"
+                                (input)="servProvNewClav.filterGlobal($event.target.value, 'contains')"
+                                placeholder="{{'bus_car' | translate}}" />
+                            </p-iconfield>
+                          </div>
+                        </ng-template>
+                        <ng-template #header>
+                          <tr>
+                            <th pSortableColumn="folio">Folio&nbsp;<p-sortIcon field="folio" /></th>
+                            <th pSortableColumn="rfc_prov">rfc&nbsp;<p-sortIcon field="rfc_prov" /></th>
+                            <th pSortableColumn="nombre">{{'prov' | translate}}&nbsp;<p-sortIcon field="nombre" /></th>
+                            <th class="">activar vinculaci&oacute;n a proveedor</th>
+                            <th>cuenta con clave alterna</th>
+                            <th>clave alterna (asignada por el proveedor)</th>
+                          </tr>
+                        </ng-template>
+                        <ng-template #body let-prv_row>
+                          <tr>
+                            <td>{{prv_row.folio}}</td>
+                            <td>{{prv_row.rfc_prov}}</td>
+                            <td class="name">{{prv_row.nombre}}</td>
+                            <td class="ultimo">
+                              <div class="form-check form-switch form-check-reverse switch_primario"
+                                style="justify-content: center;flex-direction: column;">
+                                <label class="form-check-label" for="flexSwitchCheckReverse">No</label>
+                                <input class="form-check-input selectSwitchProvProd" name="selectImpProd"
+                                  type="checkbox" [checked]="prv_row.encendido == true"
+                                  (click)="apagar_encender($event.target,prv_row.token_cat_proveedores);"
+                                  style="width: 80%!important;">
+                                <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' |
+                                  translate}}</label>
+                              </div>
+                            </td>
+                            <td>
+                              <div *ngIf="prv_row.encendido == true"
+                                class="form-check form-switch form-check-reverse switch_primario"
+                                style="justify-content: center;flex-direction: column;">
+                                <label class="form-check-label" for="flexSwitchCheckReverse">No</label>
+                                <input class="form-check-input selectSwitchProvProd" name="selectImpProd"
+                                  type="checkbox" [checked]="prv_row.tiene_clave == 'true'"
+                                  (click)="decideHabilitaClave($event.target,prv_row.token_cat_proveedores);"
+                                  style="width: 80%!important;">
+                                <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' |
+                                  translate}}</label>
+                              </div>
+                              <p *ngIf="prv_row.encendido == false">---</p>
+                            </td>
+                            <td>
+                              <input class="claveServProvAlta txtClave validate" type="text"
+                                *ngIf="prv_row.encendido == true && prv_row.tiene_clave != '' && prv_row.tiene_clave == 'true'"
+                                (keyup)="keyupProvServClave($event.target,prv_row.token_cat_proveedores);"
+                                (keypress)="keypressProvServClave($event);">
+                              <p
+                                *ngIf="prv_row.encendido == false || (prv_row.encendido == true && prv_row.tiene_clave == '') || (prv_row.encendido == true && prv_row.tiene_clave != '' && prv_row.tiene_clave == 'false')">
+                                ---</p>
+                            </td>
+                          </tr>
+                        </ng-template>
+                        <ng-template pTemplate="emptymessage">
+                          <tr>
+                            <td colspan="6" class="text-center py-4">
+                              <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                              <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                {{'no_rows' | translate}}
+                              </p>
+                            </td>
+                          </tr>
+                        </ng-template>
+                      </p-table>
+                    </div>
+                  </p-tabpanel>
+                </p-tabpanels>
+              </p-tabs>
+
+              <div class="col-12" style="display: flex;justify-content: end;">
+                <button class="btn btn_extend text-bg-success rounded-3" [ngClass]="!servicioValidate ? 'disabled' : ''"
+                  [attr.disabled]="!servicioValidate ? true :null"
+                  [attr.aria-disabled]="!servicioValidate ? true : null" type="submit" name="btnCompraDetalleC">
+                  <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade bd-example-modal-lg" id="windowServicioVentasDetalle" tabindex="-1" role="dialog"
+  aria-labelledby="windowServicioVentasDetalleLabel" aria-hidden="true">
+  <div class="modal-dialog modal-fullscreen" style="margin: 1%;width: 98%!important;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="windowServicioVentasDetalleLabel">INFORMACI&Oacute;N DE
+          SERVICIOS PARA VENTAS</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+          style="background-color: transparent !important;"></button>
+      </div>
+      <div class="modal-body">
+        <div class="col-12" *ngFor="let srv of datosDetalleServVentas">
+          <div class="col-12 explain">
+            <h6 class="title">folio</h6>
+            <h6 class="content">{{srv.folio_sistema}}</h6>
+          </div>
+          <form class="row formPerfilServCat" #formPerfilServCat="ngForm" autocomplete="off" name="formPerfilServCat"
+            enctype="multipart/form-data"
+            (ngSubmit)="servicioValidate && actualizaGeneralesServ(formPerfilServCat,srv.token_cat_servicios);">
+            <div class="col-12 row" style="padding: 0!important;">
+              <div class="col-12 input-group conceptoServ">
+                <label class="activeInput">Concepto / Descripci&oacute;n</label>
+                <input class="validate" name="servicio_regCat" type="text" [value]="srv.servicio" required
+                  (keyup)="conceptoKeyup($event.target);">
+              </div>
+              <div class="col-12 col-sm-6 col-md-6 col-ld-6 col-xl-6 col-xxl-6 input-group">
+                <label class="activeInput">Clasificaci&oacute;n</label>
+                <select name="txtGeneroAltaServ" required class="browser-default"
+                  (change)="selectGeneroServ($event.target);">
+                  <option value="">{{'opt_select' | translate}}</option>
+                  <option *ngFor="let clase of listaServClasificacion" [value]="clase.token_genero"
+                    [attr.disabled]="servicioModelo.genero == clase.token_genero ? true : null"
+                    [attr.selected]="servicioModelo.genero == clase.token_genero ? true : null">{{clase.concepto}}
+                  </option>
+                </select>
+              </div>
+              <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-6 col-xxl-6 input-group">
+                <label class="activeInput">Vinculaci&oacute;n al cat&aacute;logo de unidades de medida</label>
+                <datalist id="dtListUnidadMedidaSAT">
+                  <option *ngFor="let medU of catalogoUnidadesMedINVENT" [value]="medU.nombre">{{medU.simbolo+"
+                    ("+medU.categoria+")"}}</option>
+                </datalist>
+                <input class="validate" type="text" name="medida_servicio" list="dtListUnidadMedidaSAT"
+                  [value]="servicioModelo.unidad_medida_clave"
+                  (change)="keyupUnidadMedidaSalidaApiServ($event.target);">
+              </div>
+              <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-10 col-xxl-11 input-group">
+                <label for="" class="activeInput">C&oacute;digo de vinculaci&oacute;n al catalogo del SAT</label>
+                <input class="validate" type="text" name="Servicio_regCat" maxlength="8"
+                  [value]="servicioModelo.clave_sat" (keypress)="keyPressNumerico($event)" required
+                  (keyup)="keyupSat($event.target);">
+              </div>
+              <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-2 col-xxl-1"
+                style="padding-left: 0!important;display:flex;align-items: center;justify-content: end;height: 30px;">
+                <a class="btn btn_extend bg-blue-600" href="http://pys.sat.gob.mx/PyS/catPyS.aspx" target="_blank">
+                  <i class="fa-solid fa-globe"></i> Sitio web del sat
+                </a>
+              </div>
+              <p-divider />
+              <h6 style="height: 30px;font-weight: bold;">Vinculaci&oacute;n a proveedores</h6>
+
+              <p-tabs value="0">
+                <p-tablist>
+                  <p-tab value="0">Proveedores vinculados</p-tab>
+                  <p-tab value="1">Proveedores para vincular</p-tab>
+                </p-tablist>
+                <p-tabpanels>
+                  <p-tabpanel value="0">
+                    <div class="col-12">
+                      <p-table #ventServProvVinc [value]="srv.proveedores" dataKey="id" [paginator]="true" [rows]="10"
+                        [rowsPerPageOptions]="[10,20,30,50,100]" [globalFilterFields]="buscarSRVPrvVinc">
+                        <ng-template #caption>
+                          <div class="flex">
+                            <p-iconfield iconPosition="left" class="ml-auto">
+                              <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                              <input pInputText type="text"
+                                (input)="ventServProvVinc.filterGlobal($event.target.value, 'contains')"
+                                placeholder="{{'bus_car' | translate}}" />
+                            </p-iconfield>
+                          </div>
+                        </ng-template>
+                        <ng-template #header>
+                          <tr>
+                            <th pSortableColumn="folio">Folio&nbsp;<p-sortIcon field="folio" /></th>
+                            <th pSortableColumn="rfc_prov">rfc&nbsp;<p-sortIcon field="rfc_prov" /></th>
+                            <th pSortableColumn="nombre">{{'prov' | translate}}&nbsp;<p-sortIcon field="nombre" /></th>
+                            <th pSortableColumn="tiene_clave">cuenta con clave alterna&nbsp;<p-sortIcon
+                                field="tiene_clave" /></th>
+                            <th pSortableColumn="asigned_clave">clave alterna (asignada por el
+                              proveedor)&nbsp;<p-sortIcon field="asigned_clave" /></th>
+                            <th class="ultimo"><i class="fa-solid fa-eraser"></i></th>
+                          </tr>
+                        </ng-template>
+                        <ng-template #body let-prv>
+                          <tr>
+                            <td>{{prv.folio}}</td>
+                            <td>{{prv.rfc_prov}}</td>
+                            <td class="name">{{prv.nombre}}</td>
+                            <td>
+                              <div class="form-check form-switch form-check-reverse switch_primario"
+                                style="justify-content: center;flex-direction: column;">
+                                <label class="form-check-label" for="flexSwitchCheckReverse">No</label>
+                                <input class="form-check-input selectSwitchProvProd" name="selectImpProd"
+                                  type="checkbox" [checked]="prv.tiene_clave == 'true'"
+                                  [ngClass]="prv.eliminacion_proceso ? 'disabled' : ''"
+                                  [attr.disabled]="prv.eliminacion_proceso ? true : null"
+                                  [attr.aria-disabled]="prv.eliminacion_proceso ? true : null"
+                                  (click)="!prv.eliminacion_proceso && habilitarClave_vinc($event.target,prv.token_serv_claves);"
+                                  style="width: 80%!important;">
+                                <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' |
+                                  translate}}</label>
+                              </div>
+                            </td>
+                            <td>
+                              <p
+                                *ngIf="prv.encendido == false || (prv.encendido == true && prv.tiene_clave == '') || (prv.encendido == true && prv.tiene_clave != '' && prv.tiene_clave == 'false')">
+                                ---</p>
+                              <input class="claveServProvAlta txtClave validate" type="text"
+                                [ngClass]="prv.eliminacion_proceso ? 'disabled' : ''"
+                                [attr.disabled]="prv.eliminacion_proceso ? true : null"
+                                [attr.aria.disabled]="prv.eliminacion_proceso ? true : null"
+                                *ngIf="prv.encendido == true && prv.tiene_clave != '' && prv.tiene_clave == 'true'"
+                                [value]="prv.asigned_clave"
+                                (keyup)="ediClav_asigVinc($event.target,prv.token_serv_claves);"
+                                (keypress)="keypressProvServClave($event);">
+                            </td>
+                            <td>
+                              <div class="form-check form-switch form-check-reverse switch_primario switch_delete"
+                                style="justify-content: center;flex-direction: column;">
+                                <input class="form-check-input selectSwitchProvProd" name="selectImpProd"
+                                  type="checkbox" [checked]="prv.eliminacion_proceso == true"
+                                  (click)="actionBotonVinc($event.target,prv.token_serv_claves);"
+                                  style="width: 80%!important;">
+                              </div>
+                            </td>
+                          </tr>
+                        </ng-template>
+                        <ng-template pTemplate="emptymessage">
+                          <tr>
+                            <td colspan="6" class="text-center py-4">
+                              <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                              <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                {{'no_rows' | translate}}
+                              </p>
+                            </td>
+                          </tr>
+                        </ng-template>
+                      </p-table>
+                    </div>
+                  </p-tabpanel>
+                  <p-tabpanel value="1">
+                    <div class="col-12">
+                      <div class="buscador row" style="margin-top: 10px!important">
+                        <div class="content content_light">
+                          <div class="col-12 col-sm-6 col-md-3 col-lg-2 btn-group lista_botones">
+                            <a class="btn btn_extend bg-indigo-600" (click)="llenarProvClavesNuevasList();">
+                              <i class="fa-solid fa-rotate" style="margin-left: 5px;"></i>&nbsp;{{'list_updt' |
+                              translate}}
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                      <p-table #ventServProvNewClav [value]="catProvNewClaves" [globalFilterFields]="buscarSRVPrvList"
+                        dataKey="id" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]">
+                        <ng-template #caption>
+                          <div class="flex">
+                            <p-iconfield iconPosition="left" class="ml-auto">
+                              <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                              <input pInputText type="text"
+                                (input)="ventServProvNewClav.filterGlobal($event.target.value, 'contains')"
+                                placeholder="{{'bus_car' | translate}}" />
+                            </p-iconfield>
+                          </div>
+                        </ng-template>
+                        <ng-template #header>
+                          <tr>
+                            <th pSortableColumn="folio">Folio&nbsp;<p-sortIcon field="folio" /></th>
+                            <th pSortableColumn="rfc_prov">rfc&nbsp;<p-sortIcon field="rfc_prov" /></th>
+                            <th pSortableColumn="nombre">{{'prov' | translate}}&nbsp;<p-sortIcon field="nombre" /></th>
+                            <th class="">activar vinculaci&oacute;n a proveedor</th>
+                            <th>cuenta con clave alterna</th>
+                            <th>clave alterna (asignada por el proveedor)</th>
+                          </tr>
+                        </ng-template>
+                        <ng-template #body let-prv_row>
+                          <tr>
+                            <td>{{prv_row.folio}}</td>
+                            <td>{{prv_row.rfc_prov}}</td>
+                            <td class="name">{{prv_row.nombre}}</td>
+                            <td class="ultimo">
+                              <div class="form-check form-switch form-check-reverse switch_primario"
+                                style="justify-content: center;flex-direction: column;">
+                                <label class="form-check-label" for="flexSwitchCheckReverse">No</label>
+                                <input class="form-check-input selectSwitchProvProd" name="selectImpProd"
+                                  type="checkbox" [checked]="prv_row.encendido == true"
+                                  (click)="apagar_encender($event.target,prv_row.token_cat_proveedores);"
+                                  style="width: 80%!important;">
+                                <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' |
+                                  translate}}</label>
+                              </div>
+                            </td>
+                            <td>
+                              <div *ngIf="prv_row.encendido == true"
+                                class="form-check form-switch form-check-reverse switch_primario"
+                                style="justify-content: center;flex-direction: column;">
+                                <label class="form-check-label" for="flexSwitchCheckReverse">No</label>
+                                <input class="form-check-input selectSwitchProvProd" name="selectImpProd"
+                                  type="checkbox" [checked]="prv_row.tiene_clave == 'true'"
+                                  (click)="decideHabilitaClave($event.target,prv_row.token_cat_proveedores);"
+                                  style="width: 80%!important;">
+                                <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' |
+                                  translate}}</label>
+                              </div>
+                              <p *ngIf="prv_row.encendido == false">---</p>
+                            </td>
+                            <td>
+                              <input class="claveServProvAlta txtClave validate" type="text"
+                                *ngIf="prv_row.encendido == true && prv_row.tiene_clave != '' && prv_row.tiene_clave == 'true'"
+                                (keyup)="keyupProvServClave($event.target,prv_row.token_cat_proveedores);"
+                                (keypress)="keypressProvServClave($event);">
+                              <p
+                                *ngIf="prv_row.encendido == false || (prv_row.encendido == true && prv_row.tiene_clave == '') || (prv_row.encendido == true && prv_row.tiene_clave != '' && prv_row.tiene_clave == 'false')">
+                                ---</p>
+                            </td>
+                          </tr>
+                        </ng-template>
+                        <ng-template pTemplate="emptymessage">
+                          <tr>
+                            <td colspan="6" class="text-center py-4">
+                              <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                              <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                {{'no_rows' | translate}}
+                              </p>
+                            </td>
+                          </tr>
+                        </ng-template>
+                      </p-table>
+                    </div>
+                  </p-tabpanel>
+                </p-tabpanels>
+              </p-tabs>
+
+              <div class="col-12" style="display: flex;justify-content: end;">
+                <button class="btn btn_extend text-bg-success rounded-3" [ngClass]="!servicioValidate ? 'disabled' : ''"
+                  [attr.disabled]="!servicioValidate ? true :null"
+                  [attr.aria-disabled]="!servicioValidate ? true : null" type="submit" name="btnCompraDetalleC">
+                  <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade bd-example-modal-lg" id="windowServicioMostradorVentasDetalle" tabindex="-1" role="dialog"
+  aria-labelledby="windowServicioMostradorVentasDetalleLabel" aria-hidden="true">
+  <div class="modal-dialog modal-fullscreen" style="margin: 1%;width: 98%!important;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="windowServicioMostradorVentasDetalleLabel">
+          INFORMACI&Oacute;N DE SERVICIOS PARA VENTAS DE MOSTRADOR</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+          style="background-color: transparent !important;"></button>
+      </div>
+      <div class="modal-body">
+        <div class="col-12" *ngFor="let srv of datosDetalleServMostrador">
+          <form class="row formPerfilServCat" #formPerfilServCat="ngForm" autocomplete="off" name="formPerfilServCat"
+            enctype="multipart/form-data"
+            (ngSubmit)="servicioMostradorValidate && actualizaServicioMostrador(formPerfilServCat,srv.token_cat_servicios);">
+            <div class="col-12 row">
+              <div class="col-12 input-group conceptoServ">
+                <label class="activeInput">Concepto / Descripci&oacute;n</label>
+                <input class="validate" name="servicio_regCat" type="text" required [value]="modelServ.concepto"
+                  (keyup)="conceptoMostradorKeyup($event.target);">
+              </div>
+              <div class="input-group col-12 col-sm-12 col-md-12 col-lg-4 col-xl-4 col-xxl-4">
+                <label for="stockmax_regCat" id="lblStockmax" class="activeInput">Precio sin impuestos</label>
+                <input id="textStockmax" class="validate" name="stockmax_regCat" type="number"
+                  [value]="modelServ.precio_aplicable" (keyup)="keyupPrecioAplicableServ($event.target);">
+              </div>
+              <div class="input-group col-12 col-sm-12 col-md-12 col-lg-4 col-xl-4 col-xxl-4">
+                <label class="activeInput">{{'mon_name' | translate}}</label><!-- {{reem_moneda_entrante_nombre}}-->
+                <datalist id="inputListMonServ">
+                  <option *ngFor="let arraMon of catalogoMonedasApi" [value]="arraMon.langEN">{{"código
+                    "+arraMon.code+", "+arraMon.decimales+" decimales"}}</option>
+                </datalist>
+                <input class="validate" list="inputListMonServ" type="text" id="reem_moneda_entrante"
+                  [value]="data_moneda" (change)="keyupValidateMoneda($event.target);">
+              </div>
+              <div class="input-group col-12 col-sm-12 col-md-12 col-lg-4 col-xl-4 col-xxl-4">
+                <label class="activeInput">Vinculaci&oacute;n al catalogo de unidades de medida</label>
+                <label class="activeInput">Vinculaci&oacute;n al cat&aacute;logo de unidades de medida</label>
+                <datalist id="dtListUnidadMedidaSAT">
+                  <option *ngFor="let medU of catalogoUnidadesMedINVENT" [value]="medU.nombre">{{medU.simbolo+"
+                    ("+medU.categoria+")"}}</option>
+                </datalist>
+                <input class="validate" type="text" list="dtListUnidadMedidaSAT" [value]="modelServ.unidad_medida_clave"
+                  (change)="keyupUnidadMedidaServMostrador($event.target);">
+              </div>
+              <div class="col-12 row">
+                <div class="col-12 col-sm-3 col-md-3 col-lg-4 col-xl-4 col-xxl-4"></div>
+                <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-4">
+                  <button class="btn btnRow text-bg-success rounded-3" type="submit" name="btnAltaServicio2"
+                    style="padding: 0!important;" [ngClass]="!servicioMostradorValidate ? 'disabled' : ''"
+                    [attr.disabled]="!servicioMostradorValidate ? true : null"
+                    [attr.aria-disabled]="!servicioMostradorValidate ? true : null">
+                    <i class="fa-solid fa-floppy-disk"
+                      style="height: 15px!important;line-height: 15px!important;width: 15px!important;font-size: small!important;"></i>&nbsp;{{'sav_cam'
+                    | translate}}</button>
+                </div>
+                <div class="col-12 col-sm-3 col-md-3 col-lg-4 col-xl-4 col-xxl-4"></div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade bd-example-modal-lg" id="infoServComprasEliminados" tabindex="-1" role="dialog"
+  aria-labelledby="infoServComprasEliminadosLabel" aria-hidden="true">
+  <div class="modal-dialog modal-fullscreen" style="margin: 1%;width: 98%!important;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="infoServComprasEliminadosLabel">INFORMACI&Oacute;N DE
+          SERVICIOS ELIMINADOS</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+          style="background-color: transparent !important;"></button>
+      </div>
+      <div class="modal-body">
+        <div class="col-12">
+          <p-table #servDeletedList [value]="listaServiciosDeleted"
+            [globalFilterFields]="['folio_sistema','servicio','catalogo_sat','token_cat_servicios']" dataKey="id"
+            [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]">
+            <ng-template #caption>
+              <div class="flex">
+                <p-iconfield iconPosition="left" class="ml-auto">
+                  <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                  <input pInputText type="text" (input)="servDeletedList.filterGlobal($event.target.value, 'contains')"
+                    placeholder="{{'bus_car' | translate}}" />
+                </p-iconfield>
+              </div>
+            </ng-template>
+            <ng-template #header>
+              <tr>
+                <th class="ultimo"></th>
+                <th pSortableColumn="folio_sistema">folio&nbsp;<p-sortIcon field="folio_sistema" /></th>
+                <th pSortableColumn="servicio">servicio&nbsp;<p-sortIcon field="servicio" /></th>
+                <th pSortableColumn="catalogo_sat">catalogo de sat&nbsp;<p-sortIcon field="catalogo_sat" /></th>
+                <th class="ultimo"></th>
+                <th class="ultimo"></th>
+              </tr>
+            </ng-template>
+            <ng-template #body let-srvDel>
+              <tr>
+                <td class="img_dat">
+                  <div class="col-12">
+                    <img clas="circle optimizedImage" fill ngSrc="{{srvDel.logotipo}}" alt="Contact Person">
+                  </div>
+                </td>
+                <td>{{srvDel.folio_sistema}}</td>
+                <td>{{srvDel.servicio}}</td>
+                <td>{{srvDel.catalogo_sat}}</td>
+                <td>
+                  <a class="btn btn_extend text-bg-success rounded-3"
+                    (click)="funcRestoreServEgr(srvDel.token_cat_servicios);">
+                    <i class="fa-solid fa-trash-arrow-up"></i>&nbsp;{{'restore_row' | translate}}
+                  </a>
+                </td>
+                <td>
+                  <a class="btn btn_extend text-bg-danger rounded-3"
+                    (click)="funcDeleteTotalServEgr($event.target,srvDel.token_cat_servicios);">
+                    <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                  </a>
+                </td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="6" class="text-center py-4">
+                  <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                  <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                    {{'no_rows' | translate}}
+                  </p>
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+      </div>
+      <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade bd-example-modal-lg" id="bitacoraModalComprasServ" tabindex="-1" role="dialog"
+  aria-labelledby="bitacoraModalComprasServLabel" aria-hidden="true">
+  <div class="modal-dialog modal-fullscreen" style="margin: 1%;width: 98%!important;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="bitacoraModalComprasServLabel">BITACORA DE ACTIVIDAD</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+          style="background-color: transparent !important;"></button>
+      </div>
+      <div class="modal-body">
+        <div id="tabProvEliminados" class="col-12">
+          <table id="tabBitacoraServicios" class="display nowrap mdl-data-table white centered"
+            style="width:100%!important;margin:0!important;">
+            <thead>
+              <tr>
+                <th>folio</th>
+                <th>fecha</th>
+                <th>prov relacionado</th>
+                <th>actividad</th>
+                <th>realizo</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let bita_act of arrayBitacoraServ">
+                <td>{{bita_act.folio_bitacora}}</td>
+                <td>{{bita_act.fecha_bitacora}}</td>
+                <td>{{bita_act.folio_relacionado}}</td>
+                <td>{{bita_act.actividad}}</td>
+                <td>{{bita_act.usuario_relacionado}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

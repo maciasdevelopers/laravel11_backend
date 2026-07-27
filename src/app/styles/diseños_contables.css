@@ -1,0 +1,16 @@
+.table_contable {
+  width: 40%;
+  border-collapse: collapse;
+  margin-left: 60%;
+  margin-top: 20px;
+  text-align: right;
+  font-size: 20px;
+}
+.table_contable td {
+    padding: 8px 5px;
+    border-bottom: 1px solid #ccc;
+}
+.table_contable .label {
+    font-weight: bold;
+    color: black;
+}

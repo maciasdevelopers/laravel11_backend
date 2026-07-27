@@ -1,0 +1,304 @@
+import { Component, OnInit } from '@angular/core';
+import { ComprasServService } from '../../../../../../servicios/ssic/compras-serv.service';
+import { DireccionesService } from '../../../../../../servicios/ssic/direcciones.service';
+import { ValidatorServService } from '../../../../../../servicios/validator-serv.service';
+import { TranslateService } from '@ngx-translate/core';
+import Swal from 'sweetalert2';
+import { NgxFileDropEntry } from 'ngx-file-drop';
+import { EstablecimientosService } from '../../../../../../servicios/establecimientos';
+
+@Component({
+  selector: 'app_interno_egresos_compras_devengacion_servicios',
+  standalone: false,
+  
+  templateUrl: './compras_devengacion_servicios.component.html',
+  styleUrls: [
+    '../../../../../../styles/datatable.css',
+    '../../../../../../styles/input_group.css',
+    '../../../../../../styles/buttons.css',
+    '../../../../../../styles/modals.css',
+    '../../../../../../styles/proveedores.css',
+    '../../../../../../styles/collapsible.css',
+    '../../../../../../styles/row.css',
+    '../../../../../../styles/cards.css',
+    '../../../../../../styles/encabezados.css',
+    '../../../../../../styles/buscador.css',
+    '../../../../../../styles/radioButtons.css',
+    '../../../../../../styles/paginador.css',
+    '../../../../../../styles/tabs.css',
+    '../../../../../../styles/loading.css',
+    '../../../../../../styles/listas_ps.css',
+    '../../../../../../styles/landing.css',
+    '../../../../../../styles/colores.css',
+    '../../../../../../styles/explain.css',
+    '../../../../../../styles/switches.css',
+    '../../../../../../styles/ubicaciones.css',
+    '../../../inventarios.css',
+    './compras_devengacion_servicios.component.css'
+  ]
+})
+export class ComprasDevengacionServiciosComponent implements OnInit{
+  buyComprasBuscar: string = '';
+  arrayComprasGeneral:any = [];
+
+  buyArtBuscar: string = '';
+  arrayArticulos:any = [];
+  
+  buyArtReceptBuscar: string = '';
+  arrayArticulosRecibidos:any = [];
+
+  //recepción de articulos
+  listaRecepcionesCatalogo:any = [];
+  listaRechazosCatalogo:any = [];
+  arrayDetalleCompra:any = [];
+
+  seccionImpuestosUno:string = "";
+  seccionRecepcion:string = "";
+  seccionRechazos:string = "";
+  seccionImpuestosDos:string = "";
+
+  arrayEstablecCompras:any = []; 
+  rechazoReceptArray:any = [];
+
+    public filesDevengacion: NgxFileDropEntry[] = [];
+    public docsDevengacionAnexos:any [] = [];
+    public docsDevengacionNames:any = [];
+    public reem_saved:boolean = false;
+
+  constructor(
+    public _comprServ: ComprasServService,
+    public _almService:DireccionesService,
+    public validator:ValidatorServService,
+    private translate:TranslateService,
+    private estabServ:EstablecimientosService,
+  ){
+  }
+
+  ngOnInit(): void {
+    this.listaGencompras();
+    this.recargaEstablecimientos();
+  }
+
+  listaGencompras(){
+    this._comprServ.listaComprasDevengacionServ().subscribe(
+      response => {
+        if (response.status == 'success') {
+          console.log(response);
+          this.arrayComprasGeneral = response.compras;
+        }
+      },
+      error => {
+        console.log(error);
+      }
+    );
+  }
+
+  recargaEstablecimientos(){
+    this.estabServ.listaEstablecimientoscomplete().subscribe(
+      response => {
+        console.log(response.status);
+        if (response.status == 'success') {
+          this.arrayEstablecCompras = response.listaEstablecimientos;
+          console.log(this.arrayEstablecCompras);
+        }
+      },
+      error =>{
+        console.log(error);
+      }
+    )
+  }
+
+  compraDesgloseDevengacion(token_compras:any){
+    this.arrayDetalleCompra = [];
+    this._comprServ.detalleComprasDevengServ(token_compras).subscribe(
+      response => {
+        if (response.status == 'success') {
+          this.arrayDetalleCompra = response.compras;
+          //this.rfcProveedor = response.compras[0]['rfc'];
+          //console.log(response.compras[0]['validaTimerFact']);
+          console.log(this.arrayDetalleCompra);
+          this.arrayDetalleCompra.forEach((row:any) => {
+            this.arrayArticulos = row.articulos;
+            this.arrayArticulosRecibidos = row.articulosRecibidos;
+          });
+        }
+      },
+      error => {
+        console.log(error);
+      }
+    );
+  }
+
+  verImpuestosUno(row:any) {
+    this.seccionImpuestosUno = this.seccionImpuestosUno === row ? null : row;
+  }
+
+  validaFechaDevengado(event:any,token_articulo:any,token_detcompra:any){
+    const serv = this.arrayArticulos.find((row:any) => row.token_articulo === token_articulo && row.token_detcompra === token_detcompra);
+    const validacion = event.value != "" && this.validator.filtroFecha(event.value) == true && typeof serv !== 'undefined'; 
+    serv.fecha_devengado = validacion ? event.value : '';
+    validacion ? this.validator.correctoInputRow(event) : this.validator.errorInputRow(event);
+  }
+
+  observacionesKeyup(event:any,token_articulo:any,token_detcompra:any){
+    const validacion = event.value != '' && this.validator.filtroAlfaNumerico(event.value);
+    const serv = this.arrayArticulos.find((row:any) => row.token_articulo === token_articulo && row.token_detcompra === token_detcompra);
+    serv.observaciones = validacion ? event.value : '';
+  }
+
+  validateRegistroDevengar(token_articulo:any,token_detcompra:any): boolean {
+    const serv = this.arrayArticulos.find((row:any) => row.token_articulo === token_articulo && row.token_detcompra === token_detcompra);
+    return serv.fecha_devengado != '' && serv.observaciones != '';
+  }
+
+  verRechazoFor(row:any,token_compras:any,token_detcompra:any){
+    this.seccionRechazos = this.seccionRechazos === row ? null : row;
+    this.seccionRechazos === row ? this.listarRechazos(token_compras,token_detcompra) : null;
+  }
+
+  listarRechazos(token_compras:any,token_detcompra:any){
+    //this.rechazoReceptArray = [];
+    this._comprServ.rechazosComprasAutorizadas(token_compras,token_detcompra).subscribe(
+      response => {
+        if (response.status == 'success') {
+          this.rechazoReceptArray = response.arrayRechazos;
+          //
+          console.log(response.arrayRechazos);
+        }
+      },
+      error => {
+        console.log(error);
+      }
+    );
+  }
+
+  public droppedDevenFiles(files: NgxFileDropEntry[]) {
+    this.filesDevengacion = files;
+    this.docsDevengacionAnexos = [];
+    this.docsDevengacionNames = [];
+    for (let i = 0; i < files.length; i++) {
+      const droppedFile = files[i]
+      // Is it a file?
+      if (droppedFile.fileEntry.isFile) {
+        const fileEntry = droppedFile.fileEntry as FileSystemFileEntry;
+        fileEntry.file((file: File) => {
+          console.log(droppedFile.fileEntry, file);
+          //this.docsDevengacionAnexos.push(file,droppedFile.relativePath);
+          var nameFile = file.name;
+          if (file.size <= 2000000 && this.validator.filtroTipoArchivo(file.type) == true) {
+            this.docsDevengacionNames.push({"typoElement":this.validator.devuelveTipoArchivo(file.type),"nameFile":nameFile});
+            this.docsDevengacionAnexos.push(file);
+          } else {
+            let mensajeError = '';
+            if (file.size > 2000000) {
+              mensajeError = 'El archivo '+nameFile+' excede el tamaño permitido (2MB)';
+            }
+            if (this.validator.filtroTipoArchivo(file.type) == false) {
+              mensajeError = 'El archivo '+nameFile+' debe ser en formato pdf, xml, png o jpg';
+            }
+            Swal.fire({
+              position:'top-end',
+              icon: 'warning',
+              title: mensajeError,
+              showConfirmButton:false,
+              timer: 3000
+            })
+            this.filesDevengacion.splice(i,1);
+            return;
+          }
+        });
+      } else {
+        // It was a directory (empty directories are added, otherwise only files)
+        const fileEntry = droppedFile.fileEntry as FileSystemDirectoryEntry;
+        console.log(droppedFile.relativePath, fileEntry);
+      }
+    }
+    console.log("docsDevengacionAnexos.length "+this.docsDevengacionAnexos.length);
+  }
+
+  public fileOverDevenFiles(event:any){
+    console.log(event);
+  }
+
+  public fileLeaveDevenFiles(event:any){
+    console.log(event);
+  }
+
+  deleteAnexosDevenFiles(posicion:any){
+    Swal.fire({
+      title: this.translate.instant("swal_attenc"),
+      text: "¿Desea eliminar el archivo Seleccionedo?",
+      icon: 'question',
+      confirmButtonColor: '#388E3C',
+      confirmButtonText: this.translate.instant("swal_yes_delete"),
+      showCancelButton: true,
+      cancelButtonColor: '#D32F2F',
+      cancelButtonText: this.translate.instant("swal_cancel"),
+    }).then(
+      (result) => {
+        if (result.isConfirmed) {
+          this.docsDevengacionAnexos.splice(posicion,1);
+          this.filesDevengacion.splice(posicion,1);
+          console.log(this.docsDevengacionAnexos.length);
+        }
+      }
+    );
+  }
+
+  guardaDevengacionServicio(token_compras:any,token_detcompra:any,token_articulo:any){
+    Swal.fire({
+      title: this.translate.instant("swal_attenc"),
+      text: this.translate.instant("swal_insert"),
+      icon: 'warning',
+      confirmButtonColor: '#388E3C',
+      confirmButtonText: this.translate.instant("swal_yes_insert"),
+      showCancelButton: true,
+      cancelButtonColor: '#D32F2F',
+      cancelButtonText: this.translate.instant("swal_cancel"),
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const serv = this.arrayArticulos.filter((row:any) => row.token_articulo === token_articulo && row.token_detcompra === token_detcompra);
+        this._comprServ.guardarDevengacionServicio(token_compras,serv,this.docsDevengacionAnexos,this.docsDevengacionNames).subscribe(
+          response => {
+            let translate_response = this.translate.instant(response.message);
+            if (response.status == 'success') {
+              Swal.fire({
+                position:'center',
+                icon: 'success',
+                title: translate_response,
+                showConfirmButton:false,
+                timer: 3000
+              })
+              this.listaGencompras();
+              if (this.arrayArticulos.length > 1) {
+                this.compraDesgloseDevengacion(token_compras);
+              } else {
+                this.arrayDetalleCompra = [];
+                this.arrayArticulos = [];
+              }
+              this.filesDevengacion = [];
+              this.docsDevengacionAnexos = [];
+              this.docsDevengacionNames = [];
+            }
+            if (response.status == 'error') {
+              Swal.fire({
+                position:'top-end',
+                icon: 'warning',
+                title: translate_response,
+                showConfirmButton:false,
+                timer: 3000
+              })
+            }
+          },
+          error => {
+            console.log(error);
+          }
+        );
+      }
+    })
+  }
+
+  verImpuestosDos(row:any) {
+    this.seccionImpuestosDos = this.seccionImpuestosDos === row ? null : row;
+  }
+}

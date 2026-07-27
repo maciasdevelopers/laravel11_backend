@@ -1,0 +1,387 @@
+<h6 *ngIf="!permiso_crear" class="access_denied">{{'perm_denied' | translate}}</h6>
+<div class="col-12 row" *ngIf="permiso_crear" style="padding: 0;">
+  <div class="col-12 col-sm-12 col-md-12 col-lg-4 col-xl-4 col-xxl-4"
+    [ngClass]="acree_dor_user.length == 1 ? 'explain' : 'input-group'">
+    @if (acree_dor_user.length == 1) {
+    <h6 *ngIf="newFaseUNO.usuario_acreedor_titular != ''" class="title">{{'acree_name' | translate}}</h6>
+    <h6 *ngIf="newFaseUNO.usuario_acreedor_titular != ''" class="content">{{newFaseUNO.usuario_acreedor_titular}}</h6>
+    } @else {
+    <label for="fechaAltaProd" class="activeInput">{{'acree_name' | translate}}</label>
+    <p-select [options]="acree_dor_user" id="reem_acreedor_data" name="reem_acreedor_data" optionLabel="acr_titular"
+      [filter]="true" filterBy="acr_titular" appendTo="body" [ngClass]="acree_dor_user.length == 0 ? 'disabled' : ''"
+      [disabled]="acree_dor_user.length == 0" [attr.aria-disabled]="acree_dor_user.length == 0 ? true : null"
+      [showClear]="true" [placeholder]="'opt_select' | translate" class="w-full md:w-56"
+      (onChange)="select_acreedor_for_registro($event.value);" [(ngModel)]="newFaseUNO.usuario_acreedor_token"
+      name="usuario_acreedor">
+      <ng-template #selectedItem let-selectedOption>
+        <div class="flex items-center gap-2">
+          <div>{{selectedOption.acr_titular}}</div>
+        </div>
+      </ng-template>
+      <ng-template let-prov #item>
+        <div class="flex items-center gap-2">
+          <div>{{prov.acr_titular}}</div>
+        </div>
+      </ng-template>
+    </p-select>
+    }
+  </div>
+  <div class="input-group col-12 col-sm-12 col-md-12 col-lg-4 col-xl-4 col-xxl-4">
+    <label for="fechaAltaProd" class="activeInput">1.- {{'comi_paso_uno' | translate}}</label>
+    <p-multiselect [options]="arrayComisionesLista" [(ngModel)]="newFaseUNO.comisionesSelected"
+      optionLabel="busqueda_completa" [placeholder]="'opt_select' | translate"
+      [ngClass]="newFaseUNO.usuario_acreedor_token == '' ? 'disabled' : ''"
+      [disabled]="newFaseUNO.usuario_acreedor_token == ''"
+      [attr.aria-disabled]="newFaseUNO.usuario_acreedor_token == '' ? true : null" [maxSelectedLabels]="3"
+      styleClass="w-full md:w-80" (click)="selectComision();" />
+  </div>
+
+  <div class="col-12 col-sm-12 col-md-12 col-lg-4 col-xl-4 col-xxl-4"
+    style="display: flex !important; justify-content: start !important;align-content: flex-end;align-items: end;">
+    <a class="btn btn_extend text-bg-success rounded-3" [ngClass]="!validaFaseUNO ? 'disabled' : ''"
+      [attr.disabled]="!validaFaseUNO ? true : null" [attr.aria-disabled]="!validaFaseUNO ? true : null"
+      (click)="validaFaseUNO && onSaveReembolsoFaseUNO();">
+      <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+    </a>
+  </div>
+
+  <div class="col-12" [ngClass]="!sinComisiones && newFaseUNO.token_reembolso_main != '' ? '' : 'disabledView'"
+    style="padding: 0;">
+    <div class="col-12" style="padding: 0;">
+      <h6 style="margin-bottom: 5px;font-weight: bold;text-transform: inherit;color: #353535;text-align: left;">2.-
+        {{'comi_paso_dos_reem' | translate}}</h6>
+      <form id="form_reem_new_soli" name="form_reem_new_soli" (ngSubmit)="list_reem_to_save();">
+        <div class="fake-table" style="overflow: overlay;">
+
+          <!-- HEADER -->
+          <div class="fake-thead">
+            <div class="fake-row">
+              <div class="fake-cell">{{'date_gasto' | translate}}</div>
+              <div class="fake-cell">{{'ticket_gasto' | translate}}</div>
+              <div class="fake-cell">{{'pay_to' | translate}} a</div>
+              <div class="fake-cell">{{'provs' | translate}}</div>
+              <div class="fake-cell">{{'f_pago' | translate}} pago</div>
+              <div class="fake-cell">{{'total_refund' | translate}}</div>
+              <div class="fake-cell">{{'mon_incoming' | translate}}</div>
+              <div class="fake-cell">{{'mon_tipo_cambio' | translate}}</div>
+              <div class="fake-cell">Reembolso resultante</div>
+              <div class="fake-cell"><i class="fa-solid fa-file-code"></i>&nbsp;{{'cfdi_xml_import' | translate}}</div>
+              <div class="fake-cell"><i class="fa-solid fa-file-pdf"></i>&nbsp;{{'cfdi_pdf_import' | translate}}</div>
+              <div class="fake-cell"><i class="fa-solid fa-file"></i>&nbsp;Anexos</div>
+              <div class="fake-cell">{{'observ' | translate}}</div>
+              <div class="fake-cell"></div>
+            </div>
+          </div>
+
+          <!-- BODY -->
+          <div class="fake-tbody">
+            <div class="fake-row">
+              <div class="fake-cell"><input class="validate datepicker" id="reem_date_gasto" type="date"
+                  [min]="min_date" [max]="max_date" (change)="keyupFechaGastoReem($event.target);"></div>
+              <div class="fake-cell"><input class="validate" id="reem_ticket_gasto" type="text" style="width: 200px;"
+                  (keyup)="keyupTicketReem($event.target);"></div>
+              <div class="fake-cell">
+                <div class="col-12 input-group">
+                  <p-select [options]="list_pagado_a" id="reem_pay_to" [(ngModel)]="reem_opcion_pagado_a"
+                    name="reem_opcion_pagado_a" optionLabel="label" [filter]="true" filterBy="label" appendTo="body"
+                    [showClear]="true" [placeholder]="'opt_select' | translate" class="w-full md:w-56"
+                    (onChange)="keyupPagado_aReem($event.value);">
+                    <ng-template #selectedItem let-selectedOption>
+                      <div class="flex items-center gap-2">
+                        <div>{{selectedOption.label}}</div>
+                      </div>
+                    </ng-template>
+                    <ng-template let-prov #item>
+                      <div class="flex items-center gap-2">
+                        <div>{{prov.label}}</div>
+                      </div>
+                    </ng-template>
+                  </p-select>
+                </div>
+              </div>
+
+              <div class="fake-cell">
+                <div class="col-12"
+                  style="display: flex;justify-content: center;align-content: center;align-items: center;">
+                  <a class="btn bg-blue-600" style="width: 25px!important;" (click)="ver_catalogo_de_proveedores();">
+                    <i class="fa-solid fa-info"></i>
+                  </a>
+                  <p-dialog header="Cat&aacute;logo de proveedores" [(visible)]="ver_proveedores_modal" [modal]="true"
+                    [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }"
+                    [maximizable]="true">
+                    <p-table #reemPrvList [value]="list_proveedores_general"
+                      [globalFilterFields]="['folio','nombre','nombre_comercial','pais','rfc_generico','rfc_prov']"
+                      showGridlines [resizableColumns]="true" columnResizeMode="expand" [paginator]="true" [rows]="10"
+                      [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]">
+                      <ng-template #caption>
+                        <div class="flex">
+                          <p-iconfield iconPosition="left" class="ml-auto">
+                            <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                            <input pInputText type="text"
+                              (input)="reemPrvList.filterGlobal($event.target.value, 'contains')"
+                              placeholder="{{'bus_car' | translate}}" />
+                          </p-iconfield>
+                        </div>
+                      </ng-template>
+                      <ng-template #header>
+                        <tr>
+                          <th pResizableColumn pSortableColumn="folio">folio&nbsp;<p-sortIcon field="folio" /></th>
+                          <th pResizableColumn pSortableColumn="nombre">{{'prov' | translate}} &nbsp;<p-sortIcon
+                              field="nombre" /></th>
+                          <th pResizableColumn pSortableColumn="nombre_comercial">{{'comercial_name' | translate}}
+                            &nbsp;<p-sortIcon field="nombre_comercial" /></th>
+                          <th pResizableColumn pSortableColumn="pais">pais&nbsp;<p-sortIcon field="pais" /></th>
+                          <th pResizableColumn pSortableColumn="rfc_generico">rfc generico&nbsp;<p-sortIcon
+                              field="rfc_generico" /></th>
+                          <th pResizableColumn pSortableColumn="rfc_prov">rfc&nbsp;<p-sortIcon field="rfc_prov" /></th>
+                        </tr>
+                      </ng-template>
+                      <ng-template #body let-row_prov>
+                        <tr>
+                          <td>{{row_prov.folio}}</td>
+                          <td class="name">{{row_prov.nombre}}</td>
+                          <td class="name">{{row_prov.nombre_comercial}}</td>
+                          <td>{{row_prov.pais}}</td>
+                          <td>{{row_prov.rfc_generico}}</td>
+                          <td>{{row_prov.rfc_prov}}</td>
+                        </tr>
+                      </ng-template>
+                      <ng-template pTemplate="emptymessage">
+                        <tr>
+                          <td colspan="6" class="text-center py-4">
+                            <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                            <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                              {{'no_rows' | translate}}
+                            </p>
+                          </td>
+                        </tr>
+                      </ng-template>
+                    </p-table>
+                  </p-dialog>
+                  <div class="input-group">
+                    <p-select [options]="list_proveedores_general" id="proveedor_selected_reem"
+                      [(ngModel)]="reem_opcion_prov" name="reem_opcion_prov" optionLabel="nombre" [filter]="true"
+                      filterBy="nombre" appendTo="body" [ngClass]="newFaseDOS.reem_pagado_a != 'prov' ? 'disabled' : ''"
+                      [disabled]="newFaseDOS.reem_pagado_a != 'prov'"
+                      [attr.aria-disabled]="newFaseDOS.reem_pagado_a != 'prov' ? true : null" [showClear]="true"
+                      class="w-full md:w-56" [placeholder]="'opt_select' | translate"
+                      (onChange)="keyupTknProveedorReem($event.value);">
+                      <ng-template #selectedItem let-selectedOption>
+                        <div class="flex items-center gap-2">
+                          <div>{{selectedOption.folio+" "+selectedOption.nombre}}</div>
+                        </div>
+                      </ng-template>
+                      <ng-template let-prov #item>
+                        <div class="flex items-center gap-2">
+                          <div>{{prov.folio+" "+prov.nombre}}</div>
+                        </div>
+                      </ng-template>
+                    </p-select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="fake-cell">
+                <div class="col-12 input-group">
+                  <p-select [options]="catalogoFormaPagoApi" id="reem_f_pago" [(ngModel)]="reem_opcion_fpago"
+                    name="reem_opcion_fpago" optionLabel="clave,descripcion" [filter]="true"
+                    filterBy="clave,descripcion" appendTo="body" [showClear]="true"
+                    [placeholder]="'opt_select' | translate" class="w-full md:w-56"
+                    (onChange)="keyupTknFPagoReem($event.value);">
+                    <ng-template #selectedItem let-optSelected>
+                      <div class="flex items-center gap-2">
+                        <div>{{optSelected.clave+" "+optSelected.descripcion}}</div>
+                      </div>
+                    </ng-template>
+                    <ng-template let-fpag #item>
+                      <div class="flex items-center gap-2">
+                        <div>{{fpag.clave+" "+fpag.descripcion}}</div>
+                      </div>
+                    </ng-template>
+                  </p-select>
+                </div>
+              </div>
+
+              <div class="fake-cell">
+                <input class="validate" id="reem_importe_total" type="number" style="width: 200px;"
+                  (keyup)="keyupTotalReemSave($event.target);">
+              </div>
+
+              <div class="fake-cell">
+                <div class="col-12 input-group">
+                  <p-select [options]="catalogo_monedas_api" id="reem_moneda_entrante" [(ngModel)]="reem_opcion_moneda"
+                    name="reem_opcion_moneda" optionLabel="_filtro_busqueda" [filter]="true" filterBy="_filtro_busqueda"
+                    appendTo="body" [showClear]="true" [placeholder]="'opt_select' | translate" class="w-full md:w-56"
+                    (onChange)="keyupValidateMonedaEntrante($event.value);">
+                    <ng-template #selectedItem let-selectedOption>
+                      <div class="flex items-center gap-2">
+                        <div>{{selectedOption.code+" "+selectedOption.langEN}}</div>
+                      </div>
+                    </ng-template>
+                    <ng-template let-mon #item>
+                      <div class="flex items-center gap-2">
+                        <div>{{mon.code+" "+mon.langEN}}</div>
+                      </div>
+                    </ng-template>
+                  </p-select>
+                </div>
+              </div>
+
+              <div class="fake-cell">
+                <input class="validate" id="reem_tipo_cambio" type="number" min="1" max="100000000000000"
+                  [ngClass]="newFaseDOS.reem_moneda_nombre == 'MXN' ? 'disabled' : ''"
+                  [attr.disabled]="newFaseDOS.reem_moneda_nombre == 'MXN' ? true : null"
+                  [attr.aria-disabled]="newFaseDOS.reem_moneda_nombre == 'MXN' ? true : null"
+                  [attr.value]="newFaseDOS.reem_moneda_nombre == 'MXN' ? '1.00' : ''" style="width: 200px;"
+                  (keyup)="editTipoCambio($event.target);">
+              </div>
+
+              <div class="fake-cell result">
+                <div class="col-12" style="width: 200px;">{{newFaseDOS.reem_importe_resultante+"
+                  "+newFaseDOS.reem_moneda_nombre}}</div>
+              </div>
+
+              <div class="fake-cell">
+                <div class="mb-3" style="margin: 0!important;">
+                  <input class="form-control" type="file" id="facturaxml"
+                    [disabled]="escenarioDocumentosValido === 'ANEXOS'" (change)="cargaXmlCompra($event,$event.target);"
+                    placeholder="XML" accept=".xml" style="padding: 0;line-height: 30px;width: 350px!important;">
+                </div>
+              </div>
+
+              <div class="fake-cell">
+                <div class="mb-3" style="margin: 0!important;">
+                  <input class="form-control" type="file" name="facturaCompraPdf" id="facturapdf" accept=".pdf"
+                    placeholder="PDF" style="padding: 0;line-height: 30px;width: 350px!important;"
+                    [ngClass]="escenarioDocumentosValido === 'ANEXOS' || newFaseDOS.resultXml != 'validoXml' ? 'disabled' : ''"
+                    [attr.disabled]="escenarioDocumentosValido === 'ANEXOS' || newFaseDOS.resultXml != 'validoXml' ? true : null"
+                    [attr.aria-disabled]="escenarioDocumentosValido === 'ANEXOS' || newFaseDOS.resultXml != 'validoXml' ? true : null"
+                    (change)="newFaseDOS.resultXml == 'validoXml' && cargaPdfReem($event.target);">
+                </div>
+              </div>
+
+              <div class="fake-cell">
+                <div class="mb-3" style="margin: 0!important;">
+                  <input class="form-control" type="file" name="anexosReem" id="anexosReem" multiple
+                    [ngClass]="bloquearAnexos ? 'disabled' : ''" [attr.disabled]="bloquearAnexos ? true : null"
+                    [attr.aria-disabled]="bloquearAnexos ? true : null"
+                    style="padding: 0;line-height: 30px;width: 350px!important;" (change)="cargandoAnexos($event);">
+                </div>
+              </div>
+
+              <div class="fake-cell">
+                <textarea id="reem_large_observ" class="validate" style="width: 200px;"
+                  (keyup)="keyupObservaReemSave($event.target);"></textarea>
+              </div>
+
+              <div class="fake-cell action">
+                <button class="btn btnGuardar btnSaveRow text-bg-success rounded-3"
+                  [ngClass]="!reem_to_validate ? 'disabled' : ''" [attr.disabled]="!reem_to_validate ? true : null"
+                  [attr.aria-disabled]="!reem_to_validate ? true : null" type="submit">
+                  <i class="fa-regular fa-floppy-disk"></i> {{'btn_add' | translate}}
+                </button>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+      </form>
+    </div>
+    <div class="col-12">
+      <h6 disabled
+        style="margin-bottom: 5px;font-weight: bold;text-transform: inherit;color: #353535;text-align: left;">3.-
+        {{'comi_paso_tres_reem' | translate}}</h6>
+      <p-table [value]="arrayreembolsosSave" dataKey="id" [resizableColumns]="true"
+        responsiveLayout="stack"><!--[paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30]" -->
+        <ng-template #header>
+          <tr>
+            <th>No.</th>
+            <th pSortableColumn="reem_fecha">{{'date_gasto' | translate}}&nbsp;<p-sortIcon field="reem_fecha" /></th>
+            <th pSortableColumn="reem_folio_ticket">{{'ticket_gasto' | translate}}&nbsp;<p-sortIcon
+                field="reem_folio_ticket" /></th>
+            <th pSortableColumn="reem_observacion">{{'observ' | translate}}&nbsp;<p-sortIcon field="reem_observacion" />
+            </th>
+            <th pSortableColumn="reem_pagado_a">{{'pay_to' | translate}}&nbsp;<p-sortIcon field="reem_pagado_a" /></th>
+            <th pSortableColumn="f_pago_forma">{{'f_pago' | translate}}&nbsp;<p-sortIcon field="f_pago_forma" /></th>
+            <th pSortableColumn="reem_importe_total_format">{{'total_import' | translate}}&nbsp;<p-sortIcon
+                field="reem_importe_total_format" /></th>
+            <th pSortableColumn="reem_tipo_cambio_format">{{'mon_tipo_cambio' | translate}}&nbsp;<p-sortIcon
+                field="reem_tipo_cambio_format" /></th>
+            <th pSortableColumn="reem_importe_saliente">Reembolso resultante&nbsp;<p-sortIcon
+                field="reem_importe_saliente" /></th>
+            <th pSortableColumn="factura_xml"><i class="fa-solid fa-file-code"></i>&nbsp;Factura CFDI
+              (XML)&nbsp;<p-sortIcon field="factura_xml" /></th>
+            <th pSortableColumn="factura_pdf"><i class="fa-solid fa-file-pdf"></i>&nbsp;Factura CFDI
+              (PDF)&nbsp;<p-sortIcon field="factura_pdf" /></th>
+            <th pSortableColumn="reembolsos_anexos"><i class="fa-solid fa-file"></i>&nbsp;Anexos&nbsp;<p-sortIcon
+                field="reembolsos_anexos" /></th>
+            <th class="ultimo"></th>
+          </tr>
+        </ng-template>
+        <ng-template #body let-lreem let-posicion="rowIndex">
+          <tr>
+            <td>{{posicion+1}}</td>
+            <td>{{lreem.reem_fecha}}</td>
+            <td>{{lreem.reem_folio_ticket}}</td>
+            <td>{{lreem.reem_observacion}}</td>
+            <td>{{lreem.reem_pagado_a == 'prov' ? ['prov' | translate]+" : "+lreem.proveedor_rfc+"
+              "+lreem.proveedor_name : ['gen_pub' | translate]}}</td>
+            <td>{{lreem.f_pago_clave+" "+lreem.f_pago_forma}}</td>
+            <td class="td_importes">{{lreem.reem_importe_total_format+" "+lreem.reem_moneda_nombre}}</td>
+            <td class="td_importes">{{lreem.reem_tipo_cambio_format}}</td>
+            <td class="td_importes">{{lreem.reem_importe_saliente+" "+lreem.reem_moneda_nombre}}</td>
+            <td>{{lreem.factura_xml}}</td>
+            <td>{{lreem.factura_pdf}}</td>
+            <td>
+              <ul *ngIf="lreem.reembolsos_anexos.length > 0; else sinAnexos">
+                <li *ngFor="let anex of lreem.reembolsos_anexos">{{anex.name}}</li>
+              </ul>
+              <ng-template #sinAnexos>{{'no_rows' | translate}}</ng-template>
+            </td>
+            <td class="ultimo"><a class="btn btn_extend text-bg-danger rounded-3"
+                (click)="delete_list_reem(posicion,lreem.token_solicitud_reem);"><i
+                  class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}</a></td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="13" class="text-center py-4">
+              <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+              <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                {{'no_rows' | translate}}
+              </p>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="footer">
+          <tr>
+            <td class="td_importes" colspan="11"><strong>Saldo total de reembolsos:</strong></td>
+            <td class="td_importes"><strong>{{total_reem}} MXN</strong></td>
+            <td class="td_importes"></td>
+          </tr>
+          <tr>
+            <td class="td_importes" colspan="11"><strong>Recibido de comisiones seleccionadas:</strong></td>
+            <td class="td_importes"><strong>{{reem_comision_saldo_format}} MXN</strong></td>
+            <td class="td_importes"></td>
+          </tr>
+          <tr>
+            <td class="td_importes" colspan="11"><strong>Reembolso total:</strong></td>
+            <td class="td_importes"><strong>{{total_reem_resultante}} MXN</strong></td>
+            <td class="td_importes"></td>
+          </tr>
+        </ng-template>
+      </p-table>
+
+      <div class="col-12 row" style="display: flex !important;justify-content: end!important;">
+        <a class="btn btn_extend text-bg-success rounded-3"
+          [ngClass]="arrayreembolsosSave.length == 0 ? 'disabled' : ''"
+          [attr.disabled]="arrayreembolsosSave.length == 0 ? true : null"
+          [attr.aria-disabled]="arrayreembolsosSave.length == 0 ? true : null"
+          (click)="arrayreembolsosSave.length > 0 && onSaveReembolsoSolicitud();">
+          <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

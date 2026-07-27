@@ -1,0 +1,360 @@
+<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco" #vContent>
+	<div class="contenido">
+		<app-loader></app-loader>
+		<nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+		<main class="contenidoPagina">
+			<div class="listas_ps revanecer">
+				<div class="lista-div lista-divNoFlex row">
+					<h4>CATALOGO DE DISPOSITIVOS</h4>
+					<div class="col-12">
+						<div class="col-12 col-sm-3 col-md-3 col-lg-2"></div>
+						<div class="col-12 col-sm-6 col-md-3 col-lg-2">
+							<a style="width:100%!important;" (click)="clickEscannerrqdevice();"
+								class="btn btnGuardar btnRow waves-light">&#xf029; Buscar por QR</a>
+						</div>
+						<div class="col-12 col-sm-3 col-md-3 col-lg-2"></div>
+					</div>
+
+					<div class="col-12">
+						<div class="col-12 col-sm-3 col-md-3 col-lg-2"></div>
+						<div class="col-12 col-sm-6 col-md-3 col-lg-2 noneView" id="readerrqDispositivo">
+							<div id="camerarqDispositivo" style="height: 400px;width: 100%;margin-top: 10px;
+                    background-color: #353535;border-radius: 8px;"></div>
+						</div>
+						<div class="col-12 col-sm-3 col-md-3 col-lg-2"></div>
+					</div>
+
+					<div class="col-12 row">
+						<table class="centered responsive-table" cellspacing="0" cellpadding="0">
+							<thead>
+								<tr>
+									<th>Folio</th>
+									<th>Tipo de dispositivo</th>
+									<th>Alias</th>
+									<th class="ultimo"></th>
+									<th class="ultimo"></th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr *ngFor="let trDisp of arrayListaDispositivo">
+									<td>{{trDisp.folio}}</td>
+									<td>{{trDisp.tipo}}</td>
+									<td>{{trDisp.alias}}</td>
+									<td>
+										<a class="btn bg-indigo-600" data-bs-toggle="modal" data-bs-target="#modalViewDisp" (click)="functViewDispositivo(trDisp.token_dispositivos);"><i class="fa-solid fa-info"></i></a>
+									</td>
+									<td><a class="btn btn_extend text-bg-danger rounded-3"
+											(click)="functDelDispositivo(trDisp.token_dispositivos);"><i class="fa-solid fa-eraser"></i></a></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</main>
+		<app-footer-inside></app-footer-inside>
+	</div>
+</div>
+
+<!--<a class="btn btn_extend bg-indigo-600" data-bs-toggle="modal" data-bs-target="#modalDeletedDevices"><i class="fa-solid fa-angle-down"></i> {{'file_list_open' | translate}}</a>-->
+<div class="modal fade" id="modalDeletedDevices" tabindex="-1" role="dialog" aria-labelledby="modalDeletedDevicesLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="modalDeletedDevicesLabel">Dispositivos eliminados</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: transparent !important;"></button>
+      </div>
+      <div class="modal-body">
+				<table class="centered responsive-table" cellspacing="0" cellpadding="0">
+					<thead>
+						<tr>
+							<th>Folio</th>
+							<th>Tipo de dispositivo</th>
+							<th>Alias</th>
+							<th>{{'f_delete' | translate}}</th>
+							<th class="ultimo"></th>
+							<th class="ultimo"></th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr *ngFor="let trDelDisp of arrayListaDelDispositivo">
+							<td class="noneView">{{trDelDisp.token_dispositivos}}</td>
+							<td>{{trDelDisp.folio}}</td>
+							<td>{{trDelDisp.tipo}}</td>
+							<td>{{trDelDisp.alias}}</td>
+							<td>{{trDelDisp.fecha_delete_disp}}</td>
+							<td><a class="btn text-bg-success rounded-3"
+									(click)="restauraDispositivo($event.target);">&#xf2f9;</a></td>
+							<td><a class="btn btn_extend text-bg-danger rounded-3"
+									(click)="eliminapermDispositivo($event.target);"><i class="fa-solid fa-eraser"></i></a>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+      </div>
+      <div class="modal-footer"></div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modalViewDisp" tabindex="-1" role="dialog" aria-labelledby="modalViewDispLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="modalViewDispLabel">PERFIL DE MONEDERO ELECTR&Oacute;NICO</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: transparent !important;"></button>
+      </div>
+      <div class="modal-body">
+				<div class="col-12" *ngFor="let divDetDispositivo of arrayDetListDispositivo">
+					<div class="form">
+						<div class="data-reg row">
+							<div class="col-12 col-sm-2 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+							<div class="logotipo col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+								<div class="input-field file-field">
+									<div id="btnAddLogotipoServ" class="btn">
+										<img class="circle responsive-img" src="{{divDetDispositivo.rqCode}}" alt="">
+									</div>
+								</div>
+							</div>
+		
+							<div class="logotipo col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2" *ngIf="divDetDispositivo.logotypo != ''">
+								<div class="input-field file-field" placement="top" tooltip="INGRESE EL LOGOTIPO DE SU PRODUCTO">
+									<input type="file" id="logotipoServ" name="logotipo_servicio" multiple>
+									<div id="btnAddLogotipoServ" class="btn">
+										<img class="circle responsive-img" src="{{divDetDispositivo.logotypo}}" alt="">
+									</div>
+								</div>
+							</div>
+		
+							<div class="logotipo col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2" *ngIf="divDetDispositivo.logotypo == ''">
+								<div class="input-field file-field" placement="top" tooltip="INGRESE EL LOGOTIPO DE SU PRODUCTO">
+									<input type="file" id="logotipoServ" name="logotipo_servicio" multiple>
+									<div id="btnAddLogotipoServ" class="btn">
+										<span id="spanImgPerfil">&#xf030;</span>
+									</div>
+								</div>
+							</div>
+		
+							<div class="col-12 col-sm-2 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+		
+							<div class="col-12">
+								<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+									<div class="info">
+										<p class="titulo tituloFolio">Folio registrado</p>
+										<p class="registro">{{divDetDispositivo.folio_dispositivo}}</p>
+									</div>
+								</div>
+								<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+									<div class="info">
+										<p class="titulo tituloFolio">Fecha de registro</p>
+										<p class="registro">{{divDetDispositivo.fecha_alta}}</p>
+									</div>
+								</div>
+							</div>
+							<div class="col-12">
+								<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+									<div class="input-field">
+										<select name="tipoDispositivo" (change)="validaTipoDisp($event.target,perfDispositiv);">
+											<option value="" *ngIf="divDetDispositivo.tipo_dispositivo == ''" disabled selected>selecciona una
+												opci&oacute;n</option>
+											<option value="" *ngIf="divDetDispositivo.tipo_dispositivo != ''">{{'opt_select' | translate}}
+											</option>
+											<option *ngFor="let lisTipo of divDetDispositivo.dipositivoTipo" value="{{lisTipo.token_tipo_disp}}"
+												[selected]="lisTipo.statusTipoDisp == true">{{lisTipo.tipo}}</option>
+										</select>
+										<label class="active activeSelect">Tipo de dispositivo</label>
+									</div>
+								</div>
+								<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+									<div class="input-field">
+										<input class="validate" value="{{divDetDispositivo.alias}}" name="aliasDispositivo" type="text"
+											(keyup)="validaAliasDisp($event.target,perfDispositiv);" required>
+										<label class="activeInput">Alias</label>
+									</div>
+								</div>
+								<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+									<div class="input-field">
+										<input class="validate" value="{{divDetDispositivo.serie}}" name="serieDispositivo" type="text"
+											(keyup)="validaSerie($event.target,perfDispositiv);" required>
+										<label class="activeInput">No. serie</label>
+									</div>
+								</div>
+								<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+									<div class="input-field">
+										<input class="datepicker validate" value="{{divDetDispositivo.vigencia}}"
+											(change)="validaVigencia($event.target,perfDispositiv);" required>
+										<label class="activeInput">Vigencia</label>
+									</div>
+								</div>
+							</div>
+							<div class="col-12">
+								<table class="centered responsive-table" cellspacing="0" cellpadding="0">
+									<thead>
+										<tr>
+											<th></th>
+											<th>Folio</th>
+											<th>Personal responsable</th>
+											<th class="ultimo"></th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr *ngFor="let responsdispdet of divDetDispositivo.responsable">
+											<td>
+												<img class="circle responsive-img" style="width: 40px; height: 40px;"
+													src="{{responsdispdet.imagen}}" alt=""><!--{{trPers.imagen}}-->
+											</td>
+											<td>{{responsdispdet.folio}}</td>
+											<td>{{responsdispdet.nombre_completo}}</td>
+											<td>
+												<p>
+													<label>
+														<input class="select with-gap" *ngIf="responsdispdet.relStatus == true"
+															value="{{responsdispdet.token_personal}}" name="selectDetResponsDisp" type="radio" checked
+															(click)="selectResponsDisp($event.target,perfDispositiv);" />
+														<input class="select with-gap" *ngIf="responsdispdet.relStatus == false"
+															value="{{responsdispdet.token_personal}}" name="selectDetResponsDisp" type="radio"
+															(click)="selectResponsDisp($event.target,perfDispositiv);" />
+													</label>
+												</p>
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+							<div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+							<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+								<button #btnSaveDetDisp class="btn btnGuardar btnRow waves-light green darken-2" type="submit"
+									name="guaradrDips" (click)="actualizaDispositivo();"
+									*ngIf="perfDispositiv.alias_dispositivo != divDetDispositivo.alias || perfDispositiv.serie != divDetDispositivo.serie ||
+															perfDispositiv.vigencia != divDetDispositivo.vigencia || perfDispositiv.tipo_dispositivo != divDetDispositivo.tipo_dispositivo
+															|| perfDispositiv.token_responsable != divDetDispositivo.tokenResponsDispositivo">Actualizar</button>
+							</div>
+							<div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+							<div class="col-12">
+								<h6>Vinculaciones adicionales</h6>
+							</div>
+							<div class="col-12">
+								<p-accordion value="0">
+									<p-accordion-panel value="0">
+										<p-accordion-header>{{"Caja vinculada "+divDetDispositivo.aliasCajaDispositivo}}</p-accordion-header>
+										<p-accordion-content>
+											<div class="col-12 row">
+												<table class="centered responsive-table" cellspacing="0" cellpadding="0">
+													<thead>
+														<tr>
+															<th>Caja</th>
+															<th>Alias</th>
+															<th>Vigencia</th>
+															<th class="ultimo"></th>
+														</tr>
+													</thead>
+													<tbody>
+														<tr *ngFor="let cajadetDisp of divDetDispositivo.caja">
+															<td>{{cajadetDisp.caja}}</td>
+															<td>{{cajadetDisp.alias}}</td>
+															<td></td>
+															<td>
+																<div class="switch">
+																	<label>
+																		<input class="select with-gap" *ngIf="cajadetDisp.relStatus == true"
+																			value="{{cajadetDisp.token_caja}}" name="selectCajaMon" type="checkbox"
+																			style="width: auto;" (click)="unvincCajaDisp($event.target);" checked />
+																		<input class="select with-gap" *ngIf="cajadetDisp.relStatus == false"
+																			value="{{cajadetDisp.token_caja}}" name="selectCajaMon" type="checkbox"
+																			style="width: auto;" (click)="actualizaCajaDisp($event.target);" />
+																		<span class="lever"></span>
+																	</label>
+																</div>
+															</td>
+														</tr>
+													</tbody>
+												</table>
+											</div>
+										</p-accordion-content>
+									</p-accordion-panel>
+									<p-accordion-panel value="1">
+										<p-accordion-header>{{"Cuenta bancaria vinculada "+divDetDispositivo.aliasCuentaBankDispositivo}}</p-accordion-header>
+										<p-accordion-content>
+											<div class="col-12 row">
+												<table class="centered responsive-table" cellspacing="0" cellpadding="0">
+													<thead>
+														<tr>
+															<th>Cuenta</th>
+															<th>Vigencia</th>
+															<th class="ultimo"></th>
+														</tr>
+													</thead>
+													<tbody>
+														<tr *ngFor="let cuentadetDisp of divDetDispositivo.cuenta">
+															<td>{{cuentadetDisp.nombre_comercial+" - "+cuentadetDisp.cuenta}}</td>
+															<td></td>
+															<td>
+																<div class="switch">
+																	<label>
+																		<input *ngIf="cuentadetDisp.relStatus == true" class="selectSwitchPersonalCaja"
+																			name="selectImpServ" type="checkbox" style="width: auto;"
+																			value="{{cuentadetDisp.token_cuenta}}" checked
+																			(click)="unvincCuentaBankDisp($event.target);">
+																		<input *ngIf="cuentadetDisp.relStatus == false" class="selectSwitchPersonalCaja"
+																			name="selectImpServ" type="checkbox" style="width: auto;"
+																			value="{{cuentadetDisp.token_cuenta}}"
+																			(click)="actualizaCuentaBankDisp($event.target);">
+																		<span class="lever"></span>
+																	</label>
+																</div>
+															</td>
+														</tr>
+													</tbody>
+												</table>
+											</div>
+										</p-accordion-content>
+									</p-accordion-panel>
+									<p-accordion-panel value="2">
+										<p-accordion-header>{{"Cuenta de monedero electrónico vinculada"+divDetDispositivo.aliasMonederoDispositivo}}</p-accordion-header>
+										<p-accordion-content>
+											<div class="col-12 row">
+												<table class="centered responsive-table" cellspacing="0" cellpadding="0">
+													<thead>
+														<tr>
+															<th>Cuenta de monedero electrónico</th>
+															<th>Vigencia</th>
+															<th class="ultimo"></th>
+														</tr>
+													</thead>
+													<tbody>
+														<tr *ngFor="let monederodetDisp of divDetDispositivo.monedero">
+															<td>{{monederodetDisp.folio_cuentmon+" - "+monederodetDisp.nombre+" - "+monederodetDisp.cuenta}}</td>
+															<td></td>
+															<td>
+																<div class="switch">
+																	<label>
+																		<input *ngIf="monederodetDisp.relStatus == true" class="selectSwitchPersonalCaja"
+																			name="selectImpServ" type="checkbox" style="width: auto;"
+																			value="{{monederodetDisp.token_cuentaMon}}" checked
+																			(click)="univincCuentaMonederoDisp($event.target)">
+																		<input *ngIf="monederodetDisp.relStatus == false" class="selectSwitchPersonalCaja"
+																			name="selectImpServ" type="checkbox" style="width: auto;"
+																			value="{{monederodetDisp.token_cuentaMon}}"
+																			(click)="actualizaCuentaMonederoDisp($event.target)">
+																		<span class="lever"></span>
+																	</label>
+																</div>
+															</td>
+														</tr>
+													</tbody>
+												</table>
+											</div>
+										</p-accordion-content>
+									</p-accordion-panel>
+								</p-accordion>
+							</div>
+						</div>
+					</div>
+				</div>
+      </div>
+      <div class="modal-footer"></div>
+    </div>
+  </div>
+</div>
+

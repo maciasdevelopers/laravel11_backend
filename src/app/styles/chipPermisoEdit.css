@@ -1,0 +1,21 @@
+.chipPermisoEdit{
+    background-color: #353535;
+    display: flex;
+    justify-content: space-between;
+    padding: 0px!important;
+    height: 30px;
+    line-height: 30px;
+    margin-top: 5px;
+}
+
+.chipPermisoEdit h5{
+    height: 25px; 
+    color: #e7e7ea;
+    text-align: center; 
+    font-size: 17px; 
+    line-height: 25px;
+}
+
+.chipPermisoEdit .input-field{
+    margin-top: 0;
+}

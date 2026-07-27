@@ -1,0 +1,79 @@
+ul.pagination{
+    width: 100%;
+    display: block!important;
+}
+
+ul.pagination li a{
+    color: #fff!important;
+}
+
+.paginador ::ng-deep .ngx-pagination{
+    background-color: #1f2937 !important;
+    padding: 0;
+    height: 35px;
+    border-radius: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    margin-top: 5px;
+}
+
+.paginador ::ng-deep .ngx-pagination li{color: white!important;}
+.paginador ::ng-deep .ngx-pagination li.pagination-previous,.paginador ::ng-deep .ngx-pagination li.pagination-next{
+    color: white!important;
+    width: max-content!important;
+    border-radius:25px!important;
+    padding:5px !important;
+    font-size:smaller;
+    text-transform:inherit;
+    font-family:'roboto_cr'!important;
+}
+
+.paginador ::ng-deep .ngx-pagination li a:hover{background-color: transparent!important;}
+.paginador ::ng-deep .ngx-pagination li:hover,.paginador ::ng-deep .ngx-pagination .current{background-color: #6ea8fe!important;border-radius: 50%;color: white!important;}
+
+.pagination-controls pagination-template nav{
+    height: 35px;
+    line-height: 35px;
+    background-color: rgba(0,0,0,0.7);
+    border-radius: 8px;
+}
+
+pagination-controls pagination-template nav li{
+    height: 35px;
+    line-height: 35px;
+}
+
+pagination-controls pagination-template nav li a{
+    height: 35px;
+    line-height: 35px;
+}
+
+pagination-controls pagination-template nav li a:hover{
+    height: 35px;
+    line-height: 35px;
+}
+
+pagination-controls pagination-template nav li.pagination-previous a:hover{
+    border-radius: 8px 0 0 8px;
+}
+
+.ngx-pagination {
+    padding-left: 0px !important;
+  }
+
+.paginador nav{
+    height: 30px;
+    line-height: 30px;
+    background-color: rgba(0,0,0,0.2);
+    border-radius: 8px;
+}
+
+.paginador nav ul li a span{
+    color: #353535;
+    background-color: black;
+    display: contents;
+    font-weight: bold;
+}

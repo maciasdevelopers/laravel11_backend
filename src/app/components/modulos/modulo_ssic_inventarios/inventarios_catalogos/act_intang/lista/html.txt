@@ -1,0 +1,512 @@
+<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco" #vContent>
+	<div class="contenido"><app-loader></app-loader>
+		<nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+		<div class="contenidoPagina">
+			<div class="listas_ps revanecer">
+				<div id="listaActivosDif" class="lista-div lista-divNoFlex row">
+					<h4 class="col-12">CATALOGO DE ACTIVOS INTANGIBLES</h4>
+
+					<div class="col-12 col-sm-12 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+						<h6>Activos existentes</h6>
+						<div class="busqueda row">
+							<div class="col s1 m2 col-md-3 col-lg-2">
+								<a class="btn" placement="top" tooltip="Registrar nuevo activo intangible"><i class="fa-solid fa-cart-shopping"></i></a>
+							</div>
+							<div class="col s1 m2 col-md-3 col-lg-2">
+								<a class="btn" placement="top" tooltip="Buscar por concepto"><i class="fa-solid fa-cart-shopping"></i></a>
+							</div>
+							<div class="col s1 m2 col-md-3 col-lg-2">
+								<a class="btn" placement="top" tooltip="Amortización contable"><i class="fa-solid fa-cart-shopping"></i></a>
+							</div>
+							<div class="col s1 m2 col-md-3 col-lg-2">
+								<a class="btn" placement="top" tooltip="Amortización fiscal"><i class="fa-solid fa-cart-shopping"></i></a>
+							</div>
+							<div class="col s8 m4 col-md-3 col-lg-2">
+								<input class="datasearch" type="text" id="buscaactivointang" disabled
+									placeholder="{{'bus_car' | translate}}">
+							</div>
+						</div>
+
+						<table class="centered responsive-table" id="tabListaCatProd">
+							<thead>
+								<tr>
+									<th class="ultimo"></th>
+									<th>clasificaci&oacute;n</th>
+									<th>{{'concept' | translate}}</th>
+									<th>Amortizaci&oacute;n contable / fiscal</th>
+									<th class="ultimo"></th>
+									<th class="ultimo"></th>
+								</tr>
+							</thead>
+							<tbody id="tBodyListaCatProd" *ngIf="arraYntangibles.length != 0">
+								<tr *ngFor="let intangFor of arraYntangibles">
+									<td class="noneView">{{intangFor.token_act_intang}}</td>
+									<td class="img">
+										<img src="{{intangFor.logo_activo}}" alt="Contact Person">
+									</td>
+									<td>{{intangFor.clasificacion}}</td>
+									<td>{{intangFor.concepto}}</td>
+									<td>{{intangFor.amortizacion}}</td>
+									<td>
+										<a class="btn bg-indigo-600" data-bs-toggle="modal" data-bs-target="#modalInfoActivoIntanReg" (click)="funcViewActivoIntan(intangFor.token_act_intang);"><i class="fa-solid fa-info"></i></a>
+									</td>
+									<td>
+										<a class="btn btn_extend text-bg-danger rounded-3"
+											(click)="funcDeleteActivoIntan(intangFor.token_act_intang);">
+											<i class="fa-solid fa-eraser"></i>
+										</a>
+									</td>
+								</tr>
+							</tbody>
+							<tbody id="tBodyListaCatProd" *ngIf="arraYntangibles.length == 0">
+								<tr>
+									<td colspan="6">{{'no_rows' | translate}}</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+
+					<div class="col-12 col-sm-12 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+						<h6>Activos eliminados</h6>
+						<div class="busqueda row">
+							<div class="col s1 m2 col-md-3 col-lg-2">
+								<a class="btn" placement="top" tooltip="Buscar por concepto"><i class="fa-solid fa-cart-shopping"></i></a>
+							</div>
+							<div class="col s1 m2 col-md-3 col-lg-2">
+								<a class="btn" placement="top" tooltip="Amortización contable"><i class="fa-solid fa-cart-shopping"></i></a>
+							</div>
+							<div class="col s1 m2 col-md-3 col-lg-2">
+								<a class="btn" placement="top" tooltip="Amortización fiscal"><i class="fa-solid fa-cart-shopping"></i></a>
+							</div>
+							<div class="col s9 m6 col-md-3 col-lg-2">
+								<input class="datasearch" type="text" id="buscaactivo" disabled placeholder="{{'bus_car' | translate}}">
+							</div>
+						</div>
+
+						<table class="centered responsive-table" id="tabListaCatProd">
+							<thead>
+								<tr>
+									<th class="ultimo"></th>
+									<th>clasificaci&oacute;n</th>
+									<th>{{'concept' | translate}}</th>
+									<th>{{'f_delete' | translate}}</th>
+									<th class="ultimo"></th>
+									<th class="ultimo"></th>
+								</tr>
+							</thead>
+							<tbody id="tBodyListaCatProd" *ngIf="arraYntangiblesDeleted.length != 0">
+								<tr *ngFor="let intangForDel of arraYntangiblesDeleted">
+									<td class="noneView">{{intangForDel.token_act_intang}}</td>
+									<td class="img">
+										<img src="{{intangForDel.logo_activo}}" alt="Contact Person">
+									</td>
+									<td>{{intangForDel.clasificacion}}</td>
+									<td>{{intangForDel.concepto}}</td>
+									<td>{{intangForDel.fecha_delete}}</td>
+									<td>
+										<a (click)="funcRestoreActivoIntan(intangForDel.token_act_intang);"
+											class="btn text-bg-success rounded-3">
+											<i class="fas  fa-redo-alt"></i>
+										</a>
+									</td>
+									<td>
+										<a (click)="funcDeleteTotalActivoIntan(intangForDel.token_act_intang);"
+											class="btn btn_extend text-bg-danger rounded-3">
+											<i class="fa-solid fa-eraser"></i>
+										</a>
+									</td>
+								</tr>
+							</tbody>
+							<tbody id="tBodyListaCatProd" *ngIf="arraYntangiblesDeleted.length == 0">
+								<tr>
+									<td colspan="6">{{'no_rows' | translate}}</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+
+				</div>
+
+				<div class="modal fade" id="modalInfoActivoIntanReg" tabindex="-1" role="dialog" aria-labelledby="modalInfoActivoIntanRegLabel" aria-hidden="true">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h1 class="modal-title fs-5 bg-blue-ModalTitle" id="modalInfoActivoIntanRegLabel">{{'files_uploaded' | translate}}</h1>
+								<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: transparent !important;"></button>
+							</div>
+							<div class="modal-body">
+								<div class="col-12" *ngIf="datosDetalleActivoIntangible.length != 0">
+									<div class="form" *ngFor="let detalleIntanActivofor of datosDetalleActivoIntangible">
+										<form class="row formPerfilActivoIntangible" #formPerfilActivoIntangible="ngForm" autocomplete="off"
+											name="formPerfilActivoIntangible" enctype="multipart/form-data"
+											(ngSubmit)="actualizaGeneralesactivointang(formPerfilActivoIntangible);">
+		
+											<div class="data-reg contenido-modal row">
+		
+												<div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+												<div class="logotipo col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+													<div class="input-field file-field" placement="top" tooltip="INGRESE EL LOGOTIPO DE SU PRODUCTO">
+														<input type="file" id="logotipoServ" name="logotipo_servicio" multiple>
+														<div id="btnAddLogotipoServ" class="btn">
+															<img class="circle responsive-img" src="{{detalleIntanActivofor.logo_activo}}" alt="">
+														</div>
+													</div>
+												</div>
+												<div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+		
+												<h4 class="col-12">{{detalleIntanActivofor.concepto}}</h4>
+		
+												<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+													<div class="info infoNewServ">
+														<p class="titulo">Folio registrado</p>
+														<p class="registro newFolioServicio">{{detalleIntanActivofor.folio}}</p>
+													</div>
+												</div>
+		
+												<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+		
+												<div class="col-12">
+													<table id="tableClassActFijos" class="centered responsive-table striped">
+														<thead>
+															<tr>
+																<th class="ultimo"></th>
+																<th>No.</th>
+																<th>{{'clasificacion' | translate}}</th>
+																<th>Depreciaci&oacute;n contable</th>
+																<th>Depreciaci&oacute;n fiscal</th>
+																<th class="ultimo"></th>
+															</tr>
+														</thead>
+														<tbody id="tbodyClassAct" *ngIf="arrayClassifActFjos.length != 0">
+															<tr *ngFor="let listclact of arrayClassifActFjos">
+																<td class="img">
+																	<img src="{{listclact.logo_activo}}" alt="Contact Person">
+																</td>
+																<td>{{listclact.folio}}</td>
+																<td>{{listclact.concepto}}</td>
+																<td>{{listclact.deprec_contable}}</td>
+																<td>{{listclact.deprec_fiscal}}</td>
+																<td>
+																	<p>
+																		<label>
+																			<input class="select with-gap" value="{{listclact.token_clasificacion_act}}"
+																				name="selectClassIntanActivo" type="radio"
+																				(click)="selectClassIntanActivo($event.target);" />
+																		</label>
+																	</p>
+																</td>
+															</tr>
+														</tbody>
+														<tbody id="tbodyClassAct" *ngIf="arrayClassifActFjos.length == 0">
+															<tr>
+																<td colspan="6">{{'no_rows' | translate}}</td>
+															</tr>
+														</tbody>
+														<tbody>
+															<tr id="tr-form">
+																<td colspan="3">
+																	<datalist id="listCLassificActiF">
+																		<option value="Recursos Naturales">
+																		<option value="Equipo y Maquinaria">
+																		<option value="Terrenos">
+																	</datalist>
+																	<input type="text" id="cActConcepto" list="listCLassificActiF"
+																		(keyup)="keyupConceptoIntanActivoAlta($event.target);"
+																		(keyup)="enableAgregaClassIntanActivo($event.target);">
+																</td>
+																<td>
+																	<input type="text" id="cActContable"
+																		(keyup)="keyupContableIntanActivoAlta($event.target);"
+																		(keyup)="enableAgregaClassIntanActivo($event.target);">
+																</td>
+																<td>
+																	<input type="text" id="cActFiscal" (keyup)="keyupFiscalIntanActivoAlta($event.target);"
+																		(keyup)="enableAgregaClassIntanActivo($event.target);">
+																</td>
+																<td>
+																	<a class="agregaClassActivo btn waves-light" (click)="agregaClassIntanActivo()"
+																		disabled>&#xf0fe;</a>
+																</td>
+															</tr>
+														</tbody>
+													</table>
+												</div>
+		
+												<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+													<div class="input-field">
+														<input #fechaAltaActIntan="ngModel" class="datepicker" name="fechaAltaActIntan" type="date"
+															[(ngModel)]="modeloPerfilActIntangible.fechaAlta">
+														<label *ngIf="modeloPerfilActIntangible.fechaAlta || !fechaAltaActIntan.touched;"
+															for="fechaAltaActIntan" class="activeInput">Fecha de Alta</label>
+														<label *ngIf="!modeloPerfilActIntangible.fechaAlta && fechaAltaActIntan.touched;"
+															for="fechaAltaActIntan" class="activeInput errorlabel">Fecha de Alta</label>
+													</div>
+												</div>
+		
+												<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+													<h6 class="sat h6SatDescripcion h6SatDescripcionDetServ">{{'Descripción de código de SAT: '+detalleIntanActivofor.descripcion}}</h6>
+												</div>
+		
+												<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+													<div class="input-field inputSAT">
+														<input class="catSatHiddenToken" type="hidden">
+														<input #catalogoSATActIntan="ngModel" class="validate" name="catalogoSATActIntan" type="text"
+															[(ngModel)]="modeloPerfilActIntangible.clave_sat" (keyup)="checkSatInput($event.target)"
+															placeholder="8 caracteres" data-length="8" maxlength="8" required>
+														<label *ngIf="modeloPerfilActIntangible.clave_sat || !catalogoSATActIntan.touched;"
+															class="activeInput activeSAT">C&oacute;digo SAT</label>
+														<label *ngIf="!modeloPerfilActIntangible.clave_sat && catalogoSATActIntan.touched;"
+															class="activeInput activeSAT errorlabel">C&oacute;digo SAT</label>
+													</div>
+												</div>
+		
+												<div class="rowSat col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+													<a id="verTablaCatalogo" class="btn sat" placement="top" tooltip="catalogo del SAT">
+														<i class="fas fa-th-list"></i>
+													</a>
+													<a id="btnFrameSat" class="btn sat" placement="top" tooltip="Visita el catalogo del SAT">
+														<i class="fas fa-external-link-square-alt"></i>
+													</a>
+												</div>
+		
+												<div class="col-12 divTablaSat">
+													<div class="busqueda row">
+														<div class="rowSat col s3 m3 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+															<p class="radio">
+																<label>
+																	<input type="radio" name="filterSearchSat" id="filterSearchSatCodigo" value="codigo"
+																		(change)="checkSat($event.target);">
+																	<span>C&oacute;digo</span>
+																</label>
+															</p>
+														</div>
+														<div class="rowSat col s3 m3 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+															<p class="radio">
+																<label>
+																	<input type="radio" name="filterSearchSat" id="filterSearchSatDesc"
+																		value="descripcion" (change)="checkSat($event.target);">
+																	<span>Descripci&oacute;n</span>
+																</label>
+															</p>
+														</div>
+														<div class="rowSat col s6 m6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+															<input class="validate" type="text" disabled placeholder="{{'bus_car' | translate}}"
+																#buscaClaveSat (keyup)="keyupSat($event.target);" (change)="keyupSat($event.target);">
+														</div>
+													</div>
+													<table class="centered responsive-table" id="tabSerProdSat">
+														<thead>
+															<tr>
+																<th>Clave</th>
+																<th>Descripci&oacute;n</th>
+																<th class="ultimo"></th>
+															</tr>
+														</thead>
+														<tbody id="bodySerPrdSat">
+															<tr *ngFor="let listaCatSat of arrayCatSat">
+																<td class="noneView">{{listaCatSat.c_token}}</td>
+																<td>{{listaCatSat.clave}}</td>
+																<td>{{listaCatSat.descripcion}}</td>
+																<td class="ultimo">
+																	<p class="radio" style="text-align: center;margin: 0;">
+																		<label>
+																			<input class="selectCodigoSat select with-gap" type="radio"
+																				value="{{listaCatSat.c_token}}" (change)="clickItemSat($event.target);">
+																		</label>
+																	</p>
+																</td>
+															</tr>
+														</tbody>
+													</table>
+												</div>
+												<div class="col-12 divTablaSat noneView">
+													<iframe class="noneView" id="frameSat" title="Iframe Example"></iframe>
+												</div>
+		
+												<div class="deprec radio radioAct col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+													<p>
+														<label>
+															<input name="group1" type="radio" (click)="checaPorPorcentajeIntanAct();" />
+															<span>Deprec. por porcentaje</span>
+														</label>
+													</p>
+													<p>
+														<label>
+															<input name="group1" type="radio" (click)="checaPorCuotaIntanAct();" />
+															<span>Deprec. por cuota</span>
+														</label>
+													</p>
+												</div>
+		
+												<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+													<div class="input-field deprec">
+														<input #conceptoActivoIntan="ngModel" class="validate" name="conceptoActivoIntan" type="text"
+															(keyup)="conceptoIntanActivo($event.target);"
+															[(ngModel)]="modeloPerfilActIntangible.descripcion_activo" required>
+														<label *ngIf="modeloPerfilActIntangible.descripcion_activo || !conceptoActivoIntan.touched"
+															for="fechaAltaServ" class="activeInput">Concepto detallado de activo</label>
+														<label *ngIf="!modeloPerfilActIntangible.descripcion_activo && conceptoActivoIntan.touched"
+															for="fechaAltaServ" class="activeInput errorlabel">Concepto detallado de activo</label>
+													</div>
+												</div>
+		
+												<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+													<div class="input-field deprec">
+														<input #amortContable="ngModel" class="validate" name="amortContable" type="text"
+															(keyup)="amortContableUpKeyIntanActivo($event.target);"
+															[(ngModel)]="modeloPerfilActIntangible.amortizacionContable" required>
+														<label *ngIf="modeloPerfilActIntangible.amortizacionContable || !amortContable.touched"
+															class="activeInput">Amortizaci&oacute;n contable</label>
+														<label *ngIf="!modeloPerfilActIntangible.amortizacionContable && amortContable.touched"
+															class="activeInput errorlabel">Amortizaci&oacute;n contable</label>
+													</div>
+												</div>
+		
+												<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+													<div class="input-field deprec">
+														<input #amortFiscal="ngModel" class="validate" name="amortFiscal" type="text"
+															(keyup)="amortFiscalUpKeyIntanActivo($event.target);"
+															[(ngModel)]="modeloPerfilActIntangible.amortizacionFiscal" required>
+														<label *ngIf="modeloPerfilActIntangible.amortizacionFiscal || !amortFiscal.touched"
+															class="activeInput">Amortizaci&oacute;n fiscal</label>
+														<label *ngIf="!modeloPerfilActIntangible.amortizacionFiscal && amortFiscal.touched"
+															class="activeInput errorlabel">Amortizaci&oacute;n fiscal</label>
+													</div>
+												</div>
+		
+												<div class="col-12 col-sm-12 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+													<div class="input-field input-field-select">
+														<select #uso_cfdiPerfilIntan="ngModel" name="uso_cfdiPerfilIntan"
+															(change)="changeUsoCfdiIntanActivo($event.target);"
+															[(ngModel)]="modeloPerfilActIntangible.cfdi">
+															<option value="">{{'opt_select' | translate}}</option>
+															<!--[disabled]="usoArray.selecttkn == true" -->
+															<option *ngFor="let usoArray of detalleIntanActivofor.uso_cfdi"
+																value="{{usoArray.token_uso_cfdi}}" [selected]="usoArray.selecttkn == true">
+																{{usoArray.clave_uso+" - "+usoArray.uso_cfdi}}</option>
+														</select>
+														<label *ngIf="modeloPerfilActIntangible.cfdi || !uso_cfdiPerfilIntan.touched"
+															class="active activeSelect">Uso de cfdi</label>
+														<label *ngIf="!modeloPerfilActIntangible.cfdi && uso_cfdiPerfilIntan.touched"
+															class="active activeSelect errorlabel">Uso de cfdi</label>
+													</div>
+												</div>
+		
+												<div class="col-12 col-sm-12 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+													<div class="input-field input-field-select">
+														<select #periodo_amort="ngModel" name="uso_cfdi" (change)="changePeriodoAmort($event.target);"
+															[(ngModel)]="modeloPerfilActIntangible.periodoAmortizacion">
+															<option value="periodDay" *ngIf="detalleIntanActivofor.periodo_amortizacion == 86400" disabled
+																selected>por d&iacute;a</option>
+															<option value="periodDay" *ngIf="detalleIntanActivofor.periodo_amortizacion != 86400">por
+																d&iacute;a</option>
+															<option value="periodWeek" *ngIf="detalleIntanActivofor.periodo_amortizacion == 604800"
+																disabled selected>por semana</option>
+															<option value="periodWeek" *ngIf="detalleIntanActivofor.periodo_amortizacion != 604800">por
+																semana</option>
+															<option value="periodMonth" *ngIf="detalleIntanActivofor.periodo_amortizacion == 2629743"
+																disabled selected>por mes</option>
+															<option value="periodMonth" *ngIf="detalleIntanActivofor.periodo_amortizacion != 2629743">por
+																mes</option>
+															<option value="periodYear" *ngIf="detalleIntanActivofor.periodo_amortizacion == 31556926"
+																disabled selected>por año</option>
+															<option value="periodYear" *ngIf="detalleIntanActivofor.periodo_amortizacion != 31556926">por
+																año</option>
+														</select>
+														<label *ngIf="modeloPerfilActIntangible.periodoAmortizacion || !periodo_amort.touched"
+															class="active activeSelect">Periodo de depreciaci&oacute;n</label>
+														<label *ngIf="!modeloPerfilActIntangible.periodoAmortizacion && periodo_amort.touched"
+															class="active activeSelect errorlabel">Periodo de depreciaci&oacute;n</label>
+													</div>
+												</div>
+		
+												<div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+												<div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+													<button class="btn btnGuardar btnRow waves-light" type="submit" id="registraServ" [disabled]="formPerfilActivoIntangible.invalid 
+																				|| (modeloPerfilActIntangible.fechaAlta == detalleIntanActivofor.fechaAlta
+																				&& modeloPerfilActIntangible.clasificacion == detalleIntanActivofor.token_clasificacion_intang
+																				&& modeloPerfilActIntangible.clave_sat == detalleIntanActivofor.clave
+																				&& modeloPerfilActIntangible.descripcion_activo == detalleIntanActivofor.concepto
+																				&& modeloPerfilActIntangible.amortizacionMetodo == detalleIntanActivofor.tipo_amortizacion
+																				&& modeloPerfilActIntangible.amortizacionContable == detalleIntanActivofor.amortizacion_contable
+																				&& modeloPerfilActIntangible.amortizacionFiscal == detalleIntanActivofor.amortizacion_fiscal
+																				&& modeloPerfilActIntangible.cfdi == modeloActIntangible.cfdi
+																				&& modeloPerfilActIntangible.periodoAmortizacion == modeloActIntangible.periodoAmortizacion)
+																				"><i class="fa-regular fa-floppy-disk"></i> actualizar datos generales de activo</button>
+												</div>
+												<div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+		
+												<div id="dataProveedorActivo" class="proveedor col-12">
+													<h6>PROVEEDOR ASIGNADO</h6>
+													<table id="data" class="centered responsive-table tableRelProdProv">
+														<thead>
+															<th>PROVEEDOR</th>
+															<th>CLAVE ASIGNADA</th>
+															<th class="ultimo"></th>
+															<th class="ultimo"></th>
+															<th class="ultimo"></th>
+														</thead>
+														<tbody id="regClaveProd" *ngIf="detalleIntanActivofor.proveedores.length != 0">
+															<tr *ngFor="let provvActivo of detalleIntanActivofor.proveedores">
+																<td class="noneView">{{provvActivo.token_cat_proveedores}}</td>
+																<td>{{provvActivo.rfc+" "+provvActivo.nombre}}</td>
+																<td>
+																	<input class="txtclaveactivoprov txtClave validate" type="text"
+																		value="{{provvActivo.asigned_clave}}"
+																		(keyup)="keyupProvActIntanNewClave($event.target);" disabled>
+																</td>
+																<td class="ultimo">
+																	<div class="switch">
+																		<label>
+																			<input class="selectSwitchProvActivo" name="selectImpServ" type="checkbox"
+																				(click)="vincdesvaIntanActivoprov($event.target);" style="width: auto;">
+																			<span class="lever" placement="top" tooltip="vincular/desvincular proveedor"></span>
+																		</label>
+																	</div>
+																</td>
+		
+																<td *ngIf="provvActivo.asigned_clave != ''">
+																	<a (click)="updateActivoIntanProv($event.target);"
+																		class="updateActivoFijoProv btn text-bg-success rounded-3" placement="top" tooltip="Actualizar clave" disabled>
+																		&#xf14d;
+																	</a>
+																</td>
+																<td *ngIf="provvActivo.asigned_clave == ''">
+																	<a (click)="addNewActivoIntanProv($event.target);"
+																		class="updateActivoFijoProv btn text-bg-success rounded-3" placement="top" tooltip="Agregar clave" disabled>
+																		&#xf044;
+																	</a>
+																</td>
+																<td *ngIf="provvActivo.asigned_clave != ''" class="noneView">
+																	{{provvActivo.token_actintang_claves}}</td>
+																<td *ngIf="provvActivo.asigned_clave != ''">
+																	<a (click)="deleteActivoIntanProv($event.target);"
+																		class="btn btn_extend text-bg-danger rounded-3">
+																		<i class="fa-solid fa-eraser"></i>
+																	</a>
+																</td>
+																<td *ngIf="provvActivo.asigned_clave == ''"></td>
+															</tr>
+														</tbody>
+														<tbody id="regClaveProd" *ngIf="detalleIntanActivofor.proveedores.length == 0">
+															<tr>
+																<td colspan="5">{{'no_rows' | translate}}</td>
+															</tr>
+														</tbody>
+													</table>
+												</div>
+											</div>
+		
+										</form>
+									</div>
+								</div>
+							</div>
+							<div class="modal-footer"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

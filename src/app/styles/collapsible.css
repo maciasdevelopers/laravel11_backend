@@ -1,0 +1,118 @@
+button.accordion-button{
+	background-color: transparent;
+	font-size: medium;
+	font-family: Montserrat!important;
+	font-family: prompt!important;
+	border-radius: 0!important;
+}
+
+.accordion-button:not(.collapsed) {
+	color: var(--bs-accordion-active-color);
+	background-color: var(--bs-accordion-active-bg)!important;
+	box-shadow: inset 0 calc(-1 * var(--bs-accordion-border-width)) 0 var(--bs-accordion-border-color);
+}
+
+ul.collapsible {
+	box-shadow: none;
+	padding: 5px;
+	border: none;
+	width: 100%;
+	margin: 0 !important;
+}
+
+ul.collapsible_white li.licollapsible {
+	background-color: white !important;
+}
+
+ul.collapsible li.licollapsible div.collapsible-header {
+	height: 35px !important;
+	padding: 0;
+	display: flex;
+	justify-content: space-between;
+	background-color: #398aff!important;
+}
+
+ul.collapsible li.licollapsible:first-child {
+	border-radius: 8px 8px 0 0;
+}
+
+ul.collapsible li.licollapsible:first-child div.collapsible-header {
+	border-radius: 8px 8px 0 0;
+}
+
+ul.collapsible li.licollapsible:last-child {
+	border-radius: 0 0 8px 8px;
+}
+
+ul.collapsible li.licollapsible:last-child div.collapsible-header {
+	border-radius: 0 0 8px 8px;
+}
+
+ul.collapsible li.licollapsible:last-child.active div.collapsible-header {
+	border-radius: 0;
+}
+
+ul.collapsible li.licollapsible div.collapsible-header div.chip {
+	margin: 1px;
+	background-color: transparent;
+	text-transform: uppercase;
+	/*color: #020A5E!important;*/
+	color: #fff !important;
+}
+
+ul.collapsible li.licollapsible div.headerError {
+	background-color: #6d1300 !important;
+}
+
+ul.collapsible li.licollapsible .collapsible-body {
+	border: none;
+	flex-wrap: wrap;
+	flex-direction: row;
+	justify-content: space-around;
+	padding: 10px !important;
+}
+
+ul.collapsible li.licollapsible:last-child .collapsible-body {
+	border-radius: 0 0 8px 8px;
+  border-bottom: 2px rgba(0, 93, 255, 0.5) solid;
+}
+
+ul.collapsible li.licollapsible:hover div.collapsible-header,
+ul.collapsible li.active div.collapsible-header {
+	background-color: rgba(0, 93, 255, 0.5) !important;
+}
+
+ul.collapsible li.licollapsible:hover div.collapsible-header .chip,
+ul.collapsible li.active div.collapsible-header .chip {
+	color: #fff !important;
+}
+
+ul.collapsible li.licollapsible.active .collapsible-body {
+	display: flex !important;
+	border-left: 2px rgba(0, 93, 255, 0.5) solid;
+	border-right: 2px rgba(0, 93, 255, 0.5) solid;
+}
+
+ul.collapsible li.licollapsible.active .collapsible-table {
+	display: block !important;
+}
+
+ul.collapsible li.licollapsible div.activeViewError {
+	display: flex !important;
+	width: 100%;
+}
+
+ul.collapsible li.licollapsible div.collapsible-body div.flex {
+	width: 100%;
+	display: flex;
+	flex-wrap: wrap;
+	flex-direction: row;
+	justify-content: space-between;
+	margin-top: 20px;
+}
+
+@media screen and (max-width: 600px) {
+	ul.collapsible li.licollapsible div.collapsible-header div.chip{
+    font-size: xx-small!important;
+	}
+}

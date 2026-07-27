@@ -1,0 +1,1840 @@
+<div id="modalProyectosEliminados" class="modal modaloDialog">
+	<div class="contenido">
+		<div class="header">
+			<h4>Proyectos eliminados</h4>
+			<a (click)="cerrarModal('#modalProyectosEliminados');"
+				class="modal-close btn text-bg-danger rounded-3"><i class="fa-solid fa-window-minimize"></i></a>
+		</div>
+		<div class="modal-content">
+			<div class="col-12 form row">
+				<div class="busqueda row">
+					<div class="col-12">
+						<input class="datasearch" style="border-radius: 25px!important;" type="text" autocomplete="on"
+							[(ngModel)]="searchDelProy" placeholder="{{'bus_car' | translate}}">
+					</div>
+				</div>
+				<div class="col-12">
+					<table class="centered responsive-table">
+						<thead>
+							<tr>
+								<th>#</th>
+								<th>folio</th>
+								<th>{{'proy' | translate}}</th>
+								<th>{{'kliente' | translate}}</th>
+								<th>lider de proyecto</th>
+								<th>{{'f_delete' | translate}}</th>
+								<th *ngIf="boolean_permiso_proyectos == true && boolean_permiso_eliminar == true" class="ultimo"></th>
+								<th *ngIf="boolean_permiso_proyectos == true && boolean_permiso_eliminar == true" class="ultimo"></th>
+							</tr>
+						</thead>
+						<tbody *ngIf="arrayDeletedProyectos.length != 0">
+							<tr
+								*ngFor="let proydel of arrayDeletedProyectos paginate:{id:'pageDelProy',itemsPerPage:10,currentPage:pageDelProy};index as delPos">
+								<td>{{delPos+1}}</td>
+								<td>{{proydel.folio_proy}}</td>
+								<td>{{proydel.proyecto}}</td>
+								<td>{{proydel.abrev_cliente+" - "+proydel.cliente}}</td>
+								<td>{{proydel.nombre_lider}}</td>
+								<td>{{proydel.fecha_delete}}</td>
+								<td *ngIf="boolean_permiso_proyectos == true && boolean_permiso_eliminar == true" class="ultimo">
+									<a (click)="restaurarProyecto($event.target,proydel.token_proyecto);"
+										class="btn text-bg-success rounded-3 btnRestauraProyecto">
+										<i class="fa-solid fa-trash-can-arrow-up"></i>
+									</a>
+								</td>
+								<td *ngIf="boolean_permiso_proyectos == true && boolean_permiso_eliminar == true" class="ultimo">
+									<a (click)="removerProyecto($event.target,proydel.token_proyecto);"
+										class="btn btn_extend text-bg-danger rounded-3 eliminaProyectoPerm">
+										<i class="fa-solid fa-eraser"></i>
+									</a>
+								</td>
+							</tr>
+						</tbody>
+						<tbody *ngIf="arrayDeletedProyectos.length == 0">
+							<tr *ngIf="boolean_permiso_proyectos == true && boolean_permiso_eliminar == true">
+								<td colspan="8">{{'no_rows' | translate}}</td>
+							</tr>
+
+							<tr *ngIf="boolean_permiso_proyectos == false || boolean_permiso_eliminar == false">
+								<td colspan="6">{{'no_rows' | translate}}</td>
+							</tr>
+						</tbody>
+					</table>
+					<paginado-controles class="paginador" id="pageDelProy" (pageChange)="pageDelProy = $event"
+						previousLabel="{{'prev' | translate}}" nextLabel="{{'next' | translate}}">
+					</paginado-controles>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div id="modalDuplicarTarea" class="modal modaloDialog">
+	<div class="contenido">
+		<div class="header">
+			<h4>{{'tar_dup' | translate}}</h4>
+			<a (click)="cerrarModal('#modalDuplicarTarea');"
+				class="modal-close btn text-bg-danger rounded-3"><i class="fa-solid fa-window-minimize"></i></a>
+		</div>
+		<div class="modal-content" *ngFor="let proy of detalleProyecto">
+			<div class="col-12 form row">
+				<div class="col-12">
+					<div class="col-12 col-sm-2 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+					<div class="col-12 col-sm-8 col-md-3 col-lg-2 col-xl-2 col-xxl-2 row">
+						<div class="col-12">
+							<h6 class="header-text">Nombre de la tarea</h6>
+							<input class="validate" name="txtNameTar" type="text" [value]="tareasUpdateModelo.name_tarea"
+								(keyup)="validaDuplicNameTarea($event.target);" id="txtNameDuplicateTar">
+						</div>
+						<div class="col-12">
+							<h6 class="header-text">Descripci&oacute;n de la tarea</h6>
+							<textarea class="validate" name="txtDescripTar" [value]="tareasUpdateModelo.descrip_tarea"
+								(keyup)="validaDuplicDescTarea($event.target);" id="txtDescripDuplicateTar"></textarea>
+						</div>
+						<div class="col-12">
+							<h6 class="header-text">Fecha de re-calendarizaci&oacute;n</h6>
+							<input class="datepicker" name="fechaAltaProd" type="date" [value]="tareasUpdateModelo.fecha_fin_tarea"
+								(change)="validaDuplicFechaFinTarea($event.target);" id="txtFecharecalDuplicateTar">
+						</div>
+
+						<div class="col-12" style="border-top:1px solid #353553">
+							<h6 class="header-text">Responsables de tarea</h6>
+							<div class="busqueda row">
+								<div class="col-12">
+									<input class="datasearch" style="border-radius: 25px!important;" type="text"
+										autocomplete="on" [(ngModel)]="searchPersonal" placeholder="{{'bus_car' | translate}}">
+								</div>
+							</div>
+
+							<table class="white centered responsive-table tableTeamWork">
+								<thead>
+									<tr>
+										<th>#</th>
+										<th>Personal</th>
+									</tr>
+								</thead>
+								<tbody *ngIf="tareasUpdateModelo.equipoResponsable.length != 0">
+									<tr
+										*ngFor="let team of tareasUpdateModelo.equipoResponsable | paginate:{id:'pagePersonal',itemsPerPage:10,currentPage:pagePersonal};index as persPos">
+										<td>{{persPos+1}}</td>
+										<td>{{team.nombre_integ}}</td>
+									</tr>
+								</tbody>
+								<tbody *ngIf="tareasUpdateModelo.equipoResponsable.length == 0">
+									<tr>
+										<td colspan="2">{{'no_rows' | translate}}</td>
+									</tr>
+								</tbody>
+							</table>
+
+							<paginado-controles class="paginador" id="pagePersonal" (pageChange)="pagePersonal = $event"
+								previousLabel="{{'prev' | translate}}" nextLabel="{{'next' | translate}}">
+							</paginado-controles>
+						</div>
+
+						<div class="col-12">
+							<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+							<div id="botonRegProv" class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+								<a class="btn btnGuardar btnRow waves-light" type="submit" name="btnAltaProducto2"
+									(click)="duplicaTarea(tareasUpdateModelo.token_proyecto,tareasUpdateModelo.tkn_tarea,tareasUpdateModelo.equipoResponsable);"><i class="fa-regular fa-floppy-disk"></i>
+									Duplicar tarea</a>
+								<div class="indeterminate" style="background-color: #353553;"></div>
+							</div>
+							<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="col-12">
+  <h6 class="col-12">{{'proy_list' | translate}}</h6>
+
+  <nav class="nav-extended buscador_nav">
+    <div class="col-12 nav-content nav_division">
+      <ul class="right col-12 row">
+        <li class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></li>
+        <li class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2 content-buscar"></li>
+      </ul>
+    </div>
+    <div class="col-12 nav-content nav_division">
+      <ul class="left col-12 row"style="margin-top: 5px!important;">
+        <li class="col-12 col-sm-12 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+
+        </li>
+        <li class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2 flex_li">
+          <div class="radio">
+            <p class="btn btn_extend waves-effect waves-light light-blue darken-4 semaforo">
+              <label>
+                <input name="buscaProyectos" type="radio" value="ASC" (click)="filtroProyBusqueda($event.target);" />
+                <span><i class="fa-solid fa-arrow-up-short-wide"></i> Busqueda ascendente</span>
+              </label>
+            </p>
+          </div>
+          <div class="radio" style="margin-left: 3px!important;">
+            <p class="btn btn_extend waves-effect waves-light light-blue darken-4 semaforo">
+              <label>
+                <input name="buscaProyectos" type="radio" value="DESC" (click)="filtroProyBusqueda($event.target);" />
+                <span><i class="fa-solid fa-arrow-down-short-wide"></i> Busqueda descendente</span>
+              </label>
+            </p>
+          </div>
+          <a style="margin-left: 3px!important;" class="btn btn_extend waves-effect waves-light grey darken-4 semaforo" (click)="recarga_listas_proyectos_general();"><i class="fa-solid fa-arrows-rotate"></i> Recargar listas</a>
+          <a style="margin-left: 3px!important;" class="btn btn_extend waves-effect waves-light grey darken-4 semaforo modal-trigger"
+            href="#modalProyectosEliminados" *ngIf="arrayDeletedProyectos.length > 0"><i class="fa-solid fa-trash-can"></i> Proyectos eliminados</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="col-12 row" *ngIf="proyResponse == false && arrayProyectos.length == 0">
+    <div class="cargandoProyectos">
+      <div class="preloader-wrapper big active">
+        <div class="spinner-layer spinner-blue">
+          <div class="circle-clipper left">
+            <div class="circle"></div>
+          </div>
+          <div class="gap-patch">
+            <div class="circle"></div>
+          </div>
+          <div class="circle-clipper right">
+            <div class="circle"></div>
+          </div>
+        </div>
+
+        <div class="spinner-layer spinner-red">
+          <div class="circle-clipper left">
+            <div class="circle"></div>
+          </div>
+          <div class="gap-patch">
+            <div class="circle"></div>
+          </div>
+          <div class="circle-clipper right">
+            <div class="circle"></div>
+          </div>
+        </div>
+
+        <div class="spinner-layer spinner-yellow">
+          <div class="circle-clipper left">
+            <div class="circle"></div>
+          </div>
+          <div class="gap-patch">
+            <div class="circle"></div>
+          </div>
+          <div class="circle-clipper right">
+            <div class="circle"></div>
+          </div>
+        </div>
+
+        <div class="spinner-layer spinner-green">
+          <div class="circle-clipper left">
+            <div class="circle"></div>
+          </div>
+          <div class="gap-patch">
+            <div class="circle"></div>
+          </div>
+          <div class="circle-clipper right">
+            <div class="circle"></div>
+          </div>
+        </div>
+      </div>
+      <h6>Cargando lista de proyectos...</h6>
+    </div>
+  </div>
+  <div class="col-12 row" *ngIf="proyResponse == true && arrayProyectos.length == 0">
+    <h6>{{'no_rows' | translate}}</h6>
+  </div>
+  <div class="col-12 row" *ngIf="proyResponse == true && arrayProyectos.length > 0">
+
+    <div class="col-12 form data-reg" style="margin-top: 10px;margin-bottom: 3px;padding: 0;">
+      <div id="card_proyectos_main" class="col-12 row" style="padding: 0;">
+        <div id="card_proyecto_{{proylist.folio_proy}}" class="col-12 card card_proyectos card_{{proylist.proyecto_status}}" style="padding: 0;" *ngFor="let proylist of arrayProyectos | paginate:{id:'pageProy',itemsPerPage:10,currentPage:pageProy}">
+          <div class="card-header col-12 row">
+            <p *ngIf="proylist.proyecto_status == 'finish'" class="btn btnHeaderProyectos btnFinish waves-effect waves-light grey lighten-5">
+              <i class="fa-solid fa-check-double i_{{proylist.paloma_proyecto}}"></i>
+            </p>
+
+            <a *ngIf="boolean_permiso_proyectos == true && proylist.creat_lider == 'CR'" class="btn btnHeaderProyectos waves-effect btn_extend waves-light teal darken-2 semaforo modal-trigger"
+              (click)="proyecto_prepare(proylist.token_proyecto,proylist.proyecto,proylist.descripcion,proylist.abrev_cliente,proylist.nombre_cliente,proylist.simple_prioridad_proyecto,
+                proylist.date_end_proy_epoc,proylist.date_end_proy_html,proylist.upload_evidencias,proylist.evd_delete_perm,proylist.token_lider,proylist.equipo_trabajo_max,proylist.recalendarizacion);" 
+                href="#modalEdit{{proylist.folio_proy}}"><i class="fa-solid fa-pen-to-square"></i>&nbsp;{{'proy_edit' | translate}}
+            </a>
+
+            <div id="modalEdit{{proylist.folio_proy}}" class="modal modaloDialog" *ngIf="boolean_permiso_proyectos == true && proylist.creat_lider == 'CR'">
+              <div class="contenido">
+                <div class="header">
+                  <h4>Actualizar proyecto {{"("+proylist.creat_lider+ ") "+proylist.folio_proy+" - "+proylist.proyecto}}</h4>
+                  <a (click)="cerrarModal('#modalEdit'+proylist.folio_proy);"
+                    class="modal-close btn text-bg-danger rounded-3"><i class="fa-solid fa-window-minimize"></i></a>
+                </div>
+                <div class="modal-content">
+                  <div class="col-12 form row">
+                    <div class="col-12 division_update">
+                      <div class="col-12">
+                        <h6 class="header-text header-text-informative">{{'fecha_fin' | translate}}</h6>
+                        <h6 class="content-text">{{edit_proyecto.fecha_fin_proyecto_epoc}}</h6>
+                      </div>
+                      <div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2 row">
+                        <div class="col-12" style="display: flex;justify-content: center;flex-wrap: wrap;align-content: center;align-items: center;height: 100%;">
+                          <div class="col-12">
+                            <h6 class="header-text">{{'proy_name' | translate}}</h6>
+                            <input class="validate" name="txtNameProyecto" [value]="edit_proyecto.name_proyecto"
+                              (keyup)="validaEditNamePry($event.target,edit_proyecto.token_proyecto);" type="text" id="editNameProyecto">
+                          </div>
+                          <div class="col-12">
+                            <h6 class="header-text">{{'proy_desc' | translate}}</h6>
+                            <textarea name="txtDescripProyecto" [value]="edit_proyecto.descrip_proyecto"
+                              (keyup)="validaEditDescPry($event.target,edit_proyecto.token_proyecto);" class="validate"
+                              id="editDescripProyecto"></textarea>
+                          </div>
+                          <div class="col-12">
+                            <h6 class="header-text">{{'abrev_kliente' | translate}}</h6>
+                            <input class="validate" name="txtAbrevClienteProyecto" type="text"
+                              [value]="edit_proyecto.abrev_cliente_proyecto" minlength="3" maxlength="4"
+                              (keyup)="validaEditAbrevClientePry($event.target,edit_proyecto.token_proyecto);" id="editAbrevClienteProyecto">
+                          </div>
+                          <div class="col-12">
+                            <h6 class="header-text">{{'kliente' | translate}}</h6>
+                            <input class="validate" name="txtClienteProyecto" [value]="edit_proyecto.cliente_proyecto"
+                              (keyup)="validaEditClientePry($event.target,edit_proyecto.token_proyecto);" type="text" id="editClienteProyecto">
+                          </div>
+                          <div class="col-12">
+                            <h6 class="header-text">{{'pryori' | translate}}</h6>
+                            <select class="browser-default" name="txtPrioridadProyecto"
+                              (change)="validaEditPrioridadProyecto($event.target,edit_proyecto.token_proyecto);" id="txtPrioridadProyecto">
+                              <option value="" disabled>{{'opt_select' | translate}}</option>
+                              <option class="pryori_baj" value="baj" [selected]="edit_proyecto.prioridad == 'baj'">baja</option>
+                              <option class="pryori_med" value="med" [selected]="edit_proyecto.prioridad == 'med'">media</option>
+                              <option class="pryori_alt" value="alt" [selected]="edit_proyecto.prioridad == 'alt'">alta</option>
+                            </select>
+                          </div>
+                          <div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                            <p class="radio" style="margin:0px!important;">
+                              <label
+                                style="background-color:#fff!important;padding:5px!important;border-radius:8px!important;">
+                                <input *ngIf="edit_proyecto.upload_evid == false" id="radioEditUploadEvid"
+                                  name="radioUploadEvid" type="checkbox" (click)="evidUploadEditCheck(edit_proyecto.token_proyecto);" />
+                                <input *ngIf="edit_proyecto.upload_evid == true" id="radioEditUploadEvid" name="radioUploadEvid"
+                                  type="checkbox" (click)="evidUploadEditCheck(edit_proyecto.token_proyecto);" checked />
+                                <span style="color:#353535!important;font-size:15px!important;font-weight:bold!important;"><i style="margin-left: 3px;margin-right: 3px;" class="fa-solid fa-file-arrow-up"></i>{{'upload_evid' | translate}}</span>
+                              </label>
+                            </p>
+                          </div>
+                          <div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                            <p class="radio" style="margin:0px!important;">
+                              <label
+                                style="background-color:#fff!important;padding:5px!important;border-radius:8px!important;">
+                                <input *ngIf="edit_proyecto.delete_evid_uploaded == false" id="radioEditDeleteUploadedEvid"
+                                  name="radioUploadEvid" type="checkbox" (click)="evidDeleteUploadedEditCheck(edit_proyecto.token_proyecto);" />
+                                <input *ngIf="edit_proyecto.delete_evid_uploaded == true" id="radioEditDeleteUploadedEvid"
+                                  name="radioUploadEvid" type="checkbox" (click)="evidDeleteUploadedEditCheck(edit_proyecto.token_proyecto);" checked />
+                                <span style="color:#353535!important;font-size:15px!important;font-weight:bold!important;"><i style="margin-left: 3px;margin-right: 3px;" class="fa-solid fa-file-circle-xmark"></i>{{'del_evid_auth_perm' | translate}}</span>
+                              </label>
+                            </p>
+                          </div>
+                          <div class="col-12">
+                            <h6 class="header-text">{{'proy_manager' | translate}}</h6>
+                            <select class="browser-default" name="txtResponsableProyecto"
+                              (change)="validaEditResponsablePry($event.target,edit_proyecto.token_proyecto);" id="editResponsableProyecto">
+                              <option value="">{{'opt_select' | translate}}</option>
+                              <option *ngFor="let people of proylist.listProyToLeader" value="{{people.token_empleado}}"
+                                [disabled]="people.selected" [selected]="people.selected">{{people.nombre_completo}}
+                              </option>
+                            </select>
+                          </div>
+
+                          <div class="col-12">
+                            <div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <a class="btn btnGuardar btnRow waves-light" type="submit" *ngIf="validate_project_update == true"><i class="fa-regular fa-floppy-disk"></i> Cancelar actualizaci&oacute;n</a>
+                            </div>
+              
+                            <div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <a class="btn btnGuardar btnRow waves-light" *ngIf="validate_project_update == true" name="btnAltaProducto2" (click)="actualizarProyecto(proylist.token_proyecto);"><i class="fa-regular fa-floppy-disk"></i> Actualizar proyecto</a>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2 row">
+                        <table id="table_TeamWorkProy{{proylist.folio_proy}}" class="display nowrap white centered" style="width:100%!important;margin:0!important;">
+                          <thead>
+                            <tr>
+                              <th>#</th>
+                              <th class="ultimo ultimo-buttons"></th>
+                              <th>Personal</th>
+                              <th class="ultimo ultimo-buttons"></th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr *ngFor="let team of edit_proyecto.arrayEquipoTrabajo;index as iteam"
+                              class="tr-selected-{{team.selected}}">
+                              <td>{{iteam+1}}</td>
+                              <td class="ultimo">
+                                <p *ngIf="team.selected == true" class="btn waves-effect waves-light blue darken-4"><i class="fa-solid fa-check-double"></i></p>
+                              </td>
+                              <td>{{team.nombre_completo}}</td>
+                              <td class="ultimo">
+                                <a *ngIf="team.selected == true"
+                                  class="btn btn_extend text-bg-danger rounded-3"
+                                  (click)="eliminaEditEquipoPry($event.target,proylist.token_proyecto,team.token_empleado);">
+                                  <i class="fa-solid fa-user-xmark"></i>
+                                </a>
+                                <a *ngIf="team.selected == false"
+                                  class="btn bg-blue-600"
+                                  (click)="registraEquipoPry($event.target,proylist.token_proyecto,team.token_empleado);">
+                                  <i class="fa-solid fa-check"></i>
+                                </a>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <a href="#modalRecalProy{{proylist.folio_proy}}" *ngIf="boolean_permiso_proyectos == true && proylist.creat_lider == 'CR'" 
+              class="btn btnHeaderProyectos waves-effect btn_extend waves-light teal darken-2 semaforo modal-trigger"
+              (click)="abreRecalendarProyecto(proylist.token_proyecto,proylist.proyecto,proylist.date_end_proy_epoc,proylist.date_end_proy_html,proylist.recalendarizacion);">
+              <i class="fa-solid fa-calendar-day"></i>&nbsp;{{'proy_recal' | translate}}
+            </a>
+
+            <div id="modalRecalProy{{proylist.folio_proy}}" class="modal modaloDialog" *ngIf="boolean_permiso_proyectos == true && proylist.creat_lider == 'CR'">
+              <div class="contenido">
+                <div class="header">
+                  <h4>Recalendarizar proyecto {{"("+proylist.creat_lider+ ") "+proylist.folio_proy+" - "+proylist.proyecto}}</h4>
+                  <a (click)="cerrarModal('#modalRecalProy'+proylist.folio_proy);"
+                    class="modal-close btn text-bg-danger rounded-3"><i class="fa-solid fa-window-minimize"></i></a>
+                </div>
+                <div class="modal-content">
+                  <div class="col-12 form row">
+                    <div class="col-12">
+                      <h6 class="header-text">Fecha de re-calendarizaci&oacute;n</h6>
+                      <input class="datepicker" name="fechaAltaProd" type="date" [value]="edit_proyecto.fecha_fin_proyecto_html"
+                        (change)="validaRecalendProyecto($event.target)" id="txtFecharecalProy">
+                    </div>
+                    <div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+                    <div id="botonRegProv" class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                      <a class="btn btnGuardar btnRow waves-light" name="btnAltaProducto2"
+                        *ngIf="txt_fecha_recal_proyecto != ''" (click)="recalendarizaProy(edit_proyecto.token_proyecto);"><i class="fa-regular fa-floppy-disk"></i> Guardar
+                        cambios</a>
+                    </div>
+                    <div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+            
+                    <div class="col-12">
+                      <h6>Bitacora de recalendarizaci&oacute;n</h6>
+                      <table id="table_RecalendarProy{{proylist.folio_proy}}" class="display nowrap white centered" style="width:100%!important;margin:0!important;">
+                        <thead>
+                          <tr>
+                            <th>#</th>
+                            <th>fecha de operaci&oacute;n</th>
+                            <th>fecha de recalendarizaci&oacute;n</th>
+                            <th>realiz&oacute;</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr *ngFor="let recall of edit_proyecto.arrayRecalendar;index as recPos">
+                            <td>{{recPos+1}}</td>
+                            <td>{{recall.fecha_sistema}}</td>
+                            <td>{{recall.fecha_compromiso_nueva}}</td>
+                            <td>{{recall.personal_opera}}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <a *ngIf="boolean_permiso_proyectos == true && proylist.creat_lider == 'CR'" class="btn btnHeaderProyectos waves-effect btn_extend waves-light red darken-2"
+              (click)="eliminarProyecto(proylist.token_proyecto);"><i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+            </a>
+
+            <a class="btn btnHeaderProyectos btn_extend" *ngIf="proylist.status_detalle == false || proylist.detalle_proyecto.length == 0"
+              (click)="detalle_proyecto_main(proylist.token_proyecto,'#card_proyecto_'+proylist.folio_proy);">
+              <i class="fa-regular fa-folder-open"></i>&nbsp;{{'proy_open' | translate}}
+            </a> 
+            <a class="btn btnHeaderProyectos btn_extend" *ngIf="proylist.status_detalle == true && proylist.detalle_proyecto.length != 0" 
+              (click)="detail_proy_close(proylist.token_proyecto,'#card_proyecto_'+proylist.folio_proy);">
+              <i class="fa-regular fa-folder-closed"></i>&nbsp;{{'proy_close' | translate}}
+            </a> 
+          </div>
+          <div class="col-12 row card-content card_content_project">
+            <div class="col-12 data_project">
+              <h6 class="nameProy">{{'proy_name' | translate}}: {{"("+proylist.creat_lider+ ") "+proylist.folio_proy+" - "+proylist.proyecto}}</h6>
+            </div>
+          </div>
+
+          <div class="col-12 row card-content card_content_project">
+            <div class="col-12 col-sm-12 col-md-3 col-lg-2 col-xl-2 col-xxl-2 data_project">
+              <h6>{{'kliente' | translate}}: {{proylist.abrev_cliente+" - "+proylist.nombre_cliente}}</h6>
+              <h6>{{proylist.tareas}}</h6>
+            </div>
+
+            <div class="col-12 col-sm-12 col-md-3 col-lg-2 col-xl-2 col-xxl-2 data_project">
+              <h6>{{'pryori' | translate}}: {{proylist.text_prioridad_proyecto}}</h6>
+              <h6 *ngIf="proylist.upload_evidencias == true">{{'upload_evid' | translate}}: {{'oblig' | translate}}</h6>
+              <h6 *ngIf="proylist.upload_evidencias == false">{{'upload_evid' | translate}}: {{'no_oblig' | translate}}</h6>
+
+              <h6 *ngIf="proylist.evd_delete_perm == true">{{'del_evid_auth_perm' | translate}}: {{'oblig' | translate}}</h6>
+              <h6 *ngIf="proylist.evd_delete_perm == false">{{'del_evid_auth_perm' | translate}}: {{'no_oblig' | translate}}</h6>
+            </div>
+
+            <div class="col-12 col-sm-12 col-md-3 col-lg-2 col-xl-2 col-xxl-2 data_project">
+              <h6>{{'lid_team' | translate}}: {{proylist.nombre_lider}}</h6>
+              <h6>{{'fecha_inicio' | translate}}: {{proylist.fecha_inicio}} {{'fecha_fin' | translate}}: {{proylist.date_end_proy_epoc}}</h6>
+            </div>
+          </div>
+
+          <div class="col-12 row card-content content_detail_project" *ngIf="proylist.status_detalle == true && proylist.detalle_proyecto.length != 0">
+            <div class="card-content desglose_project" *ngFor="let proy of proylist.detalle_proyecto" style="display: inline-block;width: 100%;padding: 0;">
+              <h6 style="text-transform: initial!important;"><strong>{{'proy_desc' | translate}}:</strong> {{proy.descripcion}}</h6>
+
+              <div id="modalNewTarea{{proylist.folio_proy}}" class="modal modaloDialog">
+                <div class="contenido">
+                  <div class="header">
+                    <h4>{{'tar_new' | translate}}</h4>
+                    <a (click)="cerrarModal('#modalNewTarea'+proylist.folio_proy);" class="modal-close btn text-bg-danger rounded-3"><i class="fa-solid fa-window-minimize"></i></a>
+                  </div>
+                  <div class="modal-content">
+                    <div class="col-12 form row">
+                      <h6>{{'proy_name' | translate}}: {{proylist.folio_proy+" - "+proylist.proyecto}}</h6>
+                      <div style="width: 100%!important;">
+                        <div class="col-12 input-group">
+                          <label class="activeInput">{{'tar_name' | translate}}</label>
+                          <textarea class="validate register" name="txtDescripTar" style="max-height: 80px!important;" (keyup)="validaNameNewTarea($event.target);" id="txtNameTar"></textarea>
+                        </div>
+                        <div class="col-12 input-group">
+                          <label class="activeInput">{{'tar_desc' | translate}}</label>
+                          <textarea class="validate register" name="txtDescripTar" style="max-height: 80px!important;" (keyup)="validaDescNewTarea($event.target);" id="txtDescripTar"></textarea>
+                        </div>
+
+                        <div class="col-12" style="padding: 0!important;margin-top: 5px!important;padding-top: 5px!important;border-top: solid 2px;">
+                          <h6><i class="fa-solid fa-people-group"></i>{{'tar_manager' | translate}}:  {{proy.nombre_lider}}</h6>
+                          <div class="col-12" style="display: flex;justify-content: center;flex-wrap: wrap;align-content: center;align-items: center;height: 100%;">
+                                        
+                            <div class="busqueda row">
+                              <div class="col-12">
+                                <input class="datasearch" style="border-radius: 25px!important;" type="text"
+                                  autocomplete="on" [(ngModel)]="searchPersonal"
+                                  placeholder="{{'bus_car' | translate}}">
+                              </div>
+                            </div>
+        
+                            <table class="white centered tableTeamWork">
+                              <thead>
+                                <tr>
+                                  <th>#</th>
+                                  <th class="ultimo ultimo-buttons"></th>
+                                  <th>Personal</th>
+                                  <th class="ultimo ultimo-buttons"></th>
+                                </tr>
+                              </thead>
+                              <tbody *ngIf="proy.equipoTrabajoDetalle.length != 0">
+                                <tr
+                                *ngFor="let team of proy.equipoTrabajoDetalle | paginate:{id:'pagePersonal',itemsPerPage:10,currentPage:pagePersonal};index as iteam"
+                                  class="tr-selected-{{team.selected}}">
+                                  <td>{{iteam+1}}</td>
+                                  <td class="ultimo">
+                                    <p *ngIf="team.selected == true" class="btn waves-effect waves-light blue darken-4"><i class="fa-solid fa-check-double"></i></p>
+                                  </td>
+                                  <td>{{team.nombre_integ}}</td>
+                                  <td class="ultimo">
+                                    <a *ngIf="team.selected == true"
+                                      class="btn btn_extend text-bg-danger rounded-3"
+                                      (click)="deleteResponsableTarea(proy.token_proyecto,team.token_pers_equipo);">
+                                      <i class="fa-solid fa-user-xmark"></i>
+                                    </a>
+                                    <a *ngIf="team.selected == false"
+                                      class="btn bg-blue-600"
+                                      (click)="addResponsableTarea(proy.token_proyecto,team.token_pers_equipo);">
+                                      <i class="fa-solid fa-check"></i>
+                                    </a>
+                                  </td>
+                                </tr>
+                              </tbody>
+                              <tbody *ngIf="proy.equipoTrabajoDetalle.length == 0">
+                                <tr>
+                                  <td colspan="4">{{'no_rows' | translate}}</td>
+                                </tr>
+                              </tbody>
+                            </table>
+        
+                            <paginado-controles class="paginador" style="width: 100%;" id="pagePersonal" (pageChange)="pagePersonal = $event"
+                              previousLabel="{{'prev' | translate}}" nextLabel="{{'next' | translate}}">
+                            </paginado-controles>
+                          </div>
+                        </div>
+                
+                        <div class="col-12" style="padding: 0!important;margin-top: 5px!important;padding-top: 5px!important;border-top: solid 2px;">
+                          <div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2 input-group">
+                            <label class="activeInput">{{'fecha_fin' | translate}}</label>
+                            <input class="datepicker" name="fechaAltaProd" type="datetime-local" (change)="validaFechaFinNewTarea($event.target);" id="txtFechaFinTar">
+                          </div>
+                          <div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2 botones_accion">
+                            <a class="btn waves-effect btnSaveRow waves-light blue lighten-2" *ngIf="proy.tarea_list.length == 0" disabled><i class="fa-solid fa-list-ol"></i></a>
+                            <a class="btn waves-effect btnSaveRow waves-light blue lighten-2 sidenav-trigger" data-target="slide_out_new_tar" *ngIf="proy.tarea_list.length > 0">
+                              <i class="fa-solid fa-list-ol"></i>
+                            </a>
+    
+                            <ul id="slide_out_new_tar" class="sidenav side_tareas_nav amber lighten-1">
+                              <li class="header">
+                                <div class="content">
+                                  <h6 class="name">Listado de tareas registradas anteriormente</h6>
+                                </div>
+                              </li>
+                              <li><div class="divider"></div></li>
+                              <li style="padding: 5px;">
+                                <table id="table_out_new_tar{{proylist.folio_proy}}" class="display nowrap mdl-data-table white centered" style="width:100%!important;margin:0!important;">
+                                  <thead>
+                                    <tr>
+                                      <th class="ultimo"></th>
+                                      <th>{{'tar_name' | translate}}</th>
+                                      <th class="ultimo ultimo-buttons"></th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    <tr *ngFor="let rowtar of proy.tarea_list;index as newpos">
+                                      <td>{{newpos+1}}</td>
+                                      <td>{{rowtar.folio_tar+" "+rowtar.tarea_nombre}}</td>
+                                      <td class="ultimo">
+                                        <p class="radio"><label><input type="checkbox" (click)="addDependeTarea($event.target);" [value]="rowtar.token_tarea"/></label></p>
+                                      </td>
+                                    </tr>
+                                  </tbody>
+                                </table>
+                              </li>
+                            </ul>
+                          </div>
+                          <div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2 botones_accion">
+                            <a class="btn waves-effect btnSaveRow waves-light red darken-2" disabled
+                              *ngIf="tareasModelo.name_tarea == '' && tareasModelo.descrip_tarea == '' && tareasModelo.fecha_fin_tarea == ''"><i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}</a>
+                            <a class="btn waves-effect btnSaveRow waves-light red darken-2"
+                              *ngIf="tareasModelo.name_tarea != '' || tareasModelo.descrip_tarea != '' || tareasModelo.fecha_fin_tarea != ''" (click)="cancelaTareaRegistro(proy.token_proyecto);"><i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}</a> 
+                          </div>
+                          <div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2 botones_accion">
+                            <a class="btn waves-effect btnSaveRow waves-light blue darken-2" type="submit" disabled
+                              *ngIf="tareasModelo.name_tarea == '' || tareasModelo.descrip_tarea == '' || tareasModelo.fecha_fin_tarea == ''"><i class="fa-solid fa-floppy-disk"></i></a>
+      
+                            <a class="btn waves-effect btnSaveRow waves-light blue darken-2" type="submit" 
+                              *ngIf="tareasModelo.name_tarea != '' && tareasModelo.descrip_tarea != '' && tareasModelo.fecha_fin_tarea != ''" (click)="registraTarea(proy.token_proyecto,proy.creat_lider);">
+                              <i class="fa-solid fa-floppy-disk"></i></a> 
+                          </div>
+                        </div>
+                
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-12" *ngIf="proy.creat_lider == 'CR' || proy.creat_lider == 'LI'">
+                <div class="buscador buscador_transparent row">
+                  <div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2" style="display:flex;justify-content: flex-start;">
+                    <a class="btn waves-effect btn_extend waves-light blue darken-4 modal-trigger semaforo"
+                      *ngIf="boolean_permiso_tareas == true && (proy.creat_lider == 'CR' || proy.creat_lider == 'LI')"
+                      href="#modalNewTarea{{proylist.folio_proy}}">
+                      <i class="fa-solid fa-plus"></i>&nbsp;{{'tar_new' | translate}}
+                    </a>
+
+                    <a class="btn bg-teal-700 semaforo tooltipped"
+                      data-position="top" data-tooltip="Lista general de tareas" style="margin-left: 3px;"
+                      (click)="recargaListaTareas(proy.token_proyecto);">
+                      <i class="fa-solid fa-rectangle-list"></i>
+                    </a>
+
+                    <a style="margin-left: 3px;"
+                      class="btn waves-effect waves-light green darken-4 semaforo tooltipped"
+                      data-position="top" data-tooltip="tareas nuevos o sin fecha de vencimiento cercana"
+                      (click)="listaTareasGreen(proy.token_proyecto);">
+                      <i class="fa-solid fa-traffic-light"></i>
+                    </a>
+
+                    <a style="margin-left: 3px;"
+                      class="btn waves-effect waves-light orange darken-1 semaforo tooltipped"
+                      data-position="top"
+                      data-tooltip="tareas con fecha de vencimiento menor o igual a 5 dias"
+                      (click)="listaTareasYellow(proy.token_proyecto);">
+                      <i class="fa-solid fa-traffic-light"></i>
+                    </a>
+
+                    <a style="margin-left: 3px;"
+                      class="btn waves-effect waves-light red darken-4 semaforo tooltipped"
+                      data-position="top" data-tooltip="tareas vencidas" (click)="listaTareasRed(proy.token_proyecto);">
+                      <i class="fa-solid fa-traffic-light"></i>
+                    </a>
+
+                    <a *ngIf="proy.deletedTareas.length > 0" data-position="top" href="#modalTareasDeleted{{proylist.folio_proy}}"
+                      class="btn waves-effect waves-light grey darken-4 modal-trigger semaforo tooltipped" style="margin-left: 3px;"
+                      data-tooltip="tareas eliminadas"><i class="fa-solid fa-trash-can"></i></a>
+
+                    <div id="modalTareasDeleted{{proylist.folio_proy}}" class="modal modaloDialog">
+                      <div class="contenido">
+                        <div class="header">
+                          <h4>Tareas eliminadas</h4>
+                          <a (click)="cerrarModal('#modalTareasDeleted'+proylist.folio_proy);"
+                            class="modal-close btn text-bg-danger rounded-3"><i class="fa-solid fa-window-minimize"></i></a>
+                        </div>
+                        <div class="modal-content">
+                          <div class="col-12 form row">
+                            <div class="busqueda row">
+                              <div class="col-12">
+                                <input class="datasearch" style="border-radius: 25px!important;" type="text" autocomplete="on"
+                                  [(ngModel)]="searchDelTar" placeholder="{{'bus_car' | translate}}">
+                              </div>
+                            </div>
+                            <div class="col-12">
+                              <table class="centered responsive-table">
+                                <thead>
+                                  <tr>
+                                    <th>#</th>
+                                    <th>folio</th>
+                                    <th>tarea</th>
+                                    <th>inicio</th>
+                                    <th>fin</th>
+                                    <th>{{'f_delete' | translate}}</th>
+                                    <th>realizaci&oacute;n</th>
+                                    <th class="ultimo ultimo-buttons"></th>
+                                    <th class="ultimo ultimo-buttons"></th>
+                                  </tr>
+                                </thead>
+                                <tbody *ngIf="proy.deletedTareas.length != 0">
+                                  <tr
+                                    *ngFor="let tardel of proy.deletedTareas | paginate:{id:'pageDelTar',itemsPerPage:10,currentPage:pageDelTar};index as dtarPos">
+                                    <td>{{dtarPos+1}}</td>
+                                    <td>{{tardel.folio_tar}}</td>
+                                    <td>{{tardel.tarea_nombre}}</td>
+                                    <td>{{tardel.inicio_tarea}}</td>
+                                    <td>{{tardel.fin_tarea}}</td>
+                                    <td>{{tardel.fecha_delete}}</td>
+                                    <td style="display:flex; justify-content:center; align-items:center;">
+                                      <p class="btn waves-effect waves-light {{tardel.realizacion}} darken-2" style="width:30px!important"></p>
+                                    </td>
+                                    <td class="ultimo">
+                                      <a (click)="restaurarTarea($event.target,proy.token_proyecto,tardel.token_tarea);"
+                                        class="btn text-bg-success rounded-3 btnRestauraTarea">
+                                        <i class="fa-solid fa-trash-can-arrow-up"></i>
+                                      </a>
+                                    </td>
+                                    <td class="ultimo">
+                                      <!--(click)="removerTarea($event.target,proy.token_proyecto,tardel.token_tarea,proy.creat_lider);"-->
+                                      <a (click)="removerTarea($event.target,proy.token_proyecto,tardel.token_tarea);"
+                                        class="btn btn_extend text-bg-danger rounded-3 btnRemoveTarea">
+                                        <i class="fa-solid fa-eraser"></i>
+                                      </a>
+                                    </td>
+                                  </tr>
+                                </tbody>
+                                <tbody *ngIf="proy.deletedTareas.length == 0">
+                                  <tr>
+                                    <td colspan="8">{{'no_rows' | translate}}</td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                              <paginado-controles class="paginador" id="pageDelTar" (pageChange)="pageDelTar = $event"
+                                previousLabel="{{'prev' | translate}}" nextLabel="{{'next' | translate}}">
+                              </paginado-controles>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <a style="margin-left: 3px;" class="btn waves-effect waves-light grey darken-4 semaforo tooltipped" 
+                      (click)="detalle_proyecto_inside(proy.token_proyecto);" data-position="top" data-tooltip="recargar listas de tareas">
+                      <i class="fa-solid fa-arrows-rotate"></i>
+                    </a>
+
+                  </div>
+                  <div class="col-12 col-sm-1 col-md-3 col-lg-2 col-xl-2 col-xxl-2" style="height: 5px;"></div>
+                  <div class="col content-buscar s12 m5 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                    <input class="datasearch" type="text" autocomplete="on" (keyup)="reload_matIze();" [(ngModel)]="searchTar" placeholder="{{'bus_car' | translate}}">
+                  </div>
+                </div>
+
+                <div class="col-12 row" style="padding: 0;display: contents;">
+                  <div class="table_new_task_one col-12" style="padding: 5px!important;margin: 0!important;">
+                    <!--<table class="white centered table_show_register" style="min-width: 100%!important;width: max-content!important;">-->
+                    <table class="white centered table_show_register" style="min-width: 100%!important;margin: 0!important;">
+                      <thead>
+                        <tr>
+                          <th class="ultimo ultimo-buttons"></th>
+                          <th class="ultimo ultimo-buttons"></th>
+                          <th class="ultimo ultimo-buttons"></th>
+                          <th class="ultimo ultimo-buttons"></th>
+                          <th class="ultimo ultimo-buttons"></th>
+                          <th>{{'tar_name' | translate}}</th>
+                          <th>{{'tar_desc' | translate}}</th>
+                          <th>{{'fecha_fin' | translate}}</th>
+                          <th>{{'proy_teamwork' | translate}}</th>
+                          <th class="ultimo ultimo-buttons"></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr *ngFor="let rowtar of proy.tarea_list | paginate:{id:'pageTar',itemsPerPage:10,currentPage:pageTar};index as iTar">
+                          <td class="ultimo">
+                            <p class="btn text-bg-success rounded-3" *ngIf="rowtar.realizacion == 'green'">
+                              <i style="height:100%;width:30px;text-align:center;" class="fa-solid fa-flag-checkered"></i> {{rowtar.tottal_actividades}}
+                            </p>
+                            <p class="btn waves-effect waves-light {{rowtar.realizacion}} darken-2"
+                              *ngIf="rowtar.realizacion != 'green'">{{rowtar.tottal_actividades}}</p>
+                          </td>
+                          <td class="ultimo">
+                            <!--destinos-->
+                            <div id="modalSeccionInformesCRLI{{rowtar.folio_tar+proylist.folio_proy}}" class="modal modaloDialog">
+                              <div class="contenido">
+                                <div class="header">
+                                  <h4>Actividades de tarea {{rowtar.folio_tar}}</h4>
+                                  <a (click)="cerrarModal('#modalSeccionInformesCRLI'+rowtar.folio_tar+proylist.folio_proy);"
+                                    class="modal-close btn text-bg-danger rounded-3"><i class="fa-solid fa-window-minimize"></i></a>
+                                </div>
+                                <div class="modal-content">
+                                  <div class="col-12 form row">
+                                    <h6>{{'proy_name' | translate}}: {{proylist.folio_proy+" - "+proylist.proyecto}}</h6>
+                                    <h6>{{'tar_name' | translate}}: {{rowtar.folio_tar+" - "+rowtar.tarea_nombre}}</h6>
+                                    <div class="col-12 cabecera card_content_project">
+                                      <div class="col-12 data_project">
+                                        <h6 style="color: #353535!important;">
+                                          <div class="chip"><h6> Actividades realizadas: {{rowtar.tottal_actividades}}</h6></div>
+                                          <div class="chip"><h6>{{'fecha_inicio' | translate}}: {{rowtar.inicio_tarea}}</h6></div>
+                                          <div class="chip"><h6>{{'fecha_fin' | translate}}: {{rowtar.fin_tarea}}</h6></div>
+                                          <!--<div *ngIf="rowtar.tareas_enabled_list.length > 0" class="chip sidenav-trigger" data-target="slide_out_tar_detail"><h6>vincular a tareas registradas ant.</h6></div>-->
+                                          <div *ngIf="rowtar.tareas_enabled_list.length > 0" class="chip">
+                                            <a class="sidenav-trigger" href="#slide_out_tar_detail{{rowtar.folio_tar+proylist.folio_proy}}"><h6>vincular a tareas registradas ant.</h6></a>
+                                            <ul id="slide_out_tar_detail{{rowtar.folio_tar+proylist.folio_proy}}" class="sidenav side_tareas_nav amber lighten-1">
+                                              <li class="header">
+                                                <div class="content">
+                                                  <h6 class="name">Listado de tareas registradas anteriormente</h6>
+                                                </div>
+                                              </li>
+                                              <li><div class="divider"></div></li>
+                                              <li style="padding: 5px;">
+                                                <div class="buscador row">
+                                                  <div class="col content-buscar s12">
+                                                    <input class="datasearch" style="border-radius: 25px !important;" type="text" autocomplete="on" [(ngModel)]="searchTarNewReg" placeholder="{{'bus_car' | translate}}">
+                                                  </div>
+                                                </div>
+        
+                                                <table class="white centered table_show_register" style="min-width: 100%!important;margin: 0!important;">
+                                                  <thead>
+                                                    <tr>
+                                                      <th colspan="2" style="border-radius: 8px 8px 0 0 !important;">{{'tar_name' | translate}}</th>
+                                                      <!--<th class="ultimo ultimo-buttons"></th>-->
+                                                    </tr>
+                                                  </thead>
+                                                  <tbody *ngIf="rowtar.tareas_enabled_list.length > 0">
+                                                    <tr *ngFor="let enabledtar of rowtar.tareas_enabled_list | paginate:{id:'pageTarNewReg',itemsPerPage:10,currentPage:pageTarNewReg};index as newpos">
+                                                      <td>{{newpos+1+" "+enabledtar.folio_tarea+" "+enabledtar.tarea_nombre}}</td>
+                                                      <td class="ultimo"><!--addDependeTarea-->
+                                                        <!--<p class="radio"><label><input type="checkbox" (click)="addDependeTarea($event.target);" [value]="rowtar.token_tarea"/></label></p>-->
+                                                        <a class="btn bg-blue-300" (click)="add_tarea_dependiente(proy.token_proyecto,rowtar.token_tarea,enabledtar.token_tarea,rowtar.folio_tar)" *ngIf="enabledtar.vinculado == false"><i class="fa-solid fa-plus"></i></a>
+                                                        <a class="btn text-bg-danger rounded-3" (click)="remove_tarea_dependiente(proy.token_proyecto,rowtar.token_tarea,enabledtar.token_tarea,rowtar.folio_tar)" *ngIf="enabledtar.vinculado == true"><i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}</a>
+                                                      </td>
+                                                    </tr>
+                                                  </tbody>
+                                                  <tbody *ngIf="rowtar.tareas_enabled_list.length == 0"><tr><td colspan="2">{{'no_rows' | translate}}</td></tr></tbody>
+                                                </table>
+                                                <paginado-controles class="paginador" id="pageTarNewReg" (pageChange)="pageTarNewReg = $event" (click)="componentes();" previousLabel="{{'prev' | translate}}" nextLabel="{{'next' | translate}}"></paginado-controles>
+                                              </li>
+                                            </ul>
+                                          </div>
+                                        </h6>
+                                      </div>
+                                    </div>
+                                    <div class="col-12">
+
+                                      <div class="col-12">
+                                        <ul class="tabs">
+                                          <li class="tab col s4">
+                                            <a href="#tab_crli_seccion_proyectos_informes{{proylist.folio_proy+rowtar.folio_tar}}" class="active" style="width:100%!important;border-radius: 8px 0 0 8px !important;"
+                                              (click)="recover_tarea_by_importes(proy.token_proyecto,rowtar.token_tarea,'#tar_crli_seccion_proyectos_informes'+proylist.folio_proy+rowtar.folio_tar);">{{'inf_list' | translate}}</a>
+                                          </li>
+                                          <li class="tab col s4">
+                                            <a href="#tab_crli_seccion_proyectos_informesDeleted{{proylist.folio_proy+rowtar.folio_tar}}" class="active" style="width:100%!important;border-radius: 0 !important;">
+                                              {{'inf_deleted' | translate}}
+                                            </a>
+                                          </li>
+                                          <li class="tab col s4">
+                                            <a href="#tab_crli_seccion_proyectos_new_informe{{proylist.folio_proy+rowtar.folio_tar}}" style="width:100%!important;border-radius: 0 8px 8px 0 !important;">{{'new_inf' | translate}}</a>
+                                          </li>
+                                        </ul>
+                                      </div>
+                                      <div id="tab_crli_seccion_proyectos_informes{{proylist.folio_proy+rowtar.folio_tar}}" class="col-12">
+                                        
+                                        <div class="col-12" style="padding: 0;">
+                                          <div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2 row">
+                                            <a *ngIf="boolean_permiso_tareas == true && rowtar.informeArray.length > 0 && rowtar.realizacion != 'green' && rowtar.enabled_terminar == true"
+                                              (click)="terminarTarea(proy.token_proyecto,rowtar.token_tarea);"
+                                              class="btn btn_extend btnRow btnBlueHead bg-blue-600">
+                                              <i class="fa-solid fa-check-double"></i>&nbsp;{{'tar_fin' | translate}}
+                                            </a>
+                                            <a *ngIf="boolean_permiso_tareas == false || rowtar.informeArray.length == 0 || rowtar.realizacion == 'green' || rowtar.enabled_terminar == false" disabled
+                                              class="btn btn_extend btnRow btnBlueHead bg-blue-600">
+                                              <i class="fa-solid fa-check-double"></i>&nbsp;{{'tar_fin' | translate}}
+                                            </a>
+                                          </div>
+                                          <div class="col-12 col-sm-8 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+                                        </div>
+                                        
+                                        <table id="tar_crli_seccion_proyectos_informes{{proylist.folio_proy+rowtar.folio_tar}}" class="display nowrap mdl-data-table white centered" style="width:100%!important;margin:0!important;">
+                                          <thead>
+                                            <tr>
+                                              <th class="ultimo">#</th>
+                                              <th>Informe</th>
+                                              <th>Observaciones</th>
+                                              <th>Tiempo activo</th>
+                                              <th>Fecha de realizaci&oacute;n</th>
+                                              <th>realiz&oacute;</th>
+                                              <th>
+                                                <p style="margin: 0!important;width: auto;border-radius: 25px;padding-left: 5px;padding-right: 5px;text-transform: math-auto;" class="btn waves-effect btn_extend waves-light indigo darken-4">
+                                                  <i class="fa-solid fa-file" style="width: 25px !important;height: 25px !important;line-height: 25px !important;font-size: 15px;text-align: center;"></i> {{'files_uploaded' | translate}}
+                                                </p> 
+                                              </th>
+                                              <th>revision</th>
+                                              <th>{{'auth' | translate}}</th>
+                                              <th class="ultimo"></th>
+                                              <th class="ultimo"></th>
+                                              <th class="ultimo"></th>
+                                              <th class="ultimo"></th>
+                                              <th class="ultimo"></th>
+                                            </tr>
+                                          </thead>
+                                          <tbody>
+                                            <tr *ngFor="let inf of rowtar.informeArray;index as infPos">
+                                              <td>{{infPos+1}}</td>
+                                              <td class="text_large">{{inf.folio_inf+" - "+inf.informe}}</td>
+                                              <td class="text_large" style="min-width: 500px;"><p class="large_informe">{{inf.observaciones}}</p></td>
+                                              <td>{{inf.horas_activas}}</td>
+                                              <td>{{inf.fecha_realizacion}}</td>
+                                              <td class="name">{{inf.personal_realiza}}</td>
+                                              <td>
+                                                <!--<select *ngIf="inf.evidencias_true.length == 0" class="browser-default"><option value="" disabled selected>{{'no_rows' | translate}}</option></select>
+
+                                                <select *ngIf="inf.evidencias_true.length > 0" class="browser-default" (select)="viewDocumento($event.target);">
+                                                  <option value="" disabled selected>{{'opt_select' | translate}}</option>
+                                                  <option *ngFor="let doc of inf.evidencias_true" [value]="doc.url" (click)="optionClick(doc.url);">{{doc.name_documento}}</option>
+                                                </select>-->
+
+                                                <ul id="dropdown{{inf.folio_inf+rowtar.folio_tar+proylist.folio_proy}}" class="dropdown-content menu_docs_assoc" *ngIf="inf.evidencias_true.length > 0">
+                                                  <li class="docs" *ngFor="let doc of inf.evidencias_true"><a (click)="viewDocumentoLink(doc.url);">{{doc.name_documento}}</a></li>
+                                                </ul>
+
+                                                <a class="btn waves-effect btn_extend waves-light indigo darken-4" *ngIf="inf.evidencias_true.length == 0" disabled>
+                                                  <i class="fa-solid fa-angle-down" style="width: 25px !important;height: 25px !important;line-height: 25px !important;font-size: 15px;text-align: center;"></i> {{'file_list_open' | translate}}
+                                                </a> 
+
+                                                <a class="btn waves-effect btn_extend waves-light indigo darken-4 dropdown-trigger" *ngIf="inf.evidencias_true.length > 0" 
+                                                  href="#dropdown{{inf.folio_inf+rowtar.folio_tar+proylist.folio_proy}}" data-target="dropdown{{inf.folio_inf+rowtar.folio_tar+proylist.folio_proy}}">
+                                                  <i class="fa-solid fa-angle-down" style="width: 25px !important;height: 25px !important;line-height: 25px !important;font-size: 15px;text-align: center;"></i> {{'file_list_open' | translate}}
+                                                </a> 
+                                              </td>
+                                              <td>{{inf.rev_aprob}}</td>
+                                              <td style="vertical-align:middle;display:flex;">
+                                                <textarea name="large_descript" style="width: 300px!important;min-height: 80px!important;" class="validate" id="text_auth_proyectos_informes{{proylist.folio_proy+rowtar.folio_tar}}"
+                                                (keyup)="validateObservRevision(proy.token_proyecto,rowtar.token_tarea,inf.token_informe,$event.target);"></textarea>
+                                              </td>
+                                              <td class="ultimo">
+                                                <a class="btn waves-effect waves-light green darken-4" *ngIf="inf.observaciones_revision == ''" disabled><i class="fa-solid fa-check-double"></i></a>
+                                                <a class="btn waves-effect waves-light green darken-4" *ngIf="inf.observaciones_revision != ''"
+                                                  (click)="aprobarInforme(proy.token_proyecto,rowtar.token_tarea,inf.token_informe,'true',inf.observaciones_revision,'text_auth_proyectos_informes'+proylist.folio_proy+rowtar.folio_tar);">
+                                                  <i class="fa-solid fa-check-double"></i></a>
+                                              </td>
+                                              <td class="ultimo">
+                                                <a class="btn text-bg-danger rounded-3" *ngIf="inf.observaciones_revision == ''" disabled><i class="fa-solid fa-xmark"></i></a>
+                                                <a class="btn text-bg-danger rounded-3" *ngIf="inf.observaciones_revision != ''"
+                                                  (click)="aprobarInforme(proy.token_proyecto,rowtar.token_tarea,inf.token_informe,'false',inf.observaciones_revision,'text_auth_proyectos_informes'+proylist.folio_proy+rowtar.folio_tar);">
+                                                  <i class="fa-solid fa-xmark"></i></a>
+                                              </td>
+                                              <td *ngIf="inf.status_aprob == 'empty'">---</td>
+                                              <td *ngIf="inf.status_aprob == 'process'">{{inf.rev_aprob}}</td>
+                                              <td *ngIf="inf.status_aprob == 'success'">{{'yes_auth' | translate}} {{'observ' | translate}}: {{inf.comentarios_aprob}}</td>
+                                              <td *ngIf="inf.status_aprob == 'error'">{{'not_auth' | translate}} {{'observ' | translate}}: {{inf.comentarios_aprob}}</td>
+                                              <td class="ultimo">
+                                                <select *ngIf="inf.aprobaciones.length > 0" class="browser-default">
+                                                  <option value="" disabled selected>{{'opt_select' | translate}}</option>
+                                                  <option *ngFor="let pAuth of inf.aprobaciones">{{pAuth.aprobado_lis | translate}} {{pAuth.fecha_aprobar+" "+pAuth.observaciones}}</option>
+                                                </select>
+                                                <select *ngIf="inf.aprobaciones.length == 0" class="browser-default"><option value="" disabled selected>{{'no_rows' | translate}}</option></select>
+                                              </td>
+                                              <td class="ultimo">
+                                                <a class="btn btn_extend text-bg-danger rounded-3 btnDeleteInforme"
+                                                  (click)="eliminarInforme($event.target,proy.token_proyecto,rowtar.token_tarea,inf.token_informe);">
+                                                  <i class="fa-regular fa-trash-can"></i>
+                                                </a>
+                                              </td>
+                                            </tr>
+                                          </tbody>
+                                        </table>
+                                      </div>
+                                      <div id="tab_crli_seccion_proyectos_informesDeleted{{proylist.folio_proy+rowtar.folio_tar}}" class="col-12">
+                                        <table id="tar_control_proyectos_inf_deleted{{proylist.folio_proy+rowtar.folio_tar}}" class="display nowrap mdl-data-table white centered" style="width:100%!important;margin:0!important;">
+                                          <thead>
+                                            <tr>
+                                              <th>#</th>
+                                              <th>folio</th>
+                                              <th>informe</th>
+                                              <th>{{'f_delete' | translate}}</th>
+                                              <th>realiz&oacute;</th>
+                                              <th class="ultimo ultimo-buttons"></th>
+                                              <th class="ultimo ultimo-buttons"></th>
+                                            </tr>
+                                          </thead>
+                                          <tbody>
+                                            <tr *ngFor="let infdel of rowtar.informeDelArray;index as iDelPos">
+                                              <td>{{iDelPos+1}}</td>
+                                              <td>{{infdel.folio_inf}}</td>
+                                              <td class="text_large">{{infdel.informe}}</td>
+                                              <td>{{infdel.fecha_delete_inf}}</td>
+                                              <td>{{infdel.personal_realiza}}</td>
+                                              <td class="ultimo">
+                                                <a (click)="restaurarInforme($event.target,infdel.token_proyecto,infdel.token_tarea,infdel.token_informe);"
+                                                  class="btn text-bg-success rounded-3 btnRestauraInforme">
+                                                  <i class="fa-solid fa-trash-can-arrow-up"></i>
+                                                </a>
+                                              </td>
+                                              <td class="ultimo">
+                                                <a (click)="removerInforme($event.target,infdel.token_proyecto,infdel.token_tarea,infdel.token_informe);"
+                                                  class="btn btn_extend text-bg-danger rounded-3 btnRemoveaInforme">
+                                                  <i class="fa-solid fa-eraser"></i>
+                                                </a>
+                                              </td>
+                                            </tr>
+                                          </tbody>
+                                        </table>
+                                      </div>
+                                      <div id="tab_crli_seccion_proyectos_new_informe{{proylist.folio_proy+rowtar.folio_tar}}" class="col-12">
+                                        <div class="col-12 row" *ngIf="rowtar.realizacion != 'green'">
+                                          <div class="col-12">
+                                            <h6 class="header-text">{{'txt_new_inf' | translate}}</h6>
+                                            <input class="validate" name="txtNuevoInforme" type="text"
+                                              (keyup)="validateNewInforme($event.target)" id="txtNuevoInforme{{rowtar.folio_tar}}">
+                                          </div>
+                                
+                                          <div class="col-12">
+                                            <h6 class="header-text">{{'observ' | translate}}</h6>
+                                            <textarea class="validate" name="txtDescripTar" (keyup)="validateObservNewInforme($event.target);"
+                                              id="txtDescripTar{{rowtar.folio_tar}}"></textarea>
+                                          </div>
+
+                                          <div class="col-12">
+                                            <h6 class="header-text">{{'active_time_inf' | translate}}</h6>
+                                            <input class="validate" name="txtNuevoInforme" type="text"
+                                              (keyup)="validateHActivasInforme($event.target)" id="txtNuevoInforme{{rowtar.folio_tar}}">
+                                          </div>
+                                
+                                          <h6 class="header-text">{{'txt_evidencias' | translate}}</h6>
+                                          <div class="center evidenciaReg col-12" style="background-color:#fff;border-radius:30px!important;">
+                                            <ngx-fi-le-drop dropZoneLabel="Drop files here" (onFileDrop)="dropped($event)" (onFileOver)="fileOver($event)" (onFileLeave)="fileLeave($event)">
+                                              <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
+                                                <but_ton class="btn bg-indigo-600" style="width: auto;font-size: small;" type="button" 
+                                                  (click)="openFileSelector()">{{'load_files' | translate}} / {{'browse_files' | translate}}</button>
+                                              </ng-template>
+                                            </ngx-file-drop>
+                              
+                                            <div class="upload-table">
+                                              <table class="centered white">
+                                                <thead>
+                                                  <tr>
+                                                    <th>{{'file' | translate}}</th>
+                                                    <th class="ultimo"></th>
+                                                  </tr>
+                                                </thead>
+                                                <tbody class="upload-name-style" *ngIf="files.length != 0">
+                                                  <tr *ngFor="let item of files; index as i">
+                                                    <td><strong>{{ item.relativePath }}</strong></td>
+                                                    <td class="ultimo">
+                                                      <a class="btn btn_extend text-bg-danger rounded-3"
+                                                        (click)="deleteEvidencias(i);">
+                                                        <i class="fa-solid fa-eraser"></i>
+                                                      </a>
+                                                    </td>
+                                                  </tr>
+                                                </tbody>
+                                                <tbody class="upload-name-style" *ngIf="files.length == 0">
+                                                  <tr>
+                                                    <td colspan="2">{{'no_rows' | translate}}</td>
+                                                  </tr>
+                                                </tbody>
+                                              </table>
+                                            </div>
+                                          </div>
+                                
+                                          <div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+                                          <div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2" style="display: flex;flex-wrap: wrap;justify-content: space-evenly;">
+                                            <a style="width:100%!important;border-radius:8px!important;"
+                                              *ngIf="informesModelo.informe_titulo == '' || informesModelo.informe_observaciones == ''"
+                                              class="btn text-bg-success rounded-3" disabled>
+                                              <i class="fa-solid fa-floppy-disk"></i>
+                                            </a>
+                                            <a style="width:100%!important;border-radius:8px!important;"
+                                              *ngIf="informesModelo.informe_titulo != '' && informesModelo.informe_observaciones != ''"
+                                              (click)="registrarInforme(proy.token_proyecto,rowtar.upload_evidencias,rowtar.token_tarea,rowtar.folio_tar,proy.creat_lider,'#tar_seccion_proyectos_informes'+proylist.folio_proy+rowtar.folio_tar+'_crli');"
+                                              id="btnRegistraInforme" class="btn text-bg-success rounded-3">
+                                              <i class="fa-solid fa-floppy-disk"></i>
+                                            </a>
+                                          </div>
+                                          <div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+                            <ul id="slide_out_tar_listCRLI{{rowtar.folio_tar+proylist.folio_proy}}" class="sidenav side_tareas_nav amber lighten-1"
+                              *ngIf="rowtar.enable_tarea == false && rowtar.open_inside_tarea == false && rowtar.tareas_enabled_list.length != 0 && boolean_permiso_tareas == true && (proy.creat_lider == 'CR' || proy.creat_lider == 'LI')">
+                              <li class="header">
+                                <div class="content">
+                                  <h6 class="name">Listado de tareas registradas anteriormente</h6>
+                                </div>
+                              </li>
+                              <li><div class="divider"></div></li>
+                              <li style="padding: 5px;">
+                                <div class="buscador row">
+                                  <div class="col content-buscar s12">
+                                    <input class="datasearch" style="border-radius: 25px !important;" type="text" autocomplete="on" [(ngModel)]="searchTarNewReg" placeholder="{{'bus_car' | translate}}">
+                                  </div>
+                                </div>
+                                
+                                <table id="table_out_tar_listCRLI{{rowtar.folio_tar+proylist.folio_proy}}" class="display nowrap mdl-data-table white centered" style="width:100%!important;margin:0!important;">
+                                  <thead>
+                                    <tr>
+                                      <th colspan="2" style="border-radius: 8px 8px 0 0 !important;">{{'tar_name' | translate}}</th>
+                                      <!--<th class="ultimo ultimo-buttons"></th>-->
+                                    </tr>
+                                  </thead>
+                                  <tbody *ngIf="rowtar.tareas_enabled_list.length > 0">
+                                    <tr *ngFor="let enabledtar of rowtar.tareas_enabled_list | paginate:{id:'pageTarNewReg',itemsPerPage:10,currentPage:pageTarNewReg};index as newpos">
+                                      <td>{{newpos+1+" "+enabledtar.folio_tarea+" "+enabledtar.tarea_nombre}}</td>
+                                      <td class="ultimo"><!--addDependeTarea-->
+                                        <!--<p class="radio"><label><input type="checkbox" (click)="addDependeTarea($event.target);" [value]="rowtar.token_tarea"/></label></p>-->
+                                        <a class="btn btn_extend bg-blue-500" (click)="add_tarea_dependiente(proy.token_proyecto,rowtar.token_tarea,enabledtar.token_tarea,rowtar.folio_tar)"
+                                           *ngIf="enabledtar.vinculado == false"><i class="fa-solid fa-plus"></i></a>
+                                        <a class="btn btn_extend text-bg-danger rounded-3" (click)="remove_tarea_dependiente(proy.token_proyecto,rowtar.token_tarea,enabledtar.token_tarea,rowtar.folio_tar)"
+                                          *ngIf="enabledtar.vinculado == true"><i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}</a>
+                                      </td>
+                                    </tr>
+                                  </tbody>
+                                  <tbody *ngIf="rowtar.tareas_enabled_list.length == 0"><tr><td colspan="2">{{'no_rows' | translate}}</td></tr></tbody>
+                                </table>
+                                <paginado-controles class="paginador" id="pageTarNewReg" (pageChange)="pageTarNewReg = $event" (click)="componentes();" previousLabel="{{'prev' | translate}}" nextLabel="{{'next' | translate}}"></paginado-controles>
+                              </li>
+                            </ul>
+
+                            <!--<a class="btn" (click)="select_tarea(proy.token_proyecto,rowtar.token_tarea);"><i class="fa-solid fa-chevron-down"></i></a>-->
+                            <!--recover_tarea_by_importes(proy.token_proyecto,rowtar.token_tarea,'#tar_crli_seccion_proyectos_informes'+proylist.folio_proy+rowtar.folio_tar);-->
+                            <a class="btn btn_extend bg-blue-600 modal-trigger" *ngIf="rowtar.enable_tarea == true"
+                             (click)="recoverTareaData(proy.token_proyecto,rowtar.token_tarea);recover_tarea_by_importes(proy.token_proyecto,rowtar.token_tarea,'#tar_crli_seccion_proyectos_informes'+proylist.folio_proy+rowtar.folio_tar);" 
+                              href="#modalSeccionInformesCRLI{{rowtar.folio_tar+proylist.folio_proy}}"><i class="fa-solid fa-list-check"></i>&nbsp;{{'inf_list' | translate}}</a> 
+                            
+                            <a class="btn btn_extend waves-effect waves-light blue lighten-2 sidenav-trigger" data-target="slide_out_tar_listCRLI{{rowtar.folio_tar+proylist.folio_proy}}" 
+                              *ngIf="rowtar.enable_tarea == false && rowtar.open_inside_tarea == false && rowtar.tareas_enabled_list.length != 0 && boolean_permiso_tareas == true"
+                              href="#slide_out_tar_listCRLI{{rowtar.folio_tar+proylist.folio_proy}}"><i class="fa-solid fa-list-ol"></i>&nbsp;{{'tar_vinc' | translate}}</a>
+                          </td>
+                          <td class="ultimo">
+                            <div id="modalEditTarea{{rowtar.folio_tar+proylist.folio_proy}}" class="modal modaloDialog">
+                              <div class="contenido">
+                                <div class="header">
+                                  <h4>Actualizar tarea {{rowtar.folio_tar}}</h4>
+                                  <a (click)="cerrarModal('#modalEditTarea'+rowtar.folio_tar+proylist.folio_proy);"
+                                    class="modal-close btn text-bg-danger rounded-3"><i class="fa-solid fa-window-minimize"></i></a>
+                                </div>
+                                <div class="modal-content">
+                                  <div class="col-12 form row">
+                                    <h6>{{'proy_name' | translate}}: {{proylist.folio_proy+" - "+proylist.proyecto}}</h6>
+                                    <h6>{{'tar_name' | translate}}: {{rowtar.folio_tar+" - "+rowtar.tarea_nombre}}</h6>
+                                    <div class="col-12 cabecera card_content_project">
+                                      <div class="col-12 data_project">
+                                        <h6 style="color: #353535!important;">
+                                          <div class="chip"><h6> Actividades realizadas: {{rowtar.tottal_actividades}}</h6></div>
+                                          <div class="chip"><h6>{{'fecha_inicio' | translate}}: {{rowtar.inicio_tarea}}</h6></div>
+                                          <div class="chip"><h6>{{'fecha_fin' | translate}}: {{rowtar.fin_tarea}}</h6></div>
+                                          <!--<div *ngIf="rowtar.tareas_enabled_list.length > 0" class="chip sidenav-trigger" data-target="slide_out_tar_detail"><h6>vincular a tareas registradas ant.</h6></div>-->
+                                          <div *ngIf="rowtar.tareas_enabled_list.length > 0" class="chip">
+                                            <a class="sidenav-trigger" href="#slide_out_tar_detail{{rowtar.folio_tar+proylist.folio_proy}}"><h6>vincular a tareas registradas ant.</h6></a>
+                                            <ul id="slide_out_tar_detail{{rowtar.folio_tar+proylist.folio_proy}}" class="sidenav side_tareas_nav amber lighten-1">
+                                              <li class="header">
+                                                <div class="content">
+                                                  <h6 class="name">Listado de tareas registradas anteriormente</h6>
+                                                </div>
+                                              </li>
+                                              <li><div class="divider"></div></li>
+                                              <li style="padding: 5px;">
+                                                <div class="buscador row">
+                                                  <div class="col content-buscar s12">
+                                                    <input class="datasearch" style="border-radius: 25px !important;" type="text" autocomplete="on" [(ngModel)]="searchTarNewReg" placeholder="{{'bus_car' | translate}}">
+                                                  </div>
+                                                </div>
+        
+                                                <table class="white centered table_show_register" style="min-width: 100%!important;margin: 0!important;">
+                                                  <thead>
+                                                    <tr>
+                                                      <th colspan="2" style="border-radius: 8px 8px 0 0 !important;">{{'tar_name' | translate}}</th>
+                                                      <!--<th class="ultimo ultimo-buttons"></th>-->
+                                                    </tr>
+                                                  </thead>
+                                                  <tbody *ngIf="rowtar.tareas_enabled_list.length > 0">
+                                                    <tr *ngFor="let enabledtar of rowtar.tareas_enabled_list | paginate:{id:'pageTarNewReg',itemsPerPage:10,currentPage:pageTarNewReg};index as newpos">
+                                                      <td>{{newpos+1+" "+enabledtar.folio_tarea+" "+enabledtar.tarea_nombre}}</td>
+                                                      <td class="ultimo"><!--addDependeTarea-->
+                                                        <!--<p class="radio"><label><input type="checkbox" (click)="addDependeTarea($event.target);" [value]="rowtar.token_tarea"/></label></p>-->
+                                                        <a class="btn bg-blue-300" (click)="add_tarea_dependiente(proy.token_proyecto,rowtar.token_tarea,enabledtar.token_tarea,rowtar.folio_tar)" *ngIf="enabledtar.vinculado == false"><i class="fa-solid fa-plus"></i></a>
+                                                        <a class="btn text-bg-danger rounded-3" (click)="remove_tarea_dependiente(proy.token_proyecto,rowtar.token_tarea,enabledtar.token_tarea,rowtar.folio_tar)" *ngIf="enabledtar.vinculado == true"><i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}</a>
+                                                      </td>
+                                                    </tr>
+                                                  </tbody>
+                                                  <tbody *ngIf="rowtar.tareas_enabled_list.length == 0"><tr><td colspan="2">{{'no_rows' | translate}}</td></tr></tbody>
+                                                </table>
+                                                <paginado-controles class="paginador" id="pageTarNewReg" (pageChange)="pageTarNewReg = $event" (click)="componentes();" previousLabel="{{'prev' | translate}}" nextLabel="{{'next' | translate}}"></paginado-controles>
+                                              </li>
+                                            </ul>
+                                          </div>
+                                        </h6>
+                                      </div>
+                                    </div>
+                                    <div class="col-12">
+                                      <ul class="tabs">
+                                        <li class="tab col s4"><a href="#seccion_tarea_edit{{rowtar.folio_tar+proylist.folio_proy}}" style="width:100%!important;border-radius: 8px 0 0 8px !important;">{{'tar_edit' | translate}}</a></li>
+                                        <li class="tab col s4"><a href="#seccion_tarea_team{{rowtar.folio_tar+proylist.folio_proy}}" style="width:100%!important;border-radius: 0 !important;">{{'proy_teamwork' | translate}}</a></li>
+                                        <li class="tab col s4"><a href="#seccion_informes_recalendar{{rowtar.folio_tar+proylist.folio_proy}}" style="width:100%!important;border-radius: 0 8px 8px 0 !important;">{{'tar_recal' | translate}}</a></li>
+                                      </ul>
+                                    </div>
+                                    <div id="seccion_tarea_edit{{rowtar.folio_tar+proylist.folio_proy}}" class="col-12">
+                                      <h6>{{'tar_edit' | translate}}</h6>
+                                      <div class="col-12 division_update">
+                                        <div class="col-12">
+                                          <div class="col-12 input-group">
+                                            <label class="activeInput">{{'tar_name' | translate}}</label>
+                                            <textarea [value]="rowtar.tarea_nombre" class="validate register" name="txtDescripTar" style="max-height: 80px!important;" 
+                                              (keyup)="validaEditNameTarea($event.target,proy.token_proyecto,rowtar.token_tarea);"
+                                              (change)="changeEditNameTarea($event.target,proy.token_proyecto,rowtar.token_tarea);"></textarea>
+                                          </div>
+                                          <div class="col-12 input-group">
+                                            <label class="activeInput">{{'tar_desc' | translate}}</label>
+                                            <textarea [value]="rowtar.tarea_descripcion" class="validate register" name="txtDescripTar" style="max-height: 80px!important;" 
+                                              (keyup)="validaEditDescTarea($event.target,proy.token_proyecto,rowtar.token_tarea);"
+                                              (change)="changeEditDescTarea($event.target,proy.token_proyecto,rowtar.token_tarea);"></textarea>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div id="seccion_tarea_team{{rowtar.folio_tar+proylist.folio_proy}}" class="col-12">
+                                      <div class="col-12" style="padding: 0!important;margin-top: 5px!important;padding-top: 5px!important;border-top: solid 2px;">
+                                        <h6><i class="fa-solid fa-people-group"></i>{{'tar_manager' | translate}}:  {{proy.nombre_lider}}</h6>
+                                        <div class="col-12 row">
+                                          <div class="col-12" style="display: flex;justify-content: center;flex-wrap: wrap;align-content: center;align-items: center;height: 100%;">
+                                            <div class="busqueda row">
+                                              <div class="col-12">
+                                                <input class="datasearch" style="border-radius: 25px!important;" type="text"
+                                                  autocomplete="on" [(ngModel)]="searchPersonal"
+                                                  placeholder="{{'bus_car' | translate}}">
+                                              </div>
+                                            </div>
+                        
+                                            <table class="white centered tableTeamWork">
+                                              <thead>
+                                                <tr>
+                                                  <th>#</th>
+                                                  <th class="ultimo ultimo-buttons"></th>
+                                                  <th>Personal</th>
+                                                  <th class="ultimo ultimo-buttons"></th>
+                                                </tr>
+                                              </thead>
+                                              <tbody *ngIf="rowtar.equipoResponsableMax.length != 0">
+                                                <tr
+                                                *ngFor="let people of rowtar.equipoResponsableMax | paginate:{id:'pagePersonal',itemsPerPage:10,currentPage:pagePersonal};index as iteam"
+                                                  class="tr-selected-{{people.selected}}">
+                                                  <td>{{iteam+1}}</td>
+                                                  <td class="ultimo">
+                                                    <p *ngIf="people.selected == true" class="btn waves-effect waves-light blue darken-4"><i class="fa-solid fa-check-double"></i></p>
+                                                  </td>
+                                                  <td>{{people.nombre_integ}}</td>
+                                                  <td class="ultimo">
+                                                    <a *ngIf="people.selected == true"
+                                                      class="btn btn_extend text-bg-danger rounded-3"
+                                                      (click)="eliminaEditRespTarPry(proy.token_proyecto,rowtar.token_tarea,people.token_pers_equipo);">
+                                                      <i class="fa-solid fa-user-xmark"></i>
+                                                    </a>
+                                                    <a *ngIf="people.selected == false"
+                                                      class="btn bg-blue-600"
+                                                      (click)="registraEditRespTarPry(proy.token_proyecto,rowtar.token_tarea,people.token_pers_equipo);">
+                                                      <i class="fa-solid fa-check"></i>
+                                                    </a>
+                                                  </td>
+                                                </tr>
+                                              </tbody>
+                                              <tbody *ngIf="rowtar.equipoResponsableMax.length == 0">
+                                                <tr>
+                                                  <td colspan="4">{{'no_rows' | translate}}</td>
+                                                </tr>
+                                              </tbody>
+                                            </table>
+                        
+                                            <paginado-controles class="paginador" style="width: 100%;" id="pagePersonal" (pageChange)="pagePersonal = $event"
+                                              previousLabel="{{'prev' | translate}}" nextLabel="{{'next' | translate}}">
+                                            </paginado-controles>
+  
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div id="seccion_informes_recalendar{{rowtar.folio_tar+proylist.folio_proy}}" class="col-12">
+                                      <div class="col-12" style="padding: 0!important;margin-top: 5px!important;padding-top: 5px!important;border-top: solid 2px;">
+                                        <h6><i class="fa-solid fa-calendar-day"></i>Recalendarizar tarea</h6>
+                                        <div class="col-12">
+                                          <h6 class="header-text">Fecha de re-calendarizaci&oacute;n</h6>
+                                          <input class="datepicker" name="fechaAltaProd" type="date" [value]="tareasUpdateModelo.fecha_fin_tarea"
+                                            (change)="validaEditFechaFinTarea($event.target,proy.token_proyecto,rowtar.token_tarea);" id="txtFecharecalTar">
+                                        </div>
+                                
+                                        <div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+                                        <div id="botonRegProv" class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                                          <a class="btn btnGuardar btnRow waves-light" name="btnAltaProducto2"
+                                            *ngIf="tareasUpdateModelo.fecha_fin_tarea != rowtar.html_fin_tarea"
+                                            style="width: 100%!important;border-radius: 8px!important;background-color: #2962ff!important;"
+                                            (click)="recalendarizaTarea(proylist.token_proyecto,rowtar.token_tarea);"><i class="fa-regular fa-floppy-disk"></i> Guardar cambios</a>
+                                        </div>
+                                        <div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+                                
+                                        <div class="col-12">
+                                          <h6>Bitacora de recalendarizaci&oacute;n</h6>
+                                
+                                          <div class="busqueda row">
+                                            <div class="col-12">
+                                              <input class="datasearch" style="border-radius: 25px!important;" type="text" autocomplete="on"
+                                                [(ngModel)]="searchRecalendarProy" placeholder="{{'bus_car' | translate}}">
+                                            </div>
+                                          </div>
+                                
+                                          <table class="white centered responsive-table tableTeamWork">
+                                            <thead>
+                                              <tr>
+                                                <th>#</th>
+                                                <th>fecha de operaci&oacute;n</th>
+                                                <th>fecha de recalendarizaci&oacute;n</th>
+                                                <th>realiz&oacute;</th>
+                                              </tr>
+                                            </thead>
+                                            <tbody *ngIf="rowtar.tareaRecalendar.length != 0">
+                                              <tr
+                                                *ngFor="let recall of rowtar.tareaRecalendar | paginate:{id:'pageRecalendarProy',itemsPerPage:10,currentPage:pageRecalendarProy};index as rTarPos">
+                                                <td>{{rTarPos+1}}</td>
+                                                <td>{{recall.fecha_sistema}}</td>
+                                                <td>{{recall.fecha_compromiso_nueva}}</td>
+                                                <td>{{recall.personal_opera}}</td>
+                                              </tr>
+                                            </tbody>
+                                            <tbody *ngIf="rowtar.tareaRecalendar.length == 0">
+                                              <tr>
+                                                <td colspan="4">{{'no_rows' | translate}}</td>
+                                              </tr>
+                                            </tbody>
+                                          </table>
+                                          <paginado-controles class="paginador" id="pageRecalendarProy" (pageChange)="pageRecalendarProy = $event"
+                                            previousLabel="{{'prev' | translate}}" nextLabel="{{'next' | translate}}">
+                                          </paginado-controles>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <a class="btn btnHeaderProyectos waves-effect btn_extend waves-light teal darken-2 semaforo modal-trigger"
+                              (click)="select_tarea(proy.token_proyecto,rowtar.token_tarea);clonaPerfilTarea(proy.token_proyecto,rowtar.token_tarea);"
+                              href="#modalEditTarea{{rowtar.folio_tar+proylist.folio_proy}}">
+                              <i class="fa-solid fa-pen-to-square"></i>&nbsp;{{'tar_control' | translate}}<!--{{'tar_edit' | translate}}-->
+                            </a>
+                          </td>
+                          <td class="ultimo ultimo-buttons">
+                            <a *ngIf="boolean_permiso_tareas == true" href="#modalDuplicarTarea"
+                              class="btn btn_extend bg-teal-700 semaforo modal-trigger" (click)="clonaPerfilTarea(proy.token_proyecto,rowtar.token_tarea);">
+                              <i class="fa-solid fa-clone"></i>&nbsp;{{'tar_dup' | translate}}
+                            </a>
+                            <a *ngIf="boolean_permiso_tareas == false" disabled class="btn btn_extend bg-teal-700 semaforo">
+                              <i class="fa-solid fa-clone"></i>&nbsp;{{'tar_dup' | translate}}
+                            </a>
+                          </td>
+                          <td class="ultimo ultimo-buttons">
+                            <a *ngIf="boolean_permiso_tareas == true && rowtar.informeArray.length > 0 && rowtar.realizacion != 'green' && rowtar.enabled_terminar == true"
+                              (click)="terminarTarea(proy.token_proyecto,rowtar.token_tarea);"
+                              class="btn btn_extend text-bg-success rounded-3">
+                              <i class="fa-solid fa-check-double"></i>&nbsp;{{'tar_fin' | translate}}
+                            </a>
+                            <a *ngIf="boolean_permiso_tareas == false || rowtar.informeArray.length == 0 || rowtar.realizacion == 'green' || rowtar.enabled_terminar == false" disabled
+                              class="btn btn_extend text-bg-success rounded-3">
+                              <i class="fa-solid fa-check-double"></i>&nbsp;{{'tar_fin' | translate}}
+                            </a>
+                          </td>
+                          <td class="text_large">{{rowtar.folio_tar+" - "+rowtar.tarea_nombre}}</td>
+                          <td class="text_large">{{rowtar.tarea_descripcion}}</td>
+                          <td class="data_time">{{rowtar.fin_tarea}}</td>
+                          <td class="work_team">
+                            <select *ngIf="rowtar.equipoResponsableMin.length == 0" class="browser-default"><option value="" disabled selected>{{'no_rows' | translate}}</option></select>
+        
+                            <select *ngIf="rowtar.equipoResponsableMin.length > 0" class="browser-default name" >
+                              <option *ngFor="let people of rowtar.equipoResponsableMin">{{people.nombre_integ+" ("+people.informesRealizados+") "}}<p *ngIf="people.participacion == true">&#xf560;</p></option>
+                            </select>
+                          </td>
+                          <!--proy_teamwork--> 
+                          <td class="ultimo ultimo-buttons">
+                            <a *ngIf="proy.creat_lider == 'CR'" class="btn waves-effect btn_extend waves-light red darken-2"
+                              (click)="eliminarTarea(proy.token_proyecto,rowtar.token_tarea);">
+                              <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                            </a>
+
+                            <a *ngIf="proy.creat_lider != 'CR'" disabled class="btn waves-effect btn_extend waves-light red darken-2">
+                              <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                            </a>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <paginado-controles class="paginador" id="pageTar" (pageChange)="pageTar = $event" (click)="componentes();" previousLabel="{{'prev' | translate}}" nextLabel="{{'next' | translate}}"></paginado-controles>
+              </div>
+
+              <div class="col-12" *ngIf="proy.creat_lider == 'EQ'">
+                <div class="buscador buscador_transparent row">
+                  <div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2" style="display:flex;justify-content: flex-start;">
+                    <a class="btn bg-teal-700 semaforo tooltipped"
+                      data-position="top" data-tooltip="Lista general de tareas" style="margin-left: 3px;"
+                      (click)="recargaListaTareas(proy.token_proyecto);">
+                      <i class="fa-solid fa-rectangle-list"></i>
+                    </a>
+
+                    <a style="margin-left: 3px;"
+                      class="btn waves-effect waves-light green darken-4 semaforo tooltipped"
+                      data-position="top" data-tooltip="tareas nuevos o sin fecha de vencimiento cercana"
+                      (click)="listaTareasGreen(proy.token_proyecto);">
+                      <i class="fa-solid fa-traffic-light"></i>
+                    </a>
+
+                    <a style="margin-left: 3px;"
+                      class="btn waves-effect waves-light orange darken-1 semaforo tooltipped"
+                      data-position="top"
+                      data-tooltip="tareas con fecha de vencimiento menor o igual a 5 dias"
+                      (click)="listaTareasYellow(proy.token_proyecto);">
+                      <i class="fa-solid fa-traffic-light"></i>
+                    </a>
+
+                    <a style="margin-left: 3px;"
+                      class="btn waves-effect waves-light red darken-4 semaforo tooltipped"
+                      data-position="top" data-tooltip="tareas vencidas" (click)="listaTareasRed(proy.token_proyecto);">
+                      <i class="fa-solid fa-traffic-light"></i>
+                    </a>
+
+                    <a style="margin-left: 3px;" class="btn waves-effect waves-light grey darken-4 semaforo tooltipped" 
+                      (click)="detalle_proyecto_inside(proy.token_proyecto);" data-position="top" data-tooltip="recargar listas de tareas">
+                      <i class="fa-solid fa-arrows-rotate"></i>
+                    </a>
+
+                  </div>
+                  <div class="col-12 col-sm-1 col-md-3 col-lg-2 col-xl-2 col-xxl-2" style="height: 5px;"></div>
+                  <div class="col content-buscar s12 m5 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                    <input class="datasearch" type="text" autocomplete="on" (keyup)="reload_matIze();" [(ngModel)]="searchTar" placeholder="{{'bus_car' | translate}}">
+                  </div>
+                </div>
+                <div class="col-12 row" style="padding: 0;display: contents;">
+                  <div class="table_new_task_one col-12" style="padding: 5px!important;margin: 0!important;">
+                    <table class="white centered table_show_register" style="min-width: 100%!important;margin: 0!important;">
+                      <thead>
+                        <tr>
+                          <th class="ultimo ultimo-buttons"></th>
+                          <th class="ultimo ultimo-buttons"></th>
+                          <th class="ultimo ultimo-buttons"></th>
+                          <th>{{'tar_name' | translate}}</th>
+                          <th>{{'tar_desc' | translate}}</th>
+                          <th>{{'fecha_fin' | translate}}</th>
+                          <th>{{'proy_teamwork' | translate}}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr *ngFor="let rowtar of proy.tarea_list | paginate:{id:'pageTar',itemsPerPage:10,currentPage:pageTar};index as iTar">
+                          <td class="ultimo">
+                            <p class="btn text-bg-success rounded-3" *ngIf="rowtar.realizacion == 'green'">
+                              <i style="height:100%;width:30px;text-align:center;" class="fa-solid fa-flag-checkered"></i> {{rowtar.tottal_actividades}}
+                            </p>
+                            <p class="btn waves-effect waves-light {{rowtar.realizacion}} darken-2"
+                              *ngIf="rowtar.realizacion != 'green'">{{rowtar.tottal_actividades}}</p>
+                          </td>
+                          <td class="ultimo">
+                            <!--destinos-->
+                            <div id="modalSeccionInformes{{rowtar.folio_tar+proylist.folio_proy}}" class="modal modaloDialog">
+                              <div class="contenido">
+                                <div class="header">
+                                  <h4>Actividades de tarea {{rowtar.folio_tar}}</h4>
+                                  <a (click)="cerrarModal('#modalSeccionInformes'+rowtar.folio_tar+proylist.folio_proy);"
+                                    class="modal-close btn text-bg-danger rounded-3"><i class="fa-solid fa-window-minimize"></i></a>
+                                </div>
+                                <div class="modal-content">
+                                  <div class="col-12 form row">
+                                    <h6>{{'proy_name' | translate}}: {{proylist.folio_proy+" - "+proylist.proyecto}}</h6>
+                                    <h6>{{'tar_name' | translate}}: {{rowtar.folio_tar+" - "+rowtar.tarea_nombre}}</h6>
+                                    <div class="col-12 cabecera card_content_project">
+                                      <div class="col-12 data_project">
+                                        <h6 style="color: #353535!important;">
+                                          <div class="chip"><h6> Actividades realizadas: {{rowtar.tottal_actividades}}</h6></div>
+                                          <div class="chip"><h6>{{'fecha_inicio' | translate}}: {{rowtar.inicio_tarea}}</h6></div>
+                                          <div class="chip"><h6>{{'fecha_fin' | translate}}: {{rowtar.fin_tarea}}</h6></div>
+                                          <!--<div *ngIf="rowtar.tareas_enabled_list.length > 0" class="chip sidenav-trigger" data-target="slide_out_tar_detail"><h6>vincular a tareas registradas ant.</h6></div>-->
+                                          <div *ngIf="rowtar.tareas_enabled_list.length > 0" class="chip">
+                                            <a class="sidenav-trigger" href="#slide_out_tar_detail{{rowtar.folio_tar+proylist.folio_proy}}"><h6>vincular a tareas registradas ant.</h6></a>
+                                            <ul id="slide_out_tar_detail{{rowtar.folio_tar+proylist.folio_proy}}" class="sidenav side_tareas_nav amber lighten-1">
+                                              <li class="header">
+                                                <div class="content">
+                                                  <h6 class="name">Listado de tareas registradas anteriormente</h6>
+                                                </div>
+                                              </li>
+                                              <li><div class="divider"></div></li>
+                                              <li style="padding: 5px;">
+                                                <div class="buscador row">
+                                                  <div class="col content-buscar s12">
+                                                    <input class="datasearch" style="border-radius: 25px !important;" type="text" autocomplete="on" [(ngModel)]="searchTarNewReg" placeholder="{{'bus_car' | translate}}">
+                                                  </div>
+                                                </div>
+        
+                                                <table class="white centered table_show_register" style="min-width: 100%!important;margin: 0!important;">
+                                                  <thead>
+                                                    <tr>
+                                                      <th colspan="2" style="border-radius: 8px 8px 0 0 !important;">{{'tar_name' | translate}}</th>
+                                                      <!--<th class="ultimo ultimo-buttons"></th>-->
+                                                    </tr>
+                                                  </thead>
+                                                  <tbody *ngIf="rowtar.tareas_enabled_list.length > 0">
+                                                    <tr *ngFor="let enabledtar of rowtar.tareas_enabled_list | paginate:{id:'pageTarNewReg',itemsPerPage:10,currentPage:pageTarNewReg};index as newpos">
+                                                      <td>{{newpos+1+" "+enabledtar.folio_tarea+" "+enabledtar.tarea_nombre}}</td>
+                                                      <td class="ultimo"><!--addDependeTarea-->
+                                                        <!--<p class="radio"><label><input type="checkbox" (click)="addDependeTarea($event.target);" [value]="rowtar.token_tarea"/></label></p>-->
+                                                        <a class="btn bg-blue-300" (click)="add_tarea_dependiente(proy.token_proyecto,rowtar.token_tarea,enabledtar.token_tarea,rowtar.folio_tar)" *ngIf="enabledtar.vinculado == false"><i class="fa-solid fa-plus"></i></a>
+                                                        <a class="btn text-bg-danger rounded-3" (click)="remove_tarea_dependiente(proy.token_proyecto,rowtar.token_tarea,enabledtar.token_tarea,rowtar.folio_tar)" *ngIf="enabledtar.vinculado == true"><i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}</a>
+                                                      </td>
+                                                    </tr>
+                                                  </tbody>
+                                                  <tbody *ngIf="rowtar.tareas_enabled_list.length == 0"><tr><td colspan="2">{{'no_rows' | translate}}</td></tr></tbody>
+                                                </table>
+                                                <paginado-controles class="paginador" id="pageTarNewReg" (pageChange)="pageTarNewReg = $event" (click)="componentes();" previousLabel="{{'prev' | translate}}" nextLabel="{{'next' | translate}}"></paginado-controles>
+                                              </li>
+                                            </ul>
+                                          </div>
+                                        </h6>
+                                      </div>
+                                    </div>
+                                    <div class="col-12">
+
+                                      <div class="col-12">
+                                        <ul class="tabs">
+                                          <li class="tab col s6">
+                                            <a href="#tab_team_work_seccion_proyectos_informes{{proylist.folio_proy+rowtar.folio_tar}}" class="active" (click)="recover_tarea_by_importes(proy.token_proyecto,rowtar.token_tarea,'#tar_team_work_seccion_proyectos_informes'+proylist.folio_proy+rowtar.folio_tar);"
+                                            style="width:100%!important;border-radius: 0 8px 8px 0 !important;">{{'inf_list' | translate}}</a>
+                                          </li>
+                                          <li class="tab col s6">
+                                            <a href="#tab_team_work_seccion_proyectos_new_informe{{proylist.folio_proy+rowtar.folio_tar}}" style="width:100%!important;border-radius: 8px 0 0 8px !important;">{{'new_inf' | translate}}</a>
+                                          </li>
+                                        </ul>
+                                      </div>
+                                      <div id="tab_team_work_seccion_proyectos_informes{{proylist.folio_proy+rowtar.folio_tar}}" class="col-12">
+                                        <table id="tar_team_work_seccion_proyectos_informes{{proylist.folio_proy+rowtar.folio_tar}}" class="display nowrap mdl-data-table white centered" style="width:100%!important;margin:0!important;">
+                                          <thead>
+                                            <tr>
+                                              <th class="ultimo">#</th>
+                                              <th>Folio</th>
+                                              <th>Informe</th>
+                                              <th>Observaciones</th>
+                                              <th>Tiempo activo</th>
+                                              <th>Fecha de realizaci&oacute;n</th>
+                                              <th>realiz&oacute;</th>
+                                              <th>
+                                                <p style="margin: 0!important;width: auto;border-radius: 25px;padding-left: 5px;padding-right: 5px;text-transform: math-auto;" class="btn waves-effect btn_extend waves-light indigo darken-4">
+                                                  <i class="fa-solid fa-file" style="width: 25px !important;height: 25px !important;line-height: 25px !important;font-size: 15px;text-align: center;"></i> {{'files_uploaded' | translate}}
+                                                </p> 
+                                              </th>
+                                              <th>revision</th>
+                                              <th class="ultimo"></th>
+                                              <th class="ultimo"></th>
+                                            </tr>
+                                          </thead>
+                                          <tbody>
+                                            <tr *ngFor="let inf of rowtar.informeArray;index as infPos">
+                                              <td>{{infPos+1}}</td>
+                                              <td>{{inf.folio_inf}}</td>
+                                              
+                                              <td *ngIf="inf.status_aprob == 'error'">
+                                                <div class="col-12 text_area">
+                                                  <textarea class="validate" name="txtNuevoInforme" type="text" [value]="inf.informe" 
+                                                    style="width: 300px!important;min-height:80px!important;" 
+                                                    (keyup)="validateInformeList(proylist.token_proyecto,rowtar.token_tarea,inf.token_informe,$event.target);" id="txtEditInforme"></textarea>
+
+                                                  <a *ngIf="inf.informe_dos == '' || inf.informe_dos == inf.informe"
+                                                    class="btn btnGuardar btnRow btnBlueHead btn text-bg-success rounded-3" disabled>
+                                                    <i class="fa-solid fa-floppy-disk"></i>
+                                                  </a>
+                                                  <a *ngIf="inf.informe_dos != '' && inf.informe_dos != inf.informe"
+                                                    (click)="actualizarInforme(proylist.token_proyecto,rowtar.token_tarea,inf.token_informe,'#tar_seccion_proyectos_informes'+proylist.folio_proy+rowtar.folio_tar);"
+                                                    class="btn btnGuardar btnRow btnBlueHead btn text-bg-success rounded-3">
+                                                    <i class="fa-solid fa-floppy-disk"></i>
+                                                  </a>
+                                                </div>
+                                              </td>
+                                              <td *ngIf="inf.status_aprob != 'error'" class="text_large">{{inf.informe}}</td>
+
+                                              <td *ngIf="inf.status_aprob == 'error'">
+                                                <div class="col-12 text_area">
+                                                  <textarea class="validate" name="txtNuevoInforme" type="text" [value]="inf.observaciones"
+                                                    style="width: 300px!important;min-height:80px!important;" 
+                                                    (keyup)="validateObserLInfList(proylist.token_proyecto,rowtar.token_tarea,inf.token_informe,$event.target);"></textarea>
+
+                                                  <a *ngIf="inf.observaciones_dos == '' || inf.observaciones_dos == inf.observaciones"
+                                                    class="btn btnGuardar btnRow btnBlueHead btn text-bg-success rounded-3" disabled>
+                                                    <i class="fa-solid fa-floppy-disk"></i>
+                                                  </a>
+                                                  <a *ngIf="inf.observaciones_dos != '' && inf.observaciones_dos != inf.observaciones"
+                                                    (click)="actualizarObservacionesInforme(proylist.token_proyecto,rowtar.token_tarea,inf.token_informe,'#tar_seccion_proyectos_informes'+proylist.folio_proy+rowtar.folio_tar);"
+                                                    class="btn btnGuardar btnRow btnBlueHead btn text-bg-success rounded-3">
+                                                    <i class="fa-solid fa-floppy-disk"></i>
+                                                  </a>
+                                                </div>
+                                              </td>
+                                              <td *ngIf="inf.status_aprob != 'error'"><p class="large_informe" class="text_large">{{inf.observaciones}}</p></td>
+
+                                              <td *ngIf="inf.status_aprob == 'error'">
+                                                <div class="col-12 text_area">
+                                                  <input class="validate" name="txtNuevoInforme" type="number" [value]="inf.horas_activas"
+                                                    style="width: 300px!important;min-height:80px!important;" 
+                                                    (keyup)="validateHActivasLInfList(proylist.token_proyecto,rowtar.token_tarea,inf.token_informe,$event.target);">
+
+                                                  <a *ngIf="inf.horas_activas_dos == '' || inf.horas_activas_dos == inf.horas_activas"
+                                                    class="btn btnGuardar btnRow btnBlueHead btn text-bg-success rounded-3" disabled>
+                                                    <i class="fa-solid fa-floppy-disk"></i>
+                                                  </a>
+                                                  <a *ngIf="inf.horas_activas_dos != '' && inf.horas_activas_dos != inf.horas_activas"
+                                                    (click)="actualizarHorasActivasInforme(proylist.token_proyecto,rowtar.token_tarea,inf.token_informe,'#tar_seccion_proyectos_informes'+proylist.folio_proy+rowtar.folio_tar+'_crli');"
+                                                    class="btn btnGuardar btnRow btnBlueHead btn text-bg-success rounded-3">
+                                                    <i class="fa-solid fa-floppy-disk"></i>
+                                                  </a>
+                                                </div>
+                                              </td>
+                                              <td *ngIf="inf.status_aprob != 'error'"><p class="large_informe">{{inf.horas_activas}}</p></td>
+
+                                              <td>{{inf.fecha_realizacion}}</td>
+                                              <td class="name">{{inf.personal_realiza}}</td>
+                                              <td>
+                                                <!--<select *ngIf="inf.evidencias_true.length == 0" class="browser-default"><option value="" disabled selected>{{'no_rows' | translate}}</option></select>
+  
+                                                <select *ngIf="inf.evidencias_true.length > 0" class="browser-default" (change)="viewDocumentoInf(proylist.token_proyecto,rowtar.token_tarea,inf.token_informe,$event.target);">
+                                                  <option value="" disabled selected>{{'opt_select' | translate}}</option>
+                                                  <option *ngFor="let doc of inf.evidencias_true" [value]="doc.token_documento">{{doc.name_documento}}</option>
+                                                </select>-->
+
+                                                <ul id="dropdown{{inf.folio_inf+rowtar.folio_tar+proylist.folio_proy}}" class="dropdown-content menu_docs_assoc" *ngIf="inf.evidencias_true.length > 0">
+                                                  <li class="docs" *ngFor="let doc of inf.evidencias_true">
+                                                    <a *ngIf="inf.status_aprob != 'error'" (click)="viewDocumentoLink(doc.url);">{{doc.name_documento}}</a>
+                                                    <a *ngIf="inf.status_aprob == 'error'" (click)="viewDocumentoInf(proylist.token_proyecto,rowtar.token_tarea,inf.token_informe,doc.token_documento);">{{doc.name_documento}}</a>
+                                                  </li>
+                                                </ul>
+
+                                                <a class="btn waves-effect btn_extend waves-light indigo darken-4" *ngIf="inf.evidencias_true.length == 0" disabled>
+                                                  <i class="fa-solid fa-angle-down" style="width: 25px !important;height: 25px !important;line-height: 25px !important;font-size: 15px;text-align: center;"></i> {{'file_list_open' | translate}}
+                                                </a> 
+
+                                                <a class="btn waves-effect btn_extend waves-light indigo darken-4 dropdown-trigger" *ngIf="inf.evidencias_true.length > 0" 
+                                                  href="#dropdown{{inf.folio_inf+rowtar.folio_tar+proylist.folio_proy}}" data-target="dropdown{{inf.folio_inf+rowtar.folio_tar+proylist.folio_proy}}">
+                                                  <i class="fa-solid fa-angle-down" style="width: 25px !important;height: 25px !important;line-height: 25px !important;font-size: 15px;text-align: center;"></i> {{'file_list_open' | translate}}
+                                                </a> 
+
+                                              </td>
+                                              
+                                              <td *ngIf="inf.status_aprob == 'empty'">---</td>
+                                              <td *ngIf="inf.status_aprob == 'process'">{{inf.rev_aprob}}</td>
+                                              <td *ngIf="inf.status_aprob == 'success'">{{'yes_auth' | translate}} {{'observ' | translate}}: {{inf.comentarios_aprob}}</td>
+                                              <td *ngIf="inf.status_aprob == 'error'">{{'not_auth' | translate}} {{'observ' | translate}}: {{inf.comentarios_aprob}}</td>
+                                              
+                                              <td class="ultimo">
+                                                <select *ngIf="inf.aprobaciones.length > 0" class="browser-default">
+                                                  <option value="" disabled selected>{{'opt_select' | translate}}</option>
+                                                  <option *ngFor="let pAuth of inf.aprobaciones">{{pAuth.aprobado_lis | translate}} {{pAuth.fecha_aprobar+" "+pAuth.observaciones}}</option>
+                                                </select>
+                                                <select *ngIf="inf.aprobaciones.length == 0" class="browser-default"><option value="" disabled selected>{{'no_rows' | translate}}</option></select>
+                                              </td>
+                                              <td class="ultimo">
+                                                <a class="btn btn_extend text-bg-danger rounded-3 btnDeleteInforme"
+                                                  (click)="eliminarInforme($event.target,proy.token_proyecto,rowtar.token_tarea,inf.token_informe);">
+                                                  <i class="fa-regular fa-trash-can"></i>
+                                                </a>
+                                              </td>
+                                            </tr>
+                                          </tbody>
+                                        </table>
+                                      </div>
+                                      <div id="tab_team_work_seccion_proyectos_new_informe{{proylist.folio_proy+rowtar.folio_tar}}" class="col-12">
+                                        <div class="col-12 row" *ngIf="rowtar.realizacion != 'green'">
+                                          <div class="col-12">
+                                            <h6 class="header-text">{{'txt_new_inf' | translate}}</h6>
+                                            <input class="validate" name="txtNuevoInforme" type="text"
+                                              (keyup)="validateNewInforme($event.target)" id="txtNuevoInforme{{rowtar.folio_tar}}">
+                                          </div>
+                                
+                                          <div class="col-12">
+                                            <h6 class="header-text">{{'observ' | translate}}</h6>
+                                            <textarea class="validate" name="txtDescripTar" (keyup)="validateObservNewInforme($event.target);"
+                                              id="txtDescripTar{{rowtar.folio_tar}}"></textarea>
+                                          </div>
+
+                                          <div class="col-12">
+                                            <h6 class="header-text">{{'active_time_inf' | translate}}</h6>
+                                            <input class="validate" name="txtNuevoInforme" type="text"
+                                              (keyup)="validateHActivasInforme($event.target)" id="txtNuevoInforme{{rowtar.folio_tar}}">
+                                          </div>
+                                
+                                          <h6 class="header-text">{{'txt_evidencias' | translate}}</h6>
+                                          <div class="center evidenciaReg col-12" style="background-color:#fff;border-radius:30px!important;">
+                                            <ngx-fi-le-drop dropZoneLabel="Drop files here" (onFileDrop)="dropped($event)" (onFileOver)="fileOver($event)" (onFileLeave)="fileLeave($event)">
+                                              <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
+                                                <but_ton class="btn bg-indigo-600" style="width: auto;font-size: small;" type="button" 
+                                                  (click)="openFileSelector()">{{'load_files' | translate}} / {{'browse_files' | translate}}</button>
+                                              </ng-template>
+                                            </ngx-file-drop>
+                              
+                                            <div class="upload-table">
+                                              <table class="centered white">
+                                                <thead>
+                                                  <tr>
+                                                    <th>{{'file' | translate}}</th>
+                                                    <th class="ultimo"></th>
+                                                  </tr>
+                                                </thead>
+                                                <tbody class="upload-name-style" *ngIf="files.length != 0">
+                                                  <tr *ngFor="let item of files; index as i">
+                                                    <td><strong>{{ item.relativePath }}</strong></td>
+                                                    <td class="ultimo">
+                                                      <a class="btn btn_extend text-bg-danger rounded-3"
+                                                        (click)="deleteEvidencias(i);">
+                                                        <i class="fa-solid fa-eraser"></i>
+                                                      </a>
+                                                    </td>
+                                                  </tr>
+                                                </tbody>
+                                                <tbody class="upload-name-style" *ngIf="files.length == 0">
+                                                  <tr>
+                                                    <td colspan="2">{{'no_rows' | translate}}</td>
+                                                  </tr>
+                                                </tbody>
+                                              </table>
+                                            </div>
+                                          </div>
+                                
+                                          <div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+                                          <div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2" style="display: flex;flex-wrap: wrap;justify-content: space-evenly;">
+                                            <a style="width:100%!important;border-radius:8px!important;"
+                                              *ngIf="informesModelo.informe_titulo == '' || informesModelo.informe_observaciones == ''"
+                                              class="btn text-bg-success rounded-3" disabled>
+                                              <i class="fa-solid fa-floppy-disk"></i>
+                                            </a>
+                                            <a style="width:100%!important;border-radius:8px!important;"
+                                              *ngIf="informesModelo.informe_titulo != '' && informesModelo.informe_observaciones != ''"
+                                              (click)="registrarInforme(proy.token_proyecto,rowtar.upload_evidencias,rowtar.token_tarea,rowtar.folio_tar,proy.creat_lider,'#tar_seccion_proyectos_informes'+proylist.folio_proy+rowtar.folio_tar+'_crli');"
+                                              id="btnRegistraInforme" class="btn text-bg-success rounded-3">
+                                              <i class="fa-solid fa-floppy-disk"></i>
+                                            </a>
+                                          </div>
+                                          <div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+                            <ul id="slide_out_tar_listEQ{{rowtar.folio_tar+proylist.folio_proy}}" class="sidenav side_tareas_nav amber lighten-1"
+                              *ngIf="rowtar.enable_tarea == false && rowtar.open_inside_tarea == false && rowtar.tareas_enabled_list.length != 0 && boolean_permiso_tareas == false || proy.creat_lider == 'EQ'">
+                              <li class="header">
+                                <div class="content">
+                                  <h6 class="name">Listado de tareas vinculadas</h6>
+                                </div>
+                              </li>
+                              <li><div class="divider"></div></li>
+                              <li style="padding: 5px;">
+                                <div class="buscador row">
+                                  <div class="col content-buscar s12">
+                                    <input class="datasearch" style="border-radius: 25px !important;" type="text" autocomplete="on" [(ngModel)]="searchTarNewReg" placeholder="{{'bus_car' | translate}}">
+                                  </div>
+                                </div>
+                                
+                                <table id="table_out_tar_listEQ{{rowtar.folio_tar+proylist.folio_proy}}" class="display nowrap mdl-data-table white centered" style="width:100%!important;margin:0!important;">
+                                  <thead>
+                                    <tr>
+                                      <th style="border-radius: 8px 8px 0 0 !important;">{{'tar_name' | translate}}</th>
+                                      <!--<th class="ultimo ultimo-buttons"></th>-->
+                                    </tr>
+                                  </thead>
+                                  <tbody *ngIf="rowtar.tareas_enabled_list.length > 0">
+                                    <tr *ngFor="let enabledtar of rowtar.tareas_enabled_list | paginate:{id:'pageTarNewReg',itemsPerPage:10,currentPage:pageTarNewReg};index as newpos">
+                                      <td *ngIf="enabledtar.vinculado == true">{{newpos+1+" "+enabledtar.folio_tarea+" "+enabledtar.tarea_nombre}}</td>
+                                    </tr>
+                                  </tbody>
+                                  <tbody *ngIf="rowtar.tareas_enabled_list.length == 0"><tr><td>{{'no_rows' | translate}}</td></tr></tbody>
+                                </table>
+                                <paginado-controles class="paginador" id="pageTarNewReg" (pageChange)="pageTarNewReg = $event" (click)="componentes();" previousLabel="{{'prev' | translate}}" nextLabel="{{'next' | translate}}"></paginado-controles>
+                              </li>
+                            </ul> 
+
+                            <!--<a class="btn" (click)="select_tarea(proy.token_proyecto,rowtar.token_tarea);"><i class="fa-solid fa-chevron-down"></i></a>-->
+                            <a class="btn btn_extend bg-blue-600 modal-trigger" *ngIf="rowtar.enable_tarea == true && rowtar.particip_eq == false"
+                              (click)="recover_tarea_by_importes(proy.token_proyecto,rowtar.token_tarea,'#tar_team_work_seccion_proyectos_informes'+proylist.folio_proy+rowtar.folio_tar);" 
+                              href="#modalSeccionInformes{{rowtar.folio_tar+proylist.folio_proy}}"><i class="fa-solid fa-list-check"></i>&nbsp;{{'inf_list' | translate}}</a> 
+
+                            <a class="btn btn_extend bg-blue-600 modal-trigger" *ngIf="rowtar.enable_tarea == true && rowtar.particip_eq == true" disabled>
+                              <i class="fa-solid fa-list-check"></i>&nbsp;{{'inf_list' | translate}}</a> 
+                            
+                            <a class="btn btn_extend waves-effect waves-light blue lighten-2 sidenav-trigger" data-target="slide_out_tar_listEQ{{rowtar.folio_tar+proylist.folio_proy}}"
+                              *ngIf="rowtar.enable_tarea == false && rowtar.open_inside_tarea == false && rowtar.tareas_enabled_list.length > 0 && boolean_permiso_tareas == true"
+                              href="#slide_out_tar_listEQ{{rowtar.folio_tar+proylist.folio_proy}}"><i class="fa-solid fa-list-ol"></i>&nbsp;{{'tar_vinc' | translate}}</a>
+                          
+                            <a *ngIf="rowtar.enable_tarea == false && (rowtar.open_inside_tarea == true || rowtar.tareas_enabled_list.length == 0 || boolean_permiso_tareas == false)"
+                              class="btn btn_extend waves-effect waves-light blue lighten-2" disabled><i class="fa-solid fa-list-ol"></i>&nbsp;{{'tar_vinc' | translate}}</a>
+                          </td>
+                          <td class="ultimo ultimo-buttons">
+                            <a *ngIf="boolean_permiso_tareas == true && rowtar.mis_informes > 0 && rowtar.particip_eq == false"
+                              (click)="terminarParticipacionTarea(proy.token_proyecto,rowtar.token_tarea);"
+                              class="btn btn_extend text-bg-success rounded-3">
+                              <i class="fa-solid fa-check-double"></i>&nbsp;{{'tar_finish_part' | translate}}
+                            </a>
+                            <a *ngIf="boolean_permiso_tareas == false || rowtar.mis_informes == 0 || rowtar.particip_eq == true" disabled
+                              class="btn btn_extend text-bg-success rounded-3">
+                              <i class="fa-solid fa-check-double"></i>&nbsp;{{'tar_finish_part' | translate}}
+                            </a>
+                          </td>
+                          <td class="text_large">{{rowtar.folio_tar+" - "+rowtar.tarea_nombre}}</td>
+                          <td class="text_large">{{rowtar.tarea_descripcion}}</td>
+                          <td class="data_time">{{rowtar.fin_tarea}}</td>
+                          <td class="work_team">
+                            <select *ngIf="rowtar.equipoResponsableMin.length == 0" class="browser-default"><option value="" disabled selected>{{'no_rows' | translate}}</option></select>
+        
+                            <select *ngIf="rowtar.equipoResponsableMin.length > 0" class="browser-default name" >
+                              <option *ngFor="let people of rowtar.equipoResponsableMin">{{people.nombre_integ+" ("+people.informesRealizados+") "}}<p *ngIf="people.participacion == true">&#xf560;</p></option>
+                            </select>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <div class="col-12 row">
+        <paginado-controles class="paginador" id="pageProy" (pageChange)="pageProy = $event" previousLabel="{{'prev' | translate}}" nextLabel="{{'next' | translate}}"></paginado-controles>
+      </div>
+    </div>
+  </div>
+</div>

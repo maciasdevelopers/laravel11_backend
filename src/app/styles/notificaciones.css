@@ -1,0 +1,22 @@
+span.notificacion{
+  display: flex;
+  flex-direction: column;
+  padding-left: 0;
+  margin-bottom: 0;
+  list-style: none;
+  position: absolute;
+  transform: scale(.7);
+  transform-origin: top right;
+  color: #fff;
+  background-color: #e74a3b;
+  display: inline-block;
+  padding: .25em .4em;
+  font-size: 85%;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+  border-radius: .35rem;
+  transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+}

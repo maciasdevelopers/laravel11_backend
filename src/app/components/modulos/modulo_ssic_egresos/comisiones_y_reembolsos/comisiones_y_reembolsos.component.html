@@ -1,0 +1,50 @@
+<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco" #vContent>
+  <div class="contenido">
+    <app-loader></app-loader>
+    <nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+    <main class="contenidoPagina">
+      <div class="listas_ps revanecer">
+        <div id="listaClientes" class="lista-div lista-divNoFlex row">
+          <h4>comisiones y reembolsos</h4>
+          
+          <p-tabs value="0" (valueChange)="cambioDeSeccion($event)" scrollable>
+            <p-tablist>
+              <p-tab value="0">{{'reem_gen_list' | translate}}</p-tab>
+              <p-tab value="1">{{'reem_term_list' | translate}}</p-tab>
+              <p-tab value="2">Lista general de comisiones</p-tab>
+              <p-tab value="3">Comisiones no concluidas</p-tab>
+              <p-tab value="4">Comisiones concluidas</p-tab>
+              <p-tab value="5">Comisiones eliminadas</p-tab>
+              <p-tab value="6">{{'comi_soli' | translate}}</p-tab>
+            </p-tablist>
+            <p-tabpanels>
+              <p-tabpanel value="0">
+                <app_compras_egr_reembolsos_lista_general></app_compras_egr_reembolsos_lista_general>
+              </p-tabpanel>
+              <p-tabpanel value="1">
+                <app_compras_egr_reembolsos_lista_autorizados></app_compras_egr_reembolsos_lista_autorizados>
+              </p-tabpanel>
+              <p-tabpanel value="2">
+                <app_compras_egr_comi_lista_general></app_compras_egr_comi_lista_general>
+              </p-tabpanel>
+              <p-tabpanel value="3">
+                <app_compras_egr_comi_lista_no_conc></app_compras_egr_comi_lista_no_conc>
+              </p-tabpanel>
+              <p-tabpanel value="4">
+                <app_compras_egr_comi_lista_conc></app_compras_egr_comi_lista_conc>
+              </p-tabpanel>
+              <p-tabpanel value="5">
+                <app_compras_egr_comi_lista_deleted></app_compras_egr_comi_lista_deleted>
+              </p-tabpanel>
+              <p-tabpanel value="6">
+                <app_compras_egr_comi_registro></app_compras_egr_comi_registro>
+              </p-tabpanel>
+            </p-tabpanels>
+          </p-tabs>
+        </div>
+      </div>
+    </main>
+    <app-footer-inside></app-footer-inside>
+  </div>
+</div>

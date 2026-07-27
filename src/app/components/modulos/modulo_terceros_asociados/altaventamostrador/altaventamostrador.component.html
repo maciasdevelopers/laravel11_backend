@@ -1,0 +1,435 @@
+<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco" #vContent>
+	<div class="contenido">
+		<app-loader></app-loader>
+		<header class="sticky-top">
+			<nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+		</header>
+		<main class="contenidoPagina">
+			<div class="listas_ps revanecer">
+				<div class="lista-div lista-divNoFlex row">
+					<h4>REGISTRO DE VENTAS</h4>
+					<div class="col-12 row" *ngFor="let listaPVentas of arraylistArticulos">
+						<div class="modal fade bd-example-modal-lg" id="modalImpuestos{{listaPVentas.contador_posicion}}" tabindex="-1" role="dialog" aria-labelledby="modalNewTareaLabel" aria-hidden="true">
+							<div class="modal-dialog modal-fullscreen" style="margin: 1%;width: 98%!important;">
+								<div class="modal-content">
+									<div class="modal-header">
+										<h1 class="modal-title fs-5 bg-blue-ModalTitle" id="modalNewTareaLabel">Impuestos aplicados a venta</h1>
+										<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: transparent !important;"></button>
+									</div>
+									<div class="modal-body">
+										<table id="list_table_impuestos_assoc" class="display nowrap mdl-data-table white centered" style="width:100%!important;margin:0!important;">
+											<thead>
+												<tr>
+													<th>folio</th>
+													<th>Abreviaci&oacute;n</th>
+													<th>Concepto</th>
+													<th>Tipo</th>
+													<th>Tasa o cuota</th>
+													<th>Importe del impuesto</th>
+													<th>Tipo de cambio aplicado</th>
+													<th>Moneda aplicada</th>
+													<th>Aplica sobre</th>
+													<th>{{'observ' | translate}}</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr *ngFor="let impVig Of listaPVentas.impuestos_aplicados">
+													<td>{{impVig.folio_impuesto}}</td>
+													<td class="td_names_rfc">{{impVig.abreviacion_impuesto}}</td>
+													<td class="td_names_rfc">{{impVig.concepto_impuesto}}</td>
+													<td>{{impVig.tipo_impuesto}}</td>
+													<td>{{impVig.calculo}}</td>
+													<td class="td_importes">{{impVig.txtimporte}}</td>
+													<td class="td_importes">{{impVig.tipo_cambio}}</td>
+													<td>{{impVig.monedas_codigo+" - "+impVig.monedas_moneda}}</td>
+													<td>{{impVig.base_aplicable}}</td>
+													<td>{{impVig.observaciones}}</td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+									<div class="modal-footer"></div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<form class="row formAssocLogin" #formAssocLogin="ngForm" autocomplete="off" enctype="multipart/form-data" (ngSubmit)="registraVentaMostrador(formAssocLogin);">
+						<div class="col-12 row">
+							<div class="input-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6">
+								<label for="fechaAltaProd" class="activeInput">{{'kliente' | translate}}</label>
+								<datalist id="dataListClientes">
+									<option *ngFor="let cli of listaClientes" value="{{cli.nombre}}">{{cli.folio_client+" ("+cli.rfc_generico+")"}}</option>
+								</datalist>
+								<input class="vent_cliente_selected validate" name="vent_cliente_selected" type="text" id="vent_cliente_selected" list="dataListClientes" (change)="seleccionClienteVenta($event.target);">
+							</div>
+							<div class="input-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6">
+								<label for="fechaAltaProd" class="activeInput">Punto de venta</label>
+								<datalist id="dataListPV">
+									<option *ngFor="let pv of listaPuntoVenta" value="{{pv.pv_alias}}">{{"("+pv.pv_direccion+") Responsable ("+pv.pv_responsable+")"}}</option>
+								</datalist>
+								<input class="vent_pventa_selected validate" name="vent_pventa_selected" type="text" id="vent_pventa_selected" list="dataListPV" (change)="seleccionPuntoDVenta($event.target);">
+							</div>
+							<div class="input-group col-12 col-sm-12 col-md-6 col-lg-8 col-xl-8 col-xxl-9">
+								<label class="activeInput">{{'mon_name' | translate}}</label><!-- {{reem_moneda_entrante_nombre}}-->
+								<datalist id="dataListMonedaNewVenta"><option *ngFor="let arraMon of catalogoMonedasApi" [value]="arraMon.langEN">{{"código "+arraMon.code+", "+arraMon.decimales+" decimales"}}</option></datalist>
+								<input class="validate" list="dataListMonedaNewVenta" type="text" id="vent_monedaventa_selected" (change)="keyupValidateMonedaApi($event.target);">
+							</div>
+							<div class="input-group col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3">
+								<label class="activeInput">{{'mon_tipo_cambio' | translate}}</label>
+								<input *ngIf="cnvr_venta_moneda_codigo == mx_venta_moneda_codigo" class="validate disabled" disabled aria-disabled="true" type="number" min="1" max="100000000000000" [value]="cnvr_venta_tipo_cambio_simple">
+								<input *ngIf="cnvr_venta_moneda_codigo != mx_venta_moneda_codigo" class="validate" type="number" min="1" max="100000000000000" id="vent_tipoCambioventa_selected" (keyup)="editTipoCambio($event.target);">
+							</div>
+							<div class="col-12 explain"><h6 class="title">Moneda configurada para venta</h6><h6 class="content">{{cnvr_venta_moneda_codigo+" - "+cnvr_venta_moneda_nombre+" Tipo de cambio "+cnvr_venta_tipo_cambio_format}}</h6></div>
+						</div>
+	
+						<div class="col-12 card card_main">
+							<div class="card-content">
+								<span class="card-title">Listado de articulos</span>
+								<div class="inside">
+									<div class="input-group col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3" style="margin-bottom: 10px !important;">
+										<label for="fechaAltaProd" class="activeInput">{{'search' | translate}}</label>
+										<input class="req_uMedida validate" name="req_uMedida" type="text" id="vent_search_articulo" [disabled]="seccionArticulosListadoBool == false" (keyup)="buscaArticulos($event.target);">
+									</div>
+									<div class="col-12 row seccion_table_contents">
+										<table class="tabla_listas_ventas white_inside centered">
+											<thead>
+												<tr>
+													<th class="ultimo"></th>
+													<th>Producto / servicio</th>
+													<th>Precio sin impuestos</th>
+													<th>Cantidad</th>
+													<th><i class="fas fa-gifts"></i>&nbsp;Descuentos</th>
+													<th>Subtotal</th>
+													<th>Esquema de impuestos</th>
+													<th>impuestos aplicados</th>
+													<th>Importe</th>
+													<th class="ultimo">
+														<p class="radio" style="text-align: center; margin: 0;">
+															<label>
+																<input id="txtSelectAllProdServ" name="txtSelectAllProdServ" class="select- width-gap" type="radio">
+															</label>
+														</p>
+													</th>
+												</tr>
+											</thead>
+											<tbody *ngIf="arraylistArticulos.length > 0">
+												<tr id="trDataVentas" *ngFor="let listaPVentas of arraylistArticulos" class="{{listaPVentas.relClientServ}}">
+													<!--<td id="tdTknVenta" class="noneView">{{listaPVentas.token_articulo}}</td><img class="circle optimizedImage" fill ngSrc="{{listaPVentas.imagen}}" alt="">-->
+													<td class="img_dat"><div class="col-12"><img class="circle optimizedImage" fill ngSrc="{{listaPVentas.imagen}}" alt=""></div>	</td>
+													<td>{{listaPVentas.concepto}}</td>
+													<td><input id="ventaNumberPrecioBase" class="validate" type="number" (keyup)="ventaPrecioBase(listaPVentas.contador_posicion,$event.target);" [value]="listaPVentas.precioBase"></td>
+													<td><input class="validate" type="number" (keyup)="ventaCantidad(listaPVentas.contador_posicion,$event.target);"></td>
+													<td><input class="validate" type="number" (keyup)="ventaDescuentos(listaPVentas.contador_posicion,$event.target);"></td><!--descuentos-->
+													<td>{{listaPVentas.subtotalAfterDescuentosFormat}}</td><!--descuentos-->
+													<td id="tdPrecioBaseConImp" data-position="left" data-tooltip="Impuesto retenido">
+														<select class="validate" name="tipoSelectImp" style="width: 220px!important;" (change)="ventaSeleccionEsquemaImpuestos(listaPVentas.contador_posicion,$event.target);">
+															<option value="" disabled selected>{{'opt_select' | translate}}</option>
+															<option *ngFor="let esqList Of listEsquemasImpuestos" [value]="esqList.esquema_token">{{esqList.esquema_folio+" "+esqList.esquema_concepto}}</option>
+														</select>
+													</td>
+													<td class="ultimo">
+														<a class="btn btn_extend bg-blue-600 disabled" disabled aria-disabled="true" *ngIf="listaPVentas.esquema_impuestos_aplicado == '' || listaPVentas.impuestos_aplicados.length == 0">
+															<i class="fa-solid fa-plus"></i>&nbsp; {{listaPVentas.impuestos_aplicados.length+" "}}impuestos vinculados
+														</a>
+														<a class="btn btn_extend bg-blue-600" *ngIf="listaPVentas.esquema_impuestos_aplicado != '' && listaPVentas.impuestos_aplicados.length > 0" (click)="abreModalVentas('#modalImpuestos'+listaPVentas.contador_posicion);">
+															<i class="fa-solid fa-plus"></i>&nbsp; {{listaPVentas.impuestos_aplicados.length+" "}}impuestos vinculados
+														</a>
+													</td>
+													<td class="tdImportePartida">{{listaPVentas.importePartidaFormat}}</td>
+													<td class="ultimo">
+														<a *ngIf="listaPVentas.dataCantidad == 0" class="btnselectArtuloSell btn bg-green-300 disabled" disabled aria-disabled="true"><i class="fas fa-cart-plus"></i></a>
+														<a *ngIf="listaPVentas.dataCantidad > 0" class="btnselectArtuloSell btn bg-green-300" (click)="seleccionarArticuloParaVenta(listaPVentas.contador_posicion);"><i class="fas fa-cart-plus"></i></a>
+													</td>
+												</tr>
+											</tbody>
+											<tbody *ngIf="arraylistArticulos.length == 0">
+												<tr><td colspan="10">{{'no_rows' | translate}}</td></tr>
+											</tbody>
+										</table>
+									</div>
+									<div *ngIf="lista_articulos_seleccionados.length > 0" class="col-12 row" style="padding: 0!important;">
+										<div class="col-12 row seccion_table_contents">
+											<table class="tabla_listas_ventas white_inside centered"><!-- nowrap mdl-data-table-->
+												<thead>
+													<tr>
+														<th class="ultimo"></th>
+														<th>Producto / servicio</th>
+														<th>Precio sin impuestos</th>
+														<th>Cantidad</th>
+														<th><i class="fas fa-gifts"></i>&nbsp;Descuentos</th>
+														<th>Subtotal</th>
+														<th>Importe</th>
+														<th rowspan="2" class="ultimo"><a class="btn btn_extend text-bg-danger rounded-3" style="border-radius: 25px !important;"><i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}</a></th>
+													</tr>
+													<tr>
+														<th colspan="7" class="name" style="border-radius: 0!important;">impuestos aplicados</th>
+													</tr>
+												</thead>
+												<tbody *ngFor="let lv of lista_articulos_seleccionados">
+													<tr id="trDataVentas" class="{{lv.relClientServ}}">
+														<td class="img_dat"><div class="col-12"><img class="circle optimizedImage" fill ngSrc="{{lv.imagen}}" alt=""></div></td>
+														<td>{{lv.concepto}}</td>
+														<td>{{lv.precioBaseFormat}}</td>
+														<td>{{lv.dataCantidad}}</td>
+														<td>{{lv.descuento_aplicadoFormat}}</td><!--descuentos-->
+														<td>{{lv.subtotalAfterDescuentosFormat}}</td>
+														<td class="tdImportePartida">{{lv.importePartidaFormat}}</td>
+														<td rowspan="2" class="ultimo">
+															<a class="btn btn_extend text-bg-danger rounded-3" (click)="deleteArticuloParaVenta(lv.contador_posicion);"><i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}</a>
+														</td>
+													</tr>
+													<tr id="trDataVentas" *ngIf="lv.impuestos_aplicados.length > 0" class="{{lv.relClientServ}}">
+														<td colspan="7" class="name" style="border-radius: 0!important;">
+															<div class="col-12" style="display: flex!important;flex-wrap: wrap!important;flex-direction: row!important;justify-content: flex-start!important;padding: 0!important;">
+																<div class="explain" style="height: 15px!important;" *ngFor="let imp of lv.impuestos_aplicados">
+																	<h6 class="title">{{imp.abreviacion_impuesto}}</h6>
+																	<h6 class="title">Tipo</h6><h6 class="content">{{imp.tipo_impuesto+"("+imp.calculo+")"}}</h6>
+																	<h6 class="title">Importe</h6><h6 class="content">{{imp.valor_para_ventaFormat+"("+imp.txtimporte+")"}}|</h6>
+																</div>
+															</div>
+															<div class="explain" style="height: 15px!important;">
+																<h6 class="title">Total trasladados</h6><h6 class="content">{{lv.totalTrasladadosFormat}}</h6>
+																<h6 class="title">Total retenidos</h6><h6 class="content">{{lv.totalRetenidosFormat}}</h6>
+															</div>
+														</td>
+													</tr>
+												</tbody>
+											</table>
+										</div>
+										<div class="col-12 row" style="margin-top: 10px!important;display: flex;flex-wrap: wrap;justify-content: flex-end;">
+											<div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-6 col-xxl-6"></div>
+											<div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-3 col-xxl-3">
+												<div class="col-6 explain"><h6 class="title">Pesos Mexicanos</h6></div>
+												<div class="col-12 row"><div class="col-6 explain"><h6 class="title">Subtotal</h6></div><div class="col-6 explain"><h6 class="content content_importes">{{mx_venta_subtotal}}</h6></div></div>
+												<div class="col-12 row"><div class="col-6 explain"><h6 class="title">Descuento total</h6></div><div class="col-6 explain"><h6 class="content content_importes">{{mx_venta_descuento}}</h6></div></div>
+												<div class="col-12 row"><div class="col-6 explain"><h6 class="title">Impuestos trasladados</h6></div><div class="col-6 explain"><h6 class="content content_importes">{{mx_venta_traslados}}</h6></div></div>
+												<div class="col-12 row"><div class="col-6 explain"><h6 class="title">Impuestos retenidos</h6></div><div class="col-6 explain"><h6 class="content content_importes">{{mx_venta_retenciones}}</h6></div></div>
+												<div class="col-12 row"><div class="col-6 explain"><h6 class="title">Importe total</h6></div><div class="col-6 explain"><h6 class="content content_importes">{{mx_venta_importe_total}}</h6></div></div>
+												<div class="col-12 row"><div class="col-12 explain"><h6 class="title">{{mx_venta_importe_string}}</h6></div></div>
+											</div>
+				
+											<div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-3 col-xxl-3" *ngIf="cnvr_venta_moneda_codigo != mx_venta_moneda_codigo">
+												<div class="col-6 explain"><h6 class="content"><strong>Otra Moneda</strong>&nbsp;{{cnvr_venta_moneda_codigo+" Tipo de cambio "+cnvr_venta_tipo_cambio_format}}</h6></div>
+												<div class="col-12 row"><div class="col-6 explain"><h6 class="title">Subtotal</h6></div><div class="col-6 explain"><h6 class="content content_importes">{{cnvr_venta_subtotal}}</h6></div></div>
+												<div class="col-12 row"><div class="col-6 explain"><h6 class="title">Descuento total</h6></div><div class="col-6 explain"><h6 class="content content_importes">{{cnvr_venta_descuento}}</h6></div></div>
+												<div class="col-12 row"><div class="col-6 explain"><h6 class="title">Impuestos trasladados</h6></div><div class="col-6 explain"><h6 class="content content_importes">{{cnvr_venta_traslados}}</h6></div></div>
+												<div class="col-12 row"><div class="col-6 explain"><h6 class="title">Impuestos retenidos</h6></div><div class="col-6 explain"><h6 class="content content_importes">{{cnvr_venta_retenciones}}</h6></div></div>
+												<div class="col-12 row"><div class="col-6 explain"><h6 class="title">Importe total</h6></div><div class="col-6 explain"><h6 class="content content_importes">{{cnvr_venta_importe_total}}</h6></div></div>
+												<div class="col-12 row"><div class="col-12 explain"><h6 class="title">{{cnvr_venta_importe_string}}</h6></div></div>
+											</div>
+										</div>
+										<div class="col-12 row" style="margin-top: 10px!important;padding: 0 !important;"><!---->
+											<div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-5 col-xxl-5" style="padding: 0!important;padding-top: 10px!important;">
+												<div class="input-group col-12">
+													<label for="fechaAltaProd" class="activeInput">{{'f_pago' | translate}}</label>
+													<datalist id="dataListFormaPago">
+														<option *ngFor="let fpago of catalogoFormaPagoApi" value="{{fpago.descripcion}}"></option>
+													</datalist>
+													<input class="req_uMedida validate" name="req_uMedida" type="text" id="req_uMedida" list="dataListFormaPago" (change)="seleccionFormaCobroVenta($event.target);">
+												</div>
+				
+												<div class="input-group col-12">
+													<label for="fechaAltaProd" class="activeInput">{{'pag_date' | translate}}</label>
+													<input type="date" id="fecha" name="fecha" required (change)="validaDateFormaPago($event.target);">
+												</div>
+				
+												<div class="input-group col-12" *ngIf="venta_cobro_forma_generada != '' && (venta_cobro_forma_generada == 'Cheque nominativo' || venta_cobro_forma_generada == 'Tarjeta de crédito' || venta_cobro_forma_generada == 'Tarjeta de débito')">
+													<label for="fechaAltaProd" class="activeInput">{{'bank' | translate}}</label>
+													<datalist id="dataListBancos">
+														<option *ngFor="let bnk of catalogoBancosApi" value="{{bnk.nombre_corto}}">{{bnk.razon_social+" ("+bnk.clave+")"}}</option>
+													</datalist>
+													<input class="req_uMedida validate" name="req_uMedida" type="text" id="req_uMedida" list="dataListBancos" (change)="seleccionBancoCobroVenta($event.target);">
+												</div>
+				
+												<div class="input-group col-12" *ngIf="venta_cobro_forma_generada == 'Tarjeta de crédito' || venta_cobro_forma_generada == 'Tarjeta de débito'">
+													<label *ngIf="venta_cobro_forma_generada == 'Tarjeta de crédito'" for="fechaAltaProd" class="activeInput">{{'card_cred' | translate}} / {{'card_deb' | translate}} / {{'bank_cuent' | translate}}</label>
+													<input id="ventaNumberPrecioBase" class="validate" type="number" maxlength="4" (keyup)="cobroVentaNumTarjeta($event.target);">
+												</div>
+				
+												<div class="input-group col-12" *ngIf="venta_cobro_forma_generada != '' && venta_cobro_forma_generada != 'Efectivo'">
+													<label for="fechaAltaProd" class="activeInput">{{'num_ref' | translate}}</label>
+													<input id="ventaNumberPrecioBase" class="validate" type="number" (keyup)="cobroVentaClaveReferencia($event.target);">
+												</div>
+				
+												<div class="input-group col-12">
+													<label for="fechaAltaProd" class="activeInput">{{'total_import' | translate}}</label>
+													<input id="ventaNumberPrecioBase" class="validate" type="number" (keyup)="keyupImporteCobroVenta($event.target);">
+												</div>
+				
+												<div class="input-group col-12" *ngIf="mx_venta_moneda_codigo != cnvr_venta_moneda_codigo">
+													<label for="fechaAltaProd" class="activeInput">{{'mon_name' | translate}}</label>
+													<select class="validate" name="tipoSelectImp" (change)="keyupMonedaCobroVenta($event.target);">
+														<option value="" disabled selected>{{'opt_select' | translate}}</option>
+														<option [value]="mx_venta_moneda_codigo">{{mx_venta_moneda_codigo}}</option>
+														<option [value]="cnvr_venta_moneda_codigo">{{cnvr_venta_moneda_codigo}}</option>
+													</select>
+												</div>
+											</div>
+											<div class="col-12 col-sm-6 col-md-6 col-lg-8 col-xl-7 col-xxl-7 row">
+												<div class="col-12 row explain" style="display: flex;height: 100%;justify-content: center;flex-wrap: wrap;flex-direction: row;align-items: center;">
+													<div class="col-12 explain" style="height: 20px;">
+														<h6 class="title">Tu punto de venta, tu aliado en cada transacción.</h6>
+													</div>
+													<div class="col-12 explain" style="height: 20px;"></div>
+													<div class="col-12 explain" style="height: 20px;">
+														<h6 class="title">Folio de esta venta registrada:</h6>
+														<h6 class="content">{{folio_venta_generada}}</h6>
+													</div>
+													<div class="col-12 explain" style="height: 20px;">
+														<h6 class="title">{{'f_pago' | translate}}:</h6>
+														<h6 class="content">{{venta_cobro_forma_generada}}</h6>
+													</div>
+													<div class="col-12 explain" style="height: 20px;">
+														<h6 class="title">{{'pag_date' | translate}}:</h6>
+														<h6 class="content">{{venta_cobro_fecha}}</h6>
+													</div>
+													<div class="col-12 explain" style="height: 20px;" *ngIf="venta_cobro_forma_generada == 'Tarjeta de crédito' || venta_cobro_forma_generada == 'Tarjeta de débito'">
+														<h6 class="title">{{'bank' | translate}}:</h6>
+														<h6 class="content">{{venta_cobro_banco}}</h6>
+													</div>
+													<div class="col-12 explain" style="height: 20px;" *ngIf="venta_cobro_forma_generada == 'Tarjeta de crédito' || venta_cobro_forma_generada == 'Tarjeta de débito'">
+														<h6 class="title">{{'card_cred' | translate}} / {{'card_deb' | translate}} / {{'bank_cuent' | translate}}:</h6>
+														<h6 class="content">{{venta_cobro_cuenta_card_clabe}}</h6>
+													</div>
+													<div class="col-12 explain" style="height: 20px;" *ngIf="venta_cobro_forma_generada != '' && venta_cobro_forma_generada != 'Efectivo'">
+														<h6 class="title">{{'num_ref' | translate}}:</h6>
+														<h6 class="content">{{venta_cobro_clave_referencia}}</h6>
+													</div>
+													<div class="col-12 explain" *ngIf="venta_cambio != ''" style="height: 20px;">
+														<h6 class="title">{{'total_import' | translate}}:</h6>
+														<h6 class="content">{{venta_cobro_importe_format+" "+venta_cobro_moneda_code}}</h6>
+													</div>
+													<div class="col-12 explain" *ngIf="venta_cambio != ''" style="height: 20px;">
+														<h6 class="title">Cambio a devolver:</h6>
+														<h6 class="content">{{venta_cambio}}</h6>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="col-12 row" style="border-top: solid 2px lightgray!important;padding: 0 !important;">
+											<div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9"></div>
+											<div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3">
+												<div class="col-12 explain"><h6 class="title">¿Desea generar factura?</h6></div>
+												<div class="form-check radio_check">
+													<input class="form-check-input" type="radio" name="flexRadioDefault" (click)="decideGenerarFactura('false');">
+													<label class="form-check-label" for="flexRadioDefault1">
+														No
+													</label>
+												</div>
+												<div class="form-check radio_check">
+													<input class="form-check-input" type="radio" name="flexRadioDefault" (click)="decideGenerarFactura('true');">
+													<label class="form-check-label" for="flexRadioDefault1">
+														{{'yes' | translate}}
+													</label>
+												</div>
+											</div>
+										</div>
+										<div class="col-12 row" style="border-top: solid 1px lightgray!important;padding:10px!important;">
+											<div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9"></div>
+											<div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3">
+												<button class="btn btn_extend text-bg-success rounded-3" type="submit" name="btnAltaProducto2" style="padding: 0!important;"
+													[disabled]="cliente_seleccionado_token == '' || puntoventa_seleccionado_token == '' || mx_venta_moneda_codigo == '' || cnvr_venta_moneda_codigo == '' || lista_articulos_seleccionados.length == 0 || 
+														venta_cobro_forma_generada == '' || venta_cobro_fecha == '' || (venta_cobro_banco != '' && (venta_cobro_forma_generada != 'Tarjeta de crédito' && venta_cobro_forma_generada != 'Tarjeta de débito')) || 
+														(venta_cobro_cuenta_card_clabe != '' && (venta_cobro_forma_generada != 'Tarjeta de crédito' && venta_cobro_forma_generada != 'Tarjeta de débito')) || relacion_importe_cambio == false || decide_generar_factura == '' ||
+														(venta_cobro_clave_referencia != '' && (venta_cobro_forma_generada == '' || venta_cobro_forma_generada == 'Efectivo')) || venta_cobro_moneda_code == '' || venta_cobro_importe_simple == 0.00 || venta_cambio == ''">
+													<!--[disabled]="modelProd.genero == '' || modelProd.marca == '' || modelProd.clasificacion == '' || modelProd.stock_max < modelProd.stock_min"-->
+													<i class="fa-solid fa-floppy-disk" style="height: 15px!important;line-height: 15px!important;width: 15px!important;font-size: small!important;"></i>&nbsp;{{'sav_cam' | translate}}</button>
+				
+												<div class="demo-container" *ngIf="progressBarRegistro == true">
+													<div class="progress-bar">
+														<div class="progress-bar-value"></div>
+													</div>
+												</div>
+				
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</form>
+
+					<div #printableDiv id="ticket" class="ticket noneView">
+						<h2>{{empresa_data.company_name_short}}</h2>
+						<!--<p>Cliente: {{cliente_seleccionado_nombre}}</p>-->
+						<p>Sucursal: {{puntoventa_seleccionado_direccion}}</p>
+						<p>Caja: {{puntoventa_seleccionado_alias}}</p>
+						<p>Vendedor: {{puntoventa_seleccionado_responsable}}</p>
+						<div class="col-12 row">
+							<table id="tablaArticulosSeleccionadoPVenta" class="display white centered" style="width:100%!important;margin:0!important;"><!-- nowrap mdl-data-table-->
+								<thead>
+									<tr>
+										<th>Articulo</th>
+										<th>Cantidad</th>
+										<th>Importe</th>
+									</tr>
+								</thead>
+								<tbody *ngFor="let lv of lista_articulos_seleccionados">
+									<tr id="trDataVentas" class="{{lv.relClientServ}}">
+										<td>{{lv.concepto}}</td>
+										<td>{{lv.dataCantidad}}</td>
+										<td class="tdImportePartida">${{lv.importePartida}}</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+						<p>Forma de pago: {{venta_cobro_forma_generada}}</p>
+						<div class="totales col-12 row">
+							<!--<table class="display white centered" style="width:100%!important;margin:0!important;">
+								<thead><tr><th></th><th>Pesos Mexicanos&nbsp;{{mx_venta_moneda_codigo}}</th><th>Otra Moneda&nbsp;{{cnvr_venta_moneda_codigo}}</th></tr></thead>
+								<tbody>
+									<tr><td>Subtotal</td><td>{{mx_venta_subtotal}}</td><td>{{cnvr_venta_subtotal}}</td></tr>
+									<tr><td>Importe total</td><td>{{mx_venta_importe_total}}</td><td>{{cnvr_venta_importe_total}}</td></tr>
+									<tr><td></td><td>{{mx_venta_importe_string}}</td><td>{{cnvr_venta_importe_string}}</td></tr>
+									<tr><td>Cambio a devolver</td><td colspan="2">{{venta_cambio}}</td></tr>
+								</tbody>
+							</table>-->
+							
+							<p-table [value]="lista_articulos_seleccionados" dataKey="id" [resizableColumns]="true" responsiveLayout="stack">
+                <ng-template #header>
+									<tr>
+										<th></th>
+										<th>Pesos Mexicanos&nbsp;{{mx_venta_moneda_codigo}}</th>
+										<th>Otra Moneda&nbsp;{{cnvr_venta_moneda_codigo}}</th>
+									</tr>
+								</ng-template>
+								<ng-template pTemplate="footer" class="footer_importes">
+									<tr>
+										<td class="td_importes">Subtotal:</td>
+										<td class="td_importes">{{mx_venta_subtotal}}</td>
+										<td class="td_importes">{{cnvr_venta_subtotal}}</td>
+									</tr>
+									<tr>
+										<td class="td_importes">Importe total</td>
+										<td class="td_importes">{{mx_venta_importe_total}}</td>
+										<td class="td_importes">{{cnvr_venta_importe_total}}</td>
+									</tr>
+									<tr>
+										<td class="td_importes"></td>
+										<td class="td_importes">{{mx_venta_importe_string}}</td>
+										<td class="td_importes">{{cnvr_venta_importe_string}}</td>
+									</tr>
+									<tr>
+										<td class="td_importes">Cambio a devolver</td>
+										<td colspan="2" class="td_importes">{{venta_cambio}}</td>
+									</tr>
+								</ng-template>
+							</p-table>
+
+						</div>
+						<p>Fecha: {{fecha_venta_impresion}}</p>
+						<p *ngIf="decide_generar_factura == 'true'">Para solicitar tu factura ingresa a https://sos-mexico.com.mx/asociados</p>
+						<p *ngIf="decide_generar_factura == 'true'">C&oacute;digo de acceso: {{codigo_acceso_venta_impreso}}</p>
+						<p *ngIf="decide_generar_factura == 'true'">Contraseña: {{passwo_acceso_venta_impreso}}</p>
+						<p *ngIf="decide_generar_factura == 'true'">Folio: {{folio_venta_generada}}</p>
+						<!--<qrcode [qrdata]="qr_generado" size="128" [errorCorrectionLevel]="'M'"[allowEmptyString]="true"qrc-element-type="canvas"></qrcode>-->
+				</div>
+				
+				</div>
+			</div>
+		</main>
+		<app-footer-inside></app-footer-inside>
+	</div>
+</div>

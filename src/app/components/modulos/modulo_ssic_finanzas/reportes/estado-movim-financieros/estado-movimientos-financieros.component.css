@@ -1,0 +1,41 @@
+.report-container {
+  background-color: #ffffff;
+  font-family: 'Inter', sans-serif; /* Usando una de las fuentes recomendadas */
+  color: #333;
+  padding: 10px !important;
+  border: none;
+  border-radius: 8px;
+  margin-top: 10px;
+  box-shadow: 0 10px 15px rgba(92, 99, 105, .2) !important;
+  box-shadow: 5px 1px 15px rgba(92, 99, 105, .5) !important;
+}
+
+.estado_cuenta{
+  text-align: left!important;
+  font-family: Prompt!important; 
+}
+
+/* Tipografía específica para números para que alineen como en el extracto */
+.font-mono {
+  font-family: 'Roboto Mono', monospace;
+  font-variant-numeric: tabular-nums;
+  font-size: 1rem !important;
+}
+
+.custom-extract-table .p-datatable-thead > tr > th {
+  background: transparent;
+  border-bottom: 2px solid #333;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  color: #666;
+}
+
+.custom-extract-table .p-datatable-tbody > tr > td {
+  border: none;
+  padding: 0.75rem 0.5rem;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+/* Colores de la imagen */
+.bg-orange-100 { background-color: #fff3e0; }
+.orange-800 { color: #e65100; }

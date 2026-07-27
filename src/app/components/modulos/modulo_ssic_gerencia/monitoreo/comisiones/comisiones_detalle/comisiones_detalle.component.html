@@ -1,0 +1,195 @@
+<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco" #vContent>
+  <div class="contenido">
+    <app-loader></app-loader>
+    <nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+    <main class="contenidoPagina">
+			<article class="listas_ps revanecer">
+				<div class="lista-div lista-divNoFlex row" style="min-height: 100vh;">
+					<h4 style="margin:0;margin-top:3px;">COMISION FOLIO: {{folio_comision}}</h4>
+          
+          <div class="col-12">
+            <div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+            <div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+              <!-- routerLink="/sos_inside/contabilidad/catalogodecomisiones"-->
+              <a class="btn btnGuardar btnRow text-bg-success rounded-3" (click)="go_back();">{{'comi_list' | translate}}</a>
+            </div>
+            <div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+          </div>
+
+          <div class="col-12" *ngFor="let detcomi of arrayComisionDetalle">
+            <div class="col-12" style="margin-top: 20px;">
+              <table id="terc_table_comissiones_no_concluidas" class="display nowrap compact white centered" style="width:100%!important;margin:0!important;">
+                <thead>
+                  <tr>
+                    <th>folio</th>
+                    <th>{{'fecha_reg' | translate}}</th>
+                    <th>{{'proy' | translate}}</th>
+                    <th>{{'employ' | translate}}</th>
+                    <th>{{'observ' | translate}}</th>
+                    <th>{{'comi_date' | translate}}</th>
+                    <th>{{'comi_time' | translate}}</th>
+                    <th>{{'comi_recibe_dinero' | translate}}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>{{detcomi.folio_comision}}</td>
+                    <td>{{detcomi.fecha_comision}}</td>
+                    <td>{{detcomi.comision_proyecto}}</td>
+                    <td class="name">{{detcomi.usuario_comision_name}}</td>
+                    <td>{{detcomi.especificaciones}}</td>
+                    <td>{{detcomi.fecha_programada_text}}</td>
+                    <td>{{detcomi.duracion}}</td>
+  
+                    <td *ngIf="detcomi.recibe_dinero == false">No</td>
+                    <td *ngIf="detcomi.recibe_dinero == true">{{'yes' | translate}} {{detcomi.dinero_recibido+" "+detcomi.comision_moneda_name}}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="col-12" style="margin-top: 20px;">
+              <table id="terc_table_comissiones_no_concluidas" class="display nowrap compact white centered" style="width:100%!important;margin:0!important;">
+                <thead>
+                  <tr>
+                    <th>{{'comi_valida_vhum' | translate}}</th>
+                    <th>{{'comi_valida_eegr' | translate}}</th>
+                    <th>{{'complete' | translate}}</th>
+                    <th>{{'ubica_loca' | translate}}</th>
+                    <th class="ultimo"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td *ngIf="detcomi.valor_humano == false">No</td>
+                    <td *ngIf="detcomi.valor_humano == true">{{'yes' | translate}}</td>
+
+                    <td *ngIf="detcomi.egresos == false">No</td>
+                    <td *ngIf="detcomi.egresos == true">{{'yes' | translate}}</td>
+
+                    <td *ngIf="detcomi.concluida_bool == false">No</td>
+                    <td *ngIf="detcomi.concluida_bool == true">{{'yes' | translate}} {{detcomi.concluida_fecha}}</td>
+
+                    <td>{{detcomi.ubicacion_display_name}}</td>
+                    <td class="ultimo">
+                      <a class="btn btn_extend bg-teal-700" data-bs-toggle="modal" data-bs-target="#ubicacionModalView"><i class="fa-solid fa-location-dot"></i> {{'ubica_ver' | translate}}</a>
+
+                      <div class="modal fade bd-example-modal-lg" id="ubicacionModalView" tabindex="-1" role="dialog" aria-labelledby="ubicacionModalViewLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-fullscreen" style="margin: 1%;width: 98%!important;">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="ubicacionModalViewLabel">UBICACION SELECCIONADA</h1>
+                              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: transparent !important;"></button>
+                            </div>
+                            <div class="modal-body">
+                              <div class="col-12" style="display: flex;flex-wrap: wrap;justify-content: center;">
+                                <img *ngIf="detcomi.ubicacion_latitud != '' && detcomi.ubicacion_longitud != ''" style="border-radius: 25px!important;max-width: max-content!important;" 
+                                src='https://maps.locationiq.com/v3/staticmap?key=pk.0dc230e7bb563cb5189f8d8b944d3e1b&center={{detcomi.ubicacion_latitud}},{{detcomi.ubicacion_longitud}}&zoom=18&size=1280x500&format=png&maptype=streeets&markers=icon:Either|{{detcomi.ubicacion_latitud}},{{detcomi.ubicacion_longitud}}&markers=icon:Either|{{detcomi.ubicacion_latitud}},{{detcomi.ubicacion_longitud}}'>
+                        
+                                <div *ngIf="detcomi.ubicacion_latitud == '' || detcomi.ubicacion_longitud == ''" class="alert div_alert_pass">
+                                  <ul>
+                                    <li style="text-align: center;text-transform: uppercase;font-size: 25px;font-weight: bold;">Seleccione ubicaci&oacute;n de comisi&oacute;n</li>
+                                  </ul>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div>
+                          </div>
+                        </div>
+                      </div>
+
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="cabecera col-12" style="margin-top: 20px;">
+              <div class="col-12">
+                <h6 class="title">reembolsos relacionados</h6>
+                <table id="terc_table_reembolsos_one" class="display nowrap mdl-data-table white centered" style="width:100%!important;margin:0!important;" *ngIf="detcomi.comision_relaciones.length > 0">
+                  <thead>
+                    <tr>
+                      <th class="ultimo"></th>
+                      <th>folio</th>
+                      <th>{{'fecha_reg' | translate}}</th>
+                      <th>{{'aplicante' | translate}}</th>
+                      <th>{{'company_name' | translate}}</th>
+                      <th>{{'total_import' | translate}}</th>
+                      <th>{{'mon_tipo_cambio' | translate}}</th>
+                      <th>{{'reem_result' | translate}}</th>
+                      <th>{{'ssic_menu_vhn' | translate}}</th>
+                      <th>{{'ssic_menu_egr' | translate}}</th>
+                      <th>{{'ord_pay_fauth' | translate}}</th>
+                      <th style="width: 350px!important;">{{'ord_pay_ftent' | translate}}</th>
+                      <th style="width: 150px!important;">{{'pag_date' | translate}}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr class="trlink" [style]="lreem.reem_canceled" *ngFor="let lreem of detcomi.comision_relaciones">
+                      <td>
+                        <div class="progress" role="progressbar" aria-label="Default striped example" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100">
+                          <div class="progress-bar progress-bar-striped"  [style]="'width: '+lreem.progress"></div>
+                        </div>
+                        {{lreem.progress}}
+                      </td>
+                      <td>{{lreem.folio_reem}}</td>
+                      <td>{{lreem.date_registro}}</td>
+                      <td class="name">{{lreem.nombreEmiPers}}</td>
+                      <td>{{lreem.name_emisor}}</td>
+                      <td class="td_importes">{{lreem.importe_total+" ("+lreem.moneda_entrante+")"}}</td>
+                      <td class="td_importes">{{lreem.total_tipo_cambio}}</td>
+                      <td class="td_importes">{{lreem.total_reem_saliente+" ("+lreem.moneda_saliente+")"}}</td>
+                      
+                      <td *ngIf="lreem.nombreRecPersVH == null">N/A</td>
+                      <td *ngIf="lreem.nombreRecPersVH != null" [style]="lreem.reem_soli_auth_vhm_style">{{lreem.soli_reem_auth_vhm+"/"+lreem.soli_reem_list+" ("+lreem.nombreRecPersVH+" - "+lreem.name_receptor+")"}}
+                        <div class="chip" style="display: flex;justify-content: start;align-items: center;">
+                          <p [class]="lreem.btnp_horas_auth_vh_color" style="width: 25px!important;margin-right: 3px;">
+                            <i [class]="lreem.btnp_horas_auth_vh_icon"></i>
+                          </p>{{lreem.fecha_respuesta_auth_vh+" "+lreem.time_respuesta_auth_vh}}</div>
+                      </td>
+      
+                      <td *ngIf="lreem.nombreRecPersEGR == null">N/A</td>
+                      <td *ngIf="lreem.nombreRecPersEGR != null" [style]="lreem.reem_soli_auth_egr_style">{{lreem.soli_reem_auth_egr+"/"+lreem.soli_reem_list+" ("+lreem.nombreRecPersEGR+" - "+lreem.name_receptor+")"}}
+                        <div class="chip" style="display: flex;justify-content: start;align-items: center;">
+                          <p [class]="lreem.btnp_horas_auth_egr_color" style="width: 25px!important;margin-right: 3px;">
+                            <i [class]="lreem.btnp_horas_auth_egr_icon"></i>
+                          </p>{{lreem.fecha_respuesta_auth_egr+" "+lreem.time_respuesta_auth_egr}}</div>
+                      </td>
+      
+                      <td *ngIf="lreem.fecha_respuesta_pago_ord_auth != null">{{lreem.fecha_respuesta_pago_ord_auth}}</td>
+                      <td *ngIf="lreem.fecha_respuesta_pago_ord_auth == null">{{'undefined' | translate}}</td>
+      
+                      <td *ngIf="lreem.fecha_respuesta_pago_tentativa == null && lreem.time_respuesta_pago_tentativa == null">{{'undefined' | translate}}</td>
+                      <td *ngIf="lreem.fecha_respuesta_pago_tentativa != null && lreem.time_respuesta_pago_tentativa != null && lreem.respuesta_pago_done_fecha != null">{{lreem.fecha_respuesta_pago_tentativa}}</td>
+                      <td *ngIf="lreem.fecha_respuesta_pago_tentativa != null && lreem.time_respuesta_pago_tentativa != null && lreem.respuesta_pago_done_fecha == null">
+                        
+                        <div class="chip" style="display: flex;justify-content: start;align-items: center;">
+                          <p [class]="lreem.time_respuesta_pago_tent_color" style="width: 25px!important;margin-right: 3px;">
+                            <i [class]="lreem.time_respuesta_pago_tent_icon"></i>
+                          </p>{{lreem.fecha_respuesta_pago_tentativa+" "+lreem.time_respuesta_pago_tentativa}}</div>
+                        
+                      </td>
+                      <td *ngIf="lreem.respuesta_pago_done_fecha != null">
+                        <div class="chip" style="display: flex;justify-content: start;align-items: center;">
+                          <p [class]="lreem.respuesta_pago_done_color" style="width: 25px!important;margin-right: 3px;">
+                            <i [class]="lreem.respuesta_pago_done_icon"></i>
+                          </p>{{lreem.respuesta_pago_done_fecha}}</div>
+                      </td>
+                      <td *ngIf="lreem.respuesta_pago_done_fecha == null">{{'undefined' | translate}}</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <h6 class="content" *ngIf="detcomi.comision_relaciones.length == 0">{{'no_rows' | translate}}</h6>
+              </div>
+            </div>
+          </div>
+				</div>
+			</article>
+		</main>
+
+    <app-footer-inside></app-footer-inside>
+  </div>
+</div>
+

@@ -1,0 +1,41 @@
+div.calc_reten div.input-group{
+  margin-top: 5px; display:flex; flex-direction:row; justify-content:space-between;
+}
+
+div.calc_reten div.input-group label{
+  width: 105px;
+  height: 30px;
+  line-height: 30px;
+  text-align: right;
+  margin-right: 5px;
+}
+
+div.calc_reten div.input-group input,div.calc_reten div.input-group select,div.calc_reten div.input-group ng-select{
+  width: calc(100% - 110px);text-align: right !important;
+}
+
+div.calc_reten div.input-group ng-select{
+  width: calc(100% - 110px);text-align: left!important;
+}
+
+div.ley_iva_group{
+  margin-top: 35px!important;
+}
+
+h6.textoheader{
+  text-align: left; font-size: 20px; 
+}
+
+.textoinformativo{
+  text-align: justify; font-size: 15px; font-family: Arial, Helvetica, sans-serif;
+}
+
+.footinformativo{
+  text-align: justify; font-size: 10px; font-family: Arial, Helvetica, sans-serif;
+}
+
+@media screen and (max-width:768px){
+  div.ley_iva_group{
+    margin-top: 5px!important;
+  } 
+}

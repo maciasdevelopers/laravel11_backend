@@ -1,0 +1,114 @@
+p.intro_herramientas{
+  margin-bottom: 5px;
+  font-weight: bold;
+  text-transform: lowercase;
+  color: dimgray;
+  font-size: large;
+  text-align: left !important;
+  text-transform: initial;
+}
+
+div.tarjeta_portal {
+  margin-bottom: 5px;
+}
+
+div.tarjeta_portal:last-child {
+  margin-bottom: 0px !important;
+}
+
+div.divDescargas {
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.5) !important;
+  border-radius: 8px;
+  /*background-image: url('')!important;*/
+}
+
+div.divDescargas p.texto {
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 10px !important;
+  text-align: justify;
+}
+
+div.divDescargas .card {
+  height: 30vh;
+  background-color: #353553;
+  border-radius: 8px;
+}
+
+div.divDescargas .card .card-header,
+div.divDescargas .card .card-content {
+  width: 100%;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  flex-direction: column;
+  align-content: center;
+}
+
+div.divDescargas .card .card-header {
+  height: 30%;
+}
+
+div.divDescargas .card .card-header h6 {
+  margin: 0;
+  font-size: 15px;
+  font-family: 'Ubuntu';
+  /* font-weight: bold; */
+  color: #e7e7ea;
+  text-align: center;
+}
+
+div.divDescargas .card .card-content {
+  height: 70%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  flex-direction: column;
+  align-content: center;
+  padding: 0;
+}
+
+div.divDescargas .card .card-content h6 {
+  font-family: arial;
+  color: #e7e7ea;
+}
+
+div.divDescargas .card .card-content div.btnDescStore {
+  width: 100%;
+  height: calc(100% - 25px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+div.divDescargas .card .card-content div.btnDescStore img {
+  width: 100%;
+}
+
+div.divDescargas .card .card-content div.btnDescStore i {
+  font-family: fontAwesome;
+  color: #CB6D51;
+  margin: 0;
+  font-size: 8vh;
+  color: #e7e7ea;
+}
+
+div.divDescargas .card .card-content a.btnDescHere {
+  border-radius: 0 0 8px 8px;
+  background-color: #d3d3d3 !important;
+  color: #353553;
+  font-weight: bold;
+  height: 25px;
+  line-height: 25px;
+  box-shadow: 1px 2px 5px #9B9B9B;
+}
+
+.textoheader{
+  text-align: left; font-size: 20px; 
+}
+
+.footinformativo{
+  text-align: justify; font-size: 10px; font-family: Arial, Helvetica, sans-serif;
+}

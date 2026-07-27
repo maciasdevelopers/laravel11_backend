@@ -1,0 +1,7 @@
+<nav aria-label="Page navigation example">
+    <ul class="pagination">
+      <li class="page-item"><a class="page-link">Previous</a></li>
+      <li class="page-item" *ngFor="let pag of paginas" [ngClass]="{'active': pag == currentPage}" (click)="paginaSelected(pag);"><a class="page-link">{{pag}}</a></li>
+      <li class="page-item"><a class="page-link">Next</a></li>
+    </ul>
+  </nav>

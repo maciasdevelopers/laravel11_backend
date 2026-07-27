@@ -1,0 +1,2246 @@
+@if (compra_by_prods) {
+  <div class="col-12 row">
+    @if (mostrarSelectsCompra) {
+      <div class="input-group col-12 col-sm-12 col-md-12 col-lg-4 col-xl-4 col-xxl-4">
+        <label for="fechaAltaProd" class="activeInput">{{'prov' | translate}}</label>
+        <p-select [options]="lista_proveedores" id="selectedCatProv" optionLabel="nombre"
+          [filter]="true" filterBy="nombre" [showClear]="true" [placeholder]="'opt_select' | translate"
+          class="w-full md:w-56" (onChange)="selectProveedor($event.value);">
+          <ng-template #selectedItem let-selectedOption>
+            <div class="flex items-center gap-2">
+              <div>{{ selectedOption.nombre }}</div>
+            </div>
+          </ng-template>
+          <ng-template let-prv #item>
+            <div class="flex items-center gap-2">
+              <div>{{prv.nombre}}</div>
+            </div>
+          </ng-template>
+        </p-select>
+      </div>
+      <div class="input-group col-12 col-sm-12 col-md-12 col-lg-4 col-xl-4 col-xxl-4">
+        <label for="fechaAltaProd" class="activeInput">{{'mon_name' | translate}}</label>
+        <p-select [options]="catalogo_monedas_api" id="selectedMonedaCode"
+          optionLabel="_filtro_busqueda" [filter]="true" filterBy="_filtro_busqueda" [showClear]="true"
+          [placeholder]="'opt_select' | translate" class="w-full md:w-56" (onChange)="valMoned($event.value);">
+          <ng-template #selectedItem let-selectedOption>
+            <div class="flex items-center gap-2">
+              <div>{{selectedOption.code+" "+selectedOption.langEN}}</div>
+            </div>
+          </ng-template>
+          <ng-template let-mon #item>
+            <div class="flex items-center gap-2">
+              <div>{{mon.code+" "+mon.langEN}}</div>
+            </div>
+          </ng-template>
+        </p-select>
+      </div>
+      <div class="input-group col-12 col-sm-12 col-md-12 col-lg-4 col-xl-4 col-xxl-4">
+        <label class="activeInput">{{'mon_tipo_cambio' | translate}}</label>
+        <input class="validate" [ngClass]="activaTipoCambio() ? 'disabled' : ''"
+          [attr.disabled]="activaTipoCambio() ? true : null" [attr.aria-disabled]="activaTipoCambio() ? true : null"
+          type="number" min="1" max="100000000000000" [value]="activaTipoCambio() ? dataCFDI_comprobante_TipoCambio : null"
+          (keyup)="!activaTipoCambio() && editTipoCambio($event.target);"
+          (keypress)="!activaTipoCambio() && onpresNumer($event);">
+      </div>
+    }
+  </div>
+  <div class="col-12" style="margin-bottom: 5px!important;">
+    <table class="col-12 centered white">
+      <thead>
+        <tr>
+          <th>{{'fecha_cont' | translate}}</th>
+          <th>fecha de vencimiento</th>
+          <th>folio preliminar de registro</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <input class="validate datepicker" id="fechaContabilizacionCompra" name="fechaContabilizacionCompra"
+              type="date" [class.disabled]="proveedorSeleccionado.length == 0 ? 'disabled' : ''"
+              [attr.disabled]="proveedorSeleccionado.length == 0 ? true : null"
+              [attr.aria-disabled]="proveedorSeleccionado.length == 0 ? 'true' : null"
+              [attr.value]="fcontab_compra_modelo.fecha_contabilizacion != '' ? fcontab_compra_modelo.fecha_contabilizacion : null"
+              (change)="select_fecha_contabilizacion($event.target);">
+          </td>
+          <td>{{compra_fecha_vencimiento != "" ? compra_fecha_vencimiento : fcontab_compra_modelo.fecha_contabilizacion}}
+          </td>
+          <td>{{compra_folio_registro}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  
+  <div class="col-12">
+    <p-accordion value="0">
+      <p-accordion-panel value="0" [disabled]="accordion_desactivado ? true : false">
+        <p-accordion-header>
+          <ng-template #toggleicon let-active="active">
+            <i class="fa-solid" [ngClass]="active ? 'fa-sort-up' : 'fa-sort-down'" style="margin-right: 3px!important;"></i>
+          </ng-template>
+          <span class="flex items-center gap-2 w-full">Listado de productos / servicios</span>
+        </p-accordion-header>
+        <p-accordion-content>
+          <div class="col-12">
+            <p-table [value]="articulos_nuevo_registro" dataKey="id" [resizableColumns]="true" responsiveLayout="stack"><!--[paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30]" -->
+              <ng-template #header>
+                <tr>
+                  <th pSortableColumn="Descripcion">Concepto / Descripci&oacute;n&nbsp;<p-sortIcon field="Descripcion" /></th>
+                  <th class="ultimo" placement="top" tooltip="Articulo a homologar"><i class="fa-solid fa-cart-shopping"></i></th>
+                  <th>Unidad de Medida-SAT</th>
+                  <th>valor unitario</th>
+                  <th>cantidad</th>
+                  <th>descuento</th>
+                  <th>subtotal</th>
+                  <th colspan="2"><i class="fas fa-hand-holding-usd"></i>&nbsp;retenciones</th>
+                  <th colspan="2"><i class="fa-solid fa-right-left"></i>&nbsp;traslados</th>
+                  <th>total</th>
+                  <th class="ultimo" placement="top" tooltip="No. de serie"><i class="fa-solid fa-layer-group"></i></th>
+                  <th class="ultimo" placement="top" tooltip="No. de lote"><i class="fa-solid fa-boxes-stacked"></i></th>
+                  <th class="ultimo" placement="top" tooltip="Pedimento aduanal"><i class="fa-solid fa-file-signature"></i></th>
+                  <th class="ultimo" placement="top" tooltip="Uso del producto / servicio"><i class="fa-solid fa-people-carry-box"></i></th>
+                  <th class="ultimo" placement="top" tooltip="Catálogo de activos"><i class="fa-solid fa-industry"></i></th>
+                  <th class="ultimo" placement="top" tooltip="Participa en prorrateos"><i class="fa-solid fa-chart-pie"></i></th>
+                  <th class="ultimo"></th>
+                </tr>
+              </ng-template>
+              <ng-template #body let-conceptList>
+                <tr>
+                  <td class="text_large">
+                    <p class="large_text">{{conceptList.Descripcion}}</p>
+                  </td>
+                  <td class="ultimo">
+                    <a class="btn" [ngClass]="proveedorSeleccionado.length == 0 ? 'bg-blue-600 disabled' : (conceptList.articulo_homologado_token == '' ? 'bg-blue-600' : 'text-bg-success rounded-3')"
+                      style="border-radius: 50%!important;" [attr.disabled]="proveedorSeleccionado.length == 0 ? true : null" [attr.aria-disabled]="proveedorSeleccionado.length == 0 ? true : null"
+                      (click)="proveedorSeleccionado.length > 0 && verConceptoXMLProductosYServicios(conceptList);">
+                      <i class="fa-solid" [ngClass]="conceptList.articulo_homologado_token == '' ? 'fa-eye' : 'fa-check-double'"></i>
+                    </a>
+                    <p-dialog header="CATALOGO DE PRODUCTOS Y SERVICIOS" [(visible)]="conceptList.articulo_homologado_view" [style]="{ width: '95%' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+                      <div class="col-12 row">
+                        <div class="col-12">
+                          <div class="explain">
+                            <h6 class="title">Concepto / Descripci&oacute;n</h6>
+                            <h6 class="content">{{conceptList.Descripcion}}</h6>
+                          </div>
+                          <div class="explain">
+                            <h6 class="title">Unidad de Medida-SAT</h6>
+                            <h6 class="content">{{conceptList.Unidad}}</h6>
+                          </div>
+                          <div class="explain">
+                            <h6 class="title">Cat&aacute;logo SAT</h6>
+                            <h6 class="content">{{conceptList.ClaveProdServ}}</h6>
+                          </div>
+                        </div>
+                        <div class="col-12">
+                          <p-tabs value="0" scrollable>
+                            <p-tablist>
+                              <p-tab value="0">Cat&aacute;logo de productos y servicios vinculados al proveedor </p-tab>
+                              <p-tab value="1">Cat&aacute;logo general de productos y servicios</p-tab>
+                              @if (!conceptList.articulo_homologado_comprobacion) {
+                                <p-tab value="2" (click)="verSeccionXMLRegistroProductosYServicios(conceptList,'Producto');">Guardar como producto</p-tab>
+                                <p-tab value="3" (click)="verSeccionXMLRegistroProductosYServicios(conceptList,'Servicio');">Guardar como servicio</p-tab>
+                              }
+                            </p-tablist>
+                            <p-tabpanels>
+                              <p-tabpanel value="0">
+                                <div class="col-12 row" style="display: flex;justify-content: end;padding-top: 0;padding-bottom: 0;">
+                                  <div style="width: max-content;padding: 0;">
+                                    <div class="btn-group lista_botones col" role="group" aria-label="Basic example">
+                                      <a class="btn btn_extend text-bg-success rounded-3" style="border-right: 2px white solid;" (click)="listar_articulos_proveedor(provToken);">
+                                        <i class="fa-solid fa-rotate" style="margin-left: 5px;"></i>&nbsp;{{'list_updt' | translate}}
+                                      </a>
+                                    </div>
+                                  </div>
+                                </div>
+                                <p-table #artVincLista [value]="productosVincLista" dataKey="id" [resizableColumns]="true" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]" responsiveLayout="stack" 
+                                  [globalFilterFields]="['token_articulo','identificador','clasificacion','sat','clave','concepto']">
+                                  <ng-template #caption>
+                                    <div class="flex">
+                                      <p-iconfield iconPosition="left" class="ml-auto">
+                                        <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                                        <input pInputText type="text"
+                                          (input)="artVincLista.filterGlobal($event.target.value, 'contains')"
+                                          placeholder="{{'bus_car' | translate}}" />
+                                      </p-iconfield>
+                                    </div>
+                                  </ng-template>
+                                  <ng-template #header>
+                                    <tr>
+                                      <th class="ultimo"></th>
+                                      <th class="ultimo"></th>
+                                      <th pSortableColumn="identificador">identificador&nbsp;<p-sortIcon field="identificador" /></th>
+                                      <th pSortableColumn="clasificacion">Clasificaci&oacute;n&nbsp;<p-sortIcon field="clasificacion" /></th>
+                                      <th pSortableColumn="sat">Unidad de Medida-SAT&nbsp;<p-sortIcon field="sat" /></th>
+                                      <th pSortableColumn="clave">Cat&aacute;logo SAT&nbsp;<p-sortIcon field="clave" /></th>
+                                      <th pSortableColumn="concepto">Concepto / Descripci&oacute;n&nbsp;<p-sortIcon field="concepto" /></th>
+                                    </tr>
+                                  </ng-template>
+                                  <ng-template #body let-compProd>
+                                    <tr>
+                                      <td class="ultimo">
+                                        <div class="form-check radio_check" style="justify-content: center;">
+                                          <input class="form-check-input" type="radio" name="artCatSelect" [checked]="compProd.token_articulo == conceptList.articulo_guardar_tkn ? true : null"
+                                            (click)="selecionaArticuloCompra(conceptList,compProd.token_articulo,compProd.identificador);">
+                                        </div>
+                                      </td>
+                                      <td class="img_dat">
+                                        <div class="col-12"><img class="circle optimizedImage" fill ngSrc="{{compProd.imagen}}" alt=""></div>
+                                      </td>
+                                      <td>{{compProd.identificador}}</td>
+                                      <td>{{compProd.clasificacion}}</td>
+                                      <td>{{compProd.sat}}</td>
+                                      <td>{{compProd.clave}}</td>
+                                      <td>{{compProd.concepto}}</td>
+                                    </tr>
+                                  </ng-template>
+                                  <ng-template pTemplate="emptymessage">
+                                    <tr>
+                                      <td colspan="7" class="text-center py-4">
+                                        <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                                        <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                          {{'no_rows' | translate}}
+                                        </p>
+                                      </td>
+                                    </tr>
+                                  </ng-template>
+                                </p-table>
+                              </p-tabpanel>
+                              <p-tabpanel value="1">
+                                <div class="col-12 row" style="display: flex;justify-content: end;padding-top: 0;padding-bottom: 0;">
+                                  <div style="width: max-content;padding: 0;">
+                                    <div class="btn-group lista_botones col" role="group" aria-label="Basic example">
+                                      <a class="btn btn_extend text-bg-success rounded-3" style="border-right: 2px white solid;" (click)="listar_catalogo_general_prod_serv();">
+                                        <i class="fa-solid fa-rotate" style="margin-left: 5px;"></i>&nbsp;{{'list_updt' | translate}}
+                                      </a>
+                                    </div>
+                                  </div>
+                                </div>
+                                <p-table #prodServCatGral [value]="prodservCatGeneral" dataKey="listado" [resizableColumns]="true" 
+                                  [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]" responsiveLayout="stack"
+                                  [globalFilterFields]="['num_lista','token_articulo','identificador','clasificacion','sat','clave','concepto']"
+                                  [expandedRowKeys]="expandRowsProductos" [rowExpandMode]="'single'">
+                                  <ng-template #caption>
+                                    <div class="flex">
+                                      <p-iconfield iconPosition="left" class="ml-auto">
+                                        <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                                        <input pInputText type="text" (input)="prodServCatGral.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+                                      </p-iconfield>
+                                    </div>
+                                  </ng-template>
+                                  <ng-template #header>
+                                    <tr>
+                                      <th class="ultimo"></th>
+                                      <th class="ultimo"></th>
+                                      <th pSortableColumn="identificador">identificador&nbsp;<p-sortIcon field="identificador" /></th>
+                                      <th pSortableColumn="clasificacion">Clasificaci&oacute;n&nbsp;<p-sortIcon field="clasificacion" /></th>
+                                      <th pSortableColumn="sat">Unidad de Medida-SAT&nbsp;<p-sortIcon field="sat" /></th>
+                                      <th pSortableColumn="clave">Cat&aacute;logo SAT&nbsp;<p-sortIcon field="clave" /></th>
+                                      <th pSortableColumn="concepto">Concepto / Descripci&oacute;n&nbsp;<p-sortIcon field="concepto" /></th>
+                                    </tr>
+                                  </ng-template>
+                                  <ng-template #body let-lgProd let-i="rowIndex" let-expanded="expanded">
+                                    <tr>
+                                      <td class="ultimo">
+                                        @if (lgProd.prov_relacionado_token == provToken) {
+                                          <div class="form-check radio_check" style="justify-content: center;">
+                                            <input class="form-check-input" type="radio" name="artCatSelect" [checked]="lgProd.token_articulo == conceptList.articulo_guardar_tkn ? true : null"
+                                              (click)="seleccionaArticuloGralCompra(conceptList,lgProd.token_articulo,lgProd.identificador);">
+                                          </div>
+                                        } @else {
+                                          <a class="btn bg-blue-600" [pRowToggler]="lgProd">
+                                            <i class="fa-solid" [ngClass]="expanded ? 'fa-angle-up' : 'fa-angle-down'"></i>
+                                          </a>
+                                        }
+                                      </td>
+                                      <td class="img_dat">
+                                        <div class="col-12"><img class="circle optimizedImage" fill ngSrc="{{lgProd.imagen}}" alt=""></div>
+                                      </td>
+                                      <td>{{lgProd.identificador}}</td>
+                                      <td>{{lgProd.clasificacion}}</td>
+                                      <td>{{lgProd.sat}}</td>
+                                      <td>{{lgProd.clave}}</td>
+                                      <td>{{lgProd.concepto}}</td>
+                                    </tr>
+                                  </ng-template>
+                                  <ng-template #expandedrow let-lgProd let-i="rowIndex">
+                                    <tr>
+                                      <td colspan="7">
+                                        <div class="col-12 row">
+                                          <div class="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-3 col-xxl-3">
+                                            <div class="col-12 input-group">
+                                              <label class="activeInput">Vincular a proveedor</label>
+                                              <div class="form-check form-switch form-check-reverse switch_primario" style="justify-content: left;width: 100%!important;">
+                                                <label class="form-check-label" for="flexSwitchCheckReverse">No</label>
+                                                <input class="form-check-input selectSwitchProvProd" name="selectImpProd" type="checkbox" [checked]="lgProd.prov_relacionado_registrar"
+                                                  (click)="prov_relacionado_registrar($event.target,lgProd.listado);">
+                                                <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                                              </div>
+                                            </div>
+                                            <div class="col-12 input-group">
+                                              <label class="activeInput">Cuenta con clave alterna</label>
+                                              <div class="form-check form-switch form-check-reverse switch_primario" style="justify-content: left;width: 100%!important;">
+                                                <label class="form-check-label" for="flexSwitchCheckReverse">No</label>
+                                                <input class="form-check-input selectSwitchProvProd" name="selectImpProd" type="checkbox" [checked]="lgProd.prov_relacionado_tiene_clave"
+                                                  (click)="decideHabilitaClave($event.target,lgProd.listado);">
+                                                <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                                              </div>
+                                            </div>
+                                            <div class="col-12 input-group">
+                                              <label class="activeInput">Clave alterna (asignada por el proveedor)</label>
+                                              <input class="claveServProvAlta txtClave validate" type="text" [ngClass]="!lgProd.prov_relacionado_tiene_clave ? 'disabled' : ''"
+                                                [attr.disabled]="!lgProd.prov_relacionado_tiene_clave ? true : null" [attr.aria-disabled]="!lgProd.prov_relacionado_tiene_clave ? true : null"
+                                                (keyup)="keyupProvProdClave($event.target,lgProd.listado);" (keypress)="keypressProvProdClave($event);">
+                                            </div>
+                                          </div>
+                                          <div class="col-12 col-sm-12 col-md-8 col-lg-8 col-xl-9 col-xxl-9"></div>
+                                        </div>
+                                        <div class="col-12 row">
+                                          <div class="col-12 col-sm-12 col-md-6 col-lg-8 col-xl-8 col-xxl-9"></div>
+                                          <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3" style="display: flex !important;justify-content: end!important;">
+                                            <a class="btn btn_extend text-bg-success rounded-3" type="submit" name="btnAltaProducto2" [ngClass]="!validaRegClaveProdPRV(lgProd.listado) ? 'disabled' : ''"
+                                              [attr.disabled]="!validaRegClaveProdPRV(lgProd.listado) ? true : null" [attr.aria-disabled]="!validaRegClaveProdPRV(lgProd.listado) ? true : null"
+                                              (click)="validaRegClaveProdPRV(lgProd.listado) && registraClaveProdPRV(lgProd.listado);">
+                                              <i class="fa-solid fa-floppy-disk" style="height: 15px!important;line-height: 15px!important;width: 15px!important;font-size: small!important;"></i>
+                                                &nbsp;{{'sav_cam' | translate}}
+                                            </a>
+                                          </div>
+                                        </div>
+                                      </td>
+                                    </tr>
+                                  </ng-template>
+                                  <ng-template pTemplate="emptymessage">
+                                    <tr>
+                                      <td colspan="7" class="text-center py-4">
+                                        <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                                        <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                          {{'no_rows' | translate}}
+                                        </p>
+                                      </td>
+                                    </tr>
+                                  </ng-template>
+                                </p-table>
+                              </p-tabpanel>
+                              <p-tabpanel value="2">
+                                @if (conceptList.articulo_homologado_view && !conceptList.articulo_homologado_comprobacion && conceptList.articulo_homologado_ventana_registro && conceptList.articulo_homologado_registro_tipo == 'Producto') {
+                                  <app_productos_inventarios_registro></app_productos_inventarios_registro>
+                                }
+                              </p-tabpanel>
+                              <p-tabpanel value="3">
+                                @if (conceptList.articulo_homologado_view && !conceptList.articulo_homologado_comprobacion && conceptList.articulo_homologado_ventana_registro && conceptList.articulo_homologado_registro_tipo == 'Servicio') {
+                                  <app-invent-serv-compras-alta></app-invent-serv-compras-alta>
+                                }
+                              </p-tabpanel>
+                            </p-tabpanels>
+                          </p-tabs>
+                        </div>
+                        <div class="col-12 row" style="margin-top: 5px!important;">
+                          <div class="col-12 col-sm-12 col-md-8 col-lg-8 col-xl-9 col-xxl-10"></div>
+                          <div class="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-3 col-xxl-2" style="display: flex !important;justify-content: end!important;">
+                            <div class="btn-group lista_botones col" role="group" aria-label="Basic example">
+                              <a class="btn btn_extend bg-indigo-600"
+                                [ngClass]="conceptList.articulo_homologado_token != '' ? 'disabled' : ''"
+                                [attr.disabled]="conceptList.articulo_homologado_token != '' ? true : null"
+                                [attr.aria-disabled]="conceptList.articulo_homologado_token != '' ? true : null"
+                                (click)="cancelarArticuloCompra(conceptList);">
+                                <i class="fa-solid fa-xmark"></i>&nbsp;{{'swal_cancel' | translate}}
+                              </a>
+                              <a class="btn btn_extend bg-indigo-600"
+                                [ngClass]="conceptList.articulo_guardar_tkn == '' || conceptList.articulo_guardar_identificador  == '' ? 'disabled' : ''"
+                                [attr.disabled]="conceptList.articulo_guardar_tkn == '' || conceptList.articulo_guardar_identificador  == '' ? true : null"
+                                [attr.aria-disabled]="conceptList.articulo_guardar_tkn == '' || conceptList.articulo_guardar_identificador  == '' ? true : null"
+                                (click)="guardaArticuloCompraXML(conceptList,conceptList.articulo_guardar_tkn,conceptList.articulo_guardar_identificador,conceptList.NoIdentificacion);">
+                                <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+                              </a>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </p-dialog>
+                  </td>
+                  <td style="padding: 5px!important;height: 30px;">
+                    <!--{{conceptList.Unidad}}-->
+                    <div class="col-12 input-group">
+                      <p-select [options]="unidadMedidaCatalogoInventario" id="selectedUMedCatInvent" name="selectedUMedCatInvent"optionLabel="categoria" [filter]="true" filterBy="categoria" 
+                        [showClear]="true" optionValue="simbolo" appendTo="body" [placeholder]="'opt_select' | translate" class="w-full md:w-56" (onChange)="verConceptoProductoDOSUMedida(conceptList,$event.value);">
+                        <ng-template #selectedItem let-selectedmedU>
+                          <div class="flex items-center gap-2">
+                            <div>{{selectedmedU.simbolo+" ("+selectedmedU.categoria+")"}}</div>
+                          </div>
+                        </ng-template>
+                        <ng-template let-medU #item>
+                          <div class="flex items-center gap-2">
+                            <div>{{medU.simbolo+" ("+medU.categoria+")"}}</div>
+                          </div>
+                        </ng-template>
+                      </p-select>
+                    </div>  
+                  </td>
+                  <!--<td style="padding: 5px!important;height: 30px;">{{conceptList.ClaveProdServ}}</td>-->
+                  <td style="padding: 5px!important;height: 30px;"><!--${{conceptList.ValorUnitario}}-->
+                    <input style="text-align: right!important;" class="validate"
+                      [ngClass]="proveedorSeleccionado.length == 0 ? 'disabled' : ''"
+                      [attr.disabled]="proveedorSeleccionado.length == 0 ? true : null"
+                      [attr.aria-disabled]="proveedorSeleccionado.length == 0 ? true : null" type="number"
+                      (change)="proveedorSeleccionado.length > 0 && verConceptoProductoDOSPUnitario(conceptList,$event.target);">
+                  </td>
+                  <td style="padding: 5px!important;height: 30px;"><!--{{conceptList.Cantidad}}-->
+                    <input style="text-align: right!important;" class="validate"
+                      [ngClass]="proveedorSeleccionado.length == 0 ? 'disabled' : ''"
+                      [attr.disabled]="proveedorSeleccionado.length == 0 ? true : null"
+                      [attr.aria-disabled]="proveedorSeleccionado.length == 0 ? true : null" type="number"
+                      (change)="proveedorSeleccionado.length > 0 && verConceptoProductoDOSCantidad(conceptList,$event.target);">
+                  </td>
+                  <td style="padding: 5px!important;height: 30px;"><!--${{conceptList.Descuento}}-->
+                    <input style="text-align: right!important;" class="validate"
+                      [ngClass]="proveedorSeleccionado.length == 0 ? 'disabled' : ''"
+                      [attr.disabled]="proveedorSeleccionado.length == 0 ? true : null"
+                      [attr.aria-disabled]="proveedorSeleccionado.length == 0 ? true : null" type="number"
+                      (change)="proveedorSeleccionado.length > 0 && verConceptoProductoDOSDescuentoUnidad(conceptList,$event.target);">
+                  </td>
+                  <td style="padding: 5px!important;height: 30px;">${{conceptList.ImporteFormat}}</td>
+                  <!--Retenciones-->
+                  <td style="padding: 5px!important;height: 30px;"><!--${{conceptList.TotalRetenciones}}-->
+                    <input style="text-align: right!important;" class="validate"
+                      [ngClass]="proveedorSeleccionado.length == 0 ? 'disabled' : ''"
+                      [attr.disabled]="proveedorSeleccionado.length == 0 ? true : null"
+                      [attr.aria-disabled]="proveedorSeleccionado.length == 0 ? true : null" type="number"
+                      (change)="proveedorSeleccionado.length > 0 && verConceptoProductoDOSRetenciones(conceptList,$event.target);">
+                  </td>
+                  <td class="ultimo">
+                    <a class="btn" [ngClass]="activaBotonRetencionesClass(conceptList)"
+                      [attr.disabled]="!enableRetenciones(conceptList) ? true : null"
+                      [attr.aria-disabled]="!enableRetenciones(conceptList) ? true : null"
+                      (click)="enableRetenciones(conceptList) && verConceptoXMLRetenciones(conceptList);">
+                      <!-- descargaDataProvComprasList(prv.token_cat_proveedores,prv-->
+                      <i class="fa-solid" [ngClass]="activaBotonRetencionesIcono(conceptList)"></i>
+                    </a>
+                    <p-dialog header="Retenciones" [(visible)]="conceptList.articulo_retenciones_modal" [attr.position]="'bottom'"
+                      [modal]="true" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }"
+                      [maximizable]="true">
+                      <div class="col-12 row">
+                        <div class="col-12">
+                          <p-table #impRetList [value]="impRetencionesCatalogo" [globalFilterFields]="dataCFDIBuscarRetenciones"
+                            dataKey="id" [resizableColumns]="true" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]"
+                            responsiveLayout="stack">
+                            <ng-template #caption>
+                              <div class="flex" style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;" ngbDropdown>
+                                <a class="btn btn_extend" [ngClass]="indicadorImpRetenciones == 'hoy' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_impuestos_catalogo_retenciones('hoy');">
+                                  <i class="fa-solid fa-calendar-days"></i>&nbsp;Hoy
+                                </a>
+                                <a class="btn btn_extend" [ngClass]="indicadorImpRetenciones == 'esta_semana' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_impuestos_catalogo_retenciones('esta_semana');">
+                                  <i class="fa-solid fa-calendar-days"></i>&nbsp;Esta semana
+                                </a>
+                                <a class="btn btn_extend" [ngClass]="indicadorImpRetenciones == 'este_mes' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_impuestos_catalogo_retenciones('este_mes');">
+                                  <i class="fa-solid fa-calendar-days"></i>&nbsp;Este mes
+                                </a>
+                                <a class="btn btn_extend" [ngClass]="indicadorImpRetenciones == 'mes_anterior' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_impuestos_catalogo_retenciones('mes_anterior');">
+                                  <i class="fa-solid fa-arrow-left"></i>&nbsp;mes anterior
+                                </a>
+                                <a id="menuDropImpRetenciones" class="btn btn_extend" [ngClass]="indicadorImpRetenciones == 'otras_fechas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" ngbDropdownToggle>
+                                  <i class="fa-solid fa-list-ul"></i>&nbsp;otras fechas
+                                </a>
+                                <div class="dropdown-menu-end menu-despegable" ngbDropdownMenu="menuDropImpRetenciones" style="padding: 0!important; margin: 0!important; width: max-content!important; max-height: 400px; overflow-y: auto;">
+                                  <div class="col-12 input-group">
+                                    <label for="imp_retenciones_otras_fechas" class="activeInput">Periodo de fechas</label>
+                                    <p-datepicker id="imp_retenciones_otras_fechas" name="imp_retenciones_otras_fechas" [(ngModel)]="rangoPeriodoImpRetenciones" appendTo="body" dateFormat="dd/mm/yy"
+                                      placeholder="dd/mm/aaaa" selectionMode="range" (onSelect)="ver_impuestos_catalogo_retenciones('otras_fechas')" />
+                                  </div>
+                                </div>
+                                <a class="btn btn_extend" [ngClass]="indicadorImpRetenciones == 'all_partidas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_impuestos_catalogo_retenciones('all_partidas');">
+                                  <i class="fa-solid fa-list-ul"></i>&nbsp;todos los registros
+                                </a>
+                                <p-iconfield iconPosition="left" class="ml-auto">
+                                  <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                                  <input pInputText type="text" (input)="impRetList.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+                                </p-iconfield>
+                              </div>
+                            </ng-template>
+                            <ng-template #header>
+                              <tr>
+                                <th class="ultimo"></th>
+                                <th pSortableColumn="folio_impuesto">folio&nbsp;<p-sortIcon field="folio_impuesto" /></th>
+                                <th pSortableColumn="abreviacion_impuesto">Abreviaci&oacute;n&nbsp;<p-sortIcon field="abreviacion_impuesto" /></th>
+                                <th pSortableColumn="concepto_impuesto">Concepto&nbsp;<p-sortIcon field="concepto_impuesto" /></th>
+                                <th pSortableColumn="modulo">M&oacute;dulo&nbsp;<p-sortIcon field="modulo" /></th>
+                                <th pSortableColumn="nivel_aplicacion">nivel de aplicaci&oacute;n&nbsp;<p-sortIcon field="nivel_aplicacion" /></th>
+                                <th pSortableColumn="catalogo_sat">clave sat&nbsp;<p-sortIcon field="catalogo_sat" /></th>
+                                <th pSortableColumn="tipo_impuesto">Tipo&nbsp;<p-sortIcon field="tipo_impuesto" /></th>
+                                <th pSortableColumn="exento">Exento&nbsp;<p-sortIcon field="exento" /></th>
+                                <th pSortableColumn="calculo">Tasa o cuota&nbsp;<p-sortIcon field="calculo" /></th>
+                                <th pSortableColumn="txtimporte">Importe del impuesto&nbsp;<p-sortIcon field="txtimporte" /></th>
+                                <th pSortableColumn="tipo_cambio">Tipo de cambio aplicado&nbsp;<p-sortIcon field="tipo_cambio" /></th>
+                                <th pSortableColumn="monedas_codigo">Moneda aplicada&nbsp;<p-sortIcon field="monedas_codigo" /></th>
+                                <th pSortableColumn="base_aplicable">Aplica sobre&nbsp;<p-sortIcon field="base_aplicable" /></th>
+                                <th pSortableColumn="desglose">Desglose&nbsp;<p-sortIcon field="desglose" /></th>
+                                <th pSortableColumn="gl_por_pagarcobrar">GL por pagar o cobrar&nbsp;<p-sortIcon field="gl_por_pagarcobrar" /></th>
+                                <th pSortableColumn="gl_pagada_o_cobrada">GL efectivamente pagada o cobrada&nbsp;<p-sortIcon field="gl_pagada_o_cobrada" /></th>
+                                <th pSortableColumn="observaciones">{{'observ' | translate}}&nbsp;<p-sortIcon field="observaciones" />
+                                </th>
+                              </tr>
+                            </ng-template>
+                            <ng-template #body let-impVig>
+                              <tr>
+                                <td>
+                                  <div class="form-check radio_check">
+                                    <input class="form-check-input" type="checkbox" name="imp_ret_selector"
+                                      [value]="impVig.token_catalogo_impuesto"
+                                      (click)="selecciona_imp_retencion(conceptList,$event.target);">
+                                  </div>
+                                </td>
+                                <td>{{impVig.folio_impuesto}}</td>
+                                <td class="td_names_rfc">{{impVig.abreviacion_impuesto}}</td>
+                                <td class="td_names_rfc">{{impVig.concepto_impuesto}}</td>
+                                <td>{{impVig.modulo}}</td>
+                                <td>{{impVig.nivel_aplicacion}}</td>
+                                <td>{{impVig.catalogo_sat}}</td>
+                                <td>{{impVig.tipo_impuesto}}</td>
+                                <td>{{impVig.exento | translate}}</td>
+                                <td>{{impVig.exento == 'yes' ? '---' : impVig.calculo}}</td>
+                                <td class="td_importes">{{impVig.exento == 'yes' ? '---' : impVig.txtimporte}}</td>
+                                <td class="td_importes">{{impVig.exento == 'yes' ? '---' : impVig.tipo_cambio}}</td>
+                                <td>{{impVig.exento == 'yes' ? '---' : impVig.monedas_codigo+" - "+impVig.monedas_moneda}}</td>
+                                <td>{{impVig.exento == 'yes' ? '---' : impVig.base_aplicable}}</td>
+                                <td>{{impVig.exento == 'yes' ? '---' : impVig.desglose | translate}}</td>
+                                <td>{{impVig.exento == 'yes' ? '---' : impVig.gl_por_pagarcobrar}}</td>
+                                <td>{{impVig.exento == 'yes' ? '---' : impVig.gl_pagada_o_cobrada}}</td>
+                                <td>{{impVig.observaciones}}</td>
+                              </tr>
+                            </ng-template>
+                            <ng-template pTemplate="emptymessage">
+                              <tr>
+                                <td colspan="18" class="text-center py-4">
+                                  <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                                  <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                    {{'no_rows' | translate}}
+                                  </p>
+                                </td>
+                              </tr>
+                            </ng-template>
+                          </p-table>
+                          <div class="col-12 row" style="margin-top: 5px!important;">
+                            <div class="col-12 col-sm-12 col-md-8 col-lg-8 col-xl-9 col-xxl-10"></div>
+                            <div class="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-3 col-xxl-2"
+                              style="display: flex !important;justify-content: end!important;">
+                              <div class="btn-group lista_botones col" role="group" aria-label="Basic example">
+                                <a class="btn btn_extend bg-indigo-600"
+                                  [ngClass]="!habilita_guarda_imp_retencion(conceptList) ? 'disabled' : ''"
+                                  [attr.disabled]="!habilita_guarda_imp_retencion(conceptList) ? true : null"
+                                  [attr.aria-disabled]="!habilita_guarda_imp_retencion(conceptList) ? true : null">
+                                  <i class="fa-solid fa-xmark"></i>&nbsp;{{'swal_cancel' | translate}}
+                                </a>
+                                <a class="btn btn_extend bg-indigo-600"
+                                  [ngClass]="!habilita_guarda_imp_retencion(conceptList) ? 'disabled' : ''"
+                                  [attr.disabled]="!habilita_guarda_imp_retencion(conceptList) ? true : null"
+                                  [attr.aria-disabled]="!habilita_guarda_imp_retencion(conceptList) ? true : null"
+                                  (click)="guarda_imp_retencion(conceptList);">
+                                  <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+                                </a>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </p-dialog>
+                  </td>
+                  <!--Traslados-->
+                  <td style="padding: 5px!important;height: 30px;"><!--${{conceptList.TotalTraslados}}-->
+                    <input style="text-align: right!important;" class="validate" type="number" (change)="verConceptoProductoDOSTraslados(conceptList,$event.target);">
+                  </td>
+                  <td class="ultimo">
+                    <a class="btn" [ngClass]="activaBotonTrasladosClass(conceptList)"
+                      [attr.disabled]="!enableTraslados(conceptList) ? true : null"
+                      [attr.aria-disabled]="!enableTraslados(conceptList) ? true : null"
+                      (click)="enableTraslados(conceptList) && verConceptoXMLTraslados(conceptList);"><!-- descargaDataProvComprasList(prv.token_cat_proveedores,prv-->
+                      <i class="fa-solid" [ngClass]="activaBotonTrasladosIcono(conceptList)"></i>
+                    </a>
+                    <p-dialog header="Traslados" [(visible)]="conceptList.articulo_traslados_modal" [attr.position]="'bottom'"
+                      [modal]="true" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }"
+                      [maximizable]="true">
+                      <div class="col-12 row">
+                        <div class="col-12">
+                          <p-table #impTrasList [value]="impTrasladosCatalogo" [globalFilterFields]="dataCFDIBuscarTraslados"
+                            dataKey="id" [resizableColumns]="true" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]"
+                            responsiveLayout="stack">
+                            <ng-template #caption>
+                              <div class="flex" style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;" ngbDropdown>
+                                <a class="btn btn_extend" [ngClass]="indicadorImpTraslados == 'hoy' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_impuestos_catalogo_traslados('hoy');">
+                                  <i class="fa-solid fa-calendar-days"></i>&nbsp;Hoy
+                                </a>
+                                <a class="btn btn_extend" [ngClass]="indicadorImpTraslados == 'esta_semana' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_impuestos_catalogo_traslados('esta_semana');">
+                                  <i class="fa-solid fa-calendar-days"></i>&nbsp;Esta semana
+                                </a>
+                                <a class="btn btn_extend" [ngClass]="indicadorImpTraslados == 'este_mes' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_impuestos_catalogo_traslados('este_mes');">
+                                  <i class="fa-solid fa-calendar-days"></i>&nbsp;Este mes
+                                </a>
+                                <a class="btn btn_extend" [ngClass]="indicadorImpTraslados == 'mes_anterior' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_impuestos_catalogo_traslados('mes_anterior');">
+                                  <i class="fa-solid fa-arrow-left"></i>&nbsp;mes anterior
+                                </a>
+                                <a id="menuDropImpTras" class="btn btn_extend" [ngClass]="indicadorImpTraslados == 'otras_fechas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" ngbDropdownToggle>
+                                  <i class="fa-solid fa-list-ul"></i>&nbsp;otras fechas
+                                </a>
+                                <div class="dropdown-menu-end menu-despegable" ngbDropdownMenu="menuDropImpTras" style="padding: 0!important; margin: 0!important; width: max-content!important; max-height: 400px; overflow-y: auto;">
+                                  <div class="col-12 input-group">
+                                    <label for="imp_tras_otras_fechas" class="activeInput">Periodo de fechas</label>
+                                    <p-datepicker id="imp_tras_otras_fechas" name="imp_tras_otras_fechas" [(ngModel)]="rangoPeriodoImpTraslados" appendTo="body" dateFormat="dd/mm/yy"
+                                      placeholder="dd/mm/aaaa" selectionMode="range" (onSelect)="ver_impuestos_catalogo_traslados('otras_fechas')" />
+                                  </div>
+                                </div>
+                                <a class="btn btn_extend" [ngClass]="indicadorImpTraslados == 'all_partidas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_impuestos_catalogo_traslados('all_partidas');">
+                                  <i class="fa-solid fa-list-ul"></i>&nbsp;todos los registros
+                                </a>
+                                <p-iconfield iconPosition="left" class="ml-auto">
+                                  <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                                  <input pInputText type="text" (input)="impTrasList.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+                                </p-iconfield>
+                              </div>
+                            </ng-template>
+                            <ng-template #header>
+                              <tr>
+                                <th class="ultimo"></th>
+                                <th pSortableColumn="folio_impuesto">folio&nbsp;<p-sortIcon field="folio_impuesto" /></th>
+                                <th pSortableColumn="abreviacion_impuesto">Abreviaci&oacute;n&nbsp;<p-sortIcon field="abreviacion_impuesto" /></th>
+                                <th pSortableColumn="concepto_impuesto">Concepto&nbsp;<p-sortIcon field="concepto_impuesto" /></th>
+                                <th pSortableColumn="modulo">M&oacute;dulo&nbsp;<p-sortIcon field="modulo" /></th>
+                                <th pSortableColumn="nivel_aplicacion">nivel de aplicaci&oacute;n&nbsp;<p-sortIcon field="nivel_aplicacion" /></th>
+                                <th pSortableColumn="catalogo_sat">clave sat&nbsp;<p-sortIcon field="catalogo_sat" /></th>
+                                <th pSortableColumn="tipo_impuesto">Tipo&nbsp;<p-sortIcon field="tipo_impuesto" /></th>
+                                <th pSortableColumn="exento">Exento&nbsp;<p-sortIcon field="exento" /></th>
+                                <th pSortableColumn="calculo">Tasa o cuota&nbsp;<p-sortIcon field="calculo" /></th>
+                                <th pSortableColumn="txtimporte">Importe del impuesto&nbsp;<p-sortIcon field="txtimporte" /></th>
+                                <th pSortableColumn="tipo_cambio">Tipo de cambio aplicado&nbsp;<p-sortIcon field="tipo_cambio" /></th>
+                                <th pSortableColumn="monedas_codigo">Moneda aplicada&nbsp;<p-sortIcon field="monedas_codigo" /></th>
+                                <th pSortableColumn="base_aplicable">Aplica sobre&nbsp;<p-sortIcon field="base_aplicable" /></th>
+                                <th pSortableColumn="desglose">Desglose&nbsp;<p-sortIcon field="desglose" /></th>
+                                <th pSortableColumn="gl_por_pagarcobrar">GL por pagar o cobrar&nbsp;<p-sortIcon field="gl_por_pagarcobrar" /></th>
+                                <th pSortableColumn="gl_pagada_o_cobrada">GL efectivamente pagada o cobrada&nbsp;<p-sortIcon field="gl_pagada_o_cobrada" /></th>
+                                <th pSortableColumn="observaciones">{{'observ' | translate}}&nbsp;<p-sortIcon field="observaciones" />
+                                </th>
+                              </tr>
+                            </ng-template>
+                            <ng-template #body let-impVig>
+                              <tr>
+                                <td>
+                                  <div class="form-check radio_check">
+                                    <input class="form-check-input" type="checkbox" name="imp_tras_selector"
+                                      [value]="impVig.token_catalogo_impuesto"
+                                      (click)="selecciona_imp_traslado(conceptList,$event.target);">
+                                  </div>
+                                </td>
+                                <td>{{impVig.folio_impuesto}}</td>
+                                <td class="td_names_rfc">{{impVig.abreviacion_impuesto}}</td>
+                                <td class="td_names_rfc">{{impVig.concepto_impuesto}}</td>
+                                <td>{{impVig.modulo}}</td>
+                                <td>{{impVig.nivel_aplicacion}}</td>
+                                <td>{{impVig.catalogo_sat}}</td>
+                                <td>{{impVig.tipo_impuesto}}</td>
+                                <td>{{impVig.exento | translate}}</td>
+                                <td>{{impVig.exento == 'yes' ? '---' : impVig.calculo}}</td>
+                                <td class="td_importes">{{impVig.exento == 'yes' ? '---' : impVig.txtimporte}}</td>
+                                <td class="td_importes">{{impVig.exento == 'yes' ? '---' : impVig.tipo_cambio}}</td>
+                                <td>{{impVig.exento == 'yes' ? '---' : impVig.monedas_codigo+" - "+impVig.monedas_moneda}}</td>
+                                <td>{{impVig.exento == 'yes' ? '---' : impVig.base_aplicable}}</td>
+                                <td>{{impVig.exento == 'yes' ? '---' : impVig.desglose | translate}}</td>
+                                <td>{{impVig.exento == 'yes' ? '---' : impVig.gl_por_pagarcobrar}}</td>
+                                <td>{{impVig.exento == 'yes' ? '---' : impVig.gl_pagada_o_cobrada}}</td>
+                                <td>{{impVig.observaciones}}</td>
+                              </tr>
+                            </ng-template>
+                            <ng-template pTemplate="emptymessage">
+                              <tr>
+                                <td colspan="18" class="text-center py-4">
+                                  <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                                  <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                    {{'no_rows' | translate}}
+                                  </p>
+                                </td>
+                              </tr>
+                            </ng-template>
+                          </p-table>
+                          <div class="col-12 row" style="margin-top: 5px!important;">
+                            <div class="col-12 col-sm-12 col-md-8 col-lg-8 col-xl-9 col-xxl-10"></div>
+                            <div class="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-3 col-xxl-2" style="display: flex !important;justify-content: end!important;">
+                              <div class="btn-group lista_botones col" role="group" aria-label="Basic example">
+                                <a class="btn btn_extend bg-indigo-600"
+                                  [ngClass]="!habilita_guarda_imp_traslado(conceptList) ? 'disabled' : ''"
+                                  [attr.disabled]="!habilita_guarda_imp_traslado(conceptList) ? true : null"
+                                  [attr.aria-disabled]="!habilita_guarda_imp_traslado(conceptList) ? true : null"
+                                  (click)="imp_traslado_cancelar(conceptList);">
+                                  <i class="fa-solid fa-xmark"></i>&nbsp;{{'swal_cancel' | translate}}
+                                </a>
+                                <a class="btn btn_extend bg-indigo-600"
+                                  [ngClass]="!habilita_guarda_imp_traslado(conceptList) ? 'disabled' : ''"
+                                  [attr.disabled]="!habilita_guarda_imp_traslado(conceptList) ? true : null"
+                                  [attr.aria-disabled]="!habilita_guarda_imp_traslado(conceptList) ? true : null"
+                                  (click)="guarda_imp_traslado(conceptList)">
+                                  <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+                                </a>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </p-dialog>
+                  </td>
+                  <td style="padding: 5px!important;height: 30px;">${{conceptList.SubtotalFormat}}</td>
+                  <!--No. de serie-->
+                  <td class="ultimo">
+                    <a class="btn"
+                      [ngClass]="conceptList.articulo_homologado_serie_token == '' ? 'bg-blue-600' : 'btn_extend text-bg-success rounded-3'"
+                      [ngClass]="!conceptList.articulo_homologado_serie_bool ? 'bg-blue-600 disabled' : 'bg-blue-600'"
+                      [attr.disabled]="!conceptList.articulo_homologado_serie_bool ? true : null"
+                      [attr.disabled]="!conceptList.articulo_homologado_serie_bool ? true : null"
+                      (click)="conceptList.articulo_homologado_serie_bool && verConceptoXMLProductosSeries(conceptList);">
+                      <i class="fa-solid"
+                        [ngClass]="conceptList.articulo_homologado_serie_token == '' ? 'fa-eye' : 'fa-check-double'"></i>{{conceptList.articulo_homologado_serie_token
+                      != '' ? " número de serie: "+conceptList.articulo_homologado_serie_numero : ''}}
+                    </a>
+                    <p-dialog header="No. de serie" [(visible)]="conceptList.articulo_homologado_serie_view" [style]="{ width: '50rem' }"
+                      [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+                      <div class="col-12 row">
+                        <div class="col" style="display: flex;justify-content: start;">
+                          <div class="btn-group lista_botones" role="group" aria-label="Basic example">
+                            <a class="btn btn_extend bg-indigo-600" (click)="lista_series_catalogo_true();">
+                              <i class="fa-solid fa-rotate"></i>&nbsp;{{'list_updt' | translate}}</a>
+                          </div>
+                        </div>
+                        <div class="col-12">
+                          <p-tabs value="0" scrollable>
+                            <p-tablist>
+                              <p-tab value="0">Cat&aacute;logo de series</p-tab>
+                              <p-tab value="1">Registrar nueva serie</p-tab>
+                            </p-tablist>
+                            <p-tabpanels>
+                              <p-tabpanel value="0">
+                                <p-table #serieCatList [value]="seriesCatalogoTrue"
+                                  [globalFilterFields]="['serie_token','serie_fecha_registro','serie_codigo','uso_unico','comentarios']"
+                                  dataKey="id" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]">
+                                  <ng-template #caption>
+                                    <div class="flex">
+                                      <p-iconfield iconPosition="left" class="ml-auto">
+                                        <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                                        <input pInputText type="text" (input)="serieCatList.filterGlobal($event.target.value, 'contains')"
+                                          placeholder="{{'bus_car' | translate}}" />
+                                      </p-iconfield>
+                                    </div>
+                                  </ng-template>
+                                  <ng-template #header>
+                                    <tr>
+                                      <th class="ultimo"></th>
+                                      <th pSortableColumn="serie_fecha_registro">{{'fecha_reg' | translate}}&nbsp;<p-sortIcon
+                                          field="serie_fecha_registro" /></th>
+                                      <th pSortableColumn="serie_codigo">serie&nbsp;<p-sortIcon field="serie_codigo" /></th>
+                                      <th pSortableColumn="uso_unico">uso unico&nbsp;<p-sortIcon field="uso_unico" /></th>
+                                      <th pSortableColumn="comentarios">{{'observ' | translate}}&nbsp;<p-sortIcon field="comentarios" />
+                                      </th>
+                                    </tr>
+                                  </ng-template>
+                                  <ng-template #body let-mSer>
+                                    <tr>
+                                      <td>
+                                        <div class="form-check radio_check">
+                                          <input class="form-check-input" type="radio" name="exampleRadios"
+                                            (click)="selectPrdserieXml(conceptList,mSer.serie_token);">
+                                        </div>
+                                      </td>
+                                      <td>{{mSer.serie_fecha_registro}}</td>
+                                      <td>{{mSer.serie_codigo}}</td>
+                                      <td>{{mSer.uso_unico ? ['enabled' | translate] : ['disabled' | translate]}}</td>
+                                      <td>{{mSer.comentarios != null ? mSer.comentarios : '---'}}</td>
+                                    </tr>
+                                  </ng-template>
+                                  <ng-template pTemplate="emptymessage">
+                                    <tr>
+                                      <td colspan="5" class="text-center py-4">
+                                        <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                                        <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                          {{'no_rows' | translate}}
+                                        </p>
+                                      </td>
+                                    </tr>
+                                  </ng-template>
+                                </p-table>
+                                <div class="col-12 row" style="margin-top: 5px!important;">
+                                  <div class="col-12 col-sm-12 col-md-8 col-lg-8 col-xl-9 col-xxl-10"></div>
+                                  <div class="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-3 col-xxl-2"
+                                    style="display: flex !important;justify-content: end!important;">
+                                    <div class="btn-group lista_botones col" role="group" aria-label="Basic example">
+                                      <a class="btn btn_extend bg-indigo-600" [ngClass]="token_serie == '' ? 'disabled' : ''"
+                                        [attr.disabled]="token_serie == '' ? true : null"
+                                        [attr.aria-disabled]="token_serie == '' ? true : null"
+                                        (click)="token_serie != '' && artSerieCancelar(conceptList);">
+                                        <i class="fa-solid fa-xmark"></i>&nbsp;{{'swal_cancel' | translate}}
+                                      </a>
+                                      <a class="btn btn_extend bg-indigo-600" [ngClass]="token_serie == '' ? 'disabled' : ''"
+                                        [attr.disabled]="token_serie == '' ? true : null"
+                                        [attr.aria-disabled]="token_serie == '' ? true : null"
+                                        (click)="token_serie != '' && guardartSerie(conceptList)">
+                                        <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+                                      </a>
+                                    </div>
+                                  </div>
+                                </div>
+                              </p-tabpanel>
+                              <p-tabpanel value="1">
+                                <form class="formAddServCat" #formAddServCat="ngForm" autocomplete="off" name="formAddServCat"
+                                  enctype="multipart/form-data" (ngSubmit)="registraSerie(formAddServCat);">
+                                  <div class="col-12 row" style="margin-bottom: 5px!important;">
+                                    <div class="col-12 col-sm-12 col-md-6 col-lg-8 col-xl-8 col-xxl-9 input-group">
+                                      <label class="activeInput">Serie</label>
+                                      <input id="txt_new_serie" class="validate" type="text" name="num_serie"
+                                        (input)="validaNuevaSerie($event.target);">
+                                    </div>
+                                    <div
+                                      class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3 form-check form-switch form-check-reverse switch_primario"
+                                      style="margin-top: 25px;">
+                                      <label class="form-check-label" for="flexSwitchCheckReverse">Uso unico</label>
+                                      <input class="form-check-input" type="checkbox" [checked]="serie_uso_unico"
+                                        (click)="decideUsoUnico($event.target);">
+                                    </div>
+                                    <div class="col-12 input-group">
+                                      <label for="comentsLoteAdd" class="activeInput">{{'observ' | translate}}</label>
+                                      <textarea id="dataLoteComentarios" class="validate materialize-textarea" name="comentsLoteAdd"
+                                        type="text" (keyup)="serieComentariosLoteKeyUp($event.target)"></textarea>
+                                    </div>
+                                    <div class="col-12 col-sm-12 col-md-6 col-lg-8 col-xl-8 col-xxl-9 input-group"></div>
+                                    <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3"
+                                      style="display: flex !important;justify-content: end!important;padding-top: 20px!important;">
+                                      <button class="btn btn_extend text-bg-success rounded-3"
+                                        [ngClass]="serie_nueva == '' ? 'disabled' : ''" [attr.disabled]="serie_nueva == '' ? true : null"
+                                        [attr.aria-disabled]="serie_nueva == '' ? true : null" type="submit" name="btnAltaServicio2">
+                                        <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}</button>
+                                    </div>
+                                  </div>
+                                </form>
+                              </p-tabpanel>
+                            </p-tabpanels>
+                          </p-tabs>
+                        </div>
+                      </div>
+                    </p-dialog>
+                  </td>
+                  <!--Catálogo de lotes-->
+                  <td class="ultimo">
+                    <a class="btn"
+                      [ngClass]="conceptList.articulo_homologado_lote_token == '' ? 'bg-blue-600' : 'btn_extend text-bg-success rounded-3'"
+                      [ngClass]="!conceptList.articulo_homologado_lote_bool ? 'bg-blue-600 disabled' : 'bg-blue-600'"
+                      [attr.disabled]="!conceptList.articulo_homologado_lote_bool ? true : null"
+                      [attr.disabled]="!conceptList.articulo_homologado_lote_bool ? true : null"
+                      (click)="conceptList.articulo_homologado_lote_bool && verConceptoXMLProductosLote(conceptList);">
+                      <i class="fa-solid"
+                        [ngClass]="conceptList.articulo_homologado_lote_token == '' ? 'fa-eye' : 'fa-check-double'"></i>{{conceptList.articulo_homologado_lote_token
+                      != '' ? " número de lote: "+conceptList.articulo_homologado_lote_numero : ''}}
+                    </a>
+                    <p-dialog header="Catálogo de lotes" [(visible)]="conceptList.articulo_homologado_lote_view"
+                      [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+                      <div class="col" style="display: flex;justify-content: start;">
+                        <div class="btn-group lista_botones" role="group" aria-label="Basic example">
+                          <a class="btn btn_extend bg-indigo-600" (click)="listaLotesTrue();">
+                            <i class="fa-solid fa-rotate"></i>&nbsp;{{'list_updt' | translate}}</a>
+                        </div>
+                      </div>
+                      <div class="col-12">
+                        <p-tabs value="0" scrollable>
+                          <p-tablist>
+                            <p-tab value="0">Cat&aacute;logo de lotes</p-tab>
+                            <p-tab value="1">Registrar nuevo lote</p-tab>
+                          </p-tablist>
+                          <p-tabpanels>
+                            <p-tabpanel value="0">
+                              <p-table #loteListCat [value]="listLotesTrue"
+                                [globalFilterFields]="['token_lote','folio_lote','numero_lote','fecha_lote']" dataKey="id"
+                                [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]">
+                                <ng-template #caption>
+                                  <div class="flex">
+                                    <p-iconfield iconPosition="left" class="ml-auto">
+                                      <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                                      <input pInputText type="text" (input)="loteListCat.filterGlobal($event.target.value, 'contains')"
+                                        placeholder="{{'bus_car' | translate}}" />
+                                    </p-iconfield>
+                                  </div>
+                                </ng-template>
+                                <ng-template #header>
+                                  <tr>
+                                    <th class="ultimo"></th>
+                                    <th pSortableColumn="folio_lote">folio de lote&nbsp;<p-sortIcon field="folio_lote" /></th>
+                                    <th pSortableColumn="numero_lote">n&uacute;mero de lote&nbsp;<p-sortIcon field="numero_lote" /></th>
+                                    <th pSortableColumn="fecha_lote">fecha de lote&nbsp;<p-sortIcon field="fecha_lote" /></th>
+                                  </tr>
+                                </ng-template>
+                                <ng-template #body let-ltrow>
+                                  <tr>
+                                    <td>
+                                      <div class="form-check radio_check">
+                                        <input class="form-check-input" type="radio" name="exampleRadios"
+                                          (click)="selectPrdLoteXml(conceptList,ltrow.token_lote);">
+                                      </div>
+                                    </td>
+                                    <td>{{ltrow.folio_lote}}</td>
+                                    <td>{{ltrow.numero_lote}}</td>
+                                    <td>{{ltrow.fecha_lote}}</td>
+                                  </tr>
+                                </ng-template>
+                                <ng-template pTemplate="emptymessage">
+                                  <tr>
+                                    <td colspan="4" class="text-center py-4">
+                                      <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                                      <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                        {{'no_rows' | translate}}
+                                      </p>
+                                    </td>
+                                  </tr>
+                                </ng-template>
+                              </p-table>
+                              <div class="col-12 row" style="margin-top: 5px!important;">
+                                <div class="col-12 col-sm-12 col-md-8 col-lg-8 col-xl-9 col-xxl-10"></div>
+                                <div class="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-3 col-xxl-2"
+                                  style="display: flex !important;justify-content: end!important;">
+                                  <div class="btn-group lista_botones col" role="group" aria-label="Basic example">
+                                    <a class="btn btn_extend bg-indigo-600" [ngClass]="token_lote == '' ? 'disabled' : ''"
+                                      [attr.disabled]="token_lote == '' ? true : null"
+                                      [attr.aria-disabled]="token_lote == '' ? true : null"
+                                      (click)="token_lote != '' && artLoteCancelar(conceptList);">
+                                      <i class="fa-solid fa-xmark"></i>&nbsp;{{'swal_cancel' | translate}}
+                                    </a>
+                                    <a class="btn btn_extend bg-indigo-600" [ngClass]="token_lote == '' ? 'disabled' : ''"
+                                      [attr.disabled]="token_lote == '' ? true : null"
+                                      [attr.aria-disabled]="token_lote == '' ? true : null"
+                                      (click)="token_lote != '' && guardartLote(conceptList)">
+                                      <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+                                    </a>
+                                  </div>
+                                </div>
+                              </div>
+                            </p-tabpanel>
+                            <p-tabpanel value="1">
+                              <form class="row" #formRegistroLote="ngForm" autocomplete="off" enctype="multipart/form-data"
+                                (ngSubmit)="registraLote(formRegistroLote);">
+                                <div class="col-12 row">
+                                  <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input-group">
+                                    <label class="activeInput">Fecha de lote</label>
+                                    <input id="dataLoteFecha" class="datepicker" name="fechaLoteAdd"
+                                      (change)="checkFechaLote($event.target)" type="date" required>
+                                  </div>
+                                  <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input-group">
+                                    <label for="numeroLoteAdd" class="activeInput">n&uacute;mero de lote</label>
+                                    <input id="dataLoteNumero" class="validate" name="numeroLoteAdd"
+                                      (keyup)="checkNumeroLote($event.target)" type="text" required>
+                                  </div>
+                  
+                                  <div class="col-12 input-group">
+                                    <label for="comentsLoteAdd" class="activeInput">{{'observ' | translate}}</label>
+                                    <textarea id="dataLoteComentarios" class="validate materialize-textarea" name="comentsLoteAdd"
+                                      type="text" (keyup)="checkComentariosLote($event.target)"></textarea>
+                                  </div>
+                  
+                                  <p-panel header="Evidencia" [attr.style]="'margin-top: 10px!important;margin-bottom: 10px!important;'">
+                                    <p class="m-0">
+                                      <p-table #dt [value]="[1]" dataKey="id">
+                                        <ng-template #header>
+                                          <tr>
+                                            <th class="ultimo"></th>
+                                            <th>{{'file_name' | translate}}</th>
+                                            <th class="ultimo"></th>
+                                            <th class="ultimo"></th>
+                                            <th class="ultimo"></th>
+                                          </tr>
+                                        </ng-template>
+                                        <ng-template #body let-product>
+                                          <tr>
+                                            <td><i class="fa-solid fa-upload"></i></td>
+                                            <td>
+                                              <div class="mb-3" style="margin: 0!important;">
+                                                <input id="dataLoteDocs" class="form-control" type="file"
+                                                  (change)="changeEscannersitfiscal($event);" placeholder="EVIDENCIA DE LOTE"
+                                                  style="padding: 0;line-height: 30px;width: 100%!important;">
+                                              </div>
+                                            </td>
+                                            <td class="ultimo">
+                                              <a class="btn btn_extend bg-indigo-600" data-bs-toggle="modal"
+                                                data-bs-target="#scannerEvidenciaLote" (click)="clickEscannerEvidenciaLote();"><i
+                                                  class="fa-solid fa-qrcode"></i>&nbsp;{{' ESCANEAR QR'}}</a>
+                                            </td>
+                                            <td class="ultimo">
+                                              <a class="btn btn_extend bg-indigo-600" data-bs-toggle="modal"
+                                                data-bs-target="#modalIframeEvidencia"
+                                                [ngClass]="!imagenAltaPdfevidencialote ? 'disabled' : ''"
+                                                [attr.disabled]="!imagenAltaPdfevidencialote ? true : null"
+                                                [attr.aria-disabled]="!imagenAltaPdfevidencialote ? true : null">
+                                                <i class="fa-solid fa-eye"></i>&nbsp;{{'file_list_open' | translate}}
+                                              </a>
+                                            </td>
+                                            <td class="ultimo">
+                                              <a class="btn btn_extend text-bg-danger rounded-3"
+                                                [ngClass]="!imagenAltaPdfevidencialote ? 'disabled' : ''"
+                                                [attr.disabled]="!imagenAltaPdfevidencialote ? true : null"
+                                                [attr.aria-disabled]="!imagenAltaPdfevidencialote ? true : null">
+                                                <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}</a>
+                                            </td>
+                                          </tr>
+                                        </ng-template>
+                                        <ng-template pTemplate="emptymessage">
+                                          <tr>
+                                            <td colspan="5" class="text-center py-4">
+                                              <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                                              <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                                {{'no_rows' | translate}}
+                                              </p>
+                                            </td>
+                                          </tr>
+                                        </ng-template>
+                                      </p-table>
+                                    </p>
+                                  </p-panel>
+                  
+                                  <div class="col-12 row">
+                                    <div class="col-12 col-sm-12 col-md-6 col-lg-8 col-xl-8 col-xxl-9"></div>
+                                    <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3"
+                                      style="display: flex !important;justify-content: end!important;">
+                                      <button class="btn btn_extend text-bg-success rounded-3" [ngClass]="!verificaData ? 'disabled' : ''"
+                                        [attr.disabled]="!verificaData ? true : null" [attr.aria-disabled]="!verificaData ? true : null"
+                                        type="submit">
+                                        <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+                                      </button>
+                                    </div>
+                                  </div>
+                                </div>
+                              </form>
+                            </p-tabpanel>
+                          </p-tabpanels>
+                        </p-tabs>
+                      </div>
+                    </p-dialog>
+                  </td>
+                  <!--Catálogo de pedimentos aduanales-->
+                  <td class="ultimo">
+                    <a class="btn"
+                      [ngClass]="conceptList.articulo_homologado_pedimento_token == '' ? 'bg-blue-600' : 'btn_extend text-bg-success rounded-3'"
+                      [ngClass]="!conceptList.articulo_homologado_pedimento_bool ? 'bg-blue-600 disabled' : 'bg-blue-600'"
+                      [attr.disabled]="!conceptList.articulo_homologado_pedimento_bool ? true : null"
+                      [attr.disabled]="!conceptList.articulo_homologado_pedimento_bool ? true : null"
+                      (click)="conceptList.articulo_homologado_pedimento_bool && verConceptoXMLProductosPedimentoAduanal(conceptList);">
+                      <i class="fa-solid"
+                        [ngClass]="conceptList.articulo_homologado_pedimento_token == '' ? 'fa-eye' : 'fa-check-double'"></i>{{conceptList.articulo_homologado_pedimento_token
+                      != '' ? " número de pedimento: "+conceptList.articulo_homologado_pedimento_numero : ''}}
+                    </a>
+                    <p-dialog header="Catálogo de pedimentos aduanales" [(visible)]="conceptList.articulo_homologado_pedimento_view"
+                      [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+                      <div class="col-12 row">
+                        <div class="col" style="display: flex;justify-content: start;">
+                          <div class="btn-group lista_botones" role="group" aria-label="Basic example">
+                            <a class="btn btn_extend bg-indigo-600" (click)="pedimentosTrueList();">
+                              <i class="fa-solid fa-rotate"></i>&nbsp;{{'list_updt' | translate}}</a>
+                          </div>
+                        </div>
+                        <div class="col-12">
+                          <p-tabs value="0" scrollable>
+                            <p-tablist>
+                              <p-tab value="0">Cat&aacute;logo de pedimentos aduanales</p-tab>
+                              <p-tab value="1">Registrar nuevo pedimento aduanal</p-tab>
+                            </p-tablist>
+                            <p-tabpanels>
+                              <p-tabpanel value="0">
+                                <p-table #listPedimCat [value]="listaPedimentosTrue"
+                                  [globalFilterFields]="['token_pedimento','folio_pedimento','fecha_registro','fecha_importacion','numero_pedimento','aduana']"
+                                  dataKey="id" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]">
+                                  <ng-template #caption>
+                                    <div class="flex">
+                                      <p-iconfield iconPosition="left" class="ml-auto">
+                                        <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                                        <input pInputText type="text" (input)="listPedimCat.filterGlobal($event.target.value, 'contains')"
+                                          placeholder="{{'bus_car' | translate}}" />
+                                      </p-iconfield>
+                                    </div>
+                                  </ng-template>
+                                  <ng-template #header>
+                                    <tr>
+                                      <th class="ultimo"></th>
+                                      <th pSortableColumn="folio_pedimento">folio&nbsp;<p-sortIcon field="folio_pedimento" /></th>
+                                      <th pSortableColumn="fecha_registro">{{'fecha_reg' | translate}}&nbsp;<p-sortIcon
+                                          field="fecha_registro" /></th>
+                                      <th pSortableColumn="fecha_importacion">fecha de importaci&oacute;n&nbsp;<p-sortIcon
+                                          field="fecha_importacion" /></th>
+                                      <th pSortableColumn="numero_pedimento">n&uacute;mero de pedimento&nbsp;<p-sortIcon
+                                          field="numero_pedimento" /></th>
+                                      <th pSortableColumn="aduana">Aduana&nbsp;<p-sortIcon field="aduana" /></th>
+                                    </tr>
+                                  </ng-template>
+                                  <ng-template #body let-paRow>
+                                    <tr>
+                                      <td>
+                                        <div class="form-check radio_check">
+                                          <input class="form-check-input" type="radio" name="exampleRadios"
+                                            (click)="selectPrdPedimentoXml(conceptList,paRow.token_pedimento);">
+                                        </div>
+                                      </td>
+                                      <td>{{paRow.folio_pedimento}}</td>
+                                      <td>{{paRow.fecha_registro}}</td>
+                                      <td>{{paRow.fecha_importacion}}</td>
+                                      <td>{{paRow.numero_pedimento}}</td>
+                                      <td>{{paRow.aduana}}</td>
+                                    </tr>
+                                  </ng-template>
+                                  <ng-template pTemplate="emptymessage">
+                                    <tr>
+                                      <td colspan="6" class="text-center py-4">
+                                        <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                                        <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                          {{'no_rows' | translate}}
+                                        </p>
+                                      </td>
+                                    </tr>
+                                  </ng-template>
+                                </p-table>
+                                <div class="col-12 row" style="margin-top: 5px!important;">
+                                  <div class="col-12 col-sm-12 col-md-8 col-lg-8 col-xl-9 col-xxl-10"></div>
+                                  <div class="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-3 col-xxl-2"
+                                    style="display: flex !important;justify-content: end!important;">
+                                    <div class="btn-group lista_botones col" role="group" aria-label="Basic example">
+                                      <a class="btn btn_extend bg-indigo-600" [ngClass]="token_padnal == '' ? 'disabled' : ''"
+                                        [attr.disabled]="token_padnal == '' ? true : null"
+                                        [attr.aria-disabled]="token_padnal == '' ? true : null"
+                                        (click)="token_padnal != '' && artPrdPedimentoCancelar(conceptList);">
+                                        <i class="fa-solid fa-xmark"></i>&nbsp;{{'swal_cancel' | translate}}
+                                      </a>
+                                      <a class="btn btn_extend bg-indigo-600" [ngClass]="token_padnal == '' ? 'disabled' : ''"
+                                        [attr.disabled]="token_padnal == '' ? true : null"
+                                        [attr.aria-disabled]="token_padnal == '' ? true : null"
+                                        (click)="token_padnal != '' && guardartPrdPedimento(conceptList)">
+                                        <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+                                      </a>
+                                    </div>
+                                  </div>
+                                </div>
+                              </p-tabpanel>
+                              <p-tabpanel value="1">
+                                <form class="row" #formRegistroPedAduanal="ngForm" autocomplete="off" enctype="multipart/form-data"
+                                  (ngSubmit)="registraPedimento(formRegistroPedAduanal);">
+                                  <div class="col-12 row">
+                                    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input-group">
+                                      <label class="activeInput">Fecha de importaci&oacute;n</label>
+                                      <input id="dataPedimAdFecha" class="datepicker" (change)="checkFechaPedim($event.target)" name="fechaLoteAdd" type="date">
+                                    </div>
+                                    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input-group">
+                                      <label for="numeroPedimento" class="activeInput">N&uacute;mero de pedimento</label>
+                                      <input id="dataPedimAdNumeroPed" class="validate" name="numeroPedimento"
+                                        (keyup)="checkNumeroImportacion($event.target)" type="text" required>
+                                    </div>
+                                    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input-group">
+                                      <label for="aduanaData" class="activeInput">Aduana</label>
+                                      <input id="dataPedimAdAduana" class="validate" name="aduanaData"
+                                        (keyup)="checkPedimAduana($event.target)" type="text" required>
+                                    </div>
+                                    <div class="col-12 input-group">
+                                      <label for="comentsLoteAdd" class="activeInput">Comentarios</label>
+                                      <textarea id="dataPedimAdComentarios" class="validate materialize-textarea" name="comentsLoteAdd"
+                                        type="text" required (keyup)="checkComentariosPedim($event.target)"></textarea>
+                                    </div>
+                                    <p-panel header="Evidencia"
+                                      [attr.style]="'margin-top: 10px!important;margin-bottom: 10px!important;'">
+                                      <p class="m-0">
+                                        <p-table #dt [value]="[1]" dataKey="id">
+                                          <ng-template #header>
+                                            <tr>
+                                              <th class="ultimo"></th>
+                                              <th>{{'file_name' | translate}}</th>
+                                              <th class="ultimo"></th>
+                                              <th class="ultimo"></th>
+                                              <th class="ultimo"></th>
+                                            </tr>
+                                          </ng-template>
+                                          <ng-template #body let-product>
+                                            <tr>
+                                              <td><i class="fa-solid fa-upload"></i></td>
+                                              <td>
+                                                <div class="mb-3" style="margin: 0!important;">
+                                                  <input id="dataPedimAdDocs" class="form-control" type="file"
+                                                    (change)="changeEscannerEvidPed($event);" placeholder="EVIDENCIA DE PEDIMENTO ADUANAL"
+                                                    style="padding: 0;line-height: 30px;width: 100%!important;">
+                                                </div>
+                                              </td>
+                                              <td class="ultimo">
+                                                <a class="btn btn_extend bg-indigo-600" data-bs-toggle="modal"
+                                                  data-bs-target="#scannerEvidenciaPedim" (click)="clickEscannerEvidenciaPedim();"><i
+                                                    class="fa-solid fa-qrcode"></i>&nbsp;{{' ESCANEAR QR'}}</a>
+                                              </td>
+                                              <td class="ultimo">
+                                                <a class="btn btn_extend bg-indigo-600" data-bs-toggle="modal"
+                                                  data-bs-target="#modalIframeEvidencia"
+                                                  [ngClass]="!imagenAltaPdfevidenciapedim ? 'disabled' : ''"
+                                                  [attr.disabled]="!imagenAltaPdfevidenciapedim ? true : null"
+                                                  [attr.aria-disabled]="!imagenAltaPdfevidenciapedim ? true : null">
+                                                  <i class="fa-solid fa-eye"></i>&nbsp;{{'file_list_open' | translate}}
+                                                </a>
+                                              </td>
+                                              <td class="ultimo">
+                                                <a class="btn btn_extend text-bg-danger rounded-3"
+                                                  [ngClass]="!imagenAltaPdfevidenciapedim ? 'disabled' : ''"
+                                                  [attr.disabled]="!imagenAltaPdfevidenciapedim ? true : null"
+                                                  [attr.aria-disabled]="!imagenAltaPdfevidenciapedim ? true : null">
+                                                  <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}</a>
+                                              </td>
+                                            </tr>
+                                          </ng-template>
+                                          <ng-template pTemplate="emptymessage">
+                                            <tr>
+                                              <td colspan="5" class="text-center py-4">
+                                                <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                                                <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                                  {{'no_rows' | translate}}
+                                                </p>
+                                              </td>
+                                            </tr>
+                                          </ng-template>
+                                        </p-table>
+                                      </p>
+                                    </p-panel>
+                                    <div class="col-12 row">
+                                      <div class="col-12 col-sm-12 col-md-6 col-lg-8 col-xl-8 col-xxl-9"></div>
+                                      <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3"
+                                        style="display: flex !important;justify-content: end!important;">
+                                        <button class="btn btn_extend text-bg-success rounded-3"
+                                          [ngClass]="!verificaData ? 'disabled' : ''" [attr.disabled]="!verificaData ? true : null"
+                                          [attr.aria-disabled]="!verificaData ? true : null" type="submit">
+                                          <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+                                        </button>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </form>
+                              </p-tabpanel>
+                            </p-tabpanels>
+                          </p-tabs>
+                        </div>
+                      </div>
+                    </p-dialog>
+                  </td>
+                  <!--Uso del producto / servicio-->
+                  <td class="ultimo">
+                    <a class="btn"
+                      [ngClass]="conceptList.articulo_homologado_identificador == '' ? 'bg-blue-600 disabled' : (conceptList.articulo_homologado_uso == '' ? 'bg-blue-600' : 'text-bg-success rounded-3')"
+                      [attr.disabled]="conceptList.articulo_homologado_identificador == '' ? true : null"
+                      [attr.aria-disabled]="conceptList.articulo_homologado_identificador == '' ? true : null"
+                      (click)="conceptList.articulo_homologado_identificador != '' && verConceptoXMLUsoActivo(conceptList);">
+                      <i class="fa-solid" [ngClass]="conceptList.articulo_homologado_uso == '' ? 'fa-eye' : 'fa-check-double'"></i>
+                    </a>
+                    <p-dialog header="Uso del producto / servicio" [(visible)]="conceptList.articulo_homologado_view_uso"
+                      [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+                      <div class="col-12 explain">
+                        <h6 class="title">Uso interno</h6>
+                      </div>
+                      <div class="col-12 row">
+                        <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3">
+                          <div class="form-check radio_check seleccion_uso_art">
+                            <input class="form-check-input" type="radio" name="art_uso_interno" value="gasto" (click)="selectUsoArticuloXml($event.target,conceptList);">
+                            <label class="form-check-label" for="flexRadioDefault1">Gasto general</label>
+                          </div>
+                          @if (conceptList.articulo_homologado_identificador == 'Producto' || conceptList.articulo_homologado_identificador == 'ActivoFijo') {
+                            <div class="form-check radio_check seleccion_uso_art">
+                              <input class="form-check-input" type="radio" name="art_uso_interno" value="activo_fijo" (click)="selectUsoArticuloXml($event.target,conceptList);">
+                              <label class="form-check-label" for="flexRadioDefault1">Activo fijo</label>
+                            </div>
+                          }
+                          @if (conceptList.articulo_homologado_identificador == 'Servicio' || conceptList.articulo_homologado_identificador == 'ActivoDiferido') {
+                            <div class="form-check radio_check seleccion_uso_art">
+                              <input class="form-check-input" type="radio" name="art_uso_interno" value="activo_diferido" (click)="selectUsoArticuloXml($event.target,conceptList);">
+                              <label class="form-check-label" for="flexRadioDefault1">Activo diferido</label>
+                            </div>
+                          }
+                          <!--@if (conceptList.articulo_homologado_identificador == 'ActivoFijo' || conceptList.articulo_homologado_identificador == 'ActivoDiferido') {}-->
+                          @if (conceptList.articulo_homologado_identificador == 'Producto') {
+                            <div class="form-check radio_check seleccion_uso_art">
+                              <input class="form-check-input" type="radio" name="art_uso_interno" value="inventario" (click)="selectUsoArticuloXml($event.target,conceptList);">
+                              <label class="form-check-label" for="flexRadioDefault1">Inventariable</label>
+                            </div>
+                          }
+                        </div>
+                        <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9"></div>
+                      </div>
+                      <p-divider [attr.style]="'margin-top: 50px!important;'" />
+                      <div class="col-12 explain">
+                        <h6 class="title">{{'fisc_effect' | translate}}</h6>
+                      </div>
+                      <div class="col-12 row">
+                        <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3">
+                          <div class="form-check radio_check seleccion_uso_art">
+                            <input class="form-check-input" type="radio" name="art_uso_efecto_fiscal" value="ded_inm_apl_mes"
+                              (click)="selectEfectoFiscalUsoArticulo($event.target,conceptList);">
+                            <label class="form-check-label" for="flexRadioDefault1">Deducciones Inmediata aplicables al mes</label>
+                          </div>
+                          <div class="form-check radio_check seleccion_uso_art">
+                            <input class="form-check-input" type="radio" name="art_uso_efecto_fiscal" value="ded_pers_anual"
+                              (click)="selectEfectoFiscalUsoArticulo($event.target,conceptList);">
+                            <label class="form-check-label" for="flexRadioDefault1">Deducci&oacute;n Personal (Anual)</label>
+                          </div>
+                          <div class="form-check radio_check seleccion_uso_art">
+                            <input class="form-check-input" type="radio" name="art_uso_efecto_fiscal" value="ded_inversion"
+                              (click)="selectEfectoFiscalUsoArticulo($event.target,conceptList);">
+                            <label class="form-check-label" for="flexRadioDefault1">Deducci&oacute;n de Inversi&oacute;n</label>
+                          </div>
+                          <div class="form-check radio_check seleccion_uso_art">
+                            <input class="form-check-input" type="radio" name="art_uso_efecto_fiscal" value="no_deducible"
+                              (click)="selectEfectoFiscalUsoArticulo($event.target,conceptList);">
+                            <label class="form-check-label" for="flexRadioDefault1">No deducible</label>
+                          </div>
+                        </div>
+                        <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9"></div>
+                      </div>
+                      <div class="col-12 row" style="margin-top: 5px!important;">
+                        <div class="col-12 col-sm-12 col-md-8 col-lg-8 col-xl-9 col-xxl-10"></div>
+                        <div class="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-3 col-xxl-2"
+                          style="display: flex !important;justify-content: end!important;">
+                          <div class="btn-group lista_botones col" role="group" aria-label="Basic example">
+                            <a class="btn btn_extend bg-indigo-600"
+                              [ngClass]="conceptList.temp_articulo_uso == '' && conceptList.temp_articulo_efecto_fiscal == '' ? 'disabled' : ''"
+                              [attr.disabled]="conceptList.temp_articulo_uso == '' && conceptList.temp_articulo_efecto_fiscal == '' ? true : null"
+                              [attr.aria-disabled]="conceptList.temp_articulo_uso == '' && conceptList.temp_articulo_efecto_fiscal == '' ? true : null"
+                              (click)="(conceptList.temp_articulo_uso != '' || conceptList.temp_articulo_efecto_fiscal != '') && artUsoActivoCancelar(conceptList);">
+                              <i class="fa-solid fa-xmark"></i>&nbsp;{{'swal_cancel' | translate}}
+                            </a>
+                            <a class="btn btn_extend bg-indigo-600"
+                              [ngClass]="conceptList.temp_articulo_uso == '' && conceptList.temp_articulo_efecto_fiscal == '' ? 'disabled' : ''"
+                              [attr.disabled]="conceptList.temp_articulo_uso == '' && conceptList.temp_articulo_efecto_fiscal == '' ? true : null"
+                              [attr.aria-disabled]="conceptList.temp_articulo_uso == '' && conceptList.temp_articulo_efecto_fiscal == '' ? true : null"
+                              (click)="(conceptList.temp_articulo_uso != '' || conceptList.temp_articulo_efecto_fiscal != '') && guardartUsoActivo(conceptList)">
+                              <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                    </p-dialog>
+                  </td>
+                  <!--Activos-->
+   
+                  <td class="ultimo">
+                    @if (conceptList.articulo_homologado_uso == '' || (conceptList.articulo_homologado_uso != 'activo_diferido' && conceptList.articulo_homologado_uso != 'activo_fijo')) {
+                      {{'---'}}
+                    } @else {
+                      <a class="btn" [ngClass]="conceptList.articulo_homologado_activoFijo == '' && conceptList.articulo_homologado_activoDiferido == '' ? 'bg-blue-600' : 'text-bg-success rounded-3'"
+                        (click)="verConceptoXMLActivosLista(conceptList);">
+                        <i class="fa-solid"
+                          [ngClass]="conceptList.articulo_homologado_activoFijo == '' && conceptList.articulo_homologado_activoDiferido == '' ? 'fa-info' : 'fa-check-double'"></i>
+                      </a>
+                      <p-dialog [header]="conceptList.articulo_homologado_identificador == 'ActivoFijo' ? 'ACTIVOS FIJOS' : 'ACTIVOS INTANGIBLES'" [(visible)]="conceptList.articulo_homologado_view_activos" [style]="{ width: '50rem' }"
+                        [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+                        <div class="col-12">
+                          @if (conceptList.articulo_homologado_identificador == 'ActivoFijo') {
+                            <p-tabs value="0" scrollable>
+                              <p-tablist>
+                                <p-tab value="0">Cat&aacute;logo de activos</p-tab>
+                                <p-tab value="1">Registrar nuevo activo</p-tab>
+                              </p-tablist>
+                              <p-tabpanels>
+                                <p-tabpanel value="0">
+                                  <p-table #fijActList [value]="listActivosFijos" [globalFilterFields]="['token_act_fijos','folio_activo','categoria','tipo_depreciacion_desc','deprec_contable','deprec_fiscal','periodo_deprec']"
+                                    datakey="id" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]">
+                                    <ng-template #caption>
+                                      <div class="flex" style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;" ngbDropdown>
+                                        <a class="btn btn_extend" [ngClass]="indicadorFijosActivos == 'hoy' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_activos_fijos_true('hoy');">
+                                          <i class="fa-solid fa-calendar-days"></i>&nbsp;Hoy
+                                        </a>
+                                        <a class="btn btn_extend" [ngClass]="indicadorFijosActivos == 'esta_semana' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_activos_fijos_true('esta_semana');">
+                                          <i class="fa-solid fa-calendar-days"></i>&nbsp;Esta semana
+                                        </a>
+                                        <a class="btn btn_extend" [ngClass]="indicadorFijosActivos == 'este_mes' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_activos_fijos_true('este_mes');">
+                                          <i class="fa-solid fa-calendar"></i>&nbsp;Este mes
+                                        </a>
+                                        <a class="btn btn_extend" [ngClass]="indicadorFijosActivos == 'mes_anterior' ? ' bg-indigo-600' : ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_activos_fijos_true('mes_anterior');">
+                                          <i class="fa-solid fa-arrow-left"></i>&nbsp;mes anterior
+                                        </a>
+                                        <a id="menuDropActRangos" class="btn btn_extend" [ngClass]="indicadorFijosActivos == 'otras_fechas' ? ' bg-indigo-600' : 'bg-blue-600'" style="margin-right:5px!important;" ngbDropdownToggle>
+                                          <i class="fa-solid fa-list-ul"></i>&nbsp;otras fechas
+                                        </a>
+                                        <div class="dropdown-menu-end menu-despegable" ngbDropdownMenu="menuDropActRangos" style="padding: 0!important; margin: 0!important; width: max-content!important; max-height: 400px; overflow-y: auto;">
+                                          <div class="col-12 input-group">
+                                            <label for="act_cbuy_cfdi_otras_fechas" class="activeInput">Periodo de fechas</label>
+                                            <p-datepicker id="act_cbuy_cfdi_otras_fechas" name="act_cbuy_cfdi_otras_fechas" [(ngModel)]="rangoPeriodoFijosActivos" appendTo="body" dateFormat="dd/mm/yy" placeholder="dd/mm/aaaa" selectionMode="range"
+                                              (onSelect)="ver_activos_fijos_true('otras_fechas');" />
+                                          </div>
+                                        </div>
+                                        <a class="btn btn_extend" [ngClass]="indicadorFijosActivos == 'all_partidas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_activos_fijos_true('all_partidas');">
+                                          <i class="fa-solid fa-list-ul"></i>&nbsp;todos los registros
+                                        </a>
+                                        <p-iconfield iconPosition="left" class="ml-auto">
+                                          <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                                          <input pInputText type="text" (input)="fijActList.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+                                        </p-iconfield>
+                                      </div>
+                                    </ng-template>
+                                    <ng-template #header>
+                                      <tr>
+                                        <th rowspan="2" class="ultimo"></th>
+                                        <th rowspan="2" pSortableColumn="folio_activo">Folio&nbsp;<p-sortIcon field="folio_activo" /></th>
+                                        <th rowspan="2" pSortableColumn="categoria">Categoria&nbsp;<p-sortIcon field="categoria" /></th>
+                                        <th colspan="4">Depreciaci&oacute;n contable&nbsp;</th>
+                                        <th colspan="4">Depreciaci&oacute;n fiscal&nbsp;</th>
+                                        <th rowspan="2">{{'observ' | translate}}</th>
+                                      </tr>
+                                      <tr>
+                                        <th pSortableColumn="folio_activo">Tipo&nbsp;<p-sortIcon field="folio_activo" /></th>
+                                        <th pSortableColumn="categoria">Periodo&nbsp;<p-sortIcon field="categoria" /></th>
+                                        <th pSortableColumn="deprec_contable">Importe&nbsp;<p-sortIcon field="deprec_contable" /></th>
+                                        <th pSortableColumn="deprec_fiscal">Cuenta contable&nbsp;<p-sortIcon field="deprec_fiscal" /></th>
+                                        <th pSortableColumn="folio_activo">Tipo&nbsp;<p-sortIcon field="folio_activo" /></th>
+                                        <th pSortableColumn="categoria">Periodo&nbsp;<p-sortIcon field="categoria" /></th>
+                                        <th pSortableColumn="deprec_contable">Importe&nbsp;<p-sortIcon field="deprec_contable" /></th>
+                                        <th pSortableColumn="deprec_fiscal">Cuenta contable&nbsp;<p-sortIcon field="deprec_fiscal" /></th>
+                                      </tr>
+                                    </ng-template>
+                                    <ng-template #body let-actf>
+                                      <tr>
+                                        <td>
+                                          <div class="form-check radio_check">
+                                            <input class="form-check-input" type="radio" name="exampleRadios" (click)="selectActivoXmlFijo(conceptList,actf.token_act_fijos);">
+                                          </div>
+                                        </td>
+                                        <td>{{actf.folio_activo}}</td>
+                                        <td>{{actf.categoria}}</td>
+                                        <td>{{actf.deprec_contable_tipo}}</td>
+                                        <td>{{actf.deprec_contable_periodo}}</td>
+                                        <td>{{actf.deprec_contable_importe}}</td>
+                                        <td>{{actf.deprec_contable_cuenta}}</td>
+                                        <td>{{actf.deprec_fiscal_tipo}}</td>
+                                        <td>{{actf.deprec_fiscal_periodo}}</td>
+                                        <td>{{actf.deprec_fiscal_importe}}</td>
+                                        <td>{{actf.deprec_fiscal_cuenta}}</td>
+                                        <td>{{actf.activo_observaciones}}</td>
+                                      </tr>
+                                    </ng-template>
+                                    <ng-template pTemplate="emptymessage">
+                                      <tr>
+                                        <td colspan="12" class="text-center py-4">
+                                          <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                                          <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                            {{'no_rows' | translate}}
+                                          </p>
+                                        </td>
+                                      </tr>
+                                    </ng-template>
+                                  </p-table>
+                                  <div class="col-12 row" style="margin-top: 5px!important;">
+                                    <div class="col-12 col-sm-12 col-md-8 col-lg-8 col-xl-9 col-xxl-10"></div>
+                                    <div class="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-3 col-xxl-2" style="display: flex !important;justify-content: end!important;">
+                                      <div class="btn-group lista_botones col" role="group" aria-label="Basic example">
+                                        <a class="btn btn_extend bg-indigo-600" [ngClass]="!artActivoFijoValidar(conceptList) ? 'disabled' : ''"
+                                          [attr.disabled]="!artActivoFijoValidar(conceptList) ? true : null"
+                                          [attr.aria-disabled]="!artActivoFijoValidar(conceptList) ? true : null"
+                                          (click)="artActivoFijoValidar(conceptList) && artActivoFijoCancelar(conceptList);">
+                                          <i class="fa-solid fa-xmark"></i>&nbsp;{{'swal_cancel' | translate}}
+                                        </a>
+                                        <a class="btn btn_extend bg-indigo-600" [ngClass]="!artActivoFijoValidar(conceptList) ? 'disabled' : ''"
+                                          [attr.disabled]="!artActivoFijoValidar(conceptList) ? true : null"
+                                          [attr.aria-disabled]="!artActivoFijoValidar(conceptList) ? true : null"
+                                          (click)="artActivoFijoValidar(conceptList) && guardartActivoFijo(conceptList)">
+                                          <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+                                        </a>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </p-tabpanel>
+                                <p-tabpanel value="1">
+                                  <inventarios_registro_fam_activos_fijos></inventarios_registro_fam_activos_fijos>
+                                </p-tabpanel>
+                              </p-tabpanels>
+                            </p-tabs>
+                          } @else {
+                            <p-tabs value="0" scrollable>
+                              <p-tablist>
+                                <p-tab value="0">Cat&aacute;logo de activos</p-tab>
+                                <p-tab value="1">Registrar nuevo activo</p-tab>
+                              </p-tablist>
+                              <p-tabpanels>
+                                <p-tabpanel value="0">
+                                  <p-table #intanActList [value]="listActivosIntangibles" [globalFilterFields]="['token_act_intang','folio_activo','categoria','tipo_amortizacion_desc','amort_contable','amort_fiscal','periodo_deprec']"
+                                    dataKey="num_act" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]">
+                                    <ng-template #caption>
+                                      <div class="flex" style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;" ngbDropdown>
+                                        <a class="btn btn_extend" [ngClass]="indicadorDiferidosActivos == 'hoy' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_activos_intang_true('hoy');">
+                                          <i class="fa-solid fa-calendar-days"></i>&nbsp;Hoy
+                                        </a>
+                                        <a class="btn btn_extend" [ngClass]="indicadorDiferidosActivos == 'esta_semana' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_activos_intang_true('esta_semana');">
+                                          <i class="fa-solid fa-calendar-days"></i>&nbsp;Esta semana
+                                        </a>
+                                        <a class="btn btn_extend" [ngClass]="indicadorDiferidosActivos == 'este_mes' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_activos_intang_true('este_mes');">
+                                          <i class="fa-solid fa-calendar"></i>&nbsp;Este mes
+                                        </a>
+                                        <a class="btn btn_extend" [ngClass]="indicadorDiferidosActivos == 'mes_anterior' ? ' bg-indigo-600' : ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_activos_intang_true('mes_anterior');">
+                                          <i class="fa-solid fa-arrow-left"></i>&nbsp;mes anterior
+                                        </a>
+                                        <a id="menuDropActfidRangos" class="btn btn_extend" [ngClass]="indicadorDiferidosActivos == 'otras_fechas' ? ' bg-indigo-600' : 'bg-blue-600'" style="margin-right:5px!important;" ngbDropdownToggle>
+                                          <i class="fa-solid fa-list-ul"></i>&nbsp;otras fechas
+                                        </a>
+                                        <div class="dropdown-menu-end menu-despegable" ngbDropdownMenu="menuDropActfidRangos" style="padding: 0!important; margin: 0!important; width: max-content!important; max-height: 400px; overflow-y: auto;">
+                                          <div class="col-12 input-group">
+                                            <label for="act_dif_cbuy_cfdi_otras_fechas" class="activeInput">Periodo de fechas</label>
+                                            <p-datepicker id="act_dif_cbuy_cfdi_otras_fechas" name="act_dif_cbuy_cfdi_otras_fechas" [(ngModel)]="rangoPeriodoDiferidosActivos" appendTo="body" dateFormat="dd/mm/yy" placeholder="dd/mm/aaaa" selectionMode="range"
+                                              (onSelect)="ver_activos_intang_true('otras_fechas');" />
+                                          </div>
+                                        </div>
+                                        <a class="btn btn_extend" [ngClass]="indicadorDiferidosActivos == 'all_partidas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_activos_intang_true('all_partidas');">
+                                          <i class="fa-solid fa-list-ul"></i>&nbsp;todos los registros
+                                        </a>
+                                        <p-iconfield iconPosition="left" class="ml-auto">
+                                          <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                                          <input pInputText type="text" (input)="intanActList.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+                                        </p-iconfield>
+                                      </div>
+                                    </ng-template>
+                                    <ng-template #header>
+                                      <tr>
+                                        <th rowspan="2" class="ultimo"></th>
+                                        <th rowspan="2" class="ultimo"></th>
+                                        <th rowspan="2" pSortableColumn="folio_activo">Folio&nbsp;<p-sortIcon field="folio_activo" /></th>
+                                        <th rowspan="2" pSortableColumn="categoria">Categoria&nbsp;<p-sortIcon field="categoria" /></th>
+                                        <th rowspan="2" pSortableColumn="categoria_cuenta_contable">Cuenta contable&nbsp;<p-sortIcon field="categoria_cuenta_contable" /></th>
+                                        <th colspan="4">Amortizaci&oacute;n contable&nbsp;</th>
+                                        <th colspan="4">Amortizaci&oacute;n fiscal&nbsp;</th>
+                                        <th rowspan="2">{{'observ' | translate}}</th>
+                                      </tr>
+                                      <tr>
+                                        <th pSortableColumn="amortizacion_contable_periodo">Periodo&nbsp;<p-sortIcon field="amortizacion_contable_periodo" /></th>
+                                        <th pSortableColumn="amortizacion_contable_tiempo_ejecucion">Tiempo de amortizaci&oacute;n&nbsp;<p-sortIcon field="amortizacion_contable_tiempo_ejecucion" /></th>
+                                        <th pSortableColumn="amortizacion_contable_cuenta">Cuenta contable&nbsp;<p-sortIcon field="amortizacion_contable_cuenta" /></th>
+                                        <th pSortableColumn="amortizacion_contable_cuenta_dos">Cuenta contable dos<p-sortIcon field="amortizacion_contable_cuenta_dos" /></th>
+                        
+                                        <th pSortableColumn="amortizacion_fiscal_periodo">Periodo&nbsp;<p-sortIcon field="amortizacion_fiscal_periodo" /></th>
+                                        <th pSortableColumn="amortizacion_fiscal_tiempo_ejecucion">Tiempo de amortizaci&oacute;n&nbsp;<p-sortIcon field="amortizacion_fiscal_tiempo_ejecucion" /></th>
+                                        <th pSortableColumn="amortizacion_fiscal_cuenta">Cuenta contable&nbsp;<p-sortIcon field="amortizacion_fiscal_cuenta" /></th>
+                                        <th pSortableColumn="amortizacion_fiscal_cuenta_dos">Cuenta contable dos&nbsp;<p-sortIcon field="amortizacion_fiscal_cuenta_dos" /></th>
+                                      </tr>
+                                    </ng-template>
+                                    <ng-template #body let-acti let-expandedAct="expanded">
+                                      <tr>
+                                        <td>
+                                          <div class="form-check radio_check">
+                                            <input class="form-check-input" type="radio" name="exampleRadios" (click)="selectActivoXmlDiferido($event.target,conceptList,acti.token_act_intang);">
+                                          </div>
+                                        </td>                                      
+                                        <td class="ultimo">
+                                          <a class="btn bg-blue-600" [ngClass]="isActivoSeleccionado(conceptList, acti) ? 'disabled' : ''" [attr.disabled]="isActivoSeleccionado(conceptList, acti)"
+                                          [attr.aria-disabled]="isActivoSeleccionado(conceptList, acti)" [pRowToggler]="!isActivoSeleccionado(conceptList, acti) && acti">
+                                            <i class="fa-solid" [ngClass]="expandedAct ? 'fa-angle-up' : 'fa-angle-down'"></i>
+                                          </a>
+                                        </td>
+                                        <td>{{acti.folio_activo}}</td>
+                                        <td>{{acti.categoria}}</td>
+                                        <td>{{acti.categoria_cuenta_contable}}</td>
+                                        
+                                        <td>{{acti.amortizacion_contable_periodo}}</td>
+                                        <td>{{acti.amortizacion_contable_tiempo_ejecucion}}</td>
+                                        <td>{{acti.amortizacion_contable_cuenta}}</td>
+                                        <td>{{acti.amortizacion_contable_cuenta_dos}}</td>
+                        
+                                        <td>{{acti.amortizacion_fiscal_periodo}}</td>
+                                        <td>{{acti.amortizacion_fiscal_tiempo_ejecucion}}</td>
+                                        <td>{{acti.amortizacion_fiscal_cuenta}}</td>
+                                        <td>{{acti.amortizacion_fiscal_cuenta_dos}}</td>
+                                        
+                                        <td>{{acti.activo_observaciones}}</td>
+                                      </tr>
+                                    </ng-template>
+                                    <ng-template #expandedrow let-actf let-a="rowIndex">
+                                      <tr>
+                                        <td colspan="14">
+                                          <p-table #impTrasCat [value]="conceptList.temp_activo_diferido_foliado" dataKey="id" [resizableColumns]="true" responsiveLayout="stack"
+                                           [globalFilterFields]="['activo_folio_unico','activo_serie','activo_otros','activo_observaciones']">
+                                            <ng-template #caption>
+                                              <div class="flex">
+                                                <p-iconfield iconPosition="left" class="ml-auto">
+                                                  <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                                                  <input pInputText type="text" (input)="impTrasCat.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}"/>
+                                                </p-iconfield>
+                                              </div>
+                                            </ng-template>
+                                            <ng-template #header>
+                                              <tr>
+                                                <th rowspan="2" class="ultimo" pSortableColumn="activo_lista">No.&nbsp;<p-sortIcon field="activo_lista"/></th>
+                                                <th colspan="4">Amortizaci&oacute;n contable&nbsp;</th>
+                                                <th colspan="4">Amortizaci&oacute;n fiscal&nbsp;</th>
+                                              </tr>
+                                              <tr>
+                                                <th pSortableColumn="amort_contable_periodo">Periodo&nbsp;<p-sortIcon field="amort_contable_periodo" /></th>
+                                                <th pSortableColumn="amort_contable_tiempo">Tiempo de amortizaci&oacute;n&nbsp;<p-sortIcon field="amort_contable_tiempo" /></th>
+                                                <th pSortableColumn="amort_contable_fecha_apartir">Comienza&nbsp;<p-sortIcon field="amort_contable_fecha_apartir" /></th>
+                                                <th pSortableColumn="amort_contable_observaciones">{{'observ' | translate}}&nbsp;<p-sortIcon field="amort_contable_observaciones" /></th>
+                                
+                                                <th pSortableColumn="amort_fiscal_periodo">Periodo&nbsp;<p-sortIcon field="amort_fiscal_periodo" /></th>
+                                                <th pSortableColumn="amort_fiscal_tiempo">Tiempo de amortizaci&oacute;n&nbsp;<p-sortIcon field="amort_fiscal_tiempo" /></th>
+                                                <th pSortableColumn="amort_fiscal_fecha_apartir">Comienza&nbsp;<p-sortIcon field="amort_fiscal_fecha_apartir" /></th>
+                                                <th pSortableColumn="amort_fiscal_observaciones">{{'observ' | translate}}&nbsp;<p-sortIcon field="amort_fiscal_observaciones" /></th>
+                                              </tr>
+                                            </ng-template>
+                                            <ng-template #body let-afoli>
+                                              <tr>
+                                                <td class="ultimo">{{afoli.activo_lista}}</td>
+                                                <td>
+                                                  <!--<input id="amort_cont_periodo" name="amort_cont_periodo" type="text" class="validate" (keyup)="keyupACTDFoliadoAmortContablePeriodo($event.target,afoli,conceptList);" required>-->
+                                                  <div class="col-12 input-group">
+                                                    <p-select [options]="amortizacion_periodos" [id]="afoli.id_select_cont" name="amort_cont_periodo" optionLabel="valor" [filter]="true" filterBy="valor" optionValue="clave"
+                                                      appendTo="body" [showClear]="true" [placeholder]="'opt_select' | translate" class="w-full md:w-56" (onChange)="keyupACTDFoliadoAmortContablePeriodo($event.value,afoli,conceptList);">
+                                                      <ng-template #selectedItem let-selectedOption>
+                                                        <div class="flex items-center gap-2"><div>{{selectedOption.valor}}</div></div>
+                                                      </ng-template>
+                                                      <ng-template let-dep #item>
+                                                        <div class="flex items-center gap-2"><div>{{dep.valor}}</div></div>
+                                                      </ng-template>
+                                                    </p-select>
+                                                  </div>
+                                                </td>
+                                                <td><input id="amort_cont_tiempo" name="amort_cont_tiempo" type="number" class="validate" (keyup)="keyupACTDFoliadoAmortContableTiempo($event.target,afoli,conceptList);" required></td>
+                                                <td><input id="amort_cont_apartir" name="amort_cont_apartir" type="date" class="validate" (change)="keyupACTDFoliadoAmortContableFechaAPartir($event.target,afoli,conceptList);" required></td>
+                                                <td><input id="amort_cont_observ" name="amort_cont_observ" type="text" class="validate" (keyup)="keyupACTDFoliadoAmortContableObservaciones($event.target,afoli,conceptList);" required></td>
+  
+                                                <td>
+                                                  <!--<input id="amort_fisc_periodo" name="amort_fisc_periodo" type="text" class="validate" (keyup)="keyupACTDFoliadoAmortFiscalPeriodo($event.target,afoli,conceptList);" required>-->
+                                                  <div class="col-12 input-group">
+                                                    <p-select [options]="amortizacion_periodos" [id]="afoli.id_select_fisc" name="amort_fisc_periodo" optionLabel="valor" [filter]="true" filterBy="valor" optionValue="clave"
+                                                      appendTo="body" [showClear]="true" [placeholder]="'opt_select' | translate" class="w-full md:w-56" (onChange)="keyupACTDFoliadoAmortFiscalPeriodo($event.value,afoli,conceptList);">
+                                                      <ng-template #selectedItem let-selectedOption>
+                                                        <div class="flex items-center gap-2"><div>{{selectedOption.valor}}</div></div>
+                                                      </ng-template>
+                                                      <ng-template let-dep #item>
+                                                        <div class="flex items-center gap-2"><div>{{dep.valor}}</div></div>
+                                                      </ng-template>
+                                                    </p-select>
+                                                  </div>
+                                                </td>
+                                                <td><input id="amort_fisc_tiempo" name="amort_fisc_tiempo" type="number" class="validate" (keyup)="keyupACTDFoliadoAmortFiscalTiempo($event.target,afoli,conceptList);" required></td>
+                                                <td><input id="amort_fisc_apartir" name="amort_fisc_apartir" type="date" class="validate" (change)="keyupACTDFoliadoAmortFiscalFechaAPartir($event.target,afoli,conceptList);" required></td>
+                                                <td><input id="amort_fisc_observ" name="amort_fisc_observ" type="text" class="validate" (keyup)="keyupACTDFoliadoAmortFiscalObservaciones($event.target,afoli,conceptList);" required></td>
+                                              </tr>
+                                            </ng-template>
+                                            <ng-template pTemplate="emptymessage">
+                                              <tr>
+                                                <td colspan="18" class="text-center py-4">
+                                                  <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                                                  <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                                    {{'no_rows' | translate}}
+                                                  </p>
+                                                </td>
+                                              </tr>
+                                            </ng-template>
+                                          </p-table>
+                                          <div style="overflow-x: auto;">
+                                          </div>
+                                        </td>
+                                      </tr>
+                                    </ng-template>
+                                    <ng-template pTemplate="emptymessage">
+                                      <tr>
+                                        <td colspan="14" class="text-center py-4">
+                                          <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                                          <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                            {{'no_rows' | translate}}
+                                          </p>
+                                        </td>
+                                      </tr>
+                                    </ng-template>
+                                  </p-table>
+                                  <div class="col-12 row" style="margin-top: 5px!important;">
+                                    <div class="col-12 col-sm-12 col-md-8 col-lg-8 col-xl-9 col-xxl-10"></div>
+                                    <div class="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-3 col-xxl-2" style="display: flex !important;justify-content: end!important;">
+                                      <div class="btn-group lista_botones col" role="group" aria-label="Basic example">
+                                        <a class="btn btn_extend bg-indigo-600" [ngClass]="!artActivoDiferidoValidar(conceptList) ? 'disabled' : ''"
+                                          [attr.disabled]="!artActivoDiferidoValidar(conceptList) ? true : null"
+                                          [attr.aria-disabled]="!artActivoDiferidoValidar(conceptList) ? true : null"
+                                          (click)="artActivoDiferidoValidar(conceptList) && artActivoDiferidoCancelar(conceptList);">
+                                          <i class="fa-solid fa-xmark"></i>&nbsp;{{'swal_cancel' | translate}}
+                                        </a>
+                                        <a class="btn btn_extend bg-indigo-600" [ngClass]="!artActivoDiferidoValidar(conceptList) ? 'disabled' : ''"
+                                          [attr.disabled]="!artActivoDiferidoValidar(conceptList) ? true : null"
+                                          [attr.aria-disabled]="!artActivoDiferidoValidar(conceptList) ? true : null"
+                                          (click)="artActivoDiferidoValidar(conceptList) && guardartActivoDiferido(conceptList)">
+                                          <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+                                        </a>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </p-tabpanel>
+                                <p-tabpanel value="1">
+                                  <inventarios_registro_fam_activos_diferidos></inventarios_registro_fam_activos_diferidos>
+                                </p-tabpanel>
+                              </p-tabpanels>
+                            </p-tabs>
+                          }
+                        </div>
+                      </p-dialog>
+                    }
+                  </td>
+                  <!--Prorrateos-->
+                  <td>
+                    <div class="form-check radio_check">
+                      <input class="form-check-input" [ngClass]="proveedorSeleccionado.length == 0 ? 'disabled' : ''" [attr.disabled]="proveedorSeleccionado.length == 0 ? true : null"
+                        [attr.aria-disabled]="proveedorSeleccionado.length == 0 ? true : null" type="checkbox" name="buyProrratea" (click)="proveedorSeleccionado.length > 0 && selectProrrateoCompra(conceptList,$event.target);">
+                    </div>
+                  </td>
+                  <td class="ultimo">
+                    <a class="btn text-bg-success rounded-3" [ngClass]="!selectvalidatexmlArticulos ? 'disabled' : ''" [attr.disabled]="!selectvalidatexmlArticulos ? true : null"
+                      [attr.aria-disabled]="!selectvalidatexmlArticulos ? true : null" (click)="selectvalidatexmlArticulos && descargaPartidaCompra(conceptList);">
+                      <i class="fa-solid fa-plus"></i>
+                    </a>
+                  </td>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td colspan="19" class="text-center py-4">
+                    <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                    <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                      {{'no_rows' | translate}}
+                    </p>
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+            <p-table #conceptCFDIList [value]="dataCFDI_conceptos" [globalFilterFields]="dataCFDIBuscarConcepto" dataKey="id"
+              [resizableColumns]="true" responsiveLayout="stack">
+              <ng-template #caption>
+                <div class="flex">
+                  <p-iconfield iconPosition="left" class="ml-auto">
+                    <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                    <input pInputText type="text" (input)="conceptCFDIList.filterGlobal($event.target.value, 'contains')"
+                      placeholder="{{'bus_car' | translate}}" />
+                  </p-iconfield>
+                </div>
+              </ng-template>
+              <ng-template #header>
+                <tr>
+                  <th class="ultimo"></th>
+                  <th pSortableColumn="Descripcion">Concepto / Descripci&oacute;n&nbsp;<p-sortIcon field="Descripcion" /></th>
+                  <th pSortableColumn="Unidad">Unidad de Medida-SAT&nbsp;<p-sortIcon field="Unidad" /></th>
+                  <th pSortableColumn="ValorUnitario">valor unitario&nbsp;<p-sortIcon field="ValorUnitario" /></th>
+                  <th pSortableColumn="Cantidad">cantidad&nbsp;<p-sortIcon field="Cantidad" /></th>
+                  <th pSortableColumn="Descuento">descuento&nbsp;<p-sortIcon field="Descuento" /></th>
+                  <th pSortableColumn="Importe">subtotal&nbsp;<p-sortIcon field="Importe" /></th>
+                  <th colspan="2" pSortableColumn="TotalRetenciones"><i class="fas fa-hand-holding-usd"></i>&nbsp;retenciones&nbsp;<p-sortIcon field="TotalRetenciones" /></th>
+                  <th colspan="2" pSortableColumn="TotalTraslados"><i class="fa-solid fa-right-left"></i>&nbsp;traslados&nbsp;<p-sortIcon field="TotalTraslados" /></th>
+                  <th pSortableColumn="Subtotal">total&nbsp;<p-sortIcon field="Subtotal" /></th>
+                  <th pSortableColumn="articulo_homologado_serie_numero"><i class="fa-solid fa-layer-group"></i>&nbsp;No. de serie&nbsp;<p-sortIcon field="articulo_homologado_serie_numero" /></th>
+                  <th pSortableColumn="articulo_homologado_lote_numero"><i class="fa-solid fa-boxes-stacked"></i>&nbsp;No. de lote&nbsp;<p-sortIcon field="articulo_homologado_lote_numero" /></th>
+                  <th pSortableColumn="articulo_homologado_pedimento_numero"><i class="fa-solid fa-file-signature"></i>&nbsp;Pedimento aduanal&nbsp;<p-sortIcon field="articulo_homologado_pedimento_numero" /></th>
+                  <th pSortableColumn="articulo_homologado_uso">Uso del producto / servicio (uso interno)&nbsp;<p-sortIcon field="articulo_homologado_uso" /></th>
+                  <th pSortableColumn="articulo_homologado_efecto_fiscal">Uso del producto / servicio (Efecto fiscal)&nbsp;<p-sortIcon field="articulo_homologado_efecto_fiscal" /></th>
+                  <th pSortableColumn="articulo_homologado_info"><i class="fa-solid fa-industry"></i>&nbsp;Activo homologado&nbsp;<p-sortIcon field="articulo_homologado_info" /></th>
+                  <th pSortableColumn="articulo_homologado_prorratea"><i class="fa-solid fa-chart-pie"></i>&nbsp;Participa en prorrateos&nbsp;<p-sortIcon field="articulo_homologado_prorratea" /></th>
+                  <th class="ultimo"></th>
+                </tr>
+              </ng-template>
+              <ng-template #body let-art let-i="rowIndex">
+                <tr>
+                  <td>{{i+1}}</td>
+                  <td class="text_large">
+                    <p class="large_text">{{art.Descripcion}}</p>
+                  </td>
+                  <td style="padding: 5px!important;height: 30px;">{{art.Unidad}}</td>
+                  <td style="padding: 5px!important;height: 30px;">${{art.ValorUnitario}}</td>
+                  <td style="padding: 5px!important;height: 30px;">{{art.Cantidad}}</td>
+                  <td style="padding: 5px!important;height: 30px;">${{art.Descuento}}</td>
+                  <td style="padding: 5px!important;height: 30px;">${{art.Importe}}</td>
+                  <!--Retenciones-->
+                  <td style="padding: 5px!important;height: 30px;">${{art.TotalRetenciones}}</td>
+                  <td class="ultimo">
+                    <a class="btn text-bg-success rounded-3" [ngClass]="art.retenciones.length == 0 ? 'disabled' : ''"
+                      [attr.disabled]="art.retenciones.length == 0 ? true : null"
+                      [attr.aria-disabled]="art.retenciones.length == 0 ? true : null"
+                      (click)="art.retenciones.length > 0 && verPartDownRetenciones(art);">
+                      <!-- descargaDataProvComprasList(prv.token_cat_proveedores,prv-->
+                      <i class="fa-solid" [ngClass]="art.retenciones.length == 0 ? 'fa-ban' : 'fa-check-double'"></i>
+                    </a>
+                    <p-dialog header="Retenciones" class="window_cancelacion" [(visible)]="art.articulo_retenciones_modal" [modal]="true" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }">
+                      <p-table #retModalList [value]="art.retenciones" [globalFilterFields]="['impuesto_relacionado_nombre']"
+                        dataKey="id" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]"
+                        [scrollable]="true">
+                        <ng-template #caption>
+                          <div class="flex">
+                            <p-iconfield iconPosition="left" class="ml-auto">
+                              <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                              <input pInputText type="text" (input)="retModalList.filterGlobal($event.target.value, 'contains')"
+                                placeholder="{{'bus_car' | translate}}" />
+                            </p-iconfield>
+                          </div>
+                        </ng-template>
+                        <ng-template #header>
+                          <tr>
+                            <th>Impuesto</th>
+                          </tr>
+                        </ng-template>
+                        <ng-template #body let-ret>
+                          <tr>
+                            <td>{{ret.impuesto_relacionado_nombre}}</td>
+                          </tr>
+                        </ng-template>
+                        <ng-template pTemplate="emptymessage">
+                          <tr>
+                            <td class="text-center py-4">
+                              <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                              <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                {{'no_rows' | translate}}
+                              </p>
+                            </td>
+                          </tr>
+                        </ng-template>
+                      </p-table>
+                    </p-dialog>
+                  </td>
+                  <!--Traslados-->
+                  <td style="padding: 5px!important;height: 30px;">${{art.TotalTraslados}}</td>
+                  <td class="ultimo">
+                    <a class="btn text-bg-success rounded-3" [ngClass]="art.traslados.length == 0 ? 'disabled' : ''"
+                      [attr.disabled]="art.traslados.length == 0 ? true : null"
+                      [attr.aria-disabled]="art.traslados.length == 0 ? true : null"
+                      (click)="art.traslados.length > 0 && verPartDownTraslados(art);"><!-- descargaDataProvComprasList(prv.token_cat_proveedores,prv-->
+                      <i class="fa-solid" [ngClass]="art.traslados.length == 0 ? 'fa-ban' : 'fa-check-double'"></i>
+                    </a>
+                    <p-dialog header="Traslados" class="window_cancelacion" [(visible)]="art.articulo_traslados_modal" [modal]="true" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }">
+                      <p-table #trasModalList [value]="art.traslados" [globalFilterFields]="['impuesto_relacionado_nombre']" dataKey="id" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]" [scrollable]="true">
+                        <ng-template #caption>
+                          <div class="flex">
+                            <p-iconfield iconPosition="left" class="ml-auto">
+                              <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                              <input pInputText type="text" (input)="trasModalList.filterGlobal($event.target.value, 'contains')"
+                                placeholder="{{'bus_car' | translate}}" />
+                            </p-iconfield>
+                          </div>
+                        </ng-template>
+                        <ng-template #header>
+                          <tr>
+                            <th>Impuesto</th>
+                          </tr>
+                        </ng-template>
+                        <ng-template #body let-tras>
+                          <tr>
+                            <td>{{tras.impuesto_relacionado_nombre}}</td>
+                          </tr>
+                        </ng-template>
+                        <ng-template pTemplate="emptymessage">
+                          <tr>
+                            <td class="text-center py-4">
+                              <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                              <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                {{'no_rows' | translate}}
+                              </p>
+                            </td>
+                          </tr>
+                        </ng-template>
+                      </p-table>
+                    </p-dialog>
+                  </td>
+                  <td style="padding: 5px!important;height: 30px;">${{art.Subtotal}}</td>
+                  <td>{{art.articulo_homologado_serie_numero != "" ? art.articulo_homologado_serie_numero : 'N/A'}}</td>
+                  <td>{{art.articulo_homologado_lote_numero != "" ? art.articulo_homologado_lote_numero : 'N/A'}}</td>
+                  <td>{{art.articulo_homologado_pedimento_numero != "" ? art.articulo_homologado_pedimento_numero : 'N/A'}}</td>
+                  <!--Uso del producto / servicio-->
+                  <td>
+                    <div>
+                      @switch (art.articulo_homologado_uso) {
+                        @case ('gasto') {
+                          <span>Gasto general</span>
+                        }
+                        @case ('activo_fijo') {
+                          <span>Activo fijo</span>
+                        }
+                        @case ('activo_diferido') {
+                          <span>Activo intangible</span>
+                        }
+                        @case ('inventario') {
+                          <span>Inventariable</span>
+                        }
+                        @default {
+                          <span>Desconocido</span>
+                        }
+                      }              
+                    </div>
+                  </td>
+                  <td>
+                    <div>
+                      @switch (art.articulo_homologado_efecto_fiscal) {
+                        @case ('ded_inm_apl_mes') {
+                          <span>Deducciones Inmediata aplicables al mes</span>
+                        }
+                        @case ('ded_pers_anual') {
+                          <span>Deducci&oacute;n Personal (Anual)</span>
+                        }
+                        @case ('ded_inversion') {
+                          <span>Deducci&oacute;n de Inversi&oacute;n</span>
+                        }
+                        @case ('no_deducible') {
+                          <span>No deducible</span>
+                        }                
+                        @default {
+                          <span>Desconocido</span>
+                        }
+                      }
+                    </div>
+                  </td>
+                  <!--Activos-->
+                  <td>{{art.articulo_homologado_info}}</td>
+                  <!--Prorrateos-->
+                  <td>{{art.articulo_homologado_prorratea ? ['yes' | translate] : 'No'}}</td>
+                  <td>
+                    <a class="btn btn_extend text-bg-danger rounded-3" (click)="eliminaPartida(i);">
+                      <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                    </a>
+                  </td>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td colspan="20" class="text-center py-4">
+                    <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                    <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                      {{'no_rows' | translate}}
+                    </p>
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+            <p-table [value]="articulos_nuevo_registro" dataKey="id" [resizableColumns]="true"
+              responsiveLayout="stack"><!--[paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30]" -->
+              <ng-template pTemplate="footer" class="footer_importes">
+                <tr>
+                  <td class="td_importes" colspan="13">
+                    <strong class="row">
+                    <div class="col data_totales_title">Subtotal:</div>
+                    <div class="col data_totales_cant">${{compra_subtotal}}</div>
+                    </strong></td>
+                </tr>
+                <tr>
+                  <td class="td_importes" colspan="13"><strong class="row">
+                      <div class="col data_totales_title">Descuentos:</div>
+                      <div class="col data_totales_cant">${{compra_descuento}}</div>
+                    </strong></td>
+                </tr>
+            
+                <tr>
+                  <td class="td_importes" colspan="13"><strong class="row">
+                      <div class="col data_totales_title">Retenciones:</div>
+                      <div class="col data_totales_cant">${{compra_retenciones}}</div>
+                    </strong></td>
+                </tr>
+                <tr>
+                  <td class="td_importes" colspan="13"><strong class="row">
+                      <div class="col data_totales_title">Traslados:</div>
+                      <div class="col data_totales_cant">${{compra_traslados}}</div>
+                    </strong></td>
+                </tr>
+                <tr>
+                  <td class="td_importes" colspan="13"><strong class="row">
+                      <div class="col data_totales_title">Total:</div>
+                      <div class="col data_totales_cant">${{compra_total}}</div>
+                    </strong></td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+        </p-accordion-content>
+      </p-accordion-panel>
+      <p-accordion-panel value="1" [disabled]="accordion_desactivado || !prov_seleccionado_acepta_credito ? true : false">
+        <p-accordion-header>
+          <ng-template #toggleicon let-active="active"><i class="fa-solid" [ngClass]="active ? 'fa-sort-up' : 'fa-sort-down'" style="margin-right: 3px!important;"></i></ng-template>
+          <span class="flex items-center gap-2 w-full">Compra a cr&eacute;dito</span>
+        </p-accordion-header>
+        <p-accordion-content>
+          <div class="col-12" style="padding: 0;padding-left: 5px!important;">
+            <div class="col-12 form-check radio_check">
+              <input class="form-check-input" type="radio" name="compra_a_credito"
+                [checked]="compra_contado_credito == 'contado'" (click)="desicionCreditoContadoCompra('contado');">
+              <label class="form-check-label" for="flexRadioDefault1">Compra de contado</label>
+            </div>
+            <div class="col-12 form-check radio_check">
+              <input class="form-check-input" type="radio" name="compra_a_credito"
+                [checked]="compra_contado_credito == 'credito'" (click)="desicionCreditoContadoCompra('credito');">
+              <label class="form-check-label" for="flexRadioDefault1">Compra a cr&eacute;dito</label>
+            </div>
+            <div class="col-12 col-sm-12 col-md-3 col-lg-3 col-xl-4 col-xxl-4 input-group"
+              [ngClass]="compra_contado_credito == 'contado' ? 'noneView' : ''">
+              <label for="fechaVencimientoCompra" class="activeInput">fecha de vencimiento</label>
+              <input class="validate datepicker" id="fechaVencimientoCompra" name="fechaVencimientoCompra" type="date"
+                (change)="select_fecha_vencimiento($event.target);">
+            </div>
+          </div>
+        </p-accordion-content>
+      </p-accordion-panel>
+      <p-accordion-panel value="2" [disabled]="accordion_desactivado ? true : false">
+        <p-accordion-header>
+          <ng-template #toggleicon let-active="active"><i class="fa-solid" [ngClass]="active ? 'fa-sort-up' : 'fa-sort-down'" style="margin-right: 3px!important;"></i></ng-template>
+          <span class="flex items-center gap-2 w-full">¿El pago se realiza después o antes de recibir el producto o servicio?</span>
+        </p-accordion-header>
+        <p-accordion-content>
+          <div class="col-12">
+            <div class="col-12 row" style="padding: 0;padding-left: 5px!important;margin-bottom: 5px!important;">
+              <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario" style="justify-content: start!important;">
+                <label class="form-check-label" for="flexSwitchCheckReverse">Despues</label>
+                <input class="form-check-input" type="checkbox" (click)="recibeProdAntesDespues($event.target);">
+                <label class="form-check-label" for="flexSwitchCheckReverse">Antes (generar orden de pago)</label>
+              </div>
+              <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9"></div>
+            </div>
+          </div>
+        </p-accordion-content>
+      </p-accordion-panel>
+      <p-accordion-panel value="3" [disabled]="accordion_desactivado ? true : false">
+        <p-accordion-header>
+          <ng-template #toggleicon let-active="active"><i class="fa-solid" [ngClass]="active ? 'fa-sort-up' : 'fa-sort-down'" style="margin-right: 3px!important;"></i></ng-template>
+          <span class="flex items-center gap-2 w-full">Punto de entrega o recepci&oacute;n</span>
+        </p-accordion-header>
+        <p-accordion-content>
+          <div class="col-12">
+            <div class="form-check radio_check" style="line-height: 20px !important;">
+              <input class="form-check-input" type="radio" name="punto_ent_recept" value="proveedor" [checked]="tipoLugarRecepcion == 'proveedor'" (click)="tipoDireccionEntregas($event.target);">
+              <label class="form-check-label" for="punto_ent_recept">Establecimientos del proveedor</label>
+            </div>
+            <div class="form-check radio_check" style="line-height: 20px !important;">
+              <input class="form-check-input" type="radio" name="punto_ent_recept" value="establecimiento" [checked]="tipoLugarRecepcion == 'establecimiento'" (click)="tipoDireccionEntregas($event.target);">
+              <label class="form-check-label" for="punto_ent_recept">Nuestros establecimientos</label>
+            </div>
+            <div class="form-check radio_check" style="line-height: 20px !important;">
+              <input class="form-check-input" type="radio" name="punto_ent_recept" value="noAplica" [checked]="tipoLugarRecepcion == 'noAplica'" (click)="tipoDireccionEntregas($event.target);">
+              <label class="form-check-label" for="punto_ent_recept">No aplica</label>
+            </div>
+          </div>
+
+          @if (tipoLugarRecepcion == 'proveedor' && proveedorSeleccionado.length > 0) {
+            <div class="col-12 row">
+              <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+                <label for="fechaTentativaSalidaCompra" class="activeInput">Fecha tentativa de salida</label>
+                <input class="validate datepicker" id="fechaTentativaSalidaCompra" name="fechaTentativaSalidaCompra" type="date" (change)="select_fecha_tentativa_salida($event.target);">
+              </div>
+              <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-9 col-xxl-9 input-group">
+                <label for="lugar_salida_compra" class="activeInput">Lugar de salida</label>
+                @for (provDir of proveedorSeleccionado; track $index) {
+                  @if (provDir.nationality == 118) {
+                    <p-select [options]="provDir.arrayUbicacion" id="lugar_salida_compra" name="lugar_salida_compra" optionLabel="colonia_main" [filter]="true" filterBy="colonia_main,municipio_main,estado_main,c_postal_main" optionValue="token_direccion"
+                      appendTo="body" [showClear]="true" [placeholder]="'opt_select' | translate" class="w-full md:w-56" (onChange)="selectCompraLugarSalida($event.value);">
+                      <ng-template #selectedItem let-selectedDir>
+                        <div class="flex items-center gap-2"><div>{{selectedDir.colonia_main+" "+selectedDir.municipio_main+" "+selectedDir.estado_main+" "+selectedDir.c_postal_main}}</div></div>
+                      </ng-template>
+                      <ng-template let-dir #item>
+                        <div class="flex items-center gap-2"><div>{{dir.colonia_main+" "+dir.municipio_main+" "+dir.estado_main+" "+dir.c_postal_main}}</div></div>
+                      </ng-template>
+                    </p-select>
+                  } @else {
+                    <p-select [options]="provDir.arrayUbicacion" id="lugar_salida_compra" name="lugar_salida_compra" optionLabel="colonia_main" [filter]="true" filterBy="clase,pais,cod_postalext" optionValue="token_direccion"
+                      appendTo="body" [showClear]="true" [placeholder]="'opt_select' | translate" class="w-full md:w-56" (onChange)="selectCompraLugarSalida($event.value);">
+                      <ng-template #selectedItem let-selectedDir>
+                        <div class="flex items-center gap-2"><div>{{selectedDir.clase+" "+selectedDir.pais+" "+selectedDir.cod_postalext}}</div></div>
+                      </ng-template>
+                      <ng-template let-dir #item>
+                        <div class="flex items-center gap-2"><div>{{dir.clase+" "+dir.pais+" "+dir.cod_postalext}}</div></div>
+                      </ng-template>
+                    </p-select>
+                  }
+                }
+              </div>
+              <p-divider />
+              <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+                <label for="fechaTentativaRecepcionCompra" class="activeInput">Fecha tentativa de recepci&oacute;n</label>
+                <input class="validate datepicker" id="fechaTentativaRecepcionCompra" name="fechaTentativaRecepcionCompra" type="date" (change)="select_fecha_tentativa_recepcion($event.target);">
+              </div>
+              <div class="col-12 input-group">
+                <label for="lugar_recepcion_compra" class="activeInput">Lugar de recepci&oacute;n</label>
+                <div class="col-12 row" style="display: flex;justify-content: start;width: max-content;padding: 0;">
+                  <div class="btn-group lista_botones col" role="group" aria-label="Basic example">
+                    <a class="btn btn_extend text-bg-success rounded-3" style="border-right: 2px white solid;" (click)="recargaEstablecimientos();">
+                      <i class="fa-solid fa-rotate" style="margin-left: 5px;"></i>&nbsp;{{'list_updt' | translate}}
+                    </a>
+                    <a class="btn btn_extend text-bg-success rounded-3" (click)="verEstablecimientoFormRegistro();">
+                      <i class="fa-regular fa-floppy-disk" style="margin-left: 5px;"></i>&nbsp;Registrar establecimiento
+                    </a>
+                  </div>
+                </div>
+                <p-select [options]="arrayEstablecCompras" id="lugar_recepcion_compra" name="lugar_recepcion_compra" optionLabel="colonia_main" [filter]="true" 
+                  filterBy="estab_alias,estab_ubicacion_pais,colonia_main,c_postal_mainmunicipio_main,estado_main,dir_completa,cod_postalext,pais_nombre" optionValue="token_establecimiento"
+                  appendTo="body" [showClear]="true" [placeholder]="'opt_select' | translate" class="w-full md:w-56" (onChange)="selectCompraLugarRecepcion($event.value);">
+                  <ng-template #selectedItem let-selEstab>
+                    <div class="flex items-center gap-2"><div>{{"("+selEstab.estab_alias+") "+(selEstab.estab_ubicacion_pais == 'Mx' ? selEstab.colonia_main+' CP.'+selEstab.c_postal_main+', '+selEstab.municipio_main+', Estado: '+selEstab.estado_main : selEstab.dir_completa+', CP.'+selEstab.cod_postalext+', '+selEstab.pais_nombre)}}</div></div>
+                  </ng-template>
+                  <ng-template let-estab #item>
+                    <div class="flex items-center gap-2"><div>{{"("+estab.estab_alias+") "+(estab.estab_ubicacion_pais == 'Mx' ? estab.colonia_main+' CP.'+estab.c_postal_main+', '+estab.municipio_main+', Estado: '+estab.estado_main : estab.dir_completa+', CP.'+estab.cod_postalext+', '+estab.pais_nombre)}}</div></div>
+                  </ng-template>
+                </p-select>
+              </div>
+            </div>
+          } @else if (tipoLugarRecepcion == 'establecimiento' && arrayEstablecCompras.length > 0) {
+            <div class="col-12 row">
+              <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+                <label for="fechaTentativaSalidaCompra" class="activeInput">Fecha tentativa de salida</label>
+                <input class="validate datepicker" id="fechaTentativaSalidaCompra" name="fechaTentativaSalidaCompra" type="date" (change)="select_fecha_tentativa_salida($event.target);">
+              </div>
+              <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+                <label for="fechaTentativaRecepcionCompra" class="activeInput">Fecha tentativa de recepci&oacute;n</label>
+                <input class="validate datepicker" id="fechaTentativaRecepcionCompra" name="fechaTentativaRecepcionCompra" type="date" (change)="select_fecha_tentativa_recepcion($event.target);">
+              </div>
+              <div class="col-12 input-group">
+                <label for="lugar_recepcion_compra" class="activeInput">Lugar de recepci&oacute;n</label>
+                <div class="col-12 row" style="display: flex;justify-content: start;width: max-content;padding: 0;">
+                  <div class="btn-group lista_botones col" role="group" aria-label="Basic example">
+                    <a class="btn btn_extend text-bg-success rounded-3" style="border-right: 2px white solid;" (click)="recargaEstablecimientos();">
+                      <i class="fa-solid fa-rotate" style="margin-left: 5px;"></i>&nbsp;{{'list_updt' | translate}}
+                    </a>
+                    <a class="btn btn_extend text-bg-success rounded-3" (click)="verEstablecimientoFormRegistro();">
+                      <i class="fa-regular fa-floppy-disk" style="margin-left: 5px;"></i>&nbsp;Registrar establecimiento
+                    </a>
+                  </div>
+                </div>
+                <p-select [options]="arrayEstablecCompras" id="lugar_recepcion_compra" name="lugar_recepcion_compra" optionLabel="colonia_main" [filter]="true" 
+                  filterBy="estab_alias,estab_ubicacion_pais,colonia_main,c_postal_mainmunicipio_main,estado_main,dir_completa,cod_postalext,pais_nombre" optionValue="token_establecimiento"
+                  appendTo="body" [showClear]="true" [placeholder]="'opt_select' | translate" class="w-full md:w-56" (onChange)="selectCompraLugarRecepcion($event.value);">
+                  <ng-template #selectedItem let-selEstab>
+                    <div class="flex items-center gap-2"><div>{{"("+selEstab.estab_alias+") "+(selEstab.estab_ubicacion_pais == 'Mx' ? selEstab.colonia_main+' CP.'+selEstab.c_postal_main+', '+selEstab.municipio_main+', Estado: '+selEstab.estado_main : selEstab.dir_completa+', CP.'+selEstab.cod_postalext+', '+selEstab.pais_nombre)}}</div></div>
+                  </ng-template>
+                  <ng-template let-estab #item>
+                    <div class="flex items-center gap-2"><div>{{"("+estab.estab_alias+") "+(estab.estab_ubicacion_pais == 'Mx' ? estab.colonia_main+' CP.'+estab.c_postal_main+', '+estab.municipio_main+', Estado: '+estab.estado_main : estab.dir_completa+', CP.'+estab.cod_postalext+', '+estab.pais_nombre)}}</div></div>
+                  </ng-template>
+                </p-select>
+              </div>
+            </div>
+          }
+        </p-accordion-content>
+      </p-accordion-panel>
+      <p-accordion-panel value="4" [disabled]="accordion_desactivado || proveedorAnticipoTotal == 0 ? true : false">
+        <p-accordion-header>
+          <ng-template #toggleicon let-active="active"><i class="fa-solid" [ngClass]="active ? 'fa-sort-up' : 'fa-sort-down'" style="margin-right: 3px!important;"></i></ng-template>
+          <span class="flex items-center gap-2 w-full">Anticipo a proveedor</span>
+        </p-accordion-header>
+        <p-accordion-content>
+          <div class="col-12 explain">
+            <h6 class="title">Anticipo total registrado:</h6>
+            <h6 class="content">{{proveedorAnticipoTotalFormat}}</h6>
+          </div>
+      
+          <div class="col-12 row">
+            <div class="col-12 col-sm-12 col-md-12 col-lg-3 col-xl-4 col-xxl-4">
+              <div class="form-check radio_check" style="line-height: 20px !important;">
+                <input class="form-check-input" type="radio" name="buy_aplica_factura" value="buy_aplicar_anticipo_a_proveedor" [checked]="aplica_anticipo_a_proveedor == 'Sí'" (click)="aplicaAnticipoAProveedor($event.target);">
+                <label class="form-check-label" for="punto_ent_recept">Aplica</label>
+              </div>
+              <div class="form-check radio_check" style="line-height: 20px !important;">
+                <input class="form-check-input" type="radio" name="buy_aplica_factura" value="not_aplicar_anticipo_a_proveedor" [checked]="aplica_anticipo_a_proveedor == 'No'" (click)="aplicaAnticipoAProveedor($event.target);">
+                <label class="form-check-label" for="punto_ent_recept">No aplica</label>
+              </div>
+            </div>
+            <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-4 col-xxl-4 input-group" [ngClass]="aplica_anticipo_a_proveedor != 'Sí' ? 'noneView' : ''">
+              <label for="compraAnticipoAplicado" class="activeInput">Anticipo aplicado:</label>
+              <input class="validate datepicker" id="compraAnticipoAplicado" name="compraAnticipoAplicado" type="number" (keyup)="redacta_anticipo_aplicado($event.target);">
+            </div>
+            <div class="col-12 col-sm-12 col-md-12 col-lg-3 col-xl-4 col-xxl-4 explain" [ngClass]="aplica_anticipo_a_proveedor != 'Sí' ? 'noneView' : ''" style="margin: 0;justify-content: flex-end;padding: 10px;">
+              <h6 class="title">Anticipo restante:</h6>
+              <h6 class="content">{{proveedorAnticipoRestanteFormat}}</h6>
+            </div>
+          </div>
+        </p-accordion-content>
+      </p-accordion-panel>
+      <p-accordion-panel value="5" [disabled]="accordion_desactivado ? true : false">
+        <p-accordion-header>
+          <ng-template #toggleicon let-active="active"><i class="fa-solid" [ngClass]="active ? 'fa-sort-up' : 'fa-sort-down'" style="margin-right: 3px!important;"></i></ng-template>
+          <span class="flex items-center gap-2 w-full">Recepci&oacute;n de facturas</span>
+        </p-accordion-header>
+        <p-accordion-content>
+          <div class="col-12">
+            <div class="col-12 row">
+              <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3">
+                <div class="form-check radio_check" style="line-height: 20px !important;">
+                  <input class="form-check-input" type="radio" name="buy_aplica_factura" value="buy_aplicar_factura" [checked]="aplica_recepcion_facturas == 'Sí'" (click)="aplicarFacturasCompra($event.target);">
+                  <label class="form-check-label" for="punto_ent_recept">Aplica</label>
+                </div>
+                <div class="form-check radio_check" style="line-height: 20px !important;">
+                  <input class="form-check-input" type="radio" name="buy_aplica_factura" value="not_aplicar_factura" [checked]="aplica_recepcion_facturas == 'No'" (click)="aplicarFacturasCompra($event.target);">
+                  <label class="form-check-label" for="punto_ent_recept">No aplica</label>
+                </div>
+              </div>
+              <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9"></div>
+            </div>
+          </div>
+        </p-accordion-content>
+      </p-accordion-panel>
+    </p-accordion>
+  </div>
+  
+  <div class="col-12 input-group" style="margin-bottom: 10px!important;">
+    <label class="activeInput">{{'observ' | translate}}</label>
+    <textarea id="compraPRODS_large_observ" class="validate" (keyup)="keyupObservacionesCompra($event.target);"></textarea>
+  </div>
+  
+  <div class="col-12 field_file_drop">
+    <ngx-file-drop dropZoneLabel="Drop files here" (onFileDrop)="droppedCompra($event)" (onFileOver)="fileOverCompra($event)" (onFileLeave)="fileLeaveCompra($event)">
+      <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
+        <a class="btn btn_load_file" type="button" style="color: #0782d0 !important;" (click)="openFileSelector()">
+          {{'load_files' | translate}} / {{'browse_files' | translate}}
+        </a>
+      </ng-template>
+    </ngx-file-drop>
+  
+    <p-table #docsList [value]="anexosCompraFiles" [globalFilterFields]="['relativePath']" dataKey="id" [resizableColumns]="true" responsiveLayout="stack">
+      <ng-template #caption>
+        <div class="flex">
+          <p-iconfield iconPosition="left" class="ml-auto">
+            <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+            <input pInputText type="text" (input)="docsList.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+          </p-iconfield>
+        </div>
+      </ng-template>
+      <ng-template #header>
+        <tr>
+          <th>{{'file' | translate}}</th>
+          <th class="ultimo"></th>
+        </tr>
+      </ng-template>
+      <ng-template #body let-item let-rowIndex="rowIndex">
+        <tr>
+          <td><strong>{{ item.relativePath }}</strong></td>
+          <td class="ultimo">
+            <a class="btn btn_extend text-bg-danger rounded-3" (click)="deleteAnexosCompra(rowIndex);">
+              <i class="fa-solid fa-xmark"></i>
+            </a>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="2" class="text-center py-4">
+            <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+            <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+              {{'no_rows' | translate}}
+            </p>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+  
+  <div class="col-12 row" style="margin-top: 5px!important;">
+    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6"></div>
+  </div>
+
+  <div class="col-12" style="display: flex !important;justify-content: end!important;padding: 0!important;margin-top: 5px!important; ">
+    <a class="btn btn_extend text-bg-success rounded-3" [ngClass]="!habilitaBtnRegistro ? 'disabled' : ''"
+      [attr.disabled]="!habilitaBtnRegistro ? true : null" [attr.aria-disabled]="!habilitaBtnRegistro ? true : null"
+      name="btnAltaCompra3" style="margin-right: 3px!important;"
+      (click)="habilitaBtnRegistro && validateRegistraCompraCFDI('pagar');">
+      <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam_pay' | translate}}
+    </a>
+
+    <a class="btn btn_extend text-bg-success rounded-3" [ngClass]="!habilitaBtnRegistro ? 'disabled' : ''"
+      [attr.disabled]="!habilitaBtnRegistro ? true : null" [attr.aria-disabled]="!habilitaBtnRegistro ? true : null"
+      name="btnAltaCompra2" style="margin-right: 3px!important;"
+      (click)="habilitaBtnRegistro && validateRegistraCompraCFDI('listado');">
+      <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam_purchase_list' | translate}}
+    </a>
+
+    <a class="btn btn_extend text-bg-success rounded-3" [ngClass]="!habilitaBtnRegistro ? 'disabled' : ''"
+      [attr.disabled]="!habilitaBtnRegistro ? true : null" [attr.aria-disabled]="!habilitaBtnRegistro ? true : null"
+      name="btnAltaCompra1" (click)="habilitaBtnRegistro && validateRegistraCompraCFDI('registrando');">
+      <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam_continue_registering' | translate}}
+    </a>
+  </div>
+}
+
+<p-dialog header="Confirmaci&oacute;n de pago de ordenes" [(visible)]="compra_proceso_pago" [attr.position]="'bottom'" [modal]="true" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  <div class="col-12 row">
+    <app_orden_pago_para_compras></app_orden_pago_para_compras>
+  </div>
+</p-dialog>
+
+<p-dialog header="Registro de establecimientos para compras" [(visible)]="compra_establecimientos_registro_modal" [attr.position]="'bottom'" [modal]="true" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  <app-registro-establecimiento class="row"></app-registro-establecimiento>
+</p-dialog>

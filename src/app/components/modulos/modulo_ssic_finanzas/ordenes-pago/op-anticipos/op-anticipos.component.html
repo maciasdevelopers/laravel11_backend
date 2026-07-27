@@ -1,0 +1,608 @@
+<div class="col-12">
+  <div class="btn-group lista_botones col" role="group" aria-label="Basic example">
+    <a class="btn btn_extend bg-indigo-600" (click)="open_window_anticipos_autorizar();"><i class="fa-solid fa-plus"></i>&nbsp;Solicitudes para autorizar</a>
+  </div>
+</div>
+
+<p-table #antListCatGral [value]="anticipos_cat_autorizados" showGridlines [resizableColumns]="true" [paginator]="true"
+  [rows]="10" [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]" [globalFilterFields]="search_anticipos_list">
+  <ng-template #caption>
+    <div class="flex" style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;" ngbDropdown>
+      <a class="btn btn_extend" [ngClass]="indicadorAnticiposAutorizados == 'hoy' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_anticipos_catalogo_autorizados('hoy');">
+        <i class="fa-solid fa-calendar-days"></i>&nbsp;Hoy
+      </a>
+      <a class="btn btn_extend" [ngClass]="indicadorAnticiposAutorizados == 'esta_semana' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_anticipos_catalogo_autorizados('esta_semana');">
+        <i class="fa-solid fa-calendar-days"></i>&nbsp;Esta semana
+      </a>
+      <a class="btn btn_extend" [ngClass]="indicadorAnticiposAutorizados == 'este_mes' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_anticipos_catalogo_autorizados('este_mes');">
+        <i class="fa-solid fa-calendar-days"></i>&nbsp;Este mes
+      </a>
+      <a class="btn btn_extend" [ngClass]="indicadorAnticiposAutorizados == 'mes_anterior' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_anticipos_catalogo_autorizados('mes_anterior');">
+        <i class="fa-solid fa-arrow-left"></i>&nbsp;mes anterior
+      </a>
+      <a id="menuDropAnticipos" class="btn btn_extend" [ngClass]="indicadorAnticiposAutorizados == 'otras_fechas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" ngbDropdownToggle>
+        <i class="fa-solid fa-list-ul"></i>&nbsp;otras fechas
+      </a>
+      <div class="dropdown-menu-end menu-despegable" ngbDropdownMenu="menuDropAnticipos" style="padding: 0!important; margin: 0!important; width: max-content!important; max-height: 400px; overflow-y: auto;">
+        <div class="col-12 input-group">
+          <label for="pag_anticipos_otras_fechas" class="activeInput">Periodo de fechas</label>
+          <p-datepicker id="pag_anticipos_otras_fechas" name="pag_anticipos_otras_fechas" [(ngModel)]="rangoPeriodoAnticiposAutorizados" appendTo="body" dateFormat="dd/mm/yy"
+            placeholder="dd/mm/aaaa" selectionMode="range" (onSelect)="ver_anticipos_catalogo_autorizados('otras_fechas')" />
+        </div>
+      </div>
+      <a class="btn btn_extend" [ngClass]="indicadorAnticiposAutorizados == 'all_partidas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_anticipos_catalogo_autorizados('all_partidas');">
+        <i class="fa-solid fa-list-ul"></i>&nbsp;todos los registros
+      </a>
+      <a class="btn btn_extend bg-green-600 descarga_lista_excel" style="height: 25px !important;"><!-- (click)="descarga_excel_lgeneral();"-->
+        descargar&nbsp;<i class="fa-solid fa-file-excel"></i>
+      </a>
+      <p-iconfield iconPosition="left" class="ml-auto">
+        <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+        <input pInputText type="text" (input)="antListCatGral.filterGlobal($event.target.value, 'contains')"
+          placeholder="{{'bus_car' | translate}}" />
+      </p-iconfield>
+    </div>
+  </ng-template>
+  <ng-template #header>
+    <tr>
+      <th rowspan="2" class="ultimo"></th>
+      <th pResizableColumn rowspan="2" pSortableColumn="anticipo_folio">folio&nbsp;<p-sortIcon field="anticipo_folio" /></th>
+      <th colspan="3">{{'prov' | translate}}</th>
+      <th pResizableColumn rowspan="2" pSortableColumn="anticipo_fecha_contabilizacion">{{'fecha_cont' | translate}}&nbsp;<p-sortIcon field="anticipo_fecha_contabilizacion" /></th>
+      <th pResizableColumn rowspan="2" pSortableColumn="anticipo_forma_pago">{{'f_pago' | translate}}&nbsp;<p-sortIcon field="anticipo_forma_pago" /></th>
+      <th pResizableColumn rowspan="2" pSortableColumn="anticipo_cantidad_anticipo_format">{{'total_import' | translate}}&nbsp;<p-sortIcon field="anticipo_cantidad_anticipo_format" /></th>
+      <th pResizableColumn rowspan="2" pSortableColumn="anticipo_tipo_cambio_format">{{'mon_tipo_cambio' | translate}}&nbsp;<p-sortIcon field="anticipo_tipo_cambio_format" /></th>
+      <th pResizableColumn rowspan="2" pSortableColumn="anticipo_cantidad_anticipo_real_format">{{'total_import_resultant' | translate}}&nbsp;<p-sortIcon field="anticipo_cantidad_anticipo_real_format" /></th>
+      <th pResizableColumn rowspan="2" pSortableColumn="observaciones">{{'observ' | translate}}&nbsp;<p-sortIcon field="observaciones" /></th>
+      <th rowspan="2" class="ultimo"></th>
+      <th colspan="4">{{'cancel_pay_order' | translate}}</th>
+    </tr>
+    <tr>
+      <th pResizableColumn pSortableColumn="proveedor_folio">folio&nbsp;<p-sortIcon field="proveedor_folio" /></th>
+      <th pResizableColumn pSortableColumn="proveedor_nombre">{{'prov' | translate}} &nbsp;<p-sortIcon field="proveedor_nombre" /></th>
+      <th pResizableColumn pSortableColumn="proveedor_nombre_comercial">{{'comercial_name' | translate}}&nbsp;<p-sortIcon field="proveedor_nombre_comercial" /></th>
+      <!--cancelacion cancel_buy-->
+      <th class="ultimo"></th>
+      <th pSortableColumn="pago_orden_cancel_fecha_cont">fecha de cancelaci&oacute;n&nbsp;<p-sortIcon field="pago_orden_cancel_fecha_cont" /></th>
+      <th pSortableColumn="pago_orden_cancel_user">cancela&nbsp;<p-sortIcon field="pago_orden_cancel_user" /></th>
+      <th pSortableColumn="pago_orden_cancel_comentarios">{{'observ' | translate}}&nbsp;<p-sortIcon field="pago_orden_cancel_comentarios" /></th>
+    </tr>
+  </ng-template>
+  <ng-template #body let-ant>
+    <tr>
+      <td class="ultimo">
+        <a class="btn bg-blue-600" data-bs-toggle="modal" data-bs-target="#windowAnticipoInfo"
+          (click)="anticipo_desglose(ant);">
+          <i class="fa-solid fa-info"></i>
+        </a>
+      </td>
+      <td>{{ant.anticipo_folio}}</td>
+      <td>{{ant.proveedor_folio}}</td>
+      <td class="name">{{ant.proveedor_nombre}}</td>
+      <td class="name">{{ant.proveedor_nombre_comercial}}</td>
+      <td>{{ant.anticipo_fecha_contabilizacion}}</td>
+      <td>{{ant.anticipo_forma_pago}}</td>
+      <td class="td_importes">{{ant.anticipo_cantidad_anticipo_format}}</td>
+      <td class="td_importes">{{ant.anticipo_tipo_cambio_format}}</td>
+      <td class="td_importes">{{ant.anticipo_cantidad_anticipo_real_format}}</td>
+      <td class="name">{{ant.anticipo_observaciones}}</td>
+      <td class="ultimo">
+        @if (ant.ant_cancelado) {
+          <p class="ant_authorizado btn_extend">
+            <i class="fa-solid fa-ban"></i>&nbsp;Anticipo Cancelado
+          </p>
+        } @else {
+          <p class="ant_authorizado btn_extend">
+            <i class="fa-solid fa-check-double"></i>&nbsp;Anticipo Autorizado
+          </p>
+        }
+      </td>
+
+      <td class="ultimo">
+        @if (ant.anticipo_cancelado) {
+          <a class="btn btn_extend bg-gray-700" disabled aria-disabled="true">
+            <i class="fa-solid fa-clock-rotate-left"></i>&nbsp;Anticipo cancelado
+          </a>
+        } @else {
+          <a class="btn btn_extend text-bg-danger rounded-3" (click)="anticipo_solicitar_cancelacion(ant);">
+            <i class="fa-solid fa-clock-rotate-left"></i>&nbsp;Solicitar cancelaci&oacute;n
+          </a>
+        }
+      </td>
+      <td>{{ant.anticipo_cancel_fecha_cont}}</td>
+      <td>{{ant.anticipo_cancel_user}}</td>
+      <td>{{ant.anticipo_cancel_comentarios}}</td>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td colspan="16" class="text-center py-4">
+        <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+        <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+          {{'no_rows' | translate}}
+        </p>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<p-dialog header="Cancelaci&oacute;n de pago {{cancelacion_anticipo_folio}}" class="window_cancelacion" [(visible)]="anticipo_window_cancelacion" [modal]="true" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  @if (viewNewCancelacionForm) {
+    <form class="formCancelPago" #formCancelPago="ngForm" name="formCancelPago" enctype="multipart/form-data" (ngSubmit)="validaRegistroCancelacionAnticipo && anticipo_enviar_solicitud_cancelacion(formCancelPago);">
+      <div class="col-12 input-group">
+        <label class="activeInput" for="cancelPayFechaCont">{{'fecha_cont' | translate}}</label>
+        <input id="cancelPayFechaCont" name="cancelPayFechaCont" type="date" (change)="cancel_fecha_contabilizacion($event.target);">
+      </div>
+      <div class="col-12 input-group" style="margin-bottom: 10px!important;">
+        <label class="activeInput" for="cancelPayObservaciones">{{'observ' | translate}}</label>
+        <textarea id="cancelPayObservaciones" name="cancelPayObservaciones" class="validate" (keyup)="keyupObservacionCancelacion($event.target);"></textarea>
+      </div>
+      <div class="col-12" style="display: flex !important;justify-content: end!important;margin-top: 5px!important;">
+        <button class="btn btn_extend text-bg-success rounded-3" [ngClass]="!validaRegistroCancelacionAnticipo ? 'disabled' : ''" 
+          [attr.disabled]="!validaRegistroCancelacionAnticipo ? true : null" [attr.aria-disabled]="!validaRegistroCancelacionAnticipo ? true : null">
+          <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+        </button>
+      </div>
+    </form>
+  }
+</p-dialog>
+
+<p-dialog header="Anticipos para autorizar" [(visible)]="ver_antitipos_autorizar" [modal]="true" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [style]="{ width: '50vw' }" [draggable]="false" [resizable]="false">
+  <p-table #antListCatGral [value]="anticipos_autorizar_list" showGridlines [resizableColumns]="true" [paginator]="true"
+    [rows]="10" [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]" [globalFilterFields]="[search_anticipos_list]">
+    <ng-template #caption>
+      <div class="flex" style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;" ngbDropdown>
+        <a class="btn btn_extend" [ngClass]="indicadorAutorizarAnticipos == 'hoy' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_anticipos_para_autorizar('hoy');">
+          <i class="fa-solid fa-calendar-days"></i>&nbsp;Hoy
+        </a>
+        <a class="btn btn_extend" [ngClass]="indicadorAutorizarAnticipos == 'esta_semana' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_anticipos_para_autorizar('esta_semana');">
+          <i class="fa-solid fa-calendar-days"></i>&nbsp;Esta semana
+        </a>
+        <a class="btn btn_extend" [ngClass]="indicadorAutorizarAnticipos == 'este_mes' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_anticipos_para_autorizar('este_mes');">
+          <i class="fa-solid fa-calendar-days"></i>&nbsp;Este mes
+        </a>
+        <a class="btn btn_extend" [ngClass]="indicadorAutorizarAnticipos == 'mes_anterior' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_anticipos_para_autorizar('mes_anterior');">
+          <i class="fa-solid fa-arrow-left"></i>&nbsp;mes anterior
+        </a>
+        <a id="menuDropSoliAnticipos" class="btn btn_extend" [ngClass]="indicadorAutorizarAnticipos == 'otras_fechas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" ngbDropdownToggle>
+          <i class="fa-solid fa-list-ul"></i>&nbsp;otras fechas
+        </a>
+        <div class="dropdown-menu-end menu-despegable" ngbDropdownMenu="menuDropSoliAnticipos" style="padding: 0!important; margin: 0!important; width: max-content!important; max-height: 400px; overflow-y: auto;">
+          <div class="col-12 input-group">
+            <label for="pag_soli_anticipos_otras_fechas" class="activeInput">Periodo de fechas</label>
+            <p-datepicker id="pag_soli_anticipos_otras_fechas" name="pag_soli_anticipos_otras_fechas" [(ngModel)]="rangoPeriodoAutorizarAnticipos" appendTo="body" dateFormat="dd/mm/yy"
+              placeholder="dd/mm/aaaa" selectionMode="range" (onSelect)="ver_anticipos_para_autorizar('otras_fechas')" />
+          </div>
+        </div>
+        <a class="btn btn_extend" [ngClass]="indicadorAutorizarAnticipos == 'all_partidas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_anticipos_para_autorizar('all_partidas');">
+          <i class="fa-solid fa-list-ul"></i>&nbsp;todos los registros
+        </a>
+        <a class="btn btn_extend bg-green-600 descarga_lista_excel" style="height: 25px !important;"><!-- (click)="descarga_excel_lgeneral();"-->
+          descargar&nbsp;<i class="fa-solid fa-file-excel"></i>
+        </a>
+        <p-iconfield iconPosition="left" class="ml-auto">
+          <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+          <input pInputText type="text" (input)="antListCatGral.filterGlobal($event.target.value, 'contains')"
+            placeholder="{{'bus_car' | translate}}" />
+        </p-iconfield>
+      </div>
+    </ng-template>
+    <ng-template #header>
+      <tr>
+        <th pResizableColumn rowspan="2" pSortableColumn="folio">folio&nbsp;<p-sortIcon field="folio" /></th>
+        <th colspan="3">{{'prov' | translate}}</th>
+        <th pResizableColumn rowspan="2" pSortableColumn="anticipo_fecha_contabilizacion">{{'fecha_cont' | translate}}&nbsp;<p-sortIcon field="anticipo_fecha_contabilizacion" /></th>
+        <th pResizableColumn rowspan="2" pSortableColumn="anticipo_forma_pago">{{'f_pago' | translate}}&nbsp;<p-sortIcon field="anticipo_forma_pago" /></th>
+        <th pResizableColumn rowspan="2" pSortableColumn="anticipo_cantidad_anticipo_format">{{'total_import' | translate}}&nbsp;<p-sortIcon field="anticipo_cantidad_anticipo_format" /></th>
+        <th pResizableColumn rowspan="2" pSortableColumn="anticipo_tipo_cambio_format">{{'mon_tipo_cambio' | translate}}&nbsp;<p-sortIcon field="anticipo_tipo_cambio_format" /></th>
+        <th pResizableColumn rowspan="2" pSortableColumn="anticipo_cantidad_anticipo_real_format">{{'total_import_resultant' | translate}}&nbsp;<p-sortIcon field="anticipo_cantidad_anticipo_real_format" /></th>
+        <th pResizableColumn rowspan="2" pSortableColumn="observaciones">{{'observ' | translate}}&nbsp;<p-sortIcon field="observaciones" /></th>
+        <th rowspan="2" class="ultimo"></th>
+      </tr>
+      <tr>
+        <th pResizableColumn pSortableColumn="proveedor_folio">folio&nbsp;<p-sortIcon field="proveedor_folio" /></th>
+        <th pResizableColumn pSortableColumn="proveedor_nombre">{{'prov' | translate}} &nbsp;<p-sortIcon field="proveedor_nombre" /></th>
+        <th pResizableColumn pSortableColumn="proveedor_nombre_comercial">{{'comercial_name' | translate}}
+          &nbsp;<p-sortIcon field="proveedor_nombre_comercial" /></th>
+      </tr>
+    </ng-template>
+    <ng-template #body let-ant>
+      <tr>
+        <td>{{ant.anticipo_folio}}</td>
+        <td>{{ant.proveedor_folio}}</td>
+        <td class="name">{{ant.proveedor_nombre}}</td>
+        <td class="name">{{ant.proveedor_nombre_comercial}}</td>
+        <td>{{ant.anticipo_fecha_contabilizacion}}</td>
+        <td>{{ant.anticipo_forma_pago}}</td>
+        <td class="td_importes">{{ant.anticipo_cantidad_anticipo_format}}</td>
+        <td class="td_importes">{{ant.anticipo_tipo_cambio_format}}</td>
+        <td class="td_importes">{{ant.anticipo_cantidad_anticipo_real_format}}</td>
+        <td class="name">{{ant.anticipo_observaciones}}</td>
+        <td class="ultimo">
+          <a class="btn btn_extend text-bg-success rounded-3" [attr.disabled]="ant.ant_cancelado ? true : null" 
+            [attr.aria-disabled]="ant.ant_cancelado ? true : null" (click)="!ant.ant_cancelado && anticipo_autorizacion_ventana(ant);">
+            <i class="fa-solid fa-file-shield"></i>&nbsp;Autorizar anticipo
+          </a>
+          <p-dialog header="Autorizar anticipo {{ant.anticipo_folio}}" [(visible)]="ant.visible_for_autorizar" [modal]="true" 
+            [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [style]="{ width: '50vw' }" [draggable]="false" [resizable]="false">
+            <div class="col-12 row">
+              <form class="formAddPagoAcreedor" #formAddPagoAcreedor="ngForm" autocomplete="off" name="formAddPagoAcreedor" enctype="multipart/form-data" (ngSubmit)="anticipo_autorizacion_validate(ant) && anticipo_autorizar(ant);">
+                <div class="col-12 row" style="margin: 0!important;">
+                  <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-2 col-xxl-2 input-group">
+                    <label class="activeInput">{{'fecha_cont' | translate}}</label>
+                    <input class="validate datepicker" id="fechaContabilizacionACRPago" name="fechaContabilizacionCompra" type="date" (change)="anticipo_autorizacion_fecha_contab(ant,$event.target);">
+                  </div>
+                  <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-2 col-xxl-2 input-group">
+                    <label for="fechaAltaProd" class="activeInput">{{'mon_name' | translate}}</label>
+                    <p-select [options]="catalogo_monedas_api" id="selectedAntMonedaCode" optionLabel="_filtro_busqueda" [filter]="true" filterBy="_filtro_busqueda" [showClear]="true"
+                      [placeholder]="'opt_select' | translate" class="w-full md:w-56" (onChange)="anticipo_autorizacion_moneda(ant,$event.value);">
+                      <ng-template #selectedItem let-selectedOption>
+                        <div class="flex items-center gap-2">
+                          <div>{{selectedOption.code+" "+selectedOption.langEN}}</div>
+                        </div>
+                      </ng-template>
+                      <ng-template let-mon #item>
+                        <div class="flex items-center gap-2">
+                          <div>{{mon.code+" "+mon.langEN}}</div>
+                        </div>
+                      </ng-template>
+                    </p-select>
+                  </div>
+                  <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-2 col-xxl-2 input-group">
+                    <label class="activeInput">{{'total_import' | translate}}</label>
+                    <input class="validate" type="number" min="1" max="100000000000000" (keyup)="anticipo_autorizacion_importe(ant,$event.target);">
+                  </div>
+                  <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-2 col-xxl-2 input-group">
+                    <label class="activeInput">{{'mon_tipo_cambio' | translate}}</label>
+                    <input class="validate" [ngClass]="ant.anticipo_procesos_moneda == 'MXN' ? 'disabled' : ''" [attr.disabled]="ant.anticipo_procesos_moneda == 'MXN' ? true : null"
+                      [attr.aria-disabled]="ant.anticipo_procesos_moneda == 'MXN' ? true : null" [attr.value]="ant.anticipo_procesos_moneda == 'MXN' ? '1.00' : ''" id="pagos_acr_tipo_cambio"
+                      type="number" min="1" max="100000000000000" (keyup)="anticipo_autorizacion_tipo_cambio(ant,$event.target);">
+                  </div>
+                  <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-2 col-xxl-2 input-group">
+                    <label class="activeInput">{{'total_import_resultant' | translate}}</label>
+                    <input class="validate disabled" disabled="true" aria-disabled="true" type="text" [attr.value]="ant.anticipo_procesos_importe_resultante_string">
+                  </div>
+                  <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-2 col-xxl-2 input-group">
+                    <label for="fechaAltaProd" class="activeInput">{{'f_pago' | translate}}</label>
+                    <select id="pagos_acr_forma_pago" class="browser-default" [ngClass]="ant.anticipo_procesos_moneda == '' ? 'disabled' : ''" [attr.disabled]="ant.anticipo_procesos_moneda == '' ? true : null"
+                      [attr.aria-disabled]="ant.anticipo_procesos_moneda == '' ? true : null" (change)="ant.anticipo_procesos_moneda != '' && anticipo_autorizacion_forma_pago(ant,$event.target);">
+                      <option value="" disabled selected>{{'bus_car_por' | translate}}</option>
+                      @if (listaCajasRegistradas.length > 0) {<option value="por-caja">por caja</option>}
+                      @if (listaCuentasBancarias.length > 0) {<option value="por-cuenta-bancaria">por cuenta bancaria</option>}
+                      @if (listaCuentasMonederoElectronico.length > 0) {<option value="por-monedero-electronico">por monedero electr&oacute;nico</option>}
+                    </select>
+                  </div>
+                  
+                  @switch (ant.anticipo_procesos_f_pago) {
+                    @case ('por-caja') {
+                      <div class="col-12" style="margin-top: 5px!important;">
+                        <div class="buscador row" style="margin-top: 10px!important">
+                          <div class="content">
+                            <div class="col-12 col-sm-6 col-md-3 col-lg-2 row_buscador btn-group lista_botones col"
+                              role="group" aria-label="ejemplo">
+                              <a class="btn btn_extend bg-indigo-600" (click)="getCajasRegistradas();">
+                                <i class="fa-solid fa-rotate" style="margin-left: 5px;"></i>&nbsp;{{'list_updt' | translate}}
+                              </a>
+                            </div>
+                          </div>
+                        </div>
+                        <p-table #antCajasLista [value]="listaCajasRegistradas"
+                          [globalFilterFields]="search_cajas_registradas" dataKey="id" showGridlines [resizableColumns]="true"
+                          [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]">
+                          <ng-template #caption>
+                            <div class="flex">
+                              <p-iconfield iconPosition="left" class="ml-auto">
+                                <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                                <input pInputText type="text"
+                                  (input)="antCajasLista.filterGlobal($event.target.value, 'contains')"
+                                  placeholder="{{'bus_car' | translate}}" />
+                              </p-iconfield>
+                            </div>
+                          </ng-template>
+                          <ng-template #header>
+                            <tr>
+                              <th class="ultimo"></th>
+                              <th pResizableColumn pSortableColumn="caja_folio">Caja&nbsp;<p-sortIcon field="caja_folio" /></th>
+                              <th pResizableColumn pSortableColumn="establecimiento">Establecimiento&nbsp;<p-sortIcon field="establecimiento" /></th>
+                              <th pResizableColumn pSortableColumn="salDoCaja">Saldo&nbsp;<p-sortIcon field="salDoCaja" /></th>
+                              <th style="width: 200px!important;">Monto a aplicar</th>
+                            </tr>
+                          </ng-template>
+                          <ng-template #body let-caj>
+                            <tr>
+                              <td>
+                                <div class="form-check radio_check">
+                                  <input class="form-check-input" type="checkbox" name="caja_select" [checked]="caj.select_for_pagos"
+                                    (click)="select_anticipo_autorizacion_caja(ant,$event.target,caj.token_caja);">
+                                </div>
+                              </td>
+                              <td>{{caj.caja_folio+" "+caj.caja_alias}}</td>
+                              <td>{{caj.establecimiento}}</td>
+                              <td class="td_importes">{{caj.salDoCaja}}</td>
+                              <td>
+                                @if (caj.select_for_pagos) {
+                                  <input class="validate" name="monto_aplicar" type="number" (input)="anticipo_autorizacion_importe_by_caja($event.target,caj.token_caja);" [max]="caj.saldofloat" min="0" step="0.01" placeholder="Monto a aplicar" />
+                                } @else {
+                                  ---
+                                }
+                              </td>
+                            </tr>
+                          </ng-template>
+                          <ng-template pTemplate="emptymessage">
+                            <tr>
+                              <td colspan="5" class="text-center py-4">
+                                <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                                <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                  {{'no_rows' | translate}}
+                                </p>
+                              </td>
+                            </tr>
+                          </ng-template>
+                        </p-table>
+                      </div>
+                    }
+                    @case ('por-cuenta-bancaria') {
+                      <div class="col-12" style="margin-top: 5px!important;">
+                        <div class="buscador row" style="margin-top: 10px!important">
+                          <div class="content">
+                            <div class="col-12 col-sm-6 col-md-3 col-lg-2 row_buscador btn-group lista_botones col" role="group"
+                              aria-label="ejemplo">
+                              <a class="btn btn_extend bg-indigo-600" (click)="getCuentasBancarias();">
+                                <i class="fa-solid fa-rotate" style="margin-left: 5px;"></i>&nbsp;{{'list_updt' | translate}}
+                              </a>
+                            </div>
+                          </div>
+                        </div>
+                        <p-table #antCuentasBancarias [value]="listaCuentasBancarias" [globalFilterFields]="search_cuentas_bancarias"
+                          dataKey="id" showGridlines [resizableColumns]="true" [paginator]="true" [rows]="10"
+                          [rowsPerPageOptions]="[10,20,30,50,100]">
+                          <ng-template #caption>
+                            <div class="flex">
+                              <p-iconfield iconPosition="left" class="ml-auto">
+                                <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                                <input pInputText type="text" (input)="antCuentasBancarias.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+                              </p-iconfield>
+                            </div>
+                          </ng-template>
+                          <ng-template #header>
+                            <tr>
+                              <th class="ultimo"></th>
+                              <th pResizableColumn pSortableColumn="folio_cuenta">folio&nbsp;<p-sortIcon field="folio_cuenta" /></th>
+                              <th pResizableColumn pSortableColumn="banco_nombre_comercial">banco&nbsp;<p-sortIcon field="banco_nombre_comercial" /></th>
+                              <th class="ultimo" pResizableColumn pSortableColumn="cuenta_bancaria">cuenta&nbsp;<p-sortIcon field="cuenta_bancaria" /></th>
+                              <th pResizableColumn pSortableColumn="saldo_cuenta_format">Saldo&nbsp;<p-sortIcon field="saldo_cuenta_format" /></th>
+                              <th style="width: 200px!important;">Monto a aplicar</th>
+                            </tr>
+                          </ng-template>
+                          <ng-template #body let-cuent>
+                            <tr>
+                              <td>
+                                <div class="form-check radio_check">
+                                  <input class="form-check-input" type="checkbox" name="cuenta_bancaria_selected"
+                                    [checked]="cuent.select_for_pagos"
+                                    (click)="select_anticipo_autorizacion_cuenta(ant,$event.target,cuent.token_cuenta);">
+                                </div>
+                              </td>
+                              <td>{{cuent.folio_cuenta}}</td>
+                              <td>{{cuent.banco_clave+' '+cuent.banco_nombre_comercial}}</td>
+                              <td>
+                                <a class="btn btn_extend bg-blue-600" (click)="functCuentaNumber(cuent.token_cuenta);">
+                                  {{cuent.cuenta_bancaria}}&nbsp;<i class="fa-solid" [ngClass]="cuent.cuenta_view ? 'fa-user-clock' : 'fa-eye'"></i>&nbsp;{{cuent.cuenta_view ? " "+cuent.cuenta_time : ""}}
+                                </a>
+                              </td>
+                              <td class="td_importes">{{cuent.saldo_cuenta_format}}</td>
+                              <td>
+                                @if (cuent.select_for_pagos) {
+                                  <input class="validate" name="monto_aplicar" type="number" (input)="acree_importe_by_cuenta($event.target,cuent.token_cuenta);" [max]="cuent.saldo_cuenta" min="0" step="0.01" placeholder="Monto a aplicar" />
+                                } @else {
+                                  ---
+                                }
+                              </td>
+                            </tr>
+                          </ng-template>
+                          <ng-template pTemplate="emptymessage">
+                            <tr>
+                              <td colspan="6" class="text-center py-4">
+                                <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                                <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                  {{'no_rows' | translate}}
+                                </p>
+                              </td>
+                            </tr>
+                          </ng-template>
+                        </p-table>
+                      </div>
+                    }
+                    @case ('por-monedero-electronico') {
+                      <div class="col-12" style="margin-top: 5px!important;">
+                        <div class="buscador row" style="margin-top: 10px!important">
+                          <div class="content">
+                            <div class="col-12 col-sm-6 col-md-3 col-lg-2 row_buscador btn-group lista_botones col" role="group"
+                              aria-label="ejemplo">
+                              <a class="btn btn_extend bg-indigo-600" (click)="getMonederosElectronicos();">
+                                <i class="fa-solid fa-rotate" style="margin-left: 5px;"></i>&nbsp;{{'list_updt' | translate}}
+                              </a>
+                            </div>
+                          </div>
+                        </div>
+                        <p-table #antCuentasMonElect [value]="listaCuentasMonederoElectronico"
+                          [globalFilterFields]="search_cuentas_monedero_electronico" dataKey="id" showGridlines [resizableColumns]="true"
+                          [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]">
+                          <ng-template #caption>
+                            <div class="flex">
+                              <p-iconfield iconPosition="left" class="ml-auto">
+                                <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                                <input pInputText type="text" (input)="antCuentasMonElect.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+                              </p-iconfield>
+                            </div>
+                          </ng-template>
+                          <ng-template #header>
+                            <tr>
+                              <th class="ultimo"></th>
+                              <th pResizableColumn pSortableColumn="folio_cuenta">Folio&nbsp;<p-sortIcon field="folio_cuenta" /></th>
+                              <th pResizableColumn pSortableColumn="monedero">Monedero&nbsp;<p-sortIcon field="monedero" /></th>
+                              <th pResizableColumn pSortableColumn="cuenta_frontend">Cuenta&nbsp;<p-sortIcon field="cuenta_frontend" /></th>
+                              <th pResizableColumn pSortableColumn="saldo_cuenta_format">Saldo&nbsp;<p-sortIcon field="saldo_cuenta_format" /></th>
+                              <th style="width: 200px!important;">Monto a aplicar</th>
+                            </tr>
+                          </ng-template>
+                          <ng-template #body let-monElect>
+                            <tr>
+                              <td>
+                                <div class="form-check radio_check">
+                                  <input class="form-check-input" type="checkbox" name="cuenta_bancaria_selected"
+                                    [checked]="monElect.select_for_pagos"
+                                    (click)="select_anticipo_autorizacion_electronico(ant,$event.target,monElect.token_cuentaMon);">
+                                </div>
+                              </td>
+                              <td>{{monElect.folio_cuenta}}</td>
+                              <td>{{monElect.monedero}}</td>
+                              <td>{{monElect.cuenta_frontend}}</td>
+                              <td class="td_importes">{{monElect.saldo_cuenta_format}}</td>
+                              <td>
+                                @if (monElect.select_for_pagos) {
+                                  <input class="validate" name="monto_aplicar" type="number" (input)="acree_importe_by_monedero($event.target,monElect.token_cuentaMon);" [max]="monElect.monto_real" min="0" step="0.01" placeholder="Monto a aplicar" />
+                                } @else{
+                                  ---
+                                }
+                              </td>
+                            </tr>
+                          </ng-template>
+                          <ng-template pTemplate="emptymessage">
+                            <tr>
+                              <td colspan="6" class="text-center py-4">
+                                <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                                <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                  {{'no_rows' | translate}}
+                                </p>
+                              </td>
+                            </tr>
+                          </ng-template>
+                        </p-table>
+                      </div>
+                    }
+                    @default {
+                      <p>{{'opt_select' | translate}}</p>
+                    }
+                  }
+                  
+                  <div class="col-12" style="margin-top: 5px!important;">
+                    <p-table [value]="info_anticipo_auth" [tableStyle]="{ 'min-width': '50rem' }">
+                      <ng-template #header>
+                        <tr>
+                          <th pSortableColumn="folio">folio&nbsp;<p-sortIcon field="folio" /></th>
+                          <th pSortableColumn="anticipo_fecha_contabilizacion">{{'fecha_cont' | translate}}&nbsp;<p-sortIcon field="anticipo_fecha_contabilizacion" /></th>
+                          <th pSortableColumn="anticipo_forma_pago">{{'f_pago' | translate}}&nbsp;<p-sortIcon field="anticipo_forma_pago" /></th>
+                          <th pSortableColumn="anticipo_cantidad_anticipo_format">{{'total_import' | translate}}&nbsp;<p-sortIcon field="anticipo_cantidad_anticipo_format" /></th>
+                          <th pSortableColumn="anticipo_tipo_cambio_format">{{'mon_tipo_cambio' | translate}}&nbsp;<p-sortIcon field="anticipo_tipo_cambio_format" /></th>
+                          <th pSortableColumn="anticipo_cantidad_anticipo_real_format">{{'total_import_resultant' | translate}}&nbsp;<p-sortIcon field="anticipo_cantidad_anticipo_real_format" /></th>
+                        </tr>
+                      </ng-template>
+                      <ng-template #body let-ant>
+                        <tr>
+                          <td>{{ant.anticipo_folio}}</td>
+                          <td>{{ant.anticipo_fecha_contabilizacion}}</td>
+                          <td>{{ant.anticipo_forma_pago}}</td>
+                          <td class="td_importes">{{ant.anticipo_cantidad_anticipo_format}}</td>
+                          <td class="td_importes">{{ant.anticipo_tipo_cambio_format}}</td>
+                          <td class="td_importes">{{ant.anticipo_cantidad_anticipo_real_format}}</td>
+                        </tr>
+                      </ng-template>
+                      <ng-template pTemplate="emptymessage">
+                        <tr>
+                          <td colspan="6" class="text-center py-4">
+                            <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                            <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                              {{'no_rows' | translate}}
+                            </p>
+                          </td>
+                        </tr>
+                      </ng-template>
+                    </p-table>
+                  </div>
+  
+                  <div class="col-12 input-group">
+                    <label class="activeInput">{{'observ' | translate}}</label>
+                    <textarea id="pago_large_observ" class="validate" (keyup)="anticipo_autorizacion_observacion(ant,$event.target);"></textarea>
+                  </div>
+  
+                  <div class="col-12 field_file_drop">
+                    <ngx-file-drop dropZoneLabel="Drop files here" (onFileDrop)="droppedDocsAnticipo($event)" (onFileOver)="fileOverDocsAnticipo($event)" (onFileLeave)="fileLeaveDocsAnticipo($event)">
+                      <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
+                        <a class="btn btn_load_file" type="button" style="color: #0782d0 !important;" (click)="openFileSelector()">
+                          {{'load_files' | translate}} / {{'browse_files' | translate}}
+                        </a>
+                      </ng-template>
+                    </ngx-file-drop>
+                    <p-table #opAnticiposList [value]="filesAnticipo" showGridlines [resizableColumns]="true" [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]"
+                      [globalFilterFields]="['relativePath']">
+                      <ng-template #caption>
+                        <div class="flex">
+                          <p-iconfield iconPosition="left" class="ml-auto">
+                            <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                            <input pInputText type="text" (input)="opAnticiposList.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+                          </p-iconfield>
+                        </div>
+                      </ng-template>
+                      <ng-template #header>
+                        <tr>
+                          <th>{{'file' | translate}}</th>
+                          <th class="ultimo"></th>
+                        </tr>
+                      </ng-template>
+                      <ng-template #body let-item let-posicion="rowIndex">
+                        <tr>
+                          <td><strong>{{ item.relativePath }}</strong></td>
+                          <td class="ultimo">
+                            <a class="btn btn_extend text-bg-danger rounded-3" (click)="deleteAnexosDocsAnticipo(posicion);">
+                              <i class="fa-solid fa-xmark"></i>
+                            </a>
+                          </td>
+                        </tr>
+                      </ng-template>
+                      <ng-template pTemplate="emptymessage">
+                        <tr>
+                          <td colspan="2" class="text-center py-4">
+                            <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                            <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                              {{'no_rows' | translate}}
+                            </p>
+                          </td>
+                        </tr>
+                      </ng-template>
+                    </p-table>
+                  </div>
+                  <div class="col-12" style="display: flex !important;justify-content: end!important;margin-top: 5px!important;">
+                    <button class="btn btn_extend text-bg-success rounded-3"
+                      [ngClass]="!anticipo_autorizacion_validate(ant) ? 'disabled' : ''"
+                      [attr.disabled]="!anticipo_autorizacion_validate(ant) ? true : null"
+                      [attr.aria-disabled]="!anticipo_autorizacion_validate(ant) ? true : null">
+                      <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+                    </button>
+                  </div>
+                </div>
+              </form>
+              <!--<div class="col-12" style="display: flex !important;justify-content: end!important;margin-top: 5px!important;">
+                <a class="btn btn_extend text-bg-success rounded-3" [ngClass]="ant.anticipo_procesos_comentarios == '' ? 'disabled' : ''" 
+                  [attr.disabled]="ant.anticipo_procesos_comentarios == '' ? true : null" [attr.aria-disabled]="ant.anticipo_procesos_comentarios == '' ? true : null" 
+                  (click)="ant.anticipo_procesos_comentarios != '' && anticipo_autorizar(ant.anticipo_uuid);">
+                  <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+                </a>
+              </div>-->
+            </div>
+          </p-dialog>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="11" class="text-center py-4">
+          <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+          <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+            {{'no_rows' | translate}}
+          </p>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</p-dialog>

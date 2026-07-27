@@ -1,0 +1,84 @@
+
+@if (view_form_reg_act_diferido) {
+  <form class="formAddIntangiblesCat" #formAddIntangiblesCat="ngForm" autocomplete="off" name="formAddIntangiblesCat" enctype="multipart/form-data" (ngSubmit)="validateRegistroActivo && registroActivoIntangible(formAddIntangiblesCat);">
+    <div class="col-12 row">
+      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input-group">
+        <label for="new_actd_categoria" class="activeInput">Categoria</label>
+        <input id="new_actd_categoria" name="new_actd_categoria" type="text" class="validate" (keyup)="activoCategoria($event.target);" required>
+      </div>
+      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input-group">
+        <label for="new_actd_cat_ccontable" class="activeInput">Cuenta contable</label>
+        <input id="new_actd_cat_ccontable" name="new_actd_cat_ccontable" type="text" class="validate" (keyup)="catCuentaContable($event.target);" required>
+      </div>
+      <p-divider/>
+      <div class="col-12 explain"><h6 class="title">Amortizaci&oacute;n contable:</h6></div>
+      
+			<div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-2 col-xxl-2 input-group">
+        <label for="new_actd_amortcont_periodo" class="activeInput">Periodo de amortizaci&oacute;n</label>
+        <p-select [options]="amortizacion_periodos" id="new_actd_amortcont_periodo" name="new_actd_amortcont_periodo" optionLabel="valor" [filter]="true" filterBy="valor" optionValue="clave"
+          appendTo="body" [showClear]="true" [placeholder]="'opt_select' | translate" class="w-full md:w-56" (onChange)="amortizacionContablePeriodo($event.value);">
+          <ng-template #selectedItem let-selectedOption>
+            <div class="flex items-center gap-2"><div>{{selectedOption.valor}}</div></div>
+          </ng-template>
+          <ng-template let-dep #item>
+            <div class="flex items-center gap-2"><div>{{dep.valor}}</div></div>
+          </ng-template>
+        </p-select>
+      </div>
+      <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-2 col-xxl-2 input-group">
+        <label class="activeInput">Tiempo de amortizaci&oacute;n</label>
+        <input class="validate" name="deprecContable" type="number" (keyup)="amortizacionContableTiempoEjecucion($event.target);" required>
+      </div>
+      <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-3 col-xxl-3 input-group">
+        <label class="activeInput">Cuenta contable de activo</label>
+        <input class="validate" name="deprecContable" type="text" (keyup)="amortizacionContableCuenta($event.target);" required>
+      </div>
+      <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-3 col-xxl-3 input-group">
+        <label class="activeInput">Cuenta contable de resultados</label>
+        <input class="validate" name="deprecContable" type="text" (keyup)="amortizacionContableCuentaDos($event.target);" required>
+      </div>
+
+      <p-divider/>
+      <div class="col-12 explain"><h6 class="title">Amortizaci&oacute;n fiscal:</h6></div>
+      <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-2 col-xxl-2 input-group">
+        <label for="new_actd_amortfiscal_periodo" class="activeInput">Periodo de amortizaci&oacute;n</label>
+        <p-select [options]="amortizacion_periodos" id="new_actd_amortfiscal_periodo" name="new_actd_amortfiscal_periodo" optionLabel="valor" [filter]="true" filterBy="valor" optionValue="clave"
+          appendTo="body" [showClear]="true" [placeholder]="'opt_select' | translate" class="w-full md:w-56" (onChange)="amortizacionFiscalPeriodo($event.value);">
+          <ng-template #selectedItem let-selectedOption>
+            <div class="flex items-center gap-2"><div>{{selectedOption.valor}}</div></div>
+          </ng-template>
+          <ng-template let-dep #item>
+            <div class="flex items-center gap-2"><div>{{dep.valor}}</div></div>
+          </ng-template>
+        </p-select>
+      </div>
+      <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-2 col-xxl-2 input-group">
+        <label class="activeInput">Tiempo de amortizaci&oacute;n</label>
+        <input class="validate" name="deprecContable" type="number" (keyup)="amortizacionFiscalTiempoEjecucion($event.target);" required>
+      </div>
+      <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-3 col-xxl-3 input-group">
+        <label class="activeInput">Cuenta de orden fiscal uno</label>
+        <input class="validate" name="deprecContable" type="text" (keyup)="amortizacionFiscalCuenta($event.target);" required>
+      </div>      
+      <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-3 col-xxl-3 input-group">
+        <label class="activeInput">Cuenta de orden fiscal dos</label>
+        <input class="validate" name="deprecContable" type="text" (keyup)="amortizacionFiscalCuentaDos($event.target);" required>
+      </div>
+      <p-divider/>
+
+      <div class="col-12 input-group" style="margin-bottom: 10px!important;">
+        <label class="activeInput">{{'observ' | translate}}</label>
+        <textarea id="pago_large_observ" class="validate" (keyup)="activoObservaciones($event.target);"></textarea>
+      </div>
+
+      <div class="col-12 row" style="margin-top: 5px!important;">
+        <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6"></div>
+        <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6" style="display: flex !important;justify-content: end!important;">
+          <button class="btn btn_extend text-bg-success rounded-3" [ngClass]="!validateRegistroActivo ? 'disabled' : ''" [attr.disabled]="!validateRegistroActivo ? true : null" 
+            [attr.aria-disabled]="!validateRegistroActivo ? true : null" type="submit" name="btnAltaServicio2">
+            <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}</button>
+        </div>
+      </div>
+    </div>
+  </form>
+}

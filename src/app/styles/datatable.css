@@ -1,0 +1,633 @@
+div.data_table_row .dt-layout-row{
+  max-height: 30px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.dt-layout-row .dt_layout_cell .dt-search input{
+  width: 100%;
+  height: 30px;
+  margin: 0;
+  padding: 0;
+}
+
+div.dt-container .dt-paging .dt-paging-button.current, 
+div.dt-container .dt-paging .dt-paging-button.current:hover{
+  background-color: #002D9C!important;
+}
+
+table{
+  min-width: 100%;
+  /*color: #353535;*/
+  margin-top: 5px;
+  margin-bottom: 1%;
+  box-shadow: 2px 2px 10px #353535!important; 
+}
+  
+table.white{
+  width: 100%;
+  background-color: white!important;
+  margin-top: 5px;
+  margin-bottom: 1%;
+  box-shadow: 2px 2px 10px #353535!important; 
+}
+
+table.white_inside{
+  width: 100%;
+  background-color: white!important;
+  margin: 0!important;
+  box-shadow: none!important;
+}
+
+table.transparent_table{
+  background-color: rgba(53,53,53,0.2)!important;
+}
+
+table.white_simple {
+  width: 100%;
+  background-color: white!important;
+  margin-top: 5px;
+  margin-bottom: 1%;
+  box-shadow: none!important;
+  border-radius: 8px!important;
+}
+
+/*thead*/
+table thead tr th{
+  text-align: center;
+  font-size: 13px;
+  height: 40px;
+  line-height: 40px;
+  margin: 0;
+  /*padding: 0;*/
+  padding: 0 !important;
+  padding-left: 10px !important;
+  padding-right: 10px !important;
+  background-color: #e7e7ea!important;
+  color: #353535!important;
+  text-transform: uppercase;
+  border-radius: 0px;
+}
+
+table thead tr th,table tbody tr td{overflow: hidden;text-overflow: ellipsis;white-space: nowrap;}
+
+table.table-dark thead tr th{
+  background-color: transparent!important;
+  color: white!important;
+}
+
+table thead tr th.th_bold{
+  font-family: roboto_bold, FontAwesome;
+}
+
+table.black thead tr th{
+  background-color: #353535!important;
+  color: #e7e7ea!important;
+}
+
+table thead tr th.ultimo{
+  width: 40px;
+  padding: 0;
+  text-align: -webkit-center!important;
+}
+
+table thead tr th.ultimo a{
+  width: 25px;
+  height: 25px;
+  border-radius:50%!important;
+}
+
+table thead tr th.ultimo a i{
+  width: 25px!important;
+  height:25px!important;
+  line-height:25px!important;
+  font-size: 15px;
+  text-align: center;
+}
+
+/*tbody*/
+table tbody tr{
+  border-bottom: 1px solid lightgray;
+}
+
+table tbody tr.tr-selected-true{
+  background-color: #353553;
+  color: #fff;
+}
+
+table.white tbody tr.tr-selected-true{
+  background-color: transparent!important;
+  color: #353535!important;
+}
+
+table tbody tr.trlink{
+  cursor: pointer!important;
+}
+
+table tbody tr.trCliente{
+  background-color: #1A347C;
+  color: #fff;
+}
+
+table tbody tr:last-child{
+  border-bottom: none;
+}
+
+table tbody tr:hover{
+  background-color: rgba(211,211,211,0.2); /*!important*/
+  background-color: rgba(0,93,255,0.5); /*!important*/
+  color: #353535;
+}
+
+table tbody tr.second_action td{
+  padding: 0px!important;
+}
+
+table tbody tr.second_action td div.cabecera{
+  background-color: rgba(231,231,234);
+  margin-bottom: 0px!important;
+  border-radius: 0px!important;
+}
+
+table tbody:last-child tr.second_action td div.cabecera{
+  border-radius: 0 0 8px 8px!important;
+}
+
+table tbody:last-child tr.second_action td div.cabecera div.col{
+  line-height: initial!important;
+}
+
+table.transparent_table tbody tr td{
+  color: #e7e7ea!important;
+}
+
+table tbody tr td.td_roboto{
+  font-family: roboto_cr, FontAwesome;
+  font-size: smaller;
+}
+
+table tbody tr td{
+  color: #e7e7ea;
+  height: 40px!important;
+  line-height: 40px!important;
+  text-align: center;
+  /*padding: 0px 5px;
+  padding: 0px 5px!important;*/
+  padding: 0 !important;
+  padding-left: 10px !important;
+  padding-right: 10px !important;
+  margin-bottom: 0;
+  border-right: 1px solid #d3d3d3;
+}
+
+table.white tbody tr td,
+table.white_inside tbody tr td{
+  color: #353535!important;
+}
+
+table.transparent_table tbody tr td{
+  color: #353535!important;
+}
+  
+table thead tr th.ultimo,
+table tbody tr td.ultimo{
+  width: 40px;
+}
+
+table thead tr th.ultimo{
+  padding: 0;
+}
+
+table tbody tr td.ultimo{
+  padding: 0;
+  text-align: -webkit-center!important;
+}
+
+table tbody tr td p.btn,
+table tbody tr td.ultimo a{
+  width: 25px!important;
+  height: 25px!important;
+  border-radius:50%!important;
+}
+
+table tbody tr td.ultimo a.btnDelete{
+  background-color:#d32f2f!important;
+}
+
+table tbody tr td p.btn i,
+table tbody tr td p.btn span,
+table tbody tr td.ultimo a i,
+table tbody tr td.ultimo button i{
+  width: 25px!important;
+  height:25px!important;
+  line-height:25px!important;
+  font-size: 15px;
+  text-align: center;
+}
+
+table tbody tr td.ultimo .btn_extend{
+  width: max-content!important;
+  border-radius:25px!important;
+  padding:3px;
+  font-size:smaller;
+  text-transform:inherit;
+  font-family:'roboto_cr';
+}
+
+table tbody tr td.ultimo .btn_extend_red{font-weight: bold!important;}
+
+table thead tr th.name,
+table tbody tr td.name,
+table tbody tr td.td_names_rfc{
+  text-align: left;
+}
+
+table tbody tr td.text_large{
+  text-align: justify!important;
+  line-height: normal!important;
+}
+
+table tbody tr td.text_large p{
+  text-align: justify!important;
+  line-height: normal!important;
+}
+
+table tbody tr td.data_time{
+  width: 200px!important;
+}
+
+table tbody tr td.work_team{
+  width: 160px!important;
+}
+
+table tbody tr td.name{
+  text-transform: capitalize!important;
+}
+
+table tbody tr td.td_names_rfc{
+  text-transform: lowercase!important;
+}
+
+table tbody tr td.td_importes,
+table tfoot tr td.td_importes{
+  text-align: right!important;
+}
+
+table tbody tr td.ovFlow{
+  max-width: 100px;
+  overflow: overlay;
+  text-overflow: unset;
+  white-space: nowrap;
+}
+
+table tbody tr td.select{
+  max-width: 300px;
+}
+
+table tbody tr td.fechas{
+  max-width: 100px;
+}
+
+table tbody tr td.concepto{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+table tbody tr td.img_dat div,
+p-table tr td.img_dat div{
+  display: flex;
+  align-items: center;
+}
+
+table tbody tr td.img_dat img,
+p-table tr td.img_dat div img{
+  height: 32px!important;
+  width: 32px!important;
+  border-radius: 50%;
+}
+
+table tbody tr td.img_dat img.optimizedImage{position: relative !important;inset: auto !important}
+p-table tr td.img_dat div img.optimizedImage{position: relative !important;inset: auto !important}
+
+table tbody tr td div.text_area{
+  display: flex;
+  align-items: center;
+  align-content: center;
+  justify-content: center;
+  margin: 0!important;
+  padding: 0;
+  margin-top: 3px!important;
+  margin-bottom: 3px!important;
+}
+  
+table tbody tr td p{
+  width: 100%!important;
+  margin: 0;
+  text-align: center;
+}
+
+table tbody tr td a,
+table tbody tr td a i{
+  font-size: 2.5vh;
+  font-size: 2vh;
+}
+
+table tbody tr td p input.select{
+  opacity: 1!important;
+  margin: 0;
+  position: relative;
+  width: 10px!important;
+  height: 10px!important;
+} 
+
+table tbody tr td div.select-wrapper input.select-dropdown{
+  margin: 0px!important;
+}
+
+table tbody tr td p input.select:checked{
+  background-color: aqua;
+}
+
+table tbody tr td img{
+  max-width: 40px;
+}
+
+table tbody tr td input,
+table tbody tr td select,
+table tbody tr td textarea{
+  width: 98%;
+}
+
+/*table tbody tr td input,*/
+table tbody tr td input[type=text],
+table tbody tr td input[type=number],
+table tbody tr td select{
+  height: 30px!important;
+}
+
+table tbody tr td select.name{
+  text-transform: capitalize!important;
+}
+
+table tbody tr td textarea{
+  min-height: 30px!important;
+}
+
+table tbody tr td.ultimo input[type=text],
+table tbody tr td.ultimo input[type=number],
+table tbody tr td.ultimo select,
+table tbody tr td.ultimo textarea{
+  width: 100%;
+}
+
+table tbody tr td input.error,
+table tbody tr td textarea.error{
+  color:#353535!important;
+  background: #FBCDC3!important;
+  border: solid 1px #6d1300!important;
+}
+
+table tbody tr td.error{
+  background-color: #FBCDC3 !important;
+  border-bottom: solid 2px #6d1300 !important;
+  border-radius: 8px;
+}
+
+table tbody tr td input.error_black,
+table tbody tr td textarea.error_black{
+  color:#353535!important;
+  color: #FBCDC3!important;
+  border-bottom: solid 2px #6d1300!important;
+}
+
+table tbody tr td input.correcto,
+table tbody tr td textarea.correcto{
+  color:#353535!important;
+  background: #C6FBC3!important;
+  border: solid 1px #388E3C!important;
+}
+  
+table tbody tr td.correcto{
+  background-color: #C6FBC3 !important;
+  border-bottom: solid 2px #388E3C !important;
+  border-radius: 8px;
+}
+
+table tbody tr td input.correcto_black,
+table tbody tr td textarea.correcto_black{
+  color:#353535!important;
+  color: #C6FBC3 !important;
+  border-bottom: solid 2px #388E3C !important;
+}
+
+table tbody tr td div.file-field{
+  width: 100%;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+}
+
+table tbody tr td.span div{
+  display: flex;
+}
+
+table tbody tr td.span div span{
+  height: 30px;
+  line-height: 30px;
+  background-color: blue;
+  width: 10%;
+  color: #fff;
+  border-radius: 8px 0 0 8px;
+  border-bottom: 1px solid #353535;
+  font-weight: bold;
+}
+
+table.disabled tbody tr td.span div span{
+  background-color: #353535;
+}
+
+table tbody tr td.span div input{
+  border-radius: 0 8px 8px 0!important;
+  width: 90%!important;
+}
+
+table tbody tr td div.progress_main{
+  /*height: 30px;
+  width: 100%;
+  display: flex;
+  justify-content: center;*/
+
+  height: 30px;
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  justify-content: center;
+  align-content: center;
+}
+
+table tbody tr td div.progress_main span{
+  color: white;
+  /*position: absolute;*/
+  height: 30px;
+  width: 30px;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: small;
+  font-weight: bold;
+  rotate: 90deg;
+}
+
+table tbody tr td div.progress_main div.progress_content{
+  height: 30px;
+  margin: 0;
+  width: 30px;
+  rotate: 270deg;
+  border-radius: 50px;
+  background-color: #6f6f6f;
+}
+
+table tbody tr td div.progress_main div.percentaje{
+  background-color: #1b38ee;
+}
+
+table tbody tr td a,
+table tbody tr td button{
+  font-family: ubuntu, FontAwesome;
+  height: 25px;
+  line-height: 25px;
+  width: 25px;
+  background-color: #353535;
+  color: #fff;
+  padding: 0;
+}
+
+table tbody tr td a,
+table tbody tr td a i,
+table tbody tr td button,
+table tbody tr td button i{
+  font-size: 2.5vh;
+  font-size: 2vh;
+}
+  
+table tbody tr.second_action:last-child td:last-child{
+  border-radius: 0!important;
+}
+
+table tfoot tr th,
+table tfoot tr td{
+  color: #e7e7ea;
+}
+
+table.white tfoot tr th,
+table.white tfoot tr td,
+table.white_inside tfoot tr th,
+table.white_inside tfoot tr td{
+  color: #353535!important;
+}
+
+table tfoot tr th,
+table tfoot tr td{
+  text-align: center;
+  padding: 5px!important;
+}
+
+.tablaInversa{
+  width: 100%!important;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  margin-top: 0!important;
+  justify-content: space-between;
+  align-items: center;
+}
+
+table.table_show_register tbody tr td input.register,
+table.table_show_register tbody tr td select.register{
+  height: 80px!important;
+}
+
+table.table_show_register tbody tr td textarea.register{
+  min-height: 80px!important;
+}
+
+/*error*/
+table thead tr.error{
+  background-color: #6d1300!important;
+}
+
+/*disabled*/
+table.disabled{
+  background-color: #686868!important;
+}
+table.disabled thead tr th{
+  color: #686868!important;
+}
+
+table tfoot{
+  display:none;
+}
+  
+@media screen and (max-width: 1200px) {
+  table{width: max-content!important;}
+}
+  
+@media screen and (max-width: 600px) {
+  table thead tr th:last-child{
+    border-radius: 0 8px 0 0;
+  }
+
+  table.responsive-table thead tr th:last-child{
+    border-radius: 0 0 0 8px!important;
+  }
+
+  /*table thead tr th.ultimo{
+    width: 40px;
+      padding: 0;
+  }
+
+  table thead tr th.ultimo,
+  table tbody tr td.ultimo{
+      width: 100%!important;
+  }
+
+  table thead th.ultimo-buttons,
+  table tbody tr td.ultimo-buttons{
+    height: 40px!important;
+  }
+
+  table tbody tr td.ultimo{
+    height: 40px!important;
+    display: flex!important;
+    flex-wrap: wrap!important;
+    justify-content: center!important;
+  }*/
+
+  table.responsive-table thead tr th.ultimo,
+  table.responsive-table tbody tr td.ultimo{
+    width: 100%!important;
+  }
+
+  table tbody tr.trTfoot{
+    display:none!important;
+  }
+
+  table tbody tr td{
+    height: 40px!important;
+  }
+
+  table tbody tr:last-child td:first-child{
+    border-radius: 0 8px 0 0;
+  }
+
+  table tbody tr:last-child td:last-child{
+    border-radius: 0 0 8px 0;
+  }
+
+  table tfoot{
+    display:contents!important;
+  }
+}

@@ -1,0 +1,1160 @@
+<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco" #vContent>
+  <div class="contenido">
+    <app-loader></app-loader>
+    <header class="sticky-top">
+      <nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+    </header>
+    <main class="contenidoPagina">
+      <article class="listas_ps revanecer">
+        <div class="lista-div lista-divNoFlex row">
+          <h4 class="col-12">CATALOGO DE PRODUCTOS</h4>
+          <div class="col-12">
+            <div class="btn-group lista_botones col" role="group" aria-label="Basic example">
+              <a class="btn btn_extend bg-indigo-600" (click)="lista_general_productos();lista_productos_eliminados();">
+                <i class="fa-solid fa-rotate"></i>&nbsp;{{'list_updt' | translate}}
+              </a>
+              <a class="btn btn_extend bg-indigo-600" (click)="verWindowProdCategorias();">
+                <i class="fa-solid fa-plus"></i>&nbsp;Categor&iacute;as de productos
+              </a>
+              <a class="btn btn_extend bg-indigo-600" (click)="verWindowRegistroProdInventario();">
+                <i class="fa-solid fa-plus"></i>&nbsp;Registrar nuevo producto para inventarios
+              </a>
+              <a class="btn btn_extend bg-indigo-600" (click)="verWindowRegistroProdMostrador();">
+                <i class="fa-solid fa-plus"></i>&nbsp;Registrar nuevo producto para ventas a mostrador
+              </a>
+              <a class="btn btn_extend bg-indigo-600" (click)="lista_productos_eliminados();">
+                <i class="fa-solid fa-trash" style="margin-left: 5px;"></i>&nbsp;productos eliminados
+              </a>
+              <a class="btn btn_extend bg-green-600 descarga_lista_excel"
+                [ngClass]="listaProductosTRUE.length == 0 ? 'disabled' : ''"
+                [attr.disabled]="listaProductosTRUE.length == 0 ? true : null"
+                [attr.aria-disabled]="listaProductosTRUE.length == 0 ? true : null"
+                (click)="listaProductosTRUE.length > 0 && descarga_excel_lgeneral();">
+                <i class="fa-solid fa-file-excel" style="margin-left: 5px;"></i>&nbsp;descargar
+              </a>
+            </div>
+          </div>
+
+          <p-tabs value="0">
+            <p-tablist>
+              <p-tab value="0">Cat&aacute;logo general de productos</p-tab>
+              <p-tab value="1">Cat&aacute;logo de productos para inventarios</p-tab>
+              <p-tab value="2">Cat&aacute;logo de productos para ventas de mostrador</p-tab>
+            </p-tablist>
+            <p-tabpanels>
+              <p-tabpanel value="0">
+                <p-table #productosTrueList id="tabla_productos_list_general" [value]="listaProductosTRUE"
+                  [globalFilterFields]="buscarProductosTRUE" dataKey="id" [paginator]="true" [rows]="10"
+                  [rowsPerPageOptions]="[10,20,30,50,100]">
+                  <ng-template #caption>
+                    <div class="flex" style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;" ngbDropdown>
+                      <a class="btn btn_extend" [ngClass]="indicadorProductosList == 'hoy' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="listProductosGeneral('hoy');">
+                        <i class="fa-solid fa-calendar-days"></i>&nbsp;Hoy
+                      </a>
+                      <a class="btn btn_extend" [ngClass]="indicadorProductosList == 'esta_semana' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="listProductosGeneral('esta_semana');">
+                        <i class="fa-solid fa-calendar-days"></i>&nbsp;Esta semana
+                      </a>
+                      <a class="btn btn_extend" [ngClass]="indicadorProductosList == 'este_mes' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="listProductosGeneral('este_mes');">
+                        <i class="fa-solid fa-calendar"></i>&nbsp;Este mes
+                      </a>
+                      <a class="btn btn_extend" [ngClass]="indicadorProductosList == 'mes_anterior' ? ' bg-indigo-600' : ' bg-blue-600'" style="margin-right:5px!important;" (click)="listProductosGeneral('mes_anterior');">
+                        <i class="fa-solid fa-arrow-left"></i>&nbsp;mes anterior
+                      </a>
+                      <a id="menuDropProdRangos" class="btn btn_extend" [ngClass]="indicadorProductosList == 'otras_fechas' ? ' bg-indigo-600' : 'bg-blue-600'" style="margin-right:5px!important;" ngbDropdownToggle>
+                        <i class="fa-solid fa-list-ul"></i>&nbsp;otras fechas
+                      </a>
+                      <div class="dropdown-menu-end menu-despegable" ngbDropdownMenu="menuDropProdRangos" style="padding: 0!important; margin: 0!important; width: max-content!important; max-height: 400px; overflow-y: auto;">
+                        <div class="col-12 input-group">
+                          <label for="prod_gral_otras_fechas" class="activeInput">Periodo de fechas</label>
+                          <p-datepicker id="prod_gral_otras_fechas" name="prod_gral_otras_fechas"
+                            [(ngModel)]="rangoPeriodoProductos" appendTo="body" dateFormat="dd/mm/yy"
+                            placeholder="dd/mm/aaaa" selectionMode="range"
+                            (onSelect)="listProductosGeneral('otras_fechas');" />
+                        </div>
+                      </div>
+                      <a class="btn btn_extend" [ngClass]="indicadorProductosList == 'all_partidas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="listProductosGeneral('all_partidas');">
+                        <i class="fa-solid fa-list-ul"></i>&nbsp;todos los registros
+                      </a>
+                      <p-iconfield iconPosition="left" class="ml-auto">
+                        <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                        <input pInputText type="text" (input)="productosTrueList.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}"/>
+                      </p-iconfield>
+                    </div>
+                  </ng-template>
+                  <ng-template #header>
+                    <tr>
+                      <th class="ultimo"></th>
+                      <th pSortableColumn="folio_prod">Folio &nbsp;<p-sortIcon field="Folio"/></th>
+                      <th pSortableColumn="producto" class="name">Producto &nbsp;<p-sortIcon field="Producto"/></th>
+                      <th pSortableColumn="familia">Familia &nbsp;<p-sortIcon field="familia"/></th>
+                      <th pSortableColumn="clasificacion" class="name">Clasificaci&oacute;n &nbsp;<p-sortIcon field="clasificacion"/></th>
+                      <th pSortableColumn="genero">Genero &nbsp;<p-sortIcon field="genero"/></th>
+                      <th pSortableColumn="marca">Marca &nbsp;<p-sortIcon field="marca"/></th>
+                      <th pSortableColumn="stock_actual" class="name">Stock actual &nbsp;<p-sortIcon field="genero"/></th>
+                      <th pSortableColumn="stock_minimo_registrado" class="name">Stock m&iacute;nimo registrado&nbsp;<p-sortIcon field="stock_minimo_registrado"/></th>
+                      <th pSortableColumn="stock_maximo_registrado" class="name">Stock m&aacute;ximo registrado&nbsp;<p-sortIcon field="stock_maximo_registrado"/></th>
+                      <th pSortableColumn="metodo_costeo" class="name">M&eacute;todo de costeo &nbsp;<p-sortIcon field="metodo_costeo"/></th>
+                      <th pSortableColumn="unidad_medida_entrada_clave" class="name">Unidad de medida de entrada&nbsp;<p-sortIcon field="unidad_medida_entrada_clave"/></th>
+                      <th pSortableColumn="unidad_medida_salida_clave" class="name">Unidad de medida de salida&nbsp;<p-sortIcon field="unidad_medida_salida_clave"/></th>
+                      <th pSortableColumn="moneda_aplicable_clave">Moneda &nbsp;<p-sortIcon field="moneda_aplicable_clave"/></th>
+                      <th pSortableColumn="uso_producto">Uso del producto &nbsp;<p-sortIcon field="uso_producto"/></th>
+                      <th pSortableColumn="num_serie">Clasificaci&oacute;n en almacen por serie &nbsp;<p-sortIcon field="num_serie"/></th>
+                      <th pSortableColumn="num_lote">Clasificaci&oacute;n en almacen por lote &nbsp;<p-sortIcon field="num_lote"/></th>
+                      <th pSortableColumn="importado">Clasificaci&oacute;n en almacen por pedimento aduanal&nbsp;<p-sortIcon field="importado"/></th>
+                      <th pSortableColumn="sat_clave_code">catalogo de sat &nbsp;<p-sortIcon field="sat_clave_code de sat"/></th>
+                      <th pSortableColumn="costo_aplicable">Costo aplicable &nbsp;<p-sortIcon field="costo_aplicable"/></th>
+                      <th pSortableColumn="cuenta-contable">Cuenta contable &nbsp;<p-sortIcon field="cuenta-contable"/></th>
+                      <th pSortableColumn="modulo_destino">M&oacute;dulo &nbsp;<p-sortIcon field="modulo_destino"/></th>
+                      <th class="ultimo"></th>
+                      <th class="ultimo"></th>
+                      <th class="ultimo"></th>
+                      <th class="ultimo"></th>
+                      <th class="ultimo"></th>
+                    </tr>
+                  </ng-template>
+                  <ng-template #body let-rowProd>
+                    <tr>
+                      <td class="img_dat">
+                        <div class="col-12"><img class="circle optimizedImage" fill ngSrc="./assets/images/catalogos/default_producto.jpg" alt=""></div>
+                      </td>
+                      <td>{{rowProd.folio_prod}}</td>
+                      <td class="name">{{rowProd.producto}}</td>
+                      <td>{{rowProd.familia}}</td>
+                      <td>{{rowProd.clasificacion}}</td>
+                      <td>{{rowProd.genero}}</td>
+                      <td>{{rowProd.marca}}</td>
+                      <td>{{rowProd.stock_actual}}</td>
+                      <td>{{rowProd.stock_minimo_registrado}}</td>
+                      <td>{{rowProd.stock_maximo_registrado}}</td>
+                      <td>{{rowProd.metodo_costeo}}</td>
+                      <td>{{rowProd.unidad_medida_entrada_clave}}</td>
+                      <td>{{rowProd.unidad_medida_salida_clave}}</td>
+                      <td>{{rowProd.moneda_aplicable_clave}}</td>
+                      <td>{{rowProd.uso_producto}}</td>
+                      <td>{{rowProd.num_serie | translate}}</td>
+                      <td>{{rowProd.num_lote | translate}}</td>
+                      <td>{{rowProd.importado | translate}}</td>
+                      <td>{{rowProd.sat_clave_code}}</td>
+                      <td>{{rowProd.costo_aplicable}}</td>
+                      <td>{{rowProd.cuenta_contable}}</td>
+                      <td>{{rowProd.modulo_destino | translate}}</td>
+                      <td class="ultimo">
+                        @if (rowProd.modulo_destino == 'ssic_menu_inven') {
+                          <a class="btn bg-teal-700" (click)="verGeneralesProd(rowProd.token_cat_productos);">
+                            <i class="fa-solid fa-folder-open"></i>
+                          </a>
+                        } @else {
+                          <a class="btn bg-teal-700" (click)="verGeneralesMostraVentProd(rowProd.token_cat_productos);">
+                            <i class="fa-solid fa-folder-open"></i>
+                          </a>
+                        }
+                      </td>
+                      <td class="ultimo">
+                        @if (rowProd.modulo_destino == 'ssic_menu_inven') {
+                          <a class="btn bg-teal-700" (click)="verAlmacenamientoProd(rowProd.token_cat_productos);">
+                            <i class="fa-solid fa-boxes-stacked"></i>
+                          </a>
+                        } @else {
+                          <a class="btn bg-teal-700 disabled" disabled aria-disabled="true">
+                            <i class="fa-solid fa-boxes-stacked"></i>
+                          </a>
+                        }
+                      </td>
+                      <td class="ultimo">
+                        @if (rowProd.modulo_destino == 'ssic_menu_inven') {
+                          <i class="fa-solid fa-chart-line" style="color: #353535;"></i>
+                        } @else {
+                          ---
+                        }
+                      </td>
+                      <td class="ultimo">
+                        <a class="btn btn_extend rounded-3"
+                          [ngClass]="rowProd.authorized ? 'text-bg-success' : 'text-bg-primary'"
+                          [attr.disabled]="rowProd.authorized ? true : null"
+                          [attr.aria-disabled]="rowProd.authorized ? true : null"
+                          (click)="!rowProd.authorized && solicita_auth_producto(rowProd.token_cat_productos);">
+                          <i class="fa-solid" [ngClass]="rowProd.authorized ? 'fa-check' : 'fa-check-double'"></i>
+                          {{rowProd.authorized ? rowProd.authorized_fecha : ('auth_solicita' | translate)}}
+                        </a>
+                      </td>
+                      <td class="ultimo">
+                        <a class="btn btn_extend text-bg-danger rounded-3" [class.disabled]="rowProd.utilizado"
+                          [attr.disabled]="rowProd.utilizado ? true : null"
+                          [attr.aria-disabled]="rowProd.utilizado ? 'true' : null"
+                          (click)="!rowProd.utilizado && btnDeleteProducto(rowProd.token_cat_productos);">
+                          <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                        </a>
+                      </td>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="emptymessage">
+                    <tr>
+                      <td colspan="27" class="text-center py-4">
+                        <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                        <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                          {{'no_rows' | translate}}
+                        </p>
+                      </td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+              </p-tabpanel>
+              <p-tabpanel value="1">
+                <app_productos_inventarios_catalogo></app_productos_inventarios_catalogo>
+              </p-tabpanel>
+              <p-tabpanel value="2">
+                <app_productos_vmostrador_catalogo></app_productos_vmostrador_catalogo>
+              </p-tabpanel>
+            </p-tabpanels>
+          </p-tabs>
+        </div>
+      </article>
+    </main>
+    <app-footer-inside></app-footer-inside>
+  </div>
+</div>
+
+<p-dialog header="Informaci&oacute;n de productos registrados (Inventarios)" [(visible)]="prodGeneralesWindow" [modal]="true" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  @for (prd_inv of productoDetalleInfo; track $index) {
+    <div class="col-12 explain">
+      <h6 class="title">{{'fecha_reg' | translate}}</h6>
+      <h6 class="content">{{prd_inv.fecha_registro_prod}}</h6>
+    </div>
+    <div class="col-12 explain">
+      <h6 class="title">Clasificaci&oacute;n</h6>
+      <h6 class="content">{{prd_inv.clasificacion_folio+' - '+prd_inv.concept_class}}</h6>
+    </div>
+    <p-tabs value="0">
+      <p-tablist>
+        <p-tab value="0">Datos generales</p-tab>
+        <p-tab value="1">Caracter&iacute;sticas</p-tab>
+        <p-tab value="2">Vinculaci&oacute;n a proveedores</p-tab>
+        <p-tab value="3">Anexos</p-tab>
+      </p-tablist>
+      <p-tabpanels>
+        <p-tabpanel value="0">
+          <div class="col-12 row">
+            <div class="input-group col-12 concepto">
+              <label for="producto_regCat" id="lblProducto" class="activeInput">Concepto / Descripci&oacute;n</label>
+              <input class="validate" name="producto_regCat" type="text" [value]="prd_inv.producto" required (keyup)="keyupProdConcepto($event.target,prd_inv);">
+            </div>
+            <div class="input-group input-field-select col-12 col-sm-6 col-md-6 col-lg-3 col-xl-3 col-xxl-3">
+              <label for="fechaAltaProd" class="activeInput">Familia</label>
+              <select class="browser-default" name="txtClassAltaProd" required (change)="selectFamiliaProd($event.target,prd_inv);">
+                <option value="" [attr.disabled]="prd_inv.familia == '' ? true : null" [attr.selected]="prd_inv.familia == '' ? true : null">{{'opt_select' | translate}}</option>
+                <option value="inven"
+                  [attr.disabled]="prd_inv.familia != '' && prd_inv.familia == 'inven' ? true : null"
+                  [attr.selected]="prd_inv.familia != '' && prd_inv.familia == 'inven' ? true : null">inventarios
+                </option>
+                <option value="act_f"
+                  [attr.disabled]="prd_inv.familia != '' && prd_inv.familia == 'act_f' ? true : null"
+                  [attr.selected]="prd_inv.familia != '' && prd_inv.familia == 'act_f' ? true : null">activos fijos
+                </option>
+                <option value="act_i"
+                  [attr.disabled]="prd_inv.familia != '' && prd_inv.familia == 'act_i' ? true : null"
+                  [attr.selected]="prd_inv.familia != '' && prd_inv.familia == 'act_i' ? true : null">activos intangibles</option>
+              </select>
+            </div>
+  
+            <div class="input-group input-field-select col-12 col-sm-6 col-md-6 col-lg-3 col-xl-3 col-xxl-3">
+              <label for="fechaAltaProd" class="activeInput">Clasificaci&oacute;n</label>
+              <select class="browser-default" name="txtClassAltaProd" required (change)="selectClassProd($event.target,prd_inv);">
+                <option value="" [attr.disabled]="prd_inv.clasificacion == '' ? true : null" [attr.selected]="prd_inv.clasificacion == '' ? true : null">{{'opt_select' | translate}}</option>
+                <option *ngFor="let arrClsfPrd of arrayClasifProductos"
+                  [value]="arrClsfPrd.token_clasificacion"
+                  [attr.disabled]="prd_inv.clasificacion != '' && prd_inv.clasificacion == arrClsfPrd.token_clasificacion ? true : null"
+                  [attr.selected]="prd_inv.clasificacion != '' && prd_inv.clasificacion == arrClsfPrd.token_clasificacion ? true : null">
+                  {{arrClsfPrd.concepto}}</option>
+              </select>
+            </div>
+  
+            <div class="input-group input-field-select col-12 col-sm-6 col-md-6 col-lg-3 col-xl-3 col-xxl-3">
+              <label for="fechaAltaProd" class="activeInput">Genero</label>
+              <select class="browser-default" name="txtGeneroAltaProd" required (change)="selectGeneroProd($event.target,prd_inv);">
+                <option value="" [attr.disabled]="prd_inv.genero == '' ? true : null" [attr.selected]="prd_inv.genero == '' ? true : null">{{'opt_select' | translate}}</option>
+                <option *ngFor="let arrGenPrd of arrayGeneroClass" [value]="arrGenPrd.token_genero"
+                  [attr.disabled]="prd_inv.genero != '' && prd_inv.genero == arrGenPrd.token_genero ? true : null"
+                  [attr.selected]="prd_inv.genero != '' && prd_inv.genero == arrGenPrd.token_genero ? true : null">
+                  {{arrGenPrd.concepto}}</option>
+              </select>
+            </div>
+  
+            <div class="input-group col-12 col-sm-6 col-md-6 col-lg-3 col-xl-3 col-xxl-3">
+              <datalist id="dataListMarcas">
+                <option value="Sin marca">
+              </datalist>
+              <label for="marca_regCat" id="lblMarca" class="activeInput">Marca</label>
+              <input id="prod_marca" list="dataListMarcas" class="validate" type="text" name="marca_regCat" [value]="prd_inv.marca" (keyup)="keyupProdMarca($event.target,prd_inv);">
+            </div>
+  
+            <div class="input-group col-12 col-sm-12 col-md-12 col-lg-4 col-xl-4 col-xxl-4">
+              <label for="stockmin_regCat" id="lblStockmin" class="activeInput">Stock m&iacute;nimo</label>
+              <input id="textStockmin" class="validate" name="stockmin_regCat" type="number" [value]="prd_inv.stock_minimo_registrado" (keyup)="keyupStockMinProd($event.target,prd_inv);">
+            </div>
+  
+            <div class="input-group col-12 col-sm-12 col-md-12 col-lg-4 col-xl-4 col-xxl-4">
+              <label for="stockmax_regCat" id="lblStockmax" class="activeInput">Stock m&aacute;ximo</label>
+              <input id="textStockmax" class="validate" name="stockmax_regCat" type="number" [value]="prd_inv.stock_maximo_registrado" (keyup)="keyupStockMaxProd($event.target,prd_inv);">
+            </div>
+  
+            <div class="input-group col-12 col-sm-12 col-md-12 col-lg-4 col-xl-4 col-xxl-4">
+              <label for="fechaAltaProd" class="activeInput">M&eacute;todo de costeo</label>
+              <select class="browser-default validate" name="costeo_regCat" type="text" (change)="selectCosteoProd($event.target,prd_inv);">
+                <option value="" [attr.disabled]="prd_inv.metodo_costeo == '' ? true : null" [attr.selected]="prd_inv.metodo_costeo == '' ? true : null">{{'opt_select' | translate}}</option>
+                <option value="UEPS" [attr.disabled]="prd_inv.metodo_costeo == 'UEPS' ? true : null" [attr.selected]="prd_inv.metodo_costeo == 'UEPS' ? true : null">UEPS</option>
+                <option value="PEPS" [attr.disabled]="prd_inv.metodo_costeo == 'PEPS' ? true : null" [attr.selected]="prd_inv.metodo_costeo == 'PEPS' ? true : null">PEPS</option>
+                <option value="Promedio" [attr.disabled]="prd_inv.metodo_costeo == 'Promedio' ? true : null" [attr.selected]="prd_inv.metodo_costeo == 'Promedio' ? true : null">Promedio</option>
+              </select>
+            </div>
+  
+            <div class="input-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3">
+              <label for="fechaAltaProd" class="activeInput">Unidad de medida de entrada</label>
+              <input class="req_uMedida validate" name="req_uMedida" type="text" id="req_uMedida" list="dataListUmedida" [value]="prd_inv.unidad_medida_entrada_clave" (change)="keyupUnidadMedidaEntradaApiProd($event.target,prd_inv);">
+            </div>
+  
+            <div class="input-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3">
+              <label for="fechaAltaProd" class="activeInput">Unidad de medida de salida</label>
+              <input class="req_uMedida validate" name="req_uMedida" type="text" id="req_uMedida" list="dataListUmedida" [value]="prd_inv.unidad_medida_salida_clave" (change)="keyupUnidadMedidaSalidaApiProd($event.target,prd_inv);">
+            </div>
+  
+            <div class="input-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3">
+              <label for="fechaAltaProd" class="activeInput">Moneda</label>
+              <datalist id="dataListMonedaPrd">
+                <option *ngFor="let arraMon of catalogoMonedasApi" [value]="arraMon.langEN">{{"código"+arraMon.code+", "+arraMon.decimales+" decimales"}}</option>
+              </datalist>
+              <input class="validate" list="dataListMonedaPrd" type="text" id="reem_moneda_entrante" [value]="prd_inv.moneda_aplicable_clave" (change)="keyupValidateMonedaApi($event.target,prd_inv);">
+            </div>
+  
+            <div class="input-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3">
+              <label for="fechaAltaProd" class="activeInput">Cuenta contable</label>
+              <input class="validate" type="text" [value]="prd_inv.cuenta_contable" (keyup)="keyupValidateCuentaContable($event.target,prd_inv);">
+            </div>
+  
+            <div class="col-12 explain" style="display: flex;justify-content: space-between;">
+              <div class="col-12 explain">
+                <h6 class="title">Uso del producto</h6>
+              </div>
+              <div class="col-12 form-check radio_check">
+                <input class="form-check-input" type="radio" name="flexRadioDefault" [checked]="prd_inv.uso_producto == 'i' ? true : null" (click)="checkUsoDestinoProducto('i',prd_inv);">
+                <label class="form-check-label" for="flexRadioDefault1">Uso interno</label>
+              </div>
+              <div class="col-12 form-check radio_check">
+                <input class="form-check-input" type="radio" name="flexRadioDefault" [checked]="prd_inv.uso_producto == 'v' ? true : null" (click)="checkUsoDestinoProducto('v',prd_inv);">
+                <label class="form-check-label" for="flexRadioDefault1">Producto para ventas</label>
+              </div>
+            </div>
+  
+            <div class="col-12 explain" style="display: flex;justify-content: space-between;">
+              <div class="col-12 explain">
+                <h6 class="title">Clasificaci&oacute;n en almacen:</h6>
+              </div>
+              <div class="col-12 form-check radio_check">
+                <input class="form-check-input" type="checkbox" name="flexRadioDefault" [checked]="prd_inv.num_serie ? true : null" (click)="vincProductoToSerie($event.target);">
+                <label class="form-check-label" for="flexRadioDefault1">Por n&uacute;mero de serie</label>
+              </div>
+              <div class="col-12 form-check radio_check">
+                <input class="form-check-input" type="checkbox" name="flexRadioDefault" [checked]="prd_inv.num_lote ? true : null" (click)="vincProductoToLote($event.target);">
+                <label class="form-check-label" for="flexRadioDefault1">Por n&uacute;mero de lote</label>
+              </div>
+              <div class="col-12 form-check radio_check">
+                <input class="form-check-input" type="checkbox" name="flexRadioDefault" [checked]="prd_inv.importado ? true : null" (click)="vincProductoToPedimento($event.target);">
+                <label class="form-check-label" for="flexRadioDefault1">Por n&uacute;mero de pedimento aduanal</label>
+              </div>
+            </div>
+  
+            <div class="input-group col-12 concepto" style="margin-top:5px;">
+              <label for="producto_regCat" id="lblProducto" class="activeInput">C&oacute;digo de vinculaci&oacute;n al catalogo del SAT</label>
+              <input class="validate" name="producto_regCat" type="text" [value]="prd_inv.sat_clave_code" (keyup)="keyupSatApi($event.target,prd_inv);">
+            </div>
+          </div>
+        </p-tabpanel>
+        <p-tabpanel value="1">
+          <div class="col-12">
+            <div class="btn-group lista_botones col" role="group" aria-label="Basic example">
+              @if (clavesDeleted > 0) {
+                <a class="btn btn_extend bg-indigo-600" (click)="restaurarClavesDeleted();">
+                  <i class="fa-solid fa-trash-arrow-up"></i>&nbsp;Restaurar claves eliminadas
+                  ({{clavesDeleted}})
+                </a>
+              }
+            </div>
+          </div>
+          <div class="col-12 row">
+            <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-6 col-xxl-6">
+              <div class="col-12 explain">
+                <h6 class="title col-12" style="text-align: center;">Caracter&iacute;sticas del producto</h6>
+              </div>
+              <div class="col-12">
+                <ul class="list-group list_opciones">
+                  <li class="list-group-item row">
+                    <div class="input-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6" style="margin: 0!important;">
+                      <datalist id="dataListCaract">
+                        <option value="color">
+                        <option value="peso">
+                        <option value="medida">
+                        <option value="forma">
+                      </datalist>
+                      <label class="activeInput">Caracter&iacute;sticas</label>
+                      <input id="nClaveCaractAltaProdProv" class="claveAltaProdProv validate" list="dataListCaract" name="txtAbrevClienteProyecto" type="text" (keyup)="keyupCaracteristicasClave($event.target);">
+                    </div>
+                    <div class="input-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6" style="margin: 0!important;">
+                      <label class="activeInput" style="width: 40px!important;border-radius: 0px!important;">Valor</label>
+                      <input id="nValorCaractAltaProdProv" class="claveAltaProdProv validate" name="txtClienteProyecto" type="text" (keyup)="keyupCaracteristicasValor($event.target);">
+                    </div>
+                    <div class="input-group col-12" style="margin: 0!important;display: flex;justify-content: end;">
+                      <a class="btn btn_extend text-bg-success rounded-3"
+                        [ngClass]="new_caract_clave == '' || new_caract_valor == '' ? 'disabled' : ''"
+                        [attr.disabled]="new_caract_clave == '' || new_caract_valor == '' ? true : null"
+                        [attr.aria-disabled]="new_caract_clave == '' || new_caract_valor == '' ? true : null"
+                        (click)="(new_caract_clave != '' && new_caract_valor != '') && agregaCaracteristica();">
+                        <i class="fa-solid fa-plus"></i>&nbsp;{{'btn_add' | translate}}
+                      </a>
+                    </div>
+                  </li>
+                  <li class="list-group-item" *ngFor="let caractList of listaCaracteristicasProdNEW;index as pos">
+                    <div style="display: flex;justify-content: space-between;align-items: center;">
+                      {{caractList.clave_caract}}
+                      <p style="margin:0!important;margin-left:10px!important;margin-right:10px!important;font-family:roboto_cr,FontAwesome;">{{caractList.valor_caract}}</p>
+                      <a class="btn btn_extend text-bg-danger rounded-3 secondary-content" (click)="eliminaCaracteristica('new',pos);">
+                        <i class="fa-solid fa-eraser" style="font-size: small!important;"></i>
+                      </a>
+                    </div>
+                  </li>
+                  <li class="list-group-item" *ngFor="let caractList of listaCaracteristicasProdOLD" [ngClass]="caractList.eliminacion_proceso ? 'noneView' : ''">
+                    <div style="display: flex;justify-content: space-between;align-items: center;">
+                      {{caractList.clave_caract}}
+                      <p style="margin:0!important;margin-left:10px!important;margin-right:10px!important;font-family:roboto_cr,FontAwesome;">{{caractList.valor_caract}}</p>
+                      <a class="btn btn_extend text-bg-danger rounded-3 secondary-content" (click)="eliminaCaracteristica('old',caractList.token_caracteristicas);">
+                        <i class="fa-solid fa-eraser" style="font-size: small!important;"></i>
+                      </a>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-6 col-xxl-6">
+              <div class="col-12 explain">
+                <h6 class="title col-12" style="text-align: center;">Identificaci&oacute;n &uacute;nica del producto</h6>
+              </div>
+              <div class="col-12">
+                <ul class="list-group list_opciones">
+                  <li class="list-group-item row">
+                    <div class="input-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6" style="margin: 0!important;">
+                      <datalist id="dataListClaves">
+                        <option value="GS1">
+                        <option value="SKU">
+                        <option value="UPC">
+                      </datalist>
+                      <label class="activeInput">Est&aacute;ndar de identificaci&oacute;n</label>
+                      <input id="claveNewAlta" class="claveAltaProdProv validate" list="dataListClaves" name="txtAbrevClienteProyecto" type="text" (keyup)="keyupListaClaveInternaClaveNew($event.target);">
+                    </div>
+                    <div class="input-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6" style="margin: 0!important;">
+                      <label class="activeInput">C&oacute;digo de identificaci&oacute;n</label>
+                      <input id="claveInterna" class="claveAltaProdProv validate" name="txtClienteProyecto" type="text" (keyup)="keyupListaClaveInternaValorNew($event.target);">
+                    </div>
+                    <div class="input-group col-12" style="margin: 0!important;display: flex;justify-content: end;">
+                      <a class="btn btn_extend text-bg-success rounded-3"
+                        [ngClass]="new_clave_registro == '' || new_clave_valor == '' ? 'disabled' : ''"
+                        style="margin-bottom: 5px!important;"
+                        [attr.disabled]="new_clave_registro == '' || new_clave_valor == '' ? true : null"
+                        [attr.aria-disabled]="new_clave_registro == '' || new_clave_valor == '' ? true : null"
+                        (click)="(new_clave_registro != '' && new_clave_valor != '') && agregaClave();">
+                        <i class="fa-solid fa-plus"></i>&nbsp;{{'btn_add' | translate}}
+                      </a>
+                    </div>
+                  </li>
+                  <li class="list-group-item" *ngFor="let cpa of listaClaveProdNEW;index as pos">
+                    <div style="display: flex;justify-content: space-between;align-items: center;">
+                      {{cpa.clave_name}}
+                      <p style="margin:0!important;margin-left:10px!important;margin-right:10px!important;font-family:roboto_cr,FontAwesome;">{{cpa.valor_name}}</p>
+                      <a class="btn btn_extend text-bg-danger rounded-3 secondary-content" (click)="eliminaClave('new',pos);">
+                        <i class="fa-solid fa-eraser" style="font-size: small!important;"></i>
+                      </a>
+                    </div>
+                  </li>
+                  <li class="list-group-item" *ngFor="let cpa of listaClaveProdOLD" [ngClass]="cpa.eliminacion_proceso ? 'noneView' : ''">
+                    <div style="display: flex;justify-content: space-between;align-items: center;">
+                      {{cpa.clave_nombre}}
+                      <p style="margin:0!important;margin-left:10px!important;margin-right:10px!important;font-family:roboto_cr,FontAwesome;">{{cpa.clave_valor}}</p>
+                      <a class="btn btn_extend text-bg-danger rounded-3 secondary-content" (click)="eliminaClave('old',cpa.token_alta_clave);">
+                        <i class="fa-solid fa-eraser" style="font-size: small!important;"></i>
+                      </a>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </p-tabpanel>
+        <p-tabpanel value="2">
+          <div class="col-12">
+            <div class="col-12 explain">
+              <h6 class="title col-12" style="text-align: center;">Proveedores vinculados</h6>
+            </div>
+            <p-table [value]="prd_inv.rel_proveedores" [paginator]="true" [rows]="10" [tableStyle]="{'min-width':'50rem'}" [rowsPerPageOptions]="[10,20,30]">
+              <ng-template #header>
+                <tr>
+                  <th pSortableColumn="folio">Folio&nbsp;<p-sortIcon field="folio"/></th>
+                  <th pSortableColumn="rfc_prov">rfc&nbsp;<p-sortIcon field="rfc_prov"/></th>
+                  <th pSortableColumn="nombre">{{'prov' | translate}}&nbsp;<p-sortIcon field="nombre"/></th>
+                  <th pSortableColumn="encendido" class="">relacionado&nbsp;<p-sortIcon field="encendido"/></th>
+                  <th pSortableColumn="tiene_clave">cuenta con clave alterna&nbsp;<p-sortIcon field="tiene_clave"/></th>
+                  <th pSortableColumn="asigned_clave">clave alterna (asignada por el proveedor)&nbsp;<p-sortIcon field="asigned_clave"/></th>
+                  <th class="ultimo"><i class="fa-solid fa-eraser"></i></th>
+                </tr>
+              </ng-template>
+              <ng-template #body let-prv>
+                <tr>
+                  <td>{{prv.folio}}</td>
+                  <td>{{prv.rfc_prov}}</td>
+                  <td class="name">{{prv.nombre}}</td>
+                  <td class="ultimo">
+                    <div class="form-check form-switch form-check-reverse switch_primario" style="width: 100px;">
+                      <label class="form-check-label" for="flexSwitchCheckReverse">No</label>
+                      <input class="form-check-input selectSwitchProvProd" name="selectImpProd"
+                        type="checkbox" [checked]="prv.encendido == true"
+                        [ngClass]="prv.eliminacion_proceso ? 'disabled' : ''"
+                        [attr.disabled]="prv.eliminacion_proceso ? true : null"
+                        [attr.aria-disabled]="prv.eliminacion_proceso ? true : null"
+                        (click)="!prv.eliminacion_proceso && vinc_encendido($event.target,prd_inv,prv.token_cat_proveedores);">
+                      <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                    </div>
+                  </td>
+                  <td>
+                    @if (prv.encendido) {
+                      <div class="form-check form-switch form-check-reverse switch_primario" style="justify-content: center;">
+                        <label class="form-check-label" for="flexSwitchCheckReverse">No</label>
+                        <input class="form-check-input selectSwitchProvProd" name="selectImpProd"
+                          type="checkbox" [checked]="prv.tiene_clave == true"
+                          [ngClass]="prv.eliminacion_proceso ? 'disabled' : ''"
+                          [attr.disabled]="prv.eliminacion_proceso ? true : null"
+                          [attr.aria-disabled]="prv.eliminacion_proceso ? true : null"
+                          (click)="!prv.eliminacion_proceso && vinc_EnableClave($event.target,prd_inv,prv.token_cat_proveedores);">
+                        <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                      </div>
+                    } @else {
+                      <p style="margin: 0!important;">---</p>
+                    }
+                  </td>
+                  <td>
+                    @if (prv.encendido && prv.tiene_clave) {
+                      <input class="claveServProvAlta txtClave validate" type="text" [value]="prv.asigned_clave"
+                        [ngClass]="prv.eliminacion_proceso ? 'disabled' : ''"
+                        [attr.disabled]="prv.eliminacion_proceso ? true : null"
+                        [attr.aria-disabled]="prv.eliminacion_proceso ? true : null"
+                        (keyup)="!prv.eliminacion_proceso && vinc_AsignedClave($event.target,prd_inv,prv.token_cat_proveedores);"
+                        (keypress)="keypressProvProdClave($event);">
+                    } @else {
+                      <p style="margin: 0!important;">---</p>
+                    }
+                  </td>
+                  <td>
+                    <div class="form-check form-switch form-check-reverse switch_primario switch_delete" style="justify-content: center;flex-direction: column;">
+                      <input class="form-check-input selectSwitchProvProd" name="selectImpProd" type="checkbox" [checked]="prv.eliminacion_proceso == true"
+                        (click)="actionBotonVinc($event.target,prd_inv,prv.token_cat_proveedores);" style="width: 80%!important;">
+                    </div>
+                  </td>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td colspan="7" class="text-center py-4">
+                    <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                    <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                      {{'no_rows' | translate}}
+                    </p>
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+            <div class="col-12 explain">
+              <h6 class="title col-12" style="text-align: center;">Proveedores para vincular</h6>
+            </div>
+            <p-table [value]="arrayProvForVinc" [paginator]="true" [rows]="10" [tableStyle]="{'min-width':'50rem'}" [rowsPerPageOptions]="[10,20,30]">
+              <ng-template #header>
+                <tr>
+                  <th pSortableColumn="folio">Folio&nbsp;<p-sortIcon field="folio"/></th>
+                  <th pSortableColumn="rfc_prov">rfc&nbsp;<p-sortIcon field="rfc_prov"/></th>
+                  <th pSortableColumn="nombre">{{'prov' | translate}}&nbsp;<p-sortIcon field="nombre"/></th>
+                  <th></th>
+                  <th>cuenta con clave alterna</th>
+                  <th>clave alterna (asignada por el proveedor)</th>
+                </tr>
+              </ng-template>
+              <ng-template #body let-prv_row>
+                <tr>
+                  <td>{{prv_row.folio}}</td>
+                  <td>{{prv_row.rfc_prov}}</td>
+                  <td class="name">{{prv_row.nombre}}</td>
+                  <td class="ultimo">
+                    <div class="form-check form-switch form-check-reverse switch_primario" style="width: 100px;">
+                      <label class="form-check-label" for="flexSwitchCheckReverse">No</label>
+                      <input class="form-check-input selectSwitchProvProd" name="selectImpProd" type="checkbox" [checked]="prv_row.encendido == true" (click)="apagar_encender($event.target,prv_row.token_cat_proveedores);">
+                      <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                    </div>
+                  </td>
+                  <td>
+                    @if (prv_row.encendido) {
+                      <div class="form-check form-switch form-check-reverse switch_primario" style="justify-content: center;">
+                        <label class="form-check-label" for="flexSwitchCheckReverse">No</label>
+                        <input class="form-check-input selectSwitchProvProd" name="selectImpProd" type="checkbox" [checked]="prv_row.tiene_clave == 'true'" (click)="decideHabilitaClave($event.target,prv_row.token_cat_proveedores);">
+                        <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                      </div>
+                    } @else {
+                      <p style="margin: 0!important;">---</p>
+                    }
+                  </td>
+                  <td>
+                    @if (prv_row.encendido == true && prv_row.tiene_clave != '' && prv_row.tiene_clave == 'true') {
+                      <input class="claveServProvAlta txtClave validate" type="text" (keyup)="keyupProvProdClave($event.target,prv_row.token_cat_proveedores);" (keypress)="keypressProvProdClave($event);">
+                    } @else if (prv_row.encendido == false || (prv_row.encendido == true && prv_row.tiene_clave == '') || (prv_row.encendido == true && prv_row.tiene_clave != '' && prv_row.tiene_clave == 'false')) {
+                      <p style="margin: 0!important;">---</p>
+                    }
+                  </td>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td colspan="6" class="text-center py-4">
+                    <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                    <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                      {{'no_rows' | translate}}
+                    </p>
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+        </p-tabpanel>
+        <p-tabpanel value="3">
+          <div class="col-12 row">
+            <div class="col-12 explain">
+              <h6 class="title col-12" style="text-align: center;">Anexos registrados</h6>
+            </div>
+            <p-table [value]="prd_inv.anexos" [paginator]="true" [rows]="10" [tableStyle]="{'min-width':'50rem'}" [rowsPerPageOptions]="[10,20,30]">
+              <ng-template #header>
+                <tr>
+                  <th>{{'file_name' | translate}}</th>
+                  <th>url</th>
+                  <th class="ultimo"><i class="fa-solid fa-eraser"></i></th>
+                </tr>
+              </ng-template>
+              <ng-template #body let-doc>
+                <tr>
+                  <td>{{doc.name_documento}}</td>
+                  <td class="ultimo">
+                    <a class="btn"
+                      [ngClass]="doc.ext_doc == 'pdf' ? (doc.eliminacion_proceso ? 'text-bg-danger rounded-3 disabled' : 'text-bg-danger rounded-3') : (doc.eliminacion_proceso ? 'text-bg-primary rounded-4 disabled' : 'text-bg-primary rounded-4')"
+                      [attr.disabled]="doc.eliminacion_proceso ? true : null"
+                      [attr.aria-disabled]="doc.eliminacion_proceso ? true : null" target="_blank"
+                      [href]="doc.url">
+                      <i class="fa-solid" [ngClass]="doc.ext_doc == 'pdf' ? 'fa-file-pdf' : 'fa-globe'"></i>
+                    </a>
+                  </td>
+                  <td>
+                    <div class="form-check form-switch form-check-reverse switch_primario switch_delete" style="justify-content: center;flex-direction: column;">
+                      <input class="form-check-input selectSwitchProvProd" name="selectImpProd" type="checkbox" [checked]="doc.eliminacion_proceso == true"
+                        (click)="deleteAnexo($event.target,prd_inv,doc.token_documento);" style="width: 80%!important;">
+                    </div>
+                  </td>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td colspan="3" class="text-center py-4">
+                    <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                    <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                      {{'no_rows' | translate}}
+                    </p>
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+            <div class="col-12 explain">
+              <h6 class="title col-12" style="text-align: center;">Anexos para registrar</h6>
+            </div>
+            <ngx-file-drop dropZoneLabel="Drop files here" (onFileDrop)="droppedProd($event)" (onFileOver)="fileOverProd($event)" (onFileLeave)="fileLeaveProd($event)">
+              <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
+                <a class="btn btn_load_file" type="button" style="color: #0782d0 !important;" (click)="openFileSelector()">
+                  {{'load_files' | translate}} / {{'browse_files' | translate}}
+                </a>
+              </ng-template>
+            </ngx-file-drop>
+  
+            <p-table [value]="docsProdAnexos" [paginator]="true" [rows]="10"
+              [tableStyle]="{'min-width':'50rem'}" [rowsPerPageOptions]="[10,20,30]">
+              <ng-template #header>
+                <tr>
+                  <th>{{'file_name' | translate}}</th>
+                  <th class="ultimo"><i class="fa-solid fa-eraser"></i></th>
+                </tr>
+              </ng-template>
+              <ng-template #body let-doc>
+                <tr>
+                  <td>{{doc.name}}</td>
+                  <td>
+                    <a class="btn text-bg-danger rounded-3" (click)="deleteAnexosProd(doc.name);">
+                      <i class="fa-solid fa-eraser"></i>
+                    </a>
+                  </td>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td colspan="2" class="text-center py-4">
+                    <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                    <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                      {{'no_rows' | translate}}
+                    </p>
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+        </p-tabpanel>
+      </p-tabpanels>
+    </p-tabs>
+    <div class="col-12" style="display: flex !important;justify-content: end!important;">
+      <a class="btn btn_extend text-bg-success rounded-3"
+        [ngClass]="!validaUpdateProd(prd_inv) ? 'disabled' : ''"
+        [attr.disabled]="!validaUpdateProd(prd_inv) ? true :null"
+        [attr.aria-disabled]="!validaUpdateProd(prd_inv) ? true : null" type="submit"
+        name="btnCompraDetalleC"
+        (click)="validaUpdateProd(prd_inv) && updatesProductos(prd_inv);">
+        <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+      </a>
+    </div>
+  }
+</p-dialog>
+
+<p-dialog header="Informaci&oacute;n de productos registrados (Mostrador)" [(visible)]="prodMostradorWindow" [modal]="true" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  @for (most_prd of productoMostradorDetalle; track $index) {
+    <div class="col-12 explain">
+      <h6 class="title">{{'fecha_reg' | translate}}</h6>
+      <h6 class="content">{{most_prd.fecha_registro_prod}}</h6>
+    </div>
+    <div class="col-12 explain">
+      <h6 class="title">Clasificaci&oacute;n</h6>
+      <h6 class="content">{{most_prd.clasificacion_folio+' - '+most_prd.concept_class}}</h6>
+    </div>
+    <p-tabs value="0">
+      <p-tablist>
+        <p-tab value="0">Datos generales</p-tab>
+      </p-tablist>
+      <p-tabpanels>
+        <p-tabpanel value="0">
+          <div class="col-12 row">
+            <div class="input-group col-12 concepto">
+              <label for="producto_regCat" id="lblProducto" class="activeInput">Concepto / Descripci&oacute;n</label>
+              <input class="validate" name="producto_regCat" type="text" [value]="most_prd.producto" required (keyup)="keyupProdConcepto($event.target,most_prd);">
+            </div>
+            <div class="input-group col-12 col-sm-12 col-md-12 col-lg-4 col-xl-4 col-xxl-4">
+              <label for="stockmax_regCat" id="lblStockmax" class="activeInput">Precio sin impuestos {{most_prd.precio_aplicable_format}}</label>
+              <input id="textStockmax" class="validate" name="stockmax_regCat" type="number" [value]="most_prd.precio_aplicable" (keyup)="keyupPrecioAplicableProd($event.target,most_prd);">
+            </div>
+            <div class="input-group col-12 col-sm-12 col-md-12 col-lg-4 col-xl-4 col-xxl-4">
+              <label for="fechaAltaProd" class="activeInput">Unidad de medida de salida</label>
+              <datalist id="dataListUmedidaSal">
+                <option *ngFor="let medU of unidadMedidaCatalogoApi" value="{{medU.nombre}}">{{"("+medU.simbolo+") "+medU.descripcion+" ("+medU.categoria+")"}}</option>
+              </datalist>
+              <input class="req_uMedida validate" name="req_uMedida" type="text" id="req_uMedida" [value]="most_prd.unidad_medida_salida_clave" list="dataListUmedidaSal" (change)="keyupUnidadMedidaSalidaApiProd($event.target,most_prd);">
+            </div>
+            <div class="input-group col-12 col-sm-12 col-md-12 col-lg-4 col-xl-4 col-xxl-4">
+              <label class="activeInput">{{'mon_name' | translate}}</label>
+              <datalist id="inputListMonProd">
+                <option *ngFor="let arraMon of catalogoMonedasApi" [value]="arraMon.langEN">{{"código"+arraMon.code+", "+arraMon.decimales+" decimales"}}</option>
+              </datalist>
+              <input class="validate" list="inputListMonProd" type="text" id="reem_moneda_entrante" [value]="most_prd.moneda_aplicable_clave" (change)="keyupMostraVentProdValidateMonedaApi($event.target,most_prd);">
+            </div>
+            <p-divider />
+            <div class="col-12 explain">
+              <h6 class="title col-12" style="text-align: center;">Identificaci&oacute;n &uacute;nica del producto</h6>
+              <div class="col-12">
+                <ul class="list-group list_opciones">
+                  <li class="list-group-item row">
+                    <div class="input-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6" style="margin: 0!important;">
+                      <datalist id="dataListClaves">
+                        <option value="GS1">
+                        <option value="SKU">
+                        <option value="UPC">
+                      </datalist>
+                      <label class="activeInput">Est&aacute;ndar de identificaci&oacute;n</label>
+                      <input id="claveNewAlta" class="claveAltaProdProv validate" list="dataListClaves" name="txtAbrevClienteProyecto" type="text" (keyup)="keyupListaClaveInternaClaveNew($event.target);">
+                    </div>
+                    <div class="input-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6" style="margin: 0!important;">
+                      <label class="activeInput">C&oacute;digo de identificaci&oacute;n</label>
+                      <input id="claveInterna" class="claveAltaProdProv validate" name="txtClienteProyecto" type="text" (keyup)="keyupListaClaveInternaValorNew($event.target);">
+                    </div>
+                    <div class="input-group col-12" style="margin: 0!important;display: flex;justify-content: end;">
+                      <a class="btn btn_extend text-bg-success rounded-3"
+                        [ngClass]="new_clave_registro == '' || new_clave_valor == '' ? 'disabled' : ''"
+                        style="margin-bottom: 5px!important;"
+                        [attr.disabled]="new_clave_registro == '' || new_clave_valor == '' ? true : null"
+                        [attr.aria-disabled]="new_clave_registro == '' || new_clave_valor == '' ? true : null"
+                        (click)="(new_clave_registro != '' && new_clave_valor != '') && agregaClave();">
+                        <i class="fa-solid fa-plus"></i>&nbsp;{{'btn_add' | translate}}
+                      </a>
+                    </div>
+                  </li>
+                  <li class="list-group-item" *ngFor="let cpa of listaClaveProdNEW;index as pos">
+                    <div style="display: flex;justify-content: space-between;align-items: center;">
+                      {{cpa.clave_name}}
+                      <p style="margin:0!important;margin-left:10px!important;margin-right:10px!important;font-family:roboto_cr,FontAwesome;">
+                        {{cpa.valor_name}}</p>
+                      <a class="btn btn_extend text-bg-danger rounded-3 secondary-content" (click)="eliminaClave('new',pos);">
+                        <i class="fa-solid fa-eraser" style="font-size: small!important;"></i>
+                      </a>
+                    </div>
+                  </li>
+                  <li class="list-group-item" *ngFor="let cpa of listaClaveProdOLD" [ngClass]="cpa.eliminacion_proceso ? 'noneView' : ''">
+                    <div style="display: flex;justify-content: space-between;align-items: center;">
+                      {{cpa.clave_nombre}}
+                      <p style="margin:0!important;margin-left:10px!important;margin-right:10px!important;font-family:roboto_cr,FontAwesome;">{{cpa.clave_valor}}</p>
+                      <a class="btn btn_extend text-bg-danger rounded-3 secondary-content" (click)="eliminaClave('old',cpa.token_alta_clave);">
+                        <i class="fa-solid fa-eraser" style="font-size: small!important;"></i>
+                      </a>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </p-tabpanel>
+      </p-tabpanels>
+    </p-tabs>
+    <div class="col-12" style="display: flex !important;justify-content: end!important;">
+      <a class="btn btn_extend text-bg-success rounded-3" [ngClass]="!validaUpdateMostraVentProd(most_prd) ? 'disabled' : ''" [attr.disabled]="!validaUpdateMostraVentProd(most_prd) ? true :null"
+        [attr.aria-disabled]="!validaUpdateMostraVentProd(most_prd) ? true : null" type="submit" name="btnCompraDetalleC"
+        (click)="validaUpdateMostraVentProd(most_prd) && updatesMostraVentProductos(most_prd);">
+        <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+      </a>
+    </div>
+  }
+</p-dialog>
+
+<p-dialog header="Informaci&oacute;n de productos en almacen" [(visible)]="prodAlmacenWindow" [modal]="true" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  @for (det of productoAlmacenDetalle; track $index) {
+    <div class="col-12 explain">
+      <h6 class="title">Existencia total combinada:</h6>
+      <h6 class="content">{{det.existencia_total}}</h6>
+    </div>
+    @if (det.almacen_materia_prima.length > 0) {
+      <div class="col-12 card card_main">
+        <div class="card-content">
+          <span class="card-title">Materia prima</span>
+          <div class="inside">
+            @for (almMatPrima of det.almacen_materia_prima; track $index) {
+              <div class="col-12 explain">
+                <h6 class="title">Existencia total:</h6>
+                <h6 class="content">{{almMatPrima.resTotalExistMatPrim}}</h6>
+              </div>
+              <div class="col-12 explain">
+                <h6 class="title">Establecimientos relacionados:</h6>
+              </div>
+              <p-divider />
+              <div class="col-12" *ngFor="let datosDirr of almMatPrima.datosDir;index as posMP">
+                <div class="col-12 explain">
+                  <h6 class="title">Establecimiento:</h6>
+                  <h6 class="content">{{datosDirr.establecimiento_alias}}</h6>
+                </div>
+                <div class="col-12 explain">
+                  <h6 class="title">Ubicaci&oacute;n:</h6>
+                  <h6 class="content">{{datosDirr.dir_completaAlm}}</h6>
+                </div>
+                <div class="col-12 explain">
+                  <h6 class="title">Existencia:</h6>
+                  <h6 class="content">{{datosDirr.existAlm}}</h6>
+                </div>
+                <div class="col-12">
+                  <p-table [value]="datosDirr.desgloseAlm1" [tableStyle]="{'min-width': '50rem'}">
+                    <ng-template #header>
+                      <tr>
+                        <th pSortableColumn="unidad_entrada_complete">Unidad de entrada:&nbsp;<p-sortIcon field="unidad_entrada_complete"/></th>
+                        <th pSortableColumn="unidad_salida_complete">Unidad de salida:&nbsp;<p-sortIcon field="unidad_salida_complete"/></th>
+                        <th pSortableColumn="existencia">existencia&nbsp;<p-sortIcon field="existencia"/></th>
+                        <th pSortableColumn="num_serie">Num. de serie&nbsp;<p-sortIcon field="num_serie"/></th>
+                        <th pSortableColumn="num_lote">Num. de lote&nbsp;<p-sortIcon field="num_lote"/></th>
+                        <th pSortableColumn="desgloImport">P. aduanal&nbsp;<p-sortIcon field="desgloImport"/></th>
+                        <th pSortableColumn="costo_aplicable">Costo aplicable&nbsp;<p-sortIcon field="costo_aplicable"/></th>
+                        <th pSortableColumn="status_disponibilidad">Disponibilidad&nbsp;<p-sortIcon field="status_disponibilidad"/></th>
+                        <th pSortableColumn="recepcion_compra">Recepci&oacute;n de compra&nbsp;<p-sortIcon field="recepcion_compra"/></th>
+                      </tr>
+                    </ng-template>
+                    <ng-template #body let-des>
+                      <tr>
+                        <!--<td>{{des.token_detalle_almacen}}</td>-->
+                        <td>{{des.unidad_entrada_complete}}</td>
+                        <td>{{des.unidad_salida_complete}}</td>
+                        <td>{{des.existencia+" "+des.unidad_entrada_abrev+" / "+des.existencia_convert+"
+                          "+des.unidad_salida_abrev}}</td>
+                        <td>{{des.num_serie}}</td>
+                        <td>{{des.num_lote}}</td>
+                        <td>{{des.desgloImport}}</td>
+                        <td>{{des.costo_aplicable}}</td>
+                        <td>{{des.status_disponibilidad ? ['yes' | translate] : 'No'}}</td>
+                        <td>{{des.recepcion_compra}}</td>
+                      </tr>
+                    </ng-template>
+                    <ng-template pTemplate="emptymessage">
+                      <tr>
+                        <td colspan="9" class="text-center py-4">
+                          <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                          <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                            {{'no_rows' | translate}}
+                          </p>
+                        </td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
+                </div>
+                @if (posMP < almMatPrima.datosDir.length-1) {
+                  <p-divider />
+                }
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    }
+
+    @if (det.almacen_produccion.length > 0) {
+      <div class="col-12 card card_main">
+        <div class="card-content">
+          <span class="card-title">Producci&oacute;n en proceso</span>
+          <div class="inside">
+            @for (almProdProcess of det.almacen_produccion; track $index) {
+              <div class="col-12 explain">
+                <h6 class="title">Existencia total:</h6>
+                <h6 class="content">{{almProdProcess.resTotalExistProdProcess}}</h6>
+              </div>
+              <div class="col-12 explain">
+                <h6 class="title">Establecimientos relacionados:</h6>
+              </div>
+              <p-divider />
+              <div class="col-12" *ngFor="let datosDirr of almProdProcess.datosDir;index as posMP">
+                <div class="col-12 explain">
+                  <h6 class="title">Establecimiento:</h6>
+                  <h6 class="content">{{datosDirr.establecimiento_alias}}</h6>
+                </div>
+                <div class="col-12 explain">
+                  <h6 class="title">Ubicaci&oacute;n:</h6>
+                  <h6 class="content">{{datosDirr.dir_completaAlm}}</h6>
+                </div>
+                <div class="col-12 explain">
+                  <h6 class="title">Existencia:</h6>
+                  <h6 class="content">{{datosDirr.existAlm}}</h6>
+                </div>
+                <div class="col-12">
+                  <p-table [value]="datosDirr.desgloseAlm2" [tableStyle]="{'min-width': '50rem'}">
+                    <ng-template #header>
+                      <tr>
+                        <th pSortableColumn="unidad_entrada_complete">Unidad de entrada:&nbsp;<p-sortIcon field="unidad_entrada_complete"/></th>
+                        <th pSortableColumn="unidad_salida_complete">Unidad de salida:&nbsp;<p-sortIcon field="unidad_salida_complete"/></th>
+                        <th pSortableColumn="existencia">existencia&nbsp;<p-sortIcon field="existencia"/></th>
+                        <th pSortableColumn="num_serie">Num. de serie&nbsp;<p-sortIcon field="num_serie"/></th>
+                        <th pSortableColumn="num_lote">Num. de lote&nbsp;<p-sortIcon field="num_lote"/></th>
+                        <th pSortableColumn="desgloImport">P. aduanal&nbsp;<p-sortIcon field="desgloImport"/></th>
+                        <th pSortableColumn="costo_aplicable">Costo aplicable&nbsp;<p-sortIcon field="costo_aplicable"/></th>
+                        <th pSortableColumn="status_disponibilidad">Disponibilidad&nbsp;<p-sortIcon field="status_disponibilidad"/></th>
+                        <th pSortableColumn="recepcion_compra">Recepci&oacute;n de compra&nbsp;<p-sortIcon field="recepcion_compra"/></th>
+                      </tr>
+                    </ng-template>
+                    <ng-template #body let-des>
+                      <tr>
+                        <!--<td>{{des.token_detalle_almacen}}</td>-->
+                        <td>{{des.unidad_entrada_complete}}</td>
+                        <td>{{des.unidad_salida_complete}}</td>
+                        <td>{{des.existencia+" "+des.unidad_entrada_abrev+" / "+des.existencia_convert+"
+                          "+des.unidad_salida_abrev}}</td>
+                        <td>{{des.num_serie}}</td>
+                        <td>{{des.num_lote}}</td>
+                        <td>{{des.desgloImport}}</td>
+                        <td>{{des.costo_aplicable}}</td>
+                        <td>{{des.status_disponibilidad ? ['yes' | translate] : 'No'}}</td>
+                        <td>{{des.recepcion_compra}}</td>
+                      </tr>
+                    </ng-template>
+                    <ng-template pTemplate="emptymessage">
+                      <tr>
+                        <td colspan="9" class="text-center py-4">
+                          <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                          <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                            {{'no_rows' | translate}}
+                          </p>
+                        </td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
+                </div>
+                @if (posMP < almProdProcess.datosDir.length-1) {
+                  <p-divider />
+                }
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    }
+
+    @if (det.almacen_producto_final.length > 0) {
+      <div class="col-12 card card_main">
+        <div class="card-content">
+          <span class="card-title">Producto terminado/alm. general</span>
+          <div class="inside">
+            @for (almProdFin of det.almacen_producto_final; track $index) {
+              <div class="col-12 explain">
+                <h6 class="title">Existencia total:</h6>
+                <h6 class="content">{{almProdFin.resTotalExistProdTerminado}}</h6>
+              </div>
+              <div class="col-12 explain">
+                <h6 class="title">Establecimientos relacionados:</h6>
+              </div>
+              <p-divider />
+              <div class="col-12" *ngFor="let datosDirr of almProdFin.datosDir;index as posMP">
+                <div class="col-12 explain">
+                  <h6 class="title">Establecimiento:</h6>
+                  <h6 class="content">{{datosDirr.establecimiento_alias}}</h6>
+                </div>
+                <div class="col-12 explain">
+                  <h6 class="title">Ubicaci&oacute;n:</h6>
+                  <h6 class="content">{{datosDirr.dir_completaAlm}}</h6>
+                </div>
+                <div class="col-12 explain">
+                  <h6 class="title">Existencia:</h6>
+                  <h6 class="content">{{datosDirr.existAlm}}</h6>
+                </div>
+                <div class="col-12">
+                  <p-table [value]="datosDirr.desgloseAlm3" [tableStyle]="{'min-width': '50rem'}">
+                    <ng-template #header>
+                      <tr>
+                        <th pSortableColumn="unidad_entrada_complete">Unidad de entrada:&nbsp;<p-sortIcon field="unidad_entrada_complete"/></th>
+                        <th pSortableColumn="unidad_salida_complete">Unidad de salida:&nbsp;<p-sortIcon field="unidad_salida_complete"/></th>
+                        <th pSortableColumn="existencia">existencia&nbsp;<p-sortIcon field="existencia"/></th>
+                        <th pSortableColumn="num_serie">Num. de serie&nbsp;<p-sortIcon field="num_serie"/></th>
+                        <th pSortableColumn="num_lote">Num. de lote&nbsp;<p-sortIcon field="num_lote"/></th>
+                        <th pSortableColumn="desgloImport">P. aduanal&nbsp;<p-sortIcon field="desgloImport"/></th>
+                        <th pSortableColumn="costo_aplicable">Costo aplicable&nbsp;<p-sortIcon field="costo_aplicable"/></th>
+                        <th pSortableColumn="status_disponibilidad">Disponibilidad&nbsp;<p-sortIcon field="status_disponibilidad"/></th>
+                        <th pSortableColumn="recepcion_compra">Recepci&oacute;n de compra&nbsp;<p-sortIcon field="recepcion_compra"/></th>
+                      </tr>
+                    </ng-template>
+                    <ng-template #body let-des>
+                      <tr>
+                        <!--<td>{{des.token_detalle_almacen}}</td>-->
+                        <td>{{des.unidad_entrada_complete}}</td>
+                        <td>{{des.unidad_salida_complete}}</td>
+                        <td>{{des.existencia+" "+des.unidad_entrada_abrev+" / "+des.existencia_convert+" "+des.unidad_salida_abrev}}</td>
+                        <td>{{des.num_serie}}</td>
+                        <td>{{des.num_lote}}</td>
+                        <td>{{des.desgloImport}}</td>
+                        <td>{{des.costo_aplicable}}</td>
+                        <td>{{des.status_disponibilidad ? ['yes' | translate] : 'No'}}</td>
+                        <td>{{des.recepcion_compra}}</td>
+                      </tr>
+                    </ng-template>
+                    <ng-template pTemplate="emptymessage">
+                      <tr>
+                        <td colspan="9" class="text-center py-4">
+                          <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                          <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                            {{'no_rows' | translate}}
+                          </p>
+                        </td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
+                </div>
+                @if (posMP < almProdFin.datosDir.length-1) {
+                  <p-divider />
+                }
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    }
+  }
+</p-dialog>
+
+<p-dialog header="Categor&iacute;as de productos" [(visible)]="prdCategoriasWindow" [modal]="true"
+  [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  @if (prdCategoriasWindow) {
+    <app-productos-categorias></app-productos-categorias>
+  }
+</p-dialog>
+
+<p-dialog header="Registrar nuevo producto para inventarios" [(visible)]="registroPrdInventarioWindow" [modal]="true"
+  [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  @if (registroPrdInventarioWindow) {
+    <app_productos_inventarios_registro></app_productos_inventarios_registro>
+  }
+</p-dialog>
+
+<p-dialog header="Registrar nuevo producto para ventas a mostrador" [(visible)]="registroPrdMostradorWindow"
+  [modal]="true" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }"
+  [maximizable]="true">
+  @if (registroPrdMostradorWindow) {
+    <app-productos-vmostrador-registro></app-productos-vmostrador-registro>
+  }
+</p-dialog>
+
+<p-dialog header="Informaci&oacute;n de productos eliminados" [(visible)]="listaPrdDeletedWindow" [modal]="true" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  <p-table #productosDeletedList [value]="listaProductosFALSE"
+    [globalFilterFields]="['folio_prod','producto','sat_clave_code','modulo_destino','token_cat_productos']"
+    dataKey="id" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]">
+    <ng-template #caption>
+      <div class="flex">
+        <p-iconfield iconPosition="left" class="ml-auto">
+          <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+          <input pInputText type="text"
+            (input)="productosDeletedList.filterGlobal($event.target.value, 'contains')"
+            placeholder="{{'bus_car' | translate}}" />
+        </p-iconfield>
+      </div>
+    </ng-template>
+    <ng-template #header>
+      <tr>
+        <th class="ultimo"></th>
+        <th pSortableColumn="folio_prod">folio &nbsp;<p-sortIcon field="folio"/></th>
+        <th pSortableColumn="producto" class="name">producto &nbsp;<p-sortIcon field="producto"/></th>
+        <th pSortableColumn="sat_clave_code">catalogo de sat &nbsp;<p-sortIcon field="catalogo de sat"/></th>
+        <th pSortableColumn="modulo_destino">m&oacute;dulo &nbsp;<p-sortIcon field="m&oacute;dulo"/></th>
+        <th class="ultimo"></th>
+        <th class="ultimo"></th>
+      </tr>
+    </ng-template>
+    <ng-template #body let-rowDel>
+      <tr>
+        <td class="img_dat">
+          <div class="col-12"><img class="circle optimizedImage" fill
+              ngSrc="./assets/images/catalogos/default_producto.jpg" alt=""></div>
+        </td>
+        <td>{{rowDel.folio_prod}}</td>
+        <td class="name">{{rowDel.producto}}</td>
+        <td>{{rowDel.sat_clave_code}}</td>
+        <td>{{rowDel.modulo_destino | translate}}</td>
+        <td class="ultimo">
+          <a class="btn bg-teal-700 btn_extend"
+            (click)="btnRestProdListaPap($event.target,rowDel.token_cat_productos);"><i
+              class="fa-solid fa-trash-arrow-up"></i>&nbsp;{{'restore_row' | translate}}</a>
+        </td>
+        <td class="ultimo">
+          <a class="btn text-bg-danger rounded-3 btn_extend"
+            (click)="btnDelProdListaPap($event.target,rowDel.token_cat_productos);"><i
+              class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}</a>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="7" class="text-center py-4">
+          <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+          <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+            {{'no_rows' | translate}}
+          </p>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</p-dialog>

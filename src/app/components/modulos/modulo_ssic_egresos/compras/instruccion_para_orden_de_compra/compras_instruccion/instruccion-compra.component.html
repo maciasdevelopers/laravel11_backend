@@ -1,0 +1,604 @@
+<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco" #vContent>
+  <div class="contenido"><app-loader></app-loader>
+    <nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+    <div class="contenidoPagina">
+      <div class="listas_ps revanecer">
+        <div class="lista-div lista-divNoFlex">
+          <h4>Cotizaciones autorizadas</h4>
+
+          <h6 *ngIf="!permiso_consulta" class="access_denied">{{'perm_denied' | translate}}</h6>
+          <div class="col-12" *ngIf="permiso_consulta">
+            <div class="col-12">
+              <div class="btn-group lista_botones col" role="group" aria-label="elemplo">
+                <a (click)="cotizaciones_lista();" class="btn btn_extend bg-indigo-600">
+                  <i class="fa-solid fa-rotate" style="margin-left: 5px;"></i>&nbsp;{{'list_updt' | translate}}</a>
+              </div>
+            </div>
+
+            <div class="col-12" *ngIf="view_lista_cotizaciones == true">
+              <table id="buy_table_cotizaciones" class="display nowrap mdl-data-table white centered"
+                style="width:100%!important;margin:0!important;">
+                <thead>
+                  <tr>
+                    <th class="ultimo"></th>
+                    <th>folio</th>
+                    <th>{{'fecha_reg' | translate}}</th>
+                    <th>requisici&oacute;n</th>
+                    <th>{{'aplicante' | translate}}</th>
+                    <th class="ultimo"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let lCot of lista_cotizaciones_auth;index as posMain">
+                    <td class="ultimo">
+                      <a class="btn bg-blue-600"
+                        (click)="cotizacion_seleccionar(lCot.requisicion_tkn,lCot.cotizacion_tkn,lCot.coti_token_detalle_cotizacion,lCot.coti_token_desc_detalle_cotiza);"
+                        data-bs-toggle="modal" data-bs-target="#windowCotizacion"><i class="fa-solid fa-info"></i></a>
+                    </td>
+                    <td>{{lCot.cotizacion_folio}}</td>
+                    <td>{{lCot.cotizacion_fecha}}</td>
+                    <td>{{lCot.requisicion_folio}}</td>
+                    <td>{{lCot.cotizacion_persona}}</td>
+                    <td class="ultimo">
+                      <a class="btn btn_extend bg-blue-600"
+                        [ngClass]="lCot.coti_inside_contacto_proveedor ? 'disabled' : ''"
+                        [attr.disabled]="lCot.coti_inside_contacto_proveedor ? true : null"
+                        [attr.aria-disabled]="lCot.coti_inside_contacto_proveedor ? true : null"
+                        (click)="!lCot.coti_inside_contacto_proveedor && cotizacion_confirmar_contactoProv(lCot.cotizacion_tkn,lCot.coti_token_detalle_cotizacion,lCot.coti_token_desc_detalle_cotiza);">{{lCot.coti_inside_contacto_proveedor
+                        ? 'Contacto con proveedor está confirmado' : 'Confirmar contacto con proveedor'}}</a>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <div class="modal fade bd-example-modal-lg" id="windowCotizacion" tabindex="-1" role="dialog"
+                aria-labelledby="windowCotizacionLabel" aria-hidden="true">
+                <div class="modal-dialog modal-fullscreen" style="margin: 1%;width: 98%!important;">
+                  <div class="modal-content" *ngIf="cotizacion_selected.length > 0">
+                    <div class="modal-header">
+                      <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="windowCotizacionLabel">Cotizaciones
+                        autorizadas</h1>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                        style="background-color: transparent !important;"></button>
+                    </div>
+                    <div class="modal-body" *ngFor="let dCot of cotizacion_selected"
+                      style="align-items: start!important;flex-direction: row;height:auto!important;">
+                      <div class="card-content col-12 row">
+                        <div class="col-12">
+                          <span class="card-title"
+                            style="text-align: left;display: flex;justify-content: flex-start;align-items: center;">
+                            <a class="btn bg-red-700" target="_blank" [href]="dCot.cotizacion_pdf"
+                              style="margin-right: 5px!important;">
+                              <i class="fa-solid fa-file-pdf" style="font-size: 15px;"></i></a>{{dCot.cotizacion_folio+"
+                            "+dCot.requi_necesidad_concepto+" ("+dCot.requi_necesidad_tipo+")"}}
+                          </span>
+                        </div>
+                        <div class="col-12 inside">
+                          <div class="col-12" style="border-top: solid 1px lightgray!important;padding:0!important;">
+                            <div class="col-12 row" style="padding: 0;">
+                              <div class="col-12 explain">
+                                <h6 class="title">Cotizaci&oacute;n</h6>
+                                <h6 class="content">{{dCot.cotizacion_folio}}</h6>
+                              </div>
+                              <div class="col-12 explain">
+                                <h6 class="title">{{'aplicante' | translate}}</h6>
+                                <h6 class="content">{{dCot.cotizacion_persona+"
+                                  "}}<strong>{{dCot.cotizacion_fecha}}</strong></h6>
+                              </div>
+                              <div class="col-12 explain">
+                                <h6 class="title">{{dCot.cotizacion_auth_mensaje}}</h6>
+                              </div>
+                              <div class="col-12 explain">
+                                <h6 class="title">Especificaciones</h6>
+                                <h6 class="content">{{dCot.coti_inside_especificaciones}}</h6>
+                              </div>
+                              <div class="col-12 explain">
+                                <h6 class="title">Cantidad</h6>
+                                <h6 class="content">{{dCot.coti_inside_cantidad+", "}}<strong>Precio</strong>{{"
+                                  "+dCot.coti_inside_precio+", "}}
+                                  <strong>Tipo de cambio</strong>{{" "+dCot.coti_inside_tipo_cambio+",
+                                  "}}<strong>Conversi&oacute;n</strong>{{" "+dCot.coti_inside_conversion}}
+                                </h6>
+                              </div>
+                              <div class="col-12 explain">
+                                <h6 class="title">Calidad</h6>
+                                <h6 class="content">{{dCot.coti_inside_calidad+", "}}<strong>Servicio</strong>{{"
+                                  "+dCot.coti_inside_servicio}}</h6>
+                              </div>
+                              <div class="col-12 explain">
+                                <h6 class="title">Tipo y tiempo de entrega</h6>
+                                <h6 class="content">{{dCot.coti_inside_entrega_tipo_extend+"
+                                  "+dCot.coti_inside_entrega_tiempo}}</h6>
+                              </div>
+                              <div class="col-12 col-sm-4 col-md-4 col-lg-4 col-xl-4 col-xxl-4 explain">
+                                <h6 class="title">Descuento</h6>
+                                <h6 class="content">{{dCot.coti_inside_descuento == 'N/A' ? [0 |
+                                  numeralFormat:'$0,0.00'] : dCot.coti_inside_descuento}}</h6>
+                              </div>
+                              <div class="col-12 col-sm-4 col-md-4 col-lg-4 col-xl-4 col-xxl-4 explain">
+                                <h6 class="title">Retenciones</h6>
+                                <h6 class="content">{{dCot.coti_inside_retenciones}}</h6>
+                              </div>
+                              <div class="col-12 col-sm-4 col-md-4 col-lg-4 col-xl-4 col-xxl-4 explain">
+                                <h6 class="title">Traslados</h6>
+                                <h6 class="content">{{dCot.coti_inside_traslados}}</h6>
+                              </div>
+                              <div class="col-12 col-sm-4 col-md-4 col-lg-4 col-xl-4 col-xxl-4 explain">
+                                <h6 class="title">Cr&eacute;ditos</h6>
+                                <h6 class="content" *ngIf="dCot.coti_inside_credito_otorga == false">N/A</h6>
+                                <h6 class="content" *ngIf="dCot.coti_inside_credito_otorga == true">
+                                  {{dCot.coti_inside_credito_time}}</h6>
+                              </div>
+                              <div class="col-12 col-sm-4 col-md-4 col-lg-4 col-xl-4 col-xxl-4 explain">
+                                <h6 class="title">Garant&iacute;a</h6>
+                                <h6 class="content">{{dCot.coti_inside_garantia}}</h6>
+                              </div>
+                              <div class="col-12 col-sm-4 col-md-4 col-lg-4 col-xl-4 col-xxl-4 explain">
+                                <h6 class="title">{{'uni_med' | translate}}</h6>
+                                <h6 class="content">{{dCot.coti_inside_umed_name}}</h6>
+                              </div>
+                              <div class="col-12 col-sm-4 col-md-4 col-lg-4 col-xl-4 col-xxl-4 explain">
+                                <h6 class="title">Forma de pago</h6>
+                                <h6 class="content">{{dCot.coti_inside_fpay_forma}}</h6>
+                              </div>
+                              <div class="col-12 col-sm-4 col-md-4 col-lg-4 col-xl-4 col-xxl-4 explain">
+                                <h6 class="title">M&eacute;todo de pago</h6>
+                                <h6 class="content">{{dCot.coti_inside_mpay_metodo}}</h6>
+                              </div>
+                              <div class="col-12 col-sm-4 col-md-4 col-lg-4 col-xl-4 col-xxl-4 explain">
+                                <h6 class="title">Valoraci&oacute;n</h6>
+                                <h6 class="content">{{dCot.coti_inside_valoracion}}</h6>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-12" style="border-top: solid 1px lightgray!important;padding:0!important;">
+                            <div class="col-12 row" style="padding: 0;">
+                              <div class="col-12 explain">
+                                <h6 class="title">Requisici&oacute;n</h6>
+                                <h6 class="content">{{dCot.requisicion_folio}}<strong>{{" "+dCot.requisicion_proyecto+"
+                                    ("+dCot.requisicion_empresa+")"}}</strong></h6>
+                              </div>
+                              <div class="col-12 explain">
+                                <h6 class="title">{{'aplicante' | translate}}</h6>
+                                <h6 class="content">{{dCot.requisicion_pers_requiere}}<strong>{{"
+                                    "+dCot.requisicion_fecha_registro}}</strong></h6>
+                              </div>
+                              <div class="col-12 explain">
+                                <h6 class="title">{{dCot.requi_necesidad_auth_mensaje}}</h6>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-12" style="border-top: solid 1px lightgray!important;padding:0!important;"
+                            *ngFor="let prVd of dCot.proveedor_data">
+                            <div class="col-12 row" style="padding: 0;">
+                              <div class="col-12 card card_main" style="margin-bottom: 5px!important;">
+                                <div class="card-content">
+                                  <span class="card-title">{{['prov' | translate]+" "+prVd.folio_proveedor+"
+                                    "+prVd.nombre_proveedor_header}}</span>
+                                  <div class="inside">
+                                    <div class="col-12 row">
+                                      <div class="col-12 col-sm-4 col-md-4 col-lg-4 col-xl-4 col-xxl-4 explain">
+                                        <h6 class="title">Clasificaci&oacute;n del proveedor</h6>
+                                        <h6 class="content">{{prVd.subClasificacionAll}}</h6>
+                                      </div>
+                                      <div class="col-12 col-sm-4 col-md-4 col-lg-4 col-xl-4 col-xxl-4 explain">
+                                        <h6 class="title">Rfc/idTax</h6>
+                                        <h6 class="content">{{prVd.identificador}}</h6>
+                                      </div>
+                                      <div class="col-12 col-sm-4 col-md-4 col-lg-4 col-xl-4 col-xxl-4 explain">
+                                        <h6 class="title">Nombre comercial</h6>
+                                        <h6 class="content">{{prVd.nombre_comercial == "" ? ": Este proveedor no cuenta
+                                          con nombre comercial" : " "+prVd.nombre_comercial}}</h6>
+                                      </div>
+                                      <div class="col-12 col-sm-4 col-md-4 col-lg-4 col-xl-4 col-xxl-4 explain">
+                                        <h6 class="title">Sitio web</h6>
+                                        <h6 class="content">{{prVd.sitio_web == "" ? ": Este proveedor no tiene un sitio
+                                          web" : " "+prVd.sitio_web}}</h6>
+                                      </div>
+                                      <div class="col-12 col-sm-4 col-md-4 col-lg-4 col-xl-4 col-xxl-4 explain">
+                                        <h6 class="title">R&eacute;gimen fiscal</h6>
+                                        <h6 class="content">{{prVd.regimen_fiscal_descripcion}}</h6>
+                                      </div>
+                                    </div>
+                                    <div class="col-12 row"
+                                      style="border-top: solid 2px lightgray!important;padding: 0 !important;">
+                                      <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain">
+                                        <h6 class="title">Utiliza informaci&oacute;n de contacto</h6>
+                                      </div>
+                                      <div
+                                        class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                                        <label class="form-check-label" for="flexSwitchCheckReverse">No</label>
+                                        <input class="form-check-input" type="checkbox"
+                                          [checked]="prVd.tiene_contacto_registrado == true"
+                                          (click)="decideocupaContacto($event.target);">
+                                        <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' |
+                                          translate}}</label>
+                                      </div>
+
+                                      <div id="decideinfocontacto" class="col-12"
+                                        [ngClass]="prVd.tiene_contacto_registrado == false ? 'noneView' : ''"
+                                        style="padding: 0;">
+                                        <div class="col-12 explain">
+                                          <h6 class="title">Contactos registrados</h6>
+                                          <div class="col-12">
+                                            <p-table #dt [value]="prVd.contacto_registrado" dataKey="id"
+                                              [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]"
+                                              [globalFilterFields]="['nombre']">
+                                              <ng-template pTemplate="header">
+                                                <tr>
+                                                  <th pSortableColumn="paterno">Apellido Paterno&nbsp;<p-sortIcon
+                                                      field="paterno" /></th>
+                                                  <th pSortableColumn="materno">Apellido Materno&nbsp;<p-sortIcon
+                                                      field="materno" /></th>
+                                                  <th pSortableColumn="nombre">Nombre(s)&nbsp;<p-sortIcon
+                                                      field="nombre" /></th>
+                                                  <th pSortableColumn="area_contacto">&aacute;rea&nbsp;<p-sortIcon
+                                                      field="area_contacto" /></th>
+                                                  <th pSortableColumn="cargo_contacto">Cargo&nbsp;<p-sortIcon
+                                                      field="cargo_contacto" /></th>
+                                                  <th class="ultimo"></th>
+                                                  <th class="ultimo"></th>
+                                                </tr>
+                                              </ng-template>
+                                              <ng-template pTemplate="body" let-cont>
+                                                <tr>
+                                                  <td>{{cont.paterno}}</td>
+                                                  <td>{{cont.materno}}</td>
+                                                  <td>{{cont.nombre}}</td>
+                                                  <td>{{cont.area_contacto}}</td>
+                                                  <td>{{cont.cargo_contacto}}</td>
+                                                  <td>
+                                                    <a class="btn btn_extend bg-indigo-600" (click)="verEmails(cont);">
+                                                      <i class="fa-solid fa-at"
+                                                        style="width: 25px !important;height: 25px !important;line-height: 25px !important;font-size: 15px;text-align: center;"></i>&nbsp;{{'email_catalogo'
+                                                      | translate}}
+                                                    </a>
+                                                  </td>
+                                                  <td>
+                                                    <a class="btn btn_extend bg-indigo-600"
+                                                      (click)="verTelefonos(cont);">
+                                                      <i class="fa-solid fa-phone"
+                                                        style="width: 25px !important;height: 25px !important;line-height: 25px !important;font-size: 15px;text-align: center;"></i>&nbsp;{{'phone_catalog'
+                                                      | translate}}
+                                                    </a>
+                                                  </td>
+                                                </tr>
+                                                <tr *ngIf="cont === contactoSeleccionadoEmails">
+                                                  <td colspan="8">
+                                                    <div class="col-12">
+                                                      <div class="col-12 explain explain_column">
+                                                        <h6 class="title">{{'email_catalogo' | translate}}</h6>
+                                                        <div class="col-12">
+                                                          <div class="col-12 row">
+                                                            <p-table #correosContacto [value]="cont.correos"
+                                                              [globalFilterFields]="['correo']" dataKey="idEmails"
+                                                              [paginator]="true" [rows]="10"
+                                                              [rowsPerPageOptions]="[10,20,30,50,100]">
+                                                              <ng-template #caption>
+                                                                <div class="flex">
+                                                                  <p-iconfield iconPosition="left" class="ml-auto">
+                                                                    <p-inputicon><i
+                                                                        class="pi pi-search"></i></p-inputicon>
+                                                                    <input pInputText type="text"
+                                                                      (input)="correosContacto.filterGlobal($event.target.value, 'contains')"
+                                                                      placeholder="{{'bus_car' | translate}}" />
+                                                                  </p-iconfield>
+                                                                </div>
+                                                              </ng-template>
+                                                              <ng-template #header>
+                                                <tr>
+                                                  <th>No.</th>
+                                                  <th pSortableColumn="correo">Caja&nbsp;<p-sortIcon
+                                                      field="correo" />email</th>
+                                                </tr>
+                                              </ng-template>
+                                              <ng-template #body let-mail let-i="rowIndex">
+                                                <tr>
+                                                  <td>{{i+1}}</td>
+                                                  <td>{{mail.correo}}</td>
+                                                </tr>
+                                              </ng-template>
+                                              <ng-template pTemplate="emptymessage">
+                                                <tr>
+                                                  <td colspan="2" class="text-center py-4">
+                                                    <i class="fa-solid fa-box-open"
+                                                      style="font-size: 2rem; color: #6b7280;"></i>
+                                                    <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                                      {{'no_rows' | translate}}
+                                                    </p>
+                                                  </td>
+                                                </tr>
+                                              </ng-template>
+                                            </p-table>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    </td>
+                                    </tr>
+                                    <tr *ngIf="cont === contactoSeleccionadoPhone">
+                                      <td colspan="8">
+                                        <div class="col-12">
+                                          <div class="col-12 explain explain_column">
+                                            <h6 class="title">{{'phone_catalog' | translate}}</h6>
+                                            <div class="col-12">
+                                              <div class="col-12 row">
+                                                <p-table #contTelefonos [value]="cont.telefonos"
+                                                  [globalFilterFields]="['etiqueta','telefono','extension']"
+                                                  dataKey="idPhone" [paginator]="true" [rows]="10"
+                                                  [rowsPerPageOptions]="[10,20,30,50,100]">
+                                                  <ng-template #caption>
+                                                    <div class="flex">
+                                                      <p-iconfield iconPosition="left" class="ml-auto">
+                                                        <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                                                        <input pInputText type="text"
+                                                          (input)="contTelefonos.filterGlobal($event.target.value, 'contains')"
+                                                          placeholder="{{'bus_car' | translate}}" />
+                                                      </p-iconfield>
+                                                    </div>
+                                                  </ng-template>
+                                                  <ng-template #header>
+                                    <tr>
+                                      <th>No.</th>
+                                      <th>Tipo de tel&eacute;fono</th>
+                                      <th>{{'teléfono'}}</th>
+                                      <th>{{'extensión'}}</th>
+                                    </tr>
+                                    </ng-template>
+                                    <ng-template #body let-tel let-i="rowIndex">
+                                      <tr>
+                                        <td>{{i+1}}</td>
+                                        <td>{{tel.etiqueta}}</td>
+                                        <td>
+                                          <form #f="ngForm">
+                                            <ngx-material-intl-tel-input [fieldControl]="tel.phoneForm.get('phone')"
+                                              [preferredCountries]="tel.preferredCountries" [enablePlaceholder]="true"
+                                              maxLength="15" name="phone">
+                                            </ngx-material-intl-tel-input>
+                                          </form>
+                                        </td>
+                                        <td>{{tel.extension != '---' ? tel.extension : ''}}</td>
+                                      </tr>
+                                    </ng-template>
+                                    <ng-template pTemplate="emptymessage">
+                                      <tr>
+                                        <td colspan="4" class="text-center py-4">
+                                          <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                                          <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                            {{'no_rows' | translate}}
+                                          </p>
+                                        </td>
+                                      </tr>
+                                    </ng-template>
+                                    </p-table>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            </td>
+                            </tr>
+                            </ng-template>
+                            <ng-template pTemplate="emptymessage">
+                              <tr>
+                                <td colspan="7" class="text-center py-4">
+                                  <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                                  <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                    {{'no_rows' | translate}}
+                                  </p>
+                                </td>
+                              </tr>
+                            </ng-template>
+                            </p-table>
+                          </div>
+                        </div>
+                      </div>
+
+                    </div>
+                    <div class="col-12" *ngIf="prVd.tiene_docs_fiscales == true"
+                      style="border-top: solid 1px lightgray!important;padding: 0 !important;">
+                      <div class="col-12 explain">
+                        <h6 class="title">¿Cuenta con documentaci&oacute;n fiscal?</h6>
+                        <div class="col-12 row" style="padding: 0;">
+                          <div class="col-12 row">
+                            <p-table #prVdDocsAdj [value]="prVd.docs_adjuntos"
+                              [globalFilterFields]="['tipo_documento','name_documento']" dataKey="id" [paginator]="true"
+                              [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]">
+                              <ng-template #caption>
+                                <div class="flex">
+                                  <p-iconfield iconPosition="left" class="ml-auto">
+                                    <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                                    <input pInputText type="text"
+                                      (input)="prVdDocsAdj.filterGlobal($event.target.value, 'contains')"
+                                      placeholder="{{'bus_car' | translate}}" />
+                                  </p-iconfield>
+                                </div>
+                              </ng-template>
+                              <ng-template #header>
+                                <tr>
+                                  <th>No.</th>
+                                  <th pSortableColumn="tipo_documento">{{'file_name' | translate}}&nbsp;<p-sortIcon
+                                      field="tipo_documento" /></th>
+                                  <th class="ultimo"></th>
+                                </tr>
+                              </ng-template>
+                              <ng-template #body let-docs let-i="rowIndex">
+                                <tr>
+                                  <td>{{i+1}}</td>
+                                  <td>{{docs.tipo_documento+" ("+docs.name_documento+")"}}</td>
+                                  <td class="ultimo"><a class="btn btn_extend text-bg-primary rounded-4"
+                                      href="{{docs.url}}" target="_blank"><i class="fa-solid fa-globe"></i></a></td>
+                                </tr>
+                              </ng-template>
+                              <ng-template pTemplate="emptymessage">
+                                <tr>
+                                  <td colspan="3" class="text-center py-4">
+                                    <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                                    <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                      {{'no_rows' | translate}}
+                                    </p>
+                                  </td>
+                                </tr>
+                              </ng-template>
+                            </p-table>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-12 row" style="border-top: solid 2px lightgray!important;padding: 0 !important;">
+                      <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain">
+                        <h6 class="title">¿Ofrece credito?</h6>
+                      </div>
+                      <div
+                        class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                        <label class="form-check-label" for="flexSwitchCheckReverse">No</label>
+                        <input class="form-check-input" type="checkbox" [checked]="prVd.tieneCreditoAsignado == true"
+                          (click)="aceptaCreditoProv($event.target);">
+                        <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                      </div>
+                      <div id="decidecredito" class="col-12"
+                        [ngClass]="prVd.tieneCreditoAsignado_edit == false ? 'noneView' : ''" style="padding: 0;">
+                        <div class="col-12 row" style="margin-bottom: 5px!important;">
+                          <table class="centered white">
+                            <thead>
+                              <tr>
+                                <th>Moneda</th>
+                                <th>L&iacute;mite de credito</th>
+                                <th>D&iacute;as de pago</th>
+                                <th>Comienzo del computo de d&iacute;as de cr&eacute;dito</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td>{{prVd.tieneCreditoAsignado == true ? prVd.creditos_moneda_code : ''}}</td>
+                                <td>{{prVd.tieneCreditoAsignado == true ? prVd.creditos_limite : ''}}</td>
+                                <td>{{prVd.tieneCreditoAsignado == true ? prVd.creditos_dias : ''}}</td>
+                                <td>{{prVd.tieneCreditoAsignado == true ? (prVd.creditos_comienza == 'cada.inicio.mes' ?
+                                  'Cada inicio de mes' : (prVd.creditos_comienza == 'sistem.emite.orden.pago' ? 'Se
+                                  emite/envía orden de pago' :
+                                  (prVd.creditos_comienza == 'serecibe.facturadel.proveedor' ? 'Se recibe factura del
+                                  proveedor' : (prVd.creditos_comienza == 'producto.sale.bodegas.proveedor' ? 'El
+                                  producto salga de las bodegas del proveedor' : 'El producto es recibido en nuestras
+                                  bodegas')))) : ''}}
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-12" style="border-top: solid 1px lightgray!important;padding:0!important;">
+                      <div class="col-12 row">
+                        <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain">
+                          <h6 class="title">¿Cuenta con forma de pago?</h6>
+                        </div>
+                        <div
+                          class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                          <label class="form-check-label" for="flexSwitchCheckReverse">No</label>
+                          <input class="form-check-input" type="checkbox" [checked]="prVd.forma_pago_tiene == true"
+                            (click)="tieneFormaPagoProv($event.target);">
+                          <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                        </div>
+                      </div>
+                      <div id="decideformapagoDetail" class="col-12"
+                        [ngClass]="prVd.forma_pago_tiene_edit == false ? 'noneView' : ''" style="padding: 0;">
+                        <div class="col-12 explain">
+                          <h6 class="title">Forma de cobro</h6>
+                          <h6 class="content">{{prVd.forma_pago_tiene == true ? prVd.forma_pago_concepto : ''}}</h6>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-12 row" style="border-top: solid 2px lightgray!important;padding: 0 !important;">
+                      <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain">
+                        <h6 class="title">¿Recibe factura antes o despues del pago?</h6>
+                      </div>
+                      <div
+                        class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                        <label class="form-check-label" for="flexSwitchCheckReverse">Despues</label>
+                        <input class="form-check-input" type="checkbox" [checked]="prVd.emisionFacturas == true">
+                        <label class="form-check-label" for="flexSwitchCheckReverse">Antes</label>
+                      </div>
+                    </div>
+                    <div class="col-12 row" style="border-top: solid 2px lightgray!important;padding: 0 !important;">
+                      <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9 explain">
+                        <h6 class="title">¿Recibes el producto o servicio antes o despues del pago?</h6>
+                      </div>
+                      <div
+                        class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario">
+                        <label class="form-check-label" for="flexSwitchCheckReverse">Despues</label>
+                        <input class="form-check-input" type="checkbox" [checked]="prVd.envioArtAfterCobro == true">
+                        <label class="form-check-label" for="flexSwitchCheckReverse">Antes</label>
+                      </div>
+                    </div>
+                    <div class="col-12" style="border-top: solid 1px lightgray!important;padding:0!important;">
+                      <div class="col-12 explain">
+                        <h6 class="title">DIRECCIONES (UBICACI&Oacute;N)</h6>
+                      </div>
+                      <div class="col-12 row" style="padding: 0;" *ngFor="let dir of prVd.ubicaciones">
+                        <div class="col-12 explain">
+                          <h6 class="title">Pa&iacute;s</h6>
+                          <h6 class="content">{{(dir.pais == '118' ? 'México' : dir.pais)+' '}}<strong>Clase</strong>{{'
+                            '+dir.clase+' '}}<strong>Tipo</strong>{{' '+dir.tipo_direccion}}</h6>
+                        </div>
+                        <div class="col-12" style="padding: 0 !important;" *ngIf="dir.pais == '118'">
+                          <p-table #dt [value]="nuevo_contacto_form" dataKey="id">
+                            <ng-template pTemplate="header">
+                              <tr>
+                                <th pSortableColumn="estado_main">Estado&nbsp;<p-sortIcon field="estado_main" /></th>
+                                <th pSortableColumn="municipio_main">Municipio&nbsp;<p-sortIcon
+                                    field="municipio_main" /></th>
+                                <th pSortableColumn="c_postal_main">C&oacute;digo postal&nbsp;<p-sortIcon
+                                    field="c_postal_main" /></th>
+                                <th pSortableColumn="colonia_main">Colonia&nbsp;<p-sortIcon field="colonia_main" /></th>
+                                <!--<th class="ultimo"></th>-->
+                              </tr>
+                            </ng-template>
+                            <ng-template pTemplate="body" let-ubi let-editing="editing">
+                              <tr>
+                                <td>{{dir.estado_main}}</td>
+                                <td>{{dir.municipio_main}}</td>
+                                <td>{{dir.c_postal_main}}</td>
+                                <td>{{dir.colonia_main}}</td>
+                              </tr>
+                            </ng-template>
+                            <ng-template pTemplate="emptymessage">
+                              <tr>
+                                <td colspan="4" class="text-center py-4">
+                                  <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                                  <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                    {{'no_rows' | translate}}
+                                  </p>
+                                </td>
+                              </tr>
+                            </ng-template>
+                          </p-table>
+                        </div>
+                        <div class="col-12" style="padding: 0 !important;" *ngIf="dir.pais != '118'">
+                          <div class="col-12 row" style="padding: 0;">
+                            <div class="col-12 sm-6 lg-3 lx-3 explain">
+                              <h6 class="title">C&oacute;digo postal</h6>
+                              <h6 class="content">{{dir.cod_postalext}}</h6>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>

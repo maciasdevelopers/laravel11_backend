@@ -1,0 +1,69 @@
+div.open{
+	background-color: rgba(121, 65, 65, 0.3);
+  top: 10%!important;
+  width: 90%;
+  height: 80%!important;
+  max-height: 80%;
+  position: fixed;
+  display: block!important;
+  z-index: 999;
+  border-radius: 8px;
+}
+
+div.open .modal-content{
+	background-attachment: fixed;
+  background-repeat: no-repeat;
+  background-size: cover;
+  height: 100%!important;
+  padding: 0!important;
+}
+
+div.open .modal-content .header{
+	height: 50px;
+	background-color: rgba(55, 50, 78, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+div.open .modal-content .header{
+	height: 50px;
+	background-color: rgba(55, 50, 78, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+div.open .modal-content .header h5{
+	margin: 0;
+	text-align: center;
+	color: #e7e7ea;
+	font-weight: bold;
+}
+
+div.open .modal-content .content{
+	padding: 0;
+	background-color: rgba(55, 50, 78, 0.7);
+	height: 95%;
+	overflow: overlay;
+	display: flex;
+	justify-content: center;
+	align-items: flex-start;
+}
+
+div.open .modal-content .contentDown{
+	padding: 5px!important;
+	display: block!important;
+}
+
+div.open .modal-footer a{
+  margin-right: 5px;
+  font-family: arial,FontAwesome;
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+  border-radius: 50%;
+  background-color: red;
+  color: #fff;
+  background-color: #d32f2f!important;
+}

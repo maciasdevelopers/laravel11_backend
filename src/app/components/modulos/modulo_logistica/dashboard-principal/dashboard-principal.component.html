@@ -1,0 +1,594 @@
+<!--principal-->
+<ul id="mobile-menu" class="sidenav">
+  <li class="item-sup usuario">
+    <div class="container">
+      <div class="logo-user" style="display: flex;justify-content: center;margin-top:10px;">
+        <img class="circle responsive-img" style="width: 30%;" src="{{identidad.avatar}}" alt="alt">
+      </div>
+      <div class="data-user">
+        <h6 style="text-align:center;" class="temp area-cargo">{{identidad.com_pany_name}}</h6>
+        <h6 style="text-align:center;" class="temp nombre">{{identidad.name}}</h6>
+      </div>
+    </div>
+  </li>
+  <li class="item-sup" style="display: flex;justify-content: center;">
+    <a class="lgout blue-button" (click)="lgoutFunct(identidad);">&#xf011;</a>
+  </li>
+  <li style="padding-left: 5px;padding-right: 5px;">
+    <p-accordion value="0">
+      <p-accordion-panel *ngFor="let not of arrayNotificaciones" value="0">
+        <p-accordion-header>{{not.emisor}}</p-accordion-header>
+        <p-accordion-content>
+          <p class="m-0">{{not.fecha_notificacion+" "+not.cuerpo}}</p>
+        </p-accordion-content>
+      </p-accordion-panel>
+    </p-accordion>
+  </li>
+</ul>
+<app-loader></app-loader>
+<nav class="nav-extended">
+  <div class="nav-wrapper">
+    <div class="brand-logo">
+      <img class="circle responsive-img" src="{{identidad.logotypo}}" alt="">
+    </div>
+    <a data-target="mobile-menu" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+    <ul id="nav-mobile" class="right hide-on-med-and-down">
+      <li class="item-sup usuario">
+        <div class="container">
+          <div class="data-user">
+            <h6 class="temp nombre">{{identidad.name}}</h6>
+            <h6 class="temp area-cargo">{{identidad.com_pany_name}}</h6>
+          </div>
+          <div class="logo-user">
+            <img class="circle responsive-img" src="{{identidad.avatar}}" alt="alt">
+          </div>
+        </div>
+      </li>
+      <li class="item-sup" *ngIf="number_notificaciones > 0" style="margin-right: 3px;">
+        <a class="lgout blue-button" (click)="verListNotificaciones();">&#xf0f3;
+          <span class="notificacion">{{number_notificaciones}}</span>
+        </a>
+        <ul id="listNotificaciones" class="listNotificaciones">
+          <li *ngIf="number_notificaciones >= 5">
+            <a class="btnRow lgout ViewNotif" style="width: 100%!important;" (click)="notificacionesAll();" *ngIf="arrayNotificaciones.length == 5">Ver todas las notificaciones</a>
+            <a class="btnRow lgout ViewNotif" style="width: 100%!important;" (click)="notificacionesMin();" *ngIf="arrayNotificaciones.length > 5">Ver primeras notificaciones</a>
+          </li>
+          <li href="#modalNotificaciones" *ngFor="let not of arrayNotificaciones;index as posicion"
+            class="li-notif row">
+            <div class="col s11">
+              <p>{{not.fecha_notificacion}}</p>
+              <h6>{{not.mensaje_completo}}</h6>
+            </div>
+            <div class="col s1 divDeleteNotif">
+              <a class="lgout blue-button " (click)="verNotificacion(not.token_notificacion);"><i class="fa-solid fa-xmark"></i></a>
+            </div>
+          </li>
+        </ul>
+      </li>
+      <li class="item-sup" *ngIf="number_notificaciones == 0" style="margin-right: 3px;">
+        <a class="lgout blue-button" disabled>&#xf0f3;</a>
+      </li>
+      <li class="item-sup">
+        <a class="lgout blue-button" (click)="lgoutFunct(identidad);">&#xf011;</a>
+      </li>
+    </ul>
+  </div>
+  <div class="nav-content">
+    
+    <p-tabs value="0">
+      <p-tablist>
+        <p-tab value="0">Comisiones no concluidas</p-tab>
+        <p-tab value="1">Ordenes de producci&oacute;n entregadas</p-tab>
+      </p-tablist>
+      <p-tabpanels>
+        <p-tabpanel value="0">
+          <div class="col-12" style="padding: 10px;">
+            <div class="busqueda row">
+              <div class="col s4 m6 col-md-3 col-lg-2" style="display:flex;">
+                <a style="margin-left: 3px;" class="btn" placement="top" tooltip="Recargar lista de ordenes de producción" (click)="cargaOrdenesOrigen();">
+                  <i class="fa-solid fa-rotate"></i>
+                </a>
+                <a style="margin-left: 3px;" class="btn" data-bs-toggle="modal" data-bs-target="#infoOrdenEliminadas" placement="top" tooltip="productos eliminados">
+                  <i class="fa-solid fa-trash"></i>
+                </a>
+              </div>
+              <div class="col s8 m6 col-md-3 col-lg-2">
+                <input class="datasearch" type="text" [(ngModel)]="origensearchProd" autocomplete="on" placeholder="{{'bus_car' | translate}}">
+              </div>
+            </div>
+        
+            <p-accordion value="0">
+              <!-- | filter:origensearchProd-->
+              <p-accordion-panel *ngFor="let ord_lt of origenarrayOrdenes;index as i" (click)="recollapsible($event);" [value]="i">
+                <p-accordion-header>{{ord_lt.folio_produccion+" - "+ord_lt.upc}}</p-accordion-header>
+                <p-accordion-content>
+                  <div class="col-12 row" *ngFor="let det of arrayDetalleOrden">
+                    <div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                      <div class="collection">
+                        <a id="btnDataGeneral{{i}}" (click)="cerrarColecctionsOrigen(i,'btnDataGeneral','viewDataGeneral');" class="collection-item active">Datos generales de orden</a>
+                        <a id="btnSaveFechaSalida{{i}}" (click)="cerrarColecctionsOrigen(i,'btnSaveFechaSalida','viewSaveFechaSalida');" class="collection-item">Establecer fecha de salida final</a>
+                        <a id="btnEstadoOrden{{i}}" (click)="cerrarColecctionsOrigen(i,'btnEstadoOrden','viewEstadoOrden');" class="collection-item">Ver estado de orden</a>
+                      </div>
+                    </div>
+                    <div class="col-12 col-sm-8 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                      <div id="viewDataGeneral{{i}}" class="col-12">
+                        <div class="card blue">
+                          <div class="card-content">
+                            <div class="row">
+                              <div class="columna col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                                <h6 class="active">Descripci&oacute;n de orden</h6>
+                                <h6>{{det.descripcion}}</h6>
+                              </div>
+                              <div class="columna col-12 col-sm-12 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                                <h6 class="active">Upc</h6>
+                                <h6>{{det.upc}}</h6>
+                              </div>
+                              <div class="columna col-12 col-sm-12 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                                <h6 class="active">Sku</h6>
+                                <h6>{{det.sku}}</h6>
+                              </div>
+                            </div>
+        
+                            <div class="row">
+                              <div class="columna col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                                <h6 class="active">Cantidad</h6>
+                                <h6>{{det.cantidad}}</h6>
+                              </div>
+                              <div class="columna col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                                <h6 class="active">{{'uni_med' | translate}}</h6>
+                                <h6>{{det.unidad_medida}}</h6>
+                              </div>
+                              <div class="columna col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                                <h6 class="active">Procedencia</h6>
+                                <h6>{{det.procedencia}}</h6>
+                              </div>
+                              <div class="columna col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                                <h6 class="active">Destino</h6>
+                                <h6>{{det.destino}}</h6>
+                              </div>
+                            </div>
+        
+                            <div class="row">
+                              <div class="columna col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                                <h6 class="active">Fecha de salida estimada</h6>
+                                <h6>{{det.tentativa_salida}}</h6>
+                              </div>
+                              <div class="columna col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                                <h6 class="active">Fecha de salida final</h6>
+                                <h6 *ngIf="det.fecha_salida != null">{{det.fecha_salida}}</h6>
+                                <h6 *ngIf="det.fecha_salida == null">sin fecha de salida</h6>
+                              </div>
+                              <div class="columna col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                                <h6 class="active">Fecha de llegada estimada</h6>
+                                <h6>{{det.tentativa_llegada}}</h6>
+                              </div>
+                              <div class="columna col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                                <h6 class="active">Fecha de llegada final</h6>
+                                <h6 *ngIf="det.fecha_llegada != null">{{det.fecha_salida}}</h6>
+                                <h6 *ngIf="det.fecha_llegada == null">sin fecha de llegada</h6>
+                              </div>
+                              <div class="columna col-12">
+                                <h6 class="active">Observaciones de maquila</h6>
+                                <h6>{{det.observaciones}}</h6>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div id="viewSaveFechaSalida{{i}}" class="col-12 noneView">
+                        <div class="card blue">
+                          <div class="card-content">
+                            <div *ngIf="det.fecha_salida == null" class="row">
+                              <div class="columna input-field col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                                <input class="datepicker" name="fechaAltaProd" type="date"(change)="validaFechaSalidaFinal($event.target);" id="txtFechaSalidafinal{{i}}">
+                                <label class="active activeInput" for="txtFechaSalidafinal">Fecha de salida final</label>
+                              </div>
+                              <div class="columna col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                                <a class="btn btnGuardar btnRow waves-light" *ngIf="txt_fecha_salida_final != ''"
+                                (click)="registraOrdenSalidaFinal(det.token_produccion,i);"><i class="fa-regular fa-floppy-disk"></i> Registrar orden</a>
+                              </div>
+                            </div>
+        
+                            <div class="row" *ngIf="det.fecha_salida != null">
+                              <div class="columna col-12">
+                                <h6 class="active">Fecha de salida final</h6>
+                                <h6>{{det.fecha_salida}}</h6>
+                              </div>
+                            </div>
+        
+                          </div>
+                        </div>
+                      </div>
+                      <div id="viewEstadoOrden{{i}}" class="col-12 noneView">
+                        <table>
+                          <thead>
+                            <tr>
+                              <th class="ultimo">#</th>
+                              <th>Fecha</th>
+                              <th>acci&oacute;n</th>
+                            </tr>
+                          </thead>
+                          <tbody *ngIf="det.estado_orden.length > 0">
+                            <tr *ngFor="let ordst of det.estado_orden;index as i_s" data-bs-toggle="modal" data-bs-target="#modalBitacoraOrden"
+                              (click)="verBitacoraDetalle(det.token_produccion,ordst.token_bitacora);">
+                              <td class="ultimo">{{i_s+1}}</td>
+                              <td>{{ordst.fecha}}</td>
+                              <td>{{ordst.accion}}</td>
+                            </tr>
+                          </tbody>
+                          <tbody *ngIf="det.estado_orden.length == 0">
+                            <tr><td colspan="3">{{'no_rows' | translate}}</td></tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </p-accordion-content>
+              </p-accordion-panel>
+            </p-accordion>
+          </div>
+        </p-tabpanel>
+        <p-tabpanel value="1">
+          <div class="col-12" style="padding: 10px;">
+            <div class="busqueda row">
+              <div class="col s4 m6 col-md-3 col-lg-2" style="display:flex;">
+                <a style="margin-left: 3px;" class="btn tooltipped" data-position="top"
+                  data-tooltip="Recargar lista de ordenes de producción" (click)="cargaOrdenesOrigen();">
+                  <i class="fa-solid fa-rotate"></i>
+                </a>
+              </div>
+              <div class="col s8 m6 col-md-3 col-lg-2">
+                <input class="datasearch" type="text" [(ngModel)]="origensearchProdCompleted" autocomplete="on" placeholder="{{'bus_car' | translate}}">
+              </div>
+            </div>
+        
+            <p-accordion value="0">
+              <!-- | filter:origensearchProdCompleted-->
+              <p-accordion-panel *ngFor="let ord_lt of origenarrayOrdenesCompleted;index as i" [value]="i">
+                <p-accordion-header>{{ord_lt.folio_produccion+" - "+ord_lt.upc}}</p-accordion-header>
+                <p-accordion-content>
+                  <div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                    <div class="collection">
+                      <a id="btntDataGeneral{{i}}" (click)="cerrarColecctionTerm(i,'btntDataGeneral','viewtDataGeneral');" class="collection-item active">Datos generales de orden</a>
+                      <a id="btntEstadoOrden{{i}}" (click)="cerrarColecctionTerm(i,'btntEstadoOrden','viewtEstadoOrden');" class="collection-item">Ver estado de orden</a>
+                    </div>
+                  </div>
+                  <div class="col-12 col-sm-8 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                    <div id="viewtDataGeneral{{i}}" class="col-12">
+                      <div class="card blue">
+                        <div class="card-content">
+                          <div class="row">
+                            <div class="columna col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <h6 class="active">Descripci&oacute;n de orden</h6>
+                              <h6>{{ord_lt.descripcion}}</h6>
+                            </div>
+                            <div class="columna col-12 col-sm-12 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <h6 class="active">Upc</h6>
+                              <h6>{{ord_lt.upc}}</h6>
+                            </div>
+                            <div class="columna col-12 col-sm-12 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <h6 class="active">Sku</h6>
+                              <h6>{{ord_lt.sku}}</h6>
+                            </div>
+                          </div>
+        
+                          <div class="row">
+                            <div class="columna col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <h6 class="active">Cantidad</h6>
+                              <h6>{{ord_lt.cantidad}}</h6>
+                            </div>
+                            <div class="columna col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <h6 class="active">{{'uni_med' | translate}}</h6>
+                              <h6>{{ord_lt.unidad_medida}}</h6>
+                            </div>
+                            <div class="columna col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <h6 class="active">Procedencia</h6>
+                              <h6>{{ord_lt.procedencia}}</h6>
+                            </div>
+                            <div class="columna col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <h6 class="active">Destino</h6>
+                              <h6>{{ord_lt.destino}}</h6>
+                            </div>
+                          </div>
+        
+                          <div class="row">
+                            <div class="columna col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <h6 class="active">Fecha de salida estimada</h6>
+                              <h6>{{ord_lt.tentativa_salida}}</h6>
+                            </div>
+                            <div class="columna col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <h6 class="active">Fecha de salida final</h6>
+                              <h6 *ngIf="ord_lt.fecha_salida != null">{{ord_lt.fecha_salida}}</h6>
+                              <h6 *ngIf="ord_lt.fecha_salida == null">sin fecha de salida</h6>
+                            </div>
+                            <div class="columna col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <h6 class="active">Fecha de llegada estimada</h6>
+                              <h6>{{ord_lt.tentativa_llegada}}</h6>
+                            </div>
+                            <div class="columna col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                              <h6 class="active">Fecha de llegada final</h6>
+                              <h6 *ngIf="ord_lt.fecha_llegada != null">{{ord_lt.fecha_salida}}</h6>
+                              <h6 *ngIf="ord_lt.fecha_llegada == null">sin fecha de llegada</h6>
+                            </div>
+                            <div class="columna col-12">
+                              <h6 class="active">Observaciones de maquila</h6>
+                              <h6>{{ord_lt.observaciones}}</h6>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div id="viewtEstadoOrden{{i}}" class="col-12 noneView">
+                      <table>
+                        <thead>
+                          <tr>
+                            <th class="ultimo">#</th>
+                            <th>Fecha</th>
+                            <th>acci&oacute;n</th>
+                          </tr>
+                        </thead>
+                        <tbody *ngIf="ord_lt.estado_orden.length > 0">
+                          <tr *ngFor="let ordst of ord_lt.estado_orden;index as i_s">
+                            <td class="ultimo">{{i_s+1}}</td>
+                            <td>{{ordst.fecha}}</td>
+                            <td>{{ordst.accion}}</td>
+                          </tr>
+                        </tbody>
+                        <tbody *ngIf="ord_lt.estado_orden.length == 0">
+                          <tr><td colspan="3">{{'no_rows' | translate}}</td></tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </p-accordion-content>
+              </p-accordion-panel>
+            </p-accordion>
+          </div>
+        </p-tabpanel>
+      </p-tabpanels>
+    </p-tabs>
+
+  </div>
+</nav>
+
+<div id="registraNuevaOrden" class="registraNuevaOrden col-12">
+  <h4 class="encabezado col-12">Registrar orden de producci&oacute;n</h4>
+  <form class="col-12">
+    <div class="row">
+      <div class="input-field col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+        <input id="descOrden" type="text" class="validate" (keyup)="valida_orden_desc($event.target);">
+        <label class="active activeInput" for="descOrden">Descripci&oacute;n de orden</label>
+      </div>
+      <div class="input-field col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+        <input id="upc_orden" type="text" class="validate" (keyup)="valida_orden_upc($event.target);">
+        <label class="active activeInput" for="upc_orden">Upc</label>
+      </div>
+      <div class="input-field col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+        <input id="sku_orden" type="text" class="validate" (keyup)="valida_orden_sku($event.target);">
+        <label class="active activeInput" for="sku_orden">Sku</label>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="input-field col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+        <input id="cantidad_orden" type="text" class="validate" (keyup)="valida_orden_cantidad($event.target);">
+        <label class="active activeInput" for="cantidad_orden">Cantidad</label>
+      </div>
+      <div class="input-field input-field-select col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2" style="z-index: 2!important;">
+        <select id="unidad_medida_orden" (change)="valida_orden_unidad_medida($event.target);">
+          <option value="" disabled selected>Selecciona una opción</option>
+          <option *ngFor="let med of array_unidad_medida" value="{{med.token_unidad_medida}}">{{med.unidad_medida}}</option>
+        </select>
+        <label class="active activeSelect" for="unidad_medida_orden">{{'uni_med' | translate}}</label>
+      </div>
+
+      <div class="input-field input-field-select col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+        <select id="procedencia_orden" (change)="valida_orden_procedencia($event.target);">
+          <option value="" disabled selected>Selecciona una opción</option>
+          <!--<option *ngFor="let pais of array_paises" value="{{pais.token_pais}}">{{pais.pais}}</option>-->
+          <option value="eXpqaW9pQkVPUEtwTGlvQk1qb21Wdz09OjoxMjM0NTY3ODEyMzQ1Njc4">Estados Unidos</option>
+          <option value="QmRmWmV5QnJLL3VVTXlobVhZUkVTdz09OjoxMjM0NTY3ODEyMzQ1Njc4">China</option>
+        </select>
+        <label for="procedencia_orden" class="active activeSelect">Procedencia</label>
+      </div>
+      <div class="input-field input-field-select col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+        <select id="destino_orden" (change)="valida_orden_destino($event.target);">
+          <option value="" disabled selected>Selecciona una opción</option>
+          <option value="eXpqaW9pQkVPUEtwTGlvQk1qb21Wdz09OjoxMjM0NTY3ODEyMzQ1Njc4">Estados Unidos</option>
+          <option value="Ykt6dEwrSTM2OW1LQ3d4YWk3N0tTdz09OjoxMjM0NTY3ODEyMzQ1Njc4">México</option>
+        </select>
+        <label for="destino_orden" class="active activeSelect">Destino</label>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="input-field col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+        <input class="datepicker" name="fechaAltaProd" type="date"(change)="validaFechaSalidaEst($event.target);" id="txtFechaSalidaOrden">
+        <label class="active activeInput" for="txtFechaSalidaOrden">Fecha de salida estimada</label>
+      </div>
+      <div class="input-field col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+        <input class="datepicker" name="fechaAltaProd" type="date" (change)="validaFechaLlegadaEst($event.target);" id="txtFechaLlegadaOrden">
+        <label class="active activeInput" for="txtFechaLlegadaOrden">Fecha de llegada estimada</label>
+      </div>
+      <div class="input-field col-12">
+        <textarea id="observaciones_maquila_orden" class="materialize-textarea" (keyup)="valida_orden_observaciones_maquila($event.target);"></textarea>
+        <label class="active activeInput" for="observaciones_maquila_orden">Observaciones de maquila</label>
+      </div>
+
+      <div class="input-field col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+      <div class="input-field col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+        <a class="btn btnGuardar btnRow waves-light" *ngIf="orden_descripcion != '' && orden_upc != '' &&
+          orden_sku != '' && orden_cantidad != '' && orden_unidad_medida != '' &&
+          orden_procedencia != '' && orden_destino != '' && orden_observaciones_maquila != '' &&
+          txt_fecha_salida_tentativa != '' && txt_fecha_llegada_tentativa != ''"
+          (click)="registraOrdenProduccion();"><i class="fa-regular fa-floppy-disk"></i> Registrar orden</a>
+      </div>
+      <div class="input-field col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+    </div>
+
+  </form>
+</div>
+
+<div class="modal fade bd-example-modal-lg" id="modalBitacoraOrden" tabindex="-1" role="dialog" aria-labelledby="modalBitacoraOrdenLabel" aria-hidden="true">
+	<div class="modal-dialog modal-fullscreen" style="margin: 1%;width: 98%!important;">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h1 class="modal-title fs-5 bg-blue-ModalTitle" id="modalBitacoraOrdenLabel">Bitacora de producci&oacute;n</h1>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: transparent !important;"></button>
+			</div>
+			<div class="modal-body">
+        <div class="col-12" *ngFor="let bitdet of arrayDetalleBitacora">
+          <div class="card blue">
+            <div class="card-content">
+              <div class="row">
+                <div class="columna col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                  <h6 class="active">Acci&oacute;n</h6>
+                  <h6>{{bitdet.accion}}</h6>
+                </div>
+                <div class="columna col-12 col-sm-12 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                  <h6 class="active">Fecha</h6>
+                  <h6>{{bitdet.fecha}}</h6>
+                </div>
+              </div>
+  
+              <div class="row" *ngIf="bitdet.solicitud_produccion.length != 0">
+                <div class="columna col-12">
+                  <h6 class="active">Solicitudes de producci&oacute;n</h6>
+                </div>
+                <div class="columna col-12">
+                  <h6>{{bitdet.solicitud_produccion.length}}</h6>
+                </div>
+              </div>
+  
+              <div class="row" *ngIf="bitdet.confirmacion.length != 0">
+                <div class="columna col-12">
+                  <h6 class="active">Solicitudes de confirmaci&oacute;n</h6>
+                </div>
+                <div class="columna col-12" *ngFor="let confirm of bitdet.confirmacion;index as confPos">
+                  <div class="columna col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                    <h6 class="active">Tipo de confirmaci&oacute;n</h6>
+                    <h6>{{confirm.tipo_confirmacion}}</h6>
+                  </div>
+                  <div class="columna col-12 col-sm-12 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                    <h6 class="active">Fecha</h6>
+                    <h6>{{confirm.fecha_confirmacion}}</h6>
+                  </div>
+  
+                  <div class="col-12" *ngIf="confirm.evidencias.length != 0">
+                    <div class="listaEvidenciasPdf col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                      <div class="col-12 pdfrow" *ngFor="let evd of confirm.evidencias;index as posicion">
+                        <div *ngIf="evd.extension == 'pdf'" class="card cardpdfs blue-grey darken-1">
+                          <div class="card-content white-text">
+                            <i class="fa-solid fa-file-pdf"></i>
+                            <span class="card-title">{{evd.name_evidencia}}</span>
+                          </div>
+                          <div class="card-action">
+                            <a (click)="verEvidenciaConfirm(evd.convert,confPos);"><i class="fa-regular fa-eye"></i></a>
+                            <!--<a (click)="deleteEvidencia(det_inf.token_proyecto,det_inf.token_tarea,det_inf.token_informe,evd.name_evidencia,posicion);"><i class="fa-solid fa-xmark"></i></a>-->
+                          </div>
+                        </div>
+                        <div *ngIf="evd.extension == 'jpg' || evd.extension == 'jpeg' || evd.extension == 'png'"
+                          class="card cardpdfs blue-grey darken-1">
+                          <div class="card-image">
+                            <img style="width: 100%!important;height: 100px;
+                              border-radius: 8px 8px 0 0!important;" src="{{evd.crudo}}">
+                            <span class="card-title">{{evd.name_evidencia}}</span>
+                          </div>
+                          <div class="card-action">
+                            <a (click)="verEvidenciaConfirm(evd.convert,confPos);"><i class="fa-regular fa-eye"></i></a>
+                            <!--<a (click)="deleteEvidencia(det_inf.token_proyecto,det_inf.token_tarea,det_inf.token_informe,evd.name_evidencia,posicion);"><i class="fa-solid fa-xmark"></i></a>-->
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+  
+                    <div class="framepdf col-12 col-sm-8 col-md-3 col-lg-2 col-xl-2 col-xxl-2" *ngIf="confirm.embbed != ''" [innerHTML]="confirm.embbed"></div>
+                    <div class="col-12 col-sm-8 col-md-3 col-lg-2 col-xl-2 col-xxl-2" *ngIf="confirm.embbed == ''">
+                      <h6 style="width: 100%;text-align: center;font-weight: bolder;">selecciona archivo</h6>
+                    </div>
+  
+                  </div>
+  
+                  <div class="col-12" *ngIf="confirm.evidencias.length == 0">
+                    <h6>NO HAY EVIDENCIAS</h6>
+                  </div>
+                </div>
+              </div>
+  
+              <div class="row" *ngIf="bitdet.produccion.length != 0">
+                <div class="columna col-12">
+                  <h6 class="active">Solicitudes de producci&oacute;n</h6>
+                </div>
+                <div class="columna col-12">
+                  <h6>{{bitdet.produccion.length}}</h6>
+                </div>
+              </div>
+  
+              <div class="row" *ngIf="bitdet.exportacion.length != 0">
+                <div class="columna col-12">
+                  <h6 class="active">Solicitudes de exportaci&oacute;n</h6>
+                </div>
+                <div class="columna col-12">
+                  <h6>{{bitdet.exportacion.length}}</h6>
+                </div>
+              </div>
+  
+            </div>
+          </div>
+        </div>
+      </div>
+			<div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade bd-example-modal-lg" id="infoOrdenEliminadas" tabindex="-1" role="dialog" aria-labelledby="infoOrdenEliminadasLabel" aria-hidden="true">
+	<div class="modal-dialog modal-fullscreen" style="margin: 1%;width: 98%!important;">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h1 class="modal-title fs-5 bg-blue-ModalTitle" id="infoOrdenEliminadasLabel">ORDENES DE PRODUCCI&Oacute;N ELIMINADAS</h1>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: transparent !important;"></button>
+			</div>
+			<div class="modal-body">
+        <div id="tabProvEliminados" class="col-12">
+          <div class="busqueda row">
+            <div class="col s1 m4 col-md-3 col-lg-2"></div>
+            <div class="col s11 m8 col-md-3 col-lg-2">
+              <input class="datasearch" type="text" [(ngModel)]="origensearchProdDeleted" autocomplete="on" placeholder="{{'bus_car' | translate}}">
+            </div>
+          </div>
+  
+          <table id="tableOrdenEliminadas" class="display nowrap mdl-data-table white centered" style="width:100%!important;margin:0!important;">
+            <thead>
+              <tr>
+                <th>folio</th>
+                <th>upc</th>
+                <th>sku</th>
+                <th class="ultimo"></th>
+                <th class="ultimo"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let ord_ltDel of origenarrayOrdenesDeleted">
+                <td>{{ord_ltDel.folio_produccion}}</td>
+                <td>{{ord_ltDel.upc}}</td>
+                <td>{{ord_ltDel.sku}}</td>
+                <td>
+                  <a class="btn text-bg-success rounded-3"
+                    (click)="restaurarOrden(ord_ltDel.token_produccion);">
+                    <i class="fa-solid fa-trash-arrow-up"></i>&nbsp;{{'restore_row' | translate}}
+                  </a>
+                </td>
+                <td>
+                  <a class="btn btn_extend text-bg-danger rounded-3"
+                    (click)="deletePermOrden(ord_ltDel.token_produccion);"><i class="fa-solid fa-eraser"></i></a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+			<div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div>
+		</div>
+	</div>
+</div>

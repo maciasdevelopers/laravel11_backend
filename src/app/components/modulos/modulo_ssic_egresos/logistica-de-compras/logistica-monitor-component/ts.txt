@@ -1,0 +1,532 @@
+import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { ValidatorServService } from '../../../../../servicios/validator-serv.service';
+import { ComprasServService } from '../../../../../servicios/ssic/compras-serv.service';
+import { LogisticaService } from '../../../../../servicios/ssic/logistica-service';
+import { TranslateService } from '@ngx-translate/core';
+import { ComunicacionInternaService } from '../../../../../servicios/comunicacion-interna.service';
+import { DescargaExcel } from '../../../../../servicios/descarga-excel';
+import { logisticaCompraModelo } from '../../../../../modelos/logistica/logisticaCompraModelo';
+import Swal from 'sweetalert2';
+import { NgxFileDropEntry, FileSystemFileEntry } from 'ngx-file-drop';
+import { Subscription } from 'rxjs';
+import { MessageService } from 'primeng/api';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { CountryISO } from 'ngx-material-intl-tel-input';
+
+@Component({
+  selector: 'logistica_compras_iniciar_tran_sito',
+  standalone: false,
+  templateUrl: './logistica-iniciar-transito-component.html',
+  styleUrls: [
+    '../../../../../styles/listas_ps.css',
+    '../../../../../styles/datatable.css',
+    '../../../../../styles/dropdown.css',
+    '../../../../../styles/tabs.css',
+    '../../../../../styles/input_group.css',
+    '../../../../../styles/file_input.css',
+    '../../../../../styles/buttons.css',
+    '../../../../../styles/modals.css',
+    '../../../../../styles/cabecera.css',
+    '../../../../../styles/cards.css',
+    '../../../../../styles/clientes.css',
+    '../../../../../styles/collapsible.css',
+    '../../../../../styles/row.css',
+    '../../../../../styles/encabezados.css',
+    '../../../../../styles/buscador.css',
+    '../../../../../styles/radioButtons.css',
+    '../../../../../styles/paginador.css',
+    '../../../../../styles/landing.css',
+    '../../../../../styles/colores.css',
+    '../../../../../styles/div_explain.css',
+    '../../../../../styles/explain.css',
+    '../../../../../styles/switches.css',
+    '../../../../../styles/navegador.css',
+    '../../egresos.css',
+    './logistica-iniciar-transito-component.css'
+  ]
+})
+export class LogisticaIniciarTransitoComponent implements OnInit, OnDestroy{
+  public logisticBuyModel:logisticaCompraModelo;
+
+  listaTipoTransporte: any = [
+    { clave: "terrestre", valor: "Terrestre" },
+    { clave: "maritimo", valor: "Maritimo" },
+    { clave: "aereo", valor: "Aéreo" }
+  ];
+    
+  CountryISO = CountryISO.Mexico;
+  preferredCountries: CountryISO[] = [CountryISO.Mexico, CountryISO.UnitedStates];
+  phoneForm: FormGroup;
+
+  detalleCompra: any = [];
+  listado_articulos: any = [];
+  public compra_fecha_tentativa_salida: string = '';
+  public compra_estab_direccion: string = '';
+  public view_form_inicio_logistica = true;
+  public tokenCompraRealizaLogistica: string = '';
+  public anexosLogisticaFiles: NgxFileDropEntry[] = [];
+  public anexosLogisticaDocs: any[] = [];
+  public anexosLogisticaNames: any = [];
+  //Factura CFDI (XML)
+  public imagenEvidenciaXml: any;
+  public resultXml: string = '';
+  //Factura CFDI (PDF)
+  public imagenEvidenciaPdf: any;
+  private subs: Subscription = new Subscription();
+
+  constructor(
+    private validator: ValidatorServService,
+    private _comprServ: ComprasServService,
+    private logisticServ: LogisticaService,
+    private translate: TranslateService,
+    private relInterna: ComunicacionInternaService,
+    private servXlsx: DescargaExcel,
+    private cd: ChangeDetectorRef,
+    private primeAlerts: MessageService,
+    private fb: FormBuilder
+  ) {
+    this.phoneForm = this.fb.group({
+      telefono: ['', [Validators.required]]
+    });
+    this.logisticBuyModel = new logisticaCompraModelo('','','','','','','','','','','','','','','','','','');
+  }
+
+  @Input() set tokenCompra(value: string) {
+    if (value) {
+      this.logisticBuyModel.compra_relacionada_token = value;
+      this.verfInfoCompra();
+    }
+  }
+
+  ngOnInit(): void {}
+
+  verfInfoCompra() {
+    this.subs.add(
+      this.logisticServ.logistica_CompraDesglosePartidas(this.logisticBuyModel.compra_relacionada_token).subscribe(response => {
+        if (response.status === 'success') {
+          this.detalleCompra = response.compra;
+          this.listado_articulos = [];
+          response.compra.forEach((buy: any) => {
+            this.compra_fecha_tentativa_salida = buy.fecha_tentativa_salida;
+            this.compra_estab_direccion = buy.recepcion_estab_direccion;
+            this.listado_articulos = buy.compra_partidas;
+          });
+          this.cd.detectChanges();
+        }
+      })
+    );
+  }
+
+  select_fecha_real_salida(event: any): void {
+    const validacion = event.value != "" && this.validator.filtroFecha(event.value);
+    this.logisticBuyModel.fecha_real_salida = validacion ? event.value : '';
+    validacion ? this.validator.correctoInputRow(event) : this.validator.errorInputRow(event);
+  }
+
+  select_tipo_transporte(clave: any) {
+    var tipoTransporte = document.getElementById("tipoTransporte");
+    let option = this.listaTipoTransporte.find((row: any) => clave != '' && row.clave === clave);
+    const validacion = clave != "" && this.validator.filtroAlfaNumerico(clave) && typeof option !== 'undefined';
+    this.logisticBuyModel.transporte_tipo = validacion ? option.clave : '';
+    validacion ? this.validator.correctoSelectBrowser(tipoTransporte) : this.validator.errorSelectBrowser(tipoTransporte);
+  }
+
+  async cargaXmlCompra(e: any, objeto: any): Promise<void> {
+    const doc_xml = objeto.files[0];
+
+    const xml_tipo = doc_xml.type == 'text/xml' && doc_xml.name.toLowerCase().endsWith('.xml');
+    const xml_size = doc_xml.size <= 2000000;
+    if (xml_tipo && xml_size) {
+      this.imagenEvidenciaXml = doc_xml;
+      try {
+        //await this.lecturaInternaXML(objeto);
+      } catch (error) {
+        this.primeAlerts.add({ severity: 'error', summary: 'SOS-México informa: ', detail: 'Error en el procesamiento de información' });
+      }
+    } else {
+      this.primeAlerts.add({ severity: 'error', summary: 'SOS-México informa: ', detail: !xml_tipo ? 'El archivo no es un XML.' : 'El archivo supera el límite de 2MB.' });
+      this.validator.errorInputRow(objeto);
+    }
+  }
+
+  escanPdfCompra(e: any, objeto: any): void {
+    const doc_pdf = objeto.files[0];
+    const validacion_pdf = doc_pdf.size <= 2000000 && (doc_pdf.type == 'application/pdf');
+    this.imagenEvidenciaPdf = validacion_pdf ? doc_pdf : null;
+    validacion_pdf ? this.validator.correctoInputRow(objeto) : this.validator.errorInputRow(objeto);
+    if (!validacion_pdf) {
+      let mensajeError = '';
+      if (doc_pdf.size > 2000000) mensajeError = 'El archivo excede el tamaño permitido (2MB)';
+      if (doc_pdf.type != 'application/pdf') mensajeError = 'El archivo Debe ser en formato pdf';
+      this.primeAlerts.add({ severity: 'error', summary: 'SOS-México informa: ', detail: mensajeError });
+    }
+  }
+
+  deletePdfCompra(): void {
+    this.imagenEvidenciaPdf = null;
+  }
+
+  captura_placas_camion(event: any): void {
+    const valor = event.value.toUpperCase().trim();
+    const validacion = valor != "" && this.validator.filtroAlfaNumerico(valor);
+    this.logisticBuyModel.transporte_placas = validacion ? event.value : '';
+    validacion ? this.validator.correctoInputRow(event) : this.validator.errorInputRow(event);
+  }
+
+  captura_placas_remolque(event: any): void {
+    const valor = event.value.toUpperCase().trim();
+    const validacion = valor != "" && this.validator.filtroAlfaNumerico(valor);
+    this.logisticBuyModel.remolque_placas = validacion ? event.value : '';
+    validacion ? this.validator.correctoInputRow(event) : this.validator.errorInputRow(event);
+  }
+
+  captura_permiso_sct(event: any): void {
+    const valor = event.value.toUpperCase().trim();
+    const validacion = valor != "" && this.validator.filtroAlfaNumerico(valor);
+    this.logisticBuyModel.remolque_placas = validacion ? event.value : '';
+    validacion ? this.validator.correctoInputRow(event) : this.validator.errorInputRow(event);
+  }
+
+  captura_contenedor(event: any): void {
+    const valor = event.value.toUpperCase().trim();
+    const validacion = valor != "" && this.validator.filtroAlfaNumerico(valor);
+    this.logisticBuyModel.numeroContenedor = validacion ? event.value : '';
+    validacion ? this.validator.correctoInputRow(event) : this.validator.errorInputRow(event);
+  }
+
+  captura_booking(event: any): void {
+    const valor = event.value.toUpperCase().trim();
+    const validacion = valor != "" && this.validator.filtroAlfaNumerico(valor);
+    this.logisticBuyModel.bookingNumber = validacion ? event.value : '';
+    validacion ? this.validator.correctoInputRow(event) : this.validator.errorInputRow(event);
+  }
+
+  captura_guia_aerea(target: any): void {
+    const valor = target.value.trim();
+    const validacion = valor != "" && this.validator.filtroAlfaNumerico(valor);
+    this.logisticBuyModel.guiaAerea = validacion ? valor : '';
+    validacion ? this.validator.correctoInputRow(target) : this.validator.errorInputRow(target);
+  }
+
+  captura_codigo_vuelo(target: any): void {
+    const valor = target.value.trim();
+    const validacion = valor != "" && this.validator.filtroAlfaNumerico(valor);
+    this.logisticBuyModel.codigoVuelo = validacion ? valor : '';
+    validacion ? this.validator.correctoInputRow(target) : this.validator.errorInputRow(target);
+  }
+
+  especificaciones_transporte(event: any): void {
+    const validacion = event.value != "" && this.validator.filtroAlfaNumerico(event.value);
+    this.logisticBuyModel.transporte_especificaciones = validacion ? event.value : '';
+    validacion ? this.validator.correctoInputRow(event) : this.validator.errorInputRow(event);
+  }
+
+  salida_nombre_operador(event: any): void {
+    const validacion = event.value != "" && this.validator.filtroAlfaNumerico(event.value);
+    this.logisticBuyModel.operador_nombre = validacion ? event.value : '';
+    validacion ? this.validator.correctoInputRow(event) : this.validator.errorInputRow(event);
+  }
+
+  probarTextPhone(){
+    if (this.phoneForm.valid) {
+      console.log(this.phoneForm);
+      //const phone = this.phoneForm.get('telefono')?.value;
+      console.log(this.phoneForm.value.telefono);
+      const phone = this.phoneForm.value.telefono;
+      if (phone) {
+        console.log('Número internacional:', phone.internationalNumber);
+        console.log('Número nacional:', phone.nationalNumber);
+        console.log('Código de país:', phone.countryCode);
+        console.log('Dial code:', phone.dialCode);
+      }
+    }
+  }
+
+  keyupTrabContTelefonoNumero(event:any){
+    var telefonoOperador = document.getElementById("telefonoOperador");
+    const phone = this.phoneForm.value.telefono;
+    const validacion =  this.phoneForm.valid && phone.length >= 5 && this.validator.filtroPhone(phone);
+    this.logisticBuyModel.operador_telefono = validacion ? phone : '';
+    validacion ? this.validator.correctoTelefonos(telefonoOperador) : this.validator.errorTelefonos(telefonoOperador);
+  }
+
+  tipoDireccionDestino(event: any) {
+    this.logisticBuyModel.tipoLugarDestino = event.value;
+    if (this.logisticBuyModel.tipoLugarDestino == 'establecimiento_final') {
+      this.logisticBuyModel.descripcionLugarDestino = '';
+    }
+  }
+
+  describeDireccionDestino(event: any): void {
+    const validacion = event.value != "" && this.validator.filtroAlfaNumerico(event.value);
+    this.logisticBuyModel.descripcionLugarDestino = validacion ? event.value : '';
+    validacion ? this.validator.correctoInputRow(event) : this.validator.errorInputRow(event);
+  }
+
+  select_fecha_tentativa_llegada(event: any): void {
+    const validacion = event.value != "" && this.validator.filtroFecha(event.value);
+    this.logisticBuyModel.tentativaLlegadaLugarDestino = validacion ? event.value : '';
+    validacion ? this.validator.correctoInputRow(event) : this.validator.errorInputRow(event);
+  }
+
+  articulo_sku(event: any,cBuy:any): void {
+    const validacion = event.value != "" && this.validator.filtroAlfaNumerico(event.value);
+    cBuy.sku = validacion ? event.value : '';
+    validacion ? this.validator.correctoInputRow(event) : this.validator.errorInputRow(event);
+  }
+
+  articulo_upc(event: any,cBuy:any): void {
+    const validacion = event.value != "" && this.validator.filtroAlfaNumerico(event.value);
+    cBuy.upc = validacion ? event.value : '';
+    validacion ? this.validator.correctoInputRow(event) : this.validator.errorInputRow(event);
+  }
+
+  public droppedLogistica(files: NgxFileDropEntry[]) {
+    // 1. Limpiamos estados para recibir el nuevo set de archivos
+    this.anexosLogisticaFiles = files;
+    this.anexosLogisticaNames = [];
+    this.anexosLogisticaDocs = [];
+
+    for (let i = 0; i < files.length; i++) {
+      const droppedFile = files[i];
+
+      if (droppedFile.fileEntry.isFile) {
+        const fileEntry = droppedFile.fileEntry as FileSystemFileEntry;
+
+        fileEntry.file((file: File) => {
+          const typoElement = file.type;
+          const nameFile = file.name;
+          const sizeFile = file.size;
+
+          // 2. Validación de tipos y tamaño (2MB)
+          const allowedTypes = ['application/pdf', 'text/xml', 'image/jpeg', 'image/jpg', 'image/png'];
+          const isAllowedType = allowedTypes.includes(typoElement);
+          const isAllowedSize = sizeFile <= 2000000;
+
+          if (isAllowedType && isAllowedSize) {
+            // 3. Inserción directa y limpia
+            // Ya no necesitamos el ciclo for (j...) porque limpiamos al inicio
+            this.anexosLogisticaNames.push({ "typoElement": typoElement, "nameFile": nameFile });
+            this.anexosLogisticaDocs.push(file);
+
+            console.log(`Archivo aceptado: ${nameFile}`);
+            this.cd.detectChanges();
+          } else {
+            // 4. Manejo de errores específico
+            const mensajeError = !isAllowedSize ? `El archivo ${nameFile} excede el tamaño permitido (2MB).` : `El archivo ${nameFile} tiene un formato no permitido (PDF, XML, JPG, PNG).`;
+
+            Swal.fire({
+              position: 'top-end',
+              icon: 'warning',
+              title: mensajeError,
+              showConfirmButton: false,
+              timer: 3000
+            });
+
+            // Opcional: Remover de la lista de visualización si falló la validación técnica
+            const index = this.anexosLogisticaFiles.findIndex(f => f.relativePath === droppedFile.relativePath);
+            if (index > -1) this.anexosLogisticaFiles.splice(index, 1);
+            this.cd.detectChanges();
+          }
+        });
+      }
+    }
+  }
+
+  public fileOverLogistica(event: any) {
+    console.log(event);
+  }
+
+  public fileLeaveLogistica(event: any) {
+    console.log(event);
+  }
+
+  deleteAnexosLogistica(posicion: number) {
+    Swal.fire({
+      title: this.translate.instant("swal_attenc"),
+      text: "¿Desea eliminar el archivo seleccionado?",
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#388E3C',
+      confirmButtonText: this.translate.instant("swal_yes_delete"), // Asegúrate de tener esta llave en tu i18n
+      cancelButtonColor: '#D32F2F',
+      cancelButtonText: this.translate.instant("swal_cancel"),
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Eliminamos de los 3 arreglos usando el mismo índice
+        this.anexosLogisticaFiles.splice(posicion, 1);
+        this.anexosLogisticaNames.splice(posicion, 1);
+        this.anexosLogisticaDocs.splice(posicion, 1);
+
+        // Sincronizamos la vista de la tabla
+        this.anexosLogisticaFiles = [...this.anexosLogisticaFiles];
+        this.cd.detectChanges();
+
+        Swal.fire({
+          position: 'center',
+          icon: 'success',
+          title: 'Archivo eliminado correctamente',
+          showConfirmButton: false,
+          timer: 1500
+        });
+      }
+    });
+  }
+
+  get validaFormInicioTransitoCompra():boolean{
+    const m = this.logisticBuyModel;
+
+    // 1. Validaciones base obligatorias
+    let valido = m.fecha_real_salida !== '' && 
+                 m.operador_nombre !== '' && 
+                 m.tentativaLlegadaLugarDestino !== '';
+
+    // 2. Validaciones condicionales por tipo de transporte
+    if (m.transporte_tipo === 'TERRESTRE') {
+      valido = valido && m.transporte_placas !== '';
+    } else if (m.transporte_tipo === 'MARITIMO') {
+      valido = valido && m.numeroContenedor !== '' && m.bookingNumber !== '';
+    } else if (m.transporte_tipo === 'AEREO') {
+      valido = valido && m.guiaAerea !== '';
+    } else {
+      // Si el tipo de transporte está vacío o no coincide, no se aprueba
+      valido = false; 
+    }
+
+    // 3. Validación condicional por destino
+    if (m.tipoLugarDestino === 'otro') {
+      valido = valido && m.descripcionLugarDestino !== '';
+    }
+
+    // 4. Validar que al menos las partidas tengan sus datos completos si es obligatorio
+    const partidasValidas = this.listado_articulos.every((art:any) => art.sku && art.sku !== '');
+    
+    // Asignamos el estado final al guardián del botón submit
+    return valido && partidasValidas;
+  }
+
+  registraInicioTransitoCompra(form:{reset:() => void;}):void{
+    Swal.fire({
+      title: this.translate.instant("swal_attenc"),
+      text: this.translate.instant("swal_insert"),
+      icon: 'warning',
+      confirmButtonColor: '#388E3C',
+      confirmButtonText: this.translate.instant("swal_yes_insert"),
+      showCancelButton: true,
+      cancelButtonColor: '#D32F2F',
+        cancelButtonText: this.translate.instant("swal_cancel"),
+    }).then((result) => {
+      if (result.isConfirmed) {
+        /*this.verFormAlta = false;
+        this.cajaServ.registraCaja(this.caja).subscribe(
+          response => {
+            let translate_response = this.translate.instant(response.message);
+            if (response.status == 'success') {
+              this.verFormAlta = true;
+              Swal.fire({
+                position:'center',
+                icon: 'success',
+                title: translate_response,
+                showConfirmButton:false,
+                timer: 3000
+              })
+              form.reset();
+              this.caja = new cajaAngularModelo('','','','','','','',false,false,false,false,false,false,'');
+              this.relInterna.mensajeCAJAInsert("registro aprobado");
+            }
+            if (response.status == 'error') {
+              Swal.fire({
+                position:'top-end',
+                icon: 'warning',
+                title: translate_response,
+                showConfirmButton:false,
+                timer: 3000
+              })
+            }
+          },
+          error => {
+            console.log(error);
+
+          }
+        );*/
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.subs.unsubscribe();
+  }
+}
+
+
+CREATE TABLE eegr_compras_logistica_bitacora (
+  id INT(10) UNSIGNED PRIMARY KEY NOT NULL AUTO_INCREMENT,
+  compra_relacionada INT(10) NOT NULL,
+  estado_alcanzado VARCHAR(30) NOT NULL COMMENT 'salida_transito, en_transito, aduana, arribo_destino',
+  tipo_transporte VARCHAR(20) NOT NULL COMMENT 'terrestre, maritimo, aereo',
+  
+  -- Fechas de Control Operativo
+  fecha_real_salida INT(10) UNSIGNED,
+  fecha_tentativa_llegada INT(10) UNSIGNED,
+  
+  -- Archivos de Control Fiscal (CFDI Traslado / Carta Porte)
+  cfdi_xml_url TEXT DEFAULT NULL,
+  cfdi_pdf_url TEXT DEFAULT NULL,
+  
+  -- Operador de la Unidad
+  operador_nombre VARCHAR(150) NOT NULL,
+  operador_telefono VARCHAR(25) DEFAULT NULL,
+  
+  -- Campos Polimórficos Dinámicos (Estructurados)
+  transporte_identificador_principal VARCHAR(100) DEFAULT NULL COMMENT 'Placas Tractor / No. Contenedor / No. Guía Aérea (AWB)',
+  transporte_identificador_secundario VARCHAR(100) DEFAULT NULL COMMENT 'Placas Remolque / Booking Number / Código de Vuelo',
+  transporte_permiso_autorizacion VARCHAR(100) DEFAULT NULL COMMENT 'Permiso SCT-SICT / Patente',
+  
+  -- Destino de la Mercancía
+  tipo_lugar_destino VARCHAR(30) NOT NULL COMMENT 'establecimiento_final, otro',
+  direccion_destino_especifica TEXT DEFAULT NULL,
+  direccion_destino_final int(10) DEFAULT NULL,
+  
+  -- Notas Generales
+  observaciones TEXT DEFAULT NULL,
+  
+  -- Campos de Auditoría del Sistema Contable
+  empresa_vinculada INT(10) NOT NULL,
+  usuario_registra INT(10) NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+  -- Restricciones de Integridad
+  FOREIGN KEY (compra_relacionada) REFERENCES eegr_compras (id) ON DELETE CASCADE,
+  FOREIGN KEY (empresa_vinculada) REFERENCES main_empresas (id) ON DELETE CASCADE,
+  FOREIGN KEY (usuario_registra) REFERENCES teci_usuarios_catalogo (id),
+  
+  -- Índices para optimizar velocidad de respuesta
+  INDEX idx_compra_estado (compra_relacionada, estado_alcanzado),
+  INDEX idx_empresa_vinculada (empresa_vinculada)
+);
+
+
+CREATE TABLE eegr_compras_logistica_transportes (
+  id INT(10) UNSIGNED PRIMARY KEY NOT NULL AUTO_INCREMENT,
+  logistica_bitacora_id INT(10) UNSIGNED NOT NULL,
+  tipo_transporte VARCHAR(20) NOT NULL COMMENT 'TERRESTRE, MARITIMO, AEREO',
+  
+  -- Datos Operativos de la Unidad
+  operador_nombre VARCHAR(150) NOT NULL,
+  operador_telefono VARCHAR(25) DEFAULT NULL,
+  identificador_principal VARCHAR(100) DEFAULT NULL COMMENT 'Placas Tractor / Contenedor / Guía',
+  identificador_secundario VARCHAR(100) DEFAULT NULL COMMENT 'Placas Remolque / Booking / Vuelo',
+  permiso_autorizacion VARCHAR(100) DEFAULT NULL,
+  
+  -- 📍 Puntos de Origen y Destino Específicos de este viaje
+  direccion_origen TEXT NOT NULL COMMENT 'Dirección de salida física (Bodega Proveedor)',
+  tipo_lugar_destino VARCHAR(30) NOT NULL COMMENT 'establecimiento_final, otro',
+  direccion_destino_especifica TEXT NOT NULL COMMENT 'Dirección de entrega física',
+  
+  -- Control Fiscal (Archivos)
+  cfdi_xml_url TEXT DEFAULT NULL,
+  cfdi_pdf_url TEXT DEFAULT NULL,
+  
+  FOREIGN KEY (logistica_bitacora_id) REFERENCES eegr_compras_logistica_bitacora (id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

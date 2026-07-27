@@ -1,0 +1,45 @@
+<form class="row formAddServCat" #formAddServCat="ngForm" autocomplete="off" name="formAddServCat" enctype="multipart/form-data" (ngSubmit)="registraServ(formAddServCat);">
+  <div class="mb-3 conceptoServ">
+    <label for="basic-url" class="form-label">Concepto / Descripci&oacute;n</label>
+    <div class="input-group">
+      <input class="form-control" name="servicio_regCat" type="text" required (keyup)="conceptoKeyup($event.target);">
+    </div>
+  </div>
+  <div class="mb-3">
+    <label for="basic-url" for="stform-label" id="lblStockmax" class="activeInput">Precio sin impuestos</label>
+    <div class="input-group">
+      <input class="form-control" id="textStockmax" name="stockmax_regCat" type="number" (keyup)="keyupPrecioAplicableServ($event.target);">
+    </div>
+  </div>
+  <div class="mb-3">
+    <label for="basic-url" class="form-label">{{'mon_name' | translate}}</label><!-- {{reem_moneda_entrante_nombre}}-->
+    <datalist id="inputListMonServ"><option *ngFor="let arraMon of catalogoMonedasApi" [value]="arraMon.langEN">{{"código "+arraMon.code+", "+arraMon.decimales+" decimales"}}</option></datalist>
+    <div class="input-group">
+      <input class="form-control" list="inputListMonServ" type="text" id="reem_moneda_entrante" (change)="keyupValidateMoneda($event.target);">
+    </div>
+  </div>
+  <div class="mb-3">
+    <label for="basic-url" class="form-label">Vinculaci&oacute;n al catalogo de unidades de medida</label>
+    <datalist id="inputListUMedServ"><option *ngFor="let medU of catalogoUnidadesMedidaAPI" value="{{medU.nombre}}">{{medU.simbolo+" ("+medU.categoria+")"}}</option></datalist>
+    <div class="input-group">
+      <input class="form-control" list="inputListUMedServ" type="text" id="reem_moneda_entrante" (change)="keyupUnidadMedidaSalidaApiServ($event.target);">
+    </div>
+  </div>
+  <div class="col-12 row" style="border-top: solid 1px lightgray!important;padding:0!important;">
+    <div class="col-12 col-sm-3 col-md-3 col-lg-4 col-xl-4 col-xxl-4"></div>
+    <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-4">
+      <button class="btn btnRow text-bg-success rounded-3" type="submit" name="btnAltaServicio2" style="padding: 0!important;"
+        [disabled]="modelServ.concepto == '' || modelServ.precio_aplicable == 0 || modelServ.moneda_codigo == ''">
+        <!--[disabled]="modelServ.genero == '' || modelServ.marca == '' || modelServ.clasificacion == '' || modelServ.stock_max < modelServ.stock_min"-->
+        <i class="fa-solid fa-floppy-disk" style="height: 15px!important;line-height: 15px!important;width: 15px!important;font-size: small!important;"></i>&nbsp;Registrar Servicio</button>
+
+      <div class="demo-container" *ngIf="progressBarRegistro == true">
+        <div class="progress-bar">
+          <div class="progress-bar-value"></div>
+        </div>
+      </div>
+
+    </div>
+    <div class="col-12 col-sm-3 col-md-3 col-lg-4 col-xl-4 col-xxl-4"></div>
+  </div>      
+</form>

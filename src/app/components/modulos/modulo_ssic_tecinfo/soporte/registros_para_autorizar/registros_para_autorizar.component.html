@@ -1,0 +1,186 @@
+<div class="col-12">
+  <ol class="list-group list-group-numbered">
+    <li class="list-group-item d-flex justify-content-between align-items-start" aria-controls="collapseExample" (click)="collapsePanelProductos.toggle();">
+      <div class="col-12 me-auto">
+        <div class="fw-bold">Productos&nbsp;<span class="badge text-bg-primary rounded-pill">{{listaProductos.length}}</span></div>
+        <div class="col-12 me-auto" #collapsePanelProductos="ngbCollapse" [(ngbCollapse)]="isProductosCollapsed">
+          <div class="col-12 row" style="padding: 0;">
+            <div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+              <a (click)="lista_NotAuthorizadosProductos();" class="btn btnGuardar btnRow btnBlueHead bg-blue-600">
+                <i class="fa-solid fa-rotate" style="margin-left: 5px;"></i>&nbsp;{{'list_updt' | translate}}
+              </a>
+            </div>
+            <div class="col-12 col-sm-9 col-md-9 col-lg-10 col-xl-10 col-xxl-10"></div>
+            <div class="col-12" *ngIf="view_lista_productos == true">
+              <table id="list_table_prod_not_autorizados" class="display nowrap mdl-data-table white centered" style="width:100%!important;margin:0!important;">
+                <thead>
+                  <tr>
+                    <th class="ultimo"></th>
+                    <th>folio</th>
+                    <th class="name">producto</th>
+                    <th>catalogo de sat</th>
+                    <th>m&oacute;dulo</th>
+                    <th class="ultimo"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let rowProd of listaProductos">
+                    <td class="img_dat">
+                      <div class="col-12"><img class="circle optimizedImage" fill ngSrc="./assets/images/catalogos/default_producto.jpg" alt=""></div>		
+                    </td>
+                    <td>{{rowProd.folio_prod}}</td>
+                    <td class="name">{{rowProd.producto}}</td>
+                    <td>{{rowProd.sat_clave_code}}</td>
+                    <td>{{rowProd.modulo_destino | translate}}</td>
+                    <td class="ultimo">
+                      <a class="btn btn_extend btn_extend_red text-bg-danger rounded-3" (click)="autorizarProducto(rowProd.token_cat_productos);">
+                        {{rowProd.solicitudes}}&nbsp;<i class="fa-regular fa-circle-check"></i>&nbsp;{{'prod_validate' | translate}}
+                      </a>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </li>
+    <li class="list-group-item d-flex justify-content-between align-items-start" aria-controls="collapseExample" (click)="collapsePanelServicios.toggle();">
+      <div class="col-12 me-auto">
+        <div class="fw-bold">Servicios&nbsp;<span class="badge text-bg-primary rounded-pill">{{listaServicios.length}}</span></div>
+        <div class="col-12 me-auto" #collapsePanelServicios="ngbCollapse" [(ngbCollapse)]="isServiciosCollapsed">
+          <div class="col-12 row" style="padding: 0;">
+            <div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+              <a (click)="lista_NotAuthorizadosServicios();" class="btn btnGuardar btnRow btnBlueHead bg-blue-600">
+                <i class="fa-solid fa-rotate" style="margin-left: 5px;"></i>&nbsp;{{'list_updt' | translate}}
+              </a>
+            </div>
+            <div class="col-12 col-sm-9 col-md-9 col-lg-10 col-xl-10 col-xxl-10"></div>
+            <div class="col-12" *ngIf="view_lista_servicios == true">
+              <table id="list_table_serv_not_autorizados" class="display nowrap mdl-data-table white centered" style="width:100%!important;margin:0!important;">
+                <thead>
+                  <tr>
+                    <th class="ultimo"></th>
+                    <th>folio</th>
+                    <th>servicio</th>
+                    <th>catalogo de sat</th>
+                    <th>m&oacute;dulo</th>
+                    <th class="ultimo"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let srv of listaServicios">
+                    <td class="img_dat">
+                      <div class="col-12">
+                        <img class="circle optimizedImage" src="{{srv.logotipo}}" alt="">
+                      </div>	
+                    </td>
+                    <td>{{srv.folio_sistema}}</td>
+                    <td>{{srv.servicio}}</td>
+                    <td>{{srv.sat_clave_code}}</td>
+                    <td>{{srv.modulo_destino | translate}}</td>
+                    <td>
+                      <a class="btn btn_extend btn_extend_red text-bg-danger rounded-3" (click)="autorizarServicio(srv.token_cat_servicios);">
+                        {{srv.solicitudes}}&nbsp;<i class="fa-regular fa-circle-check"></i>&nbsp;{{'prov_validate' | translate}}
+                      </a>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </li>
+    <li class="list-group-item d-flex justify-content-between align-items-start" aria-controls="collapseExample" (click)="collapsePanelProveedores.toggle();">
+      <div class="col-12 me-auto">
+        <div class="fw-bold">Proveedores&nbsp;<span class="badge text-bg-primary rounded-pill">{{listaProveedores.length}}</span></div>
+        <div class="col-12 me-auto" #collapsePanelProveedores="ngbCollapse" [(ngbCollapse)]="isProveedoresCollapsed">
+          <div class="col-12 row" style="padding: 0;">
+            <div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+              <a (click)="lista_NotAuthorizadosProveedores();" class="btn btnGuardar btnRow btnBlueHead bg-blue-600">&nbsp;{{'list_updt' | translate}} 
+                <i class="fa-solid fa-rotate" style="margin-left: 5px;"></i>
+              </a>
+            </div>
+            <div class="col-12 col-sm-9 col-md-9 col-lg-10 col-xl-10 col-xxl-10"></div>
+            <div class="col-12" *ngIf="view_lista_proveedores == true">
+              <table id="list_table_prov_not_autorizados" class="display nowrap mdl-data-table white centered" style="width:100%!important;margin:0!important;">
+                <thead>
+                  <tr>
+                    <th>folio</th>
+                    <th>{{'country' | translate}}</th>
+                    <th>rfc generico</th>
+                    <th>rfc</th>
+                    <th>idTax</th>
+                    <th>{{'name' | translate}}</th>
+                    <th class="ultimo"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let row_prov of listaProveedores">
+                    <td>{{row_prov.folio}}</td>
+                    <td>{{row_prov.pais}}</td>
+                    <td [ngClass]="row_prov.rfc_generico != '---' ? 'td_names_rfc' : ''" class="">{{row_prov.rfc_generico != '---' ? row_prov.rfc_generico : '---'}}</td>
+                    <td [ngClass]="row_prov.rfc_prov != '---' ? 'td_names_rfc' : ''" class="">{{row_prov.rfc_prov != '---' ? row_prov.rfc_prov : '---'}}</td>
+                    <td [ngClass]="row_prov.tax_id_prov != '---' ? 'td_names_rfc' : ''" class="">{{row_prov.tax_id_prov != '---' ? row_prov.tax_id_prov : '---'}}</td>
+                    <td class="name">{{row_prov.nombre}}</td>
+                    <td class="ultimo">
+                      <a class="btn btn_extend btn_extend_red text-bg-danger rounded-3" (click)="validarProveedor(row_prov.token_cat_proveedores);">
+                        {{row_prov.solicitudes}}&nbsp;<i class="fa-regular fa-circle-check"></i>&nbsp;{{'prov_validate' | translate}}
+                      </a>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </li>
+    <li class="list-group-item d-flex justify-content-between align-items-start" aria-controls="collapseExample" (click)="collapsePanelClientes.toggle();">
+      <div class="col-12 me-auto">
+        <div class="fw-bold">Clientes&nbsp;<span class="badge text-bg-primary rounded-pill">{{listaClientes.length}}</span></div>
+        <div class="col-12 me-auto" #collapsePanelClientes="ngbCollapse" [(ngbCollapse)]="isClientesCollapsed">
+          <div class="col-12 row" style="padding: 0;">
+            <div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+              <a (click)="lista_NotAuthorizadosProveedores();" class="btn btnGuardar btnRow btnBlueHead bg-blue-600">&nbsp;{{'list_updt' | translate}} 
+                <i class="fa-solid fa-rotate" style="margin-left: 5px;"></i>
+              </a>
+            </div>
+            <div class="col-12 col-sm-9 col-md-9 col-lg-10 col-xl-10 col-xxl-10"></div>
+            <div class="col-12" *ngIf="view_lista_clientes == true">
+              <table id="list_table_client_not_autorizados" class="display nowrap mdl-data-table white centered" style="width:100%!important;margin:0!important;">
+                <thead>
+                  <tr>
+                    <th>folio</th>
+                    <th>{{'country' | translate}}</th>
+                    <th>rfc generico</th>
+                    <th>rfc</th>
+                    <th>idTax</th>
+                    <th>{{'name' | translate}}</th>
+                    <th class="ultimo"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let rKlient of listaClientes">
+                    <td>{{rKlient.folio}}</td>
+                    <td>{{rKlient.pais}}</td>
+                    <td [ngClass]="rKlient.rfc_generico != '---' ? 'td_names_rfc' : ''" class="">{{rKlient.rfc_generico != '---' ? rKlient.rfc_generico : '---'}}</td>
+                    <td [ngClass]="rKlient.rfc_prov != '---' ? 'td_names_rfc' : ''" class="">{{rKlient.rfc_prov != '---' ? rKlient.rfc_prov : '---'}}</td>
+                    <td [ngClass]="rKlient.tax_id_prov != '---' ? 'td_names_rfc' : ''" class="">{{rKlient.tax_id_prov != '---' ? rKlient.tax_id_prov : '---'}}</td>
+                    <td class="name">{{rKlient.nombre}}</td>
+                    <td class="ultimo">
+                      <a class="btn btn_extend btn_extend_red text-bg-danger rounded-3" (click)="validarProveedor(rKlient.token_cat_proveedores);">
+                        {{rKlient.solicitudes}}&nbsp;<i class="fa-regular fa-circle-check"></i>&nbsp;{{'prov_validate' | translate}}
+                      </a>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </li>
+  </ol>
+</div>

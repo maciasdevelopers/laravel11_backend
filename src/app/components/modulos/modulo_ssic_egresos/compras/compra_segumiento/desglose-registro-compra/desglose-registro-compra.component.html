@@ -1,0 +1,1159 @@
+<div class="col-12" *ngFor="let info of compras_desglose"
+  style="overflow-x: auto;padding: 5px!important; max-width: 95vw; overflow-x: auto;">
+  <div class="col-12" style="margin-bottom: 5px!important;">
+    <table class="col-12 centered white">
+      <thead>
+        <tr>
+          <th>{{'fecha_cont' | translate}}</th>
+          <th>fecha de vencimiento</th>
+          <th>fecha preliminar de registro</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>{{info.fecha_contabilizacion}}</td>
+          <td>{{info.fecha_vencimiento}}</td>
+          <td>{{info.folio_compras}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="col-12 row">
+    <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3">
+      <div class="form-check radio_check" style="line-height: 20px !important;">
+        <input class="form-check-input" type="radio" name="fact_cargar"
+          [checked]="info.aplica_recepcion_facturas == 'Sí'"
+          (click)="activar_aplica_facturas_recep(info.token_compras);">
+        <label class="form-check-label" for="punto_ent_recept">Cargar factura electr&oacute;nica.</label>
+      </div>
+      <div class="form-check radio_check" style="line-height: 20px !important;">
+        <input class="form-check-input" type="radio" name="fact_cargar"
+          [checked]="info.aplica_recepcion_facturas == 'No'"
+          (click)="deshabilitar_aplica_facturas_recep(info.token_compras);">
+        <label class="form-check-label" for="punto_ent_recept">Esta compra no recibir&aacute; factura
+          electr&oacute;nica.</label>
+      </div>
+    </div>
+    <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9"></div>
+  </div>
+  <div class="col-12" style="margin-bottom: 5px!important;">
+    <table class="col-12 centered white">
+      <tbody>
+        <tr>
+          <td><i class="fa-solid fa-file-code"></i>&nbsp;{{'cfdi_xml_import' | translate}}</td>
+          <td>
+            {{info.facturaXml != '' ? info.facturaXml : ''}}
+            <div class="mb-3" *ngIf="info.facturaXml == ''" style="margin: 0!important;">
+              <input class="form-control" type="file" id="facturaxml"
+                style="padding: 0;line-height: 30px;width: 100%!important;"
+                [ngClass]="info.aplica_recepcion_facturas != 'Sí' ? 'disabled' : ''"
+                [attr.disabled]="info.aplica_recepcion_facturas != 'Sí' ? true : null"
+                [attr.aria-disabled]="info.aplica_recepcion_facturas != 'Sí' ? true : null"
+                (change)="cargaXmlCompra($event,$event.target);" placeholder="XML" accept=".xml">
+            </div>
+          </td>
+          <td class="ultimo">
+            <a class="btn text-bg-primary rounded-4" target="_blank" [ngClass]="info.facturaXml == '' ? 'disabled' : ''"
+              [attr.disabled]="info.facturaXml == '' ? true : null"
+              [attr.aria-disabled]="info.facturaXml == '' ? true : null" [href]="info.urlFactXml">
+              <i class="fa-solid fa-globe"></i>
+            </a>
+          </td>
+        </tr>
+        <tr>
+          <td><i class="fa-solid fa-file-pdf"></i>&nbsp;{{'cfdi_pdf_import' | translate}}</td>
+          <td>
+            {{info.facturaPdf != '' ? info.facturaPdf : ''}}
+            <div class="mb-3" *ngIf="info.facturaPdf == ''" style="margin: 0!important;">
+              <input class="form-control" type="file" name="facturaCompraPdf" id="facturapdf"
+                [ngClass]="resultXml == '' || resultXml == 'errorXml' ? 'disabled' : ''"
+                [attr.disabled]="resultXml == '' || resultXml == 'errorXml' ? true : null"
+                [attr.aria-disabled]="resultXml == '' || resultXml == 'errorXml' ? true : null"
+                (change)="resultXml != '' && resultXml == 'validoXml' && escanPdfCompra($event,$event.target);"
+                accept=".pdf" placeholder="PDF" style="padding: 0;line-height: 30px;width: 100%!important;">
+            </div>
+          </td>
+          <td class="ultimo">
+            <a class="btn text-bg-danger rounded-3" target="_blank" [ngClass]="info.facturaPdf == '' ? 'disabled' : ''"
+              [attr.disabled]="info.facturaPdf == '' ? true : null"
+              [attr.aria-disabled]="info.facturaPdf == '' ? true : null" [href]="info.urlFactPdf">
+              <i class="fa-solid fa-file-pdf"></i>
+            </a>
+          </td>
+        </tr>
+        <tr>
+          <td style="font-size: smaller;"><i class="fa-solid fa-file-pdf"></i>&nbsp;Verificaci&oacute;n de comprobantes
+            fiscales por internet</td>
+          <td>
+            {{info.evidenciaSAT != '' ? info.evidenciaSAT : ''}}
+            <div class="mb-3" *ngIf="info.evidenciaSAT == ''" style="margin: 0!important;">
+              <input class="form-control" type="file" name="facturaCompraPdf"
+                [ngClass]="resultXml == '' || resultXml == 'errorXml' ? 'disabled' : ''"
+                [attr.disabled]="resultXml == '' || resultXml == 'errorXml' ? true : null"
+                [attr.aria-disabled]="resultXml == '' || resultXml == 'errorXml' ? true : null" id="comprobantePdf"
+                (change)="resultXml != '' && resultXml == 'validoXml' && capturaValidacionComprobante($event,$event.target);"
+                accept=".pdf" placeholder="PDF" style="padding: 0;line-height: 30px;width: 100%!important;">
+            </div>
+          </td>
+          <td class="ultimo">
+            <a class="btn bg-blue-600" [ngClass]="info.evidenciaSAT == '' ? 'disabled' : ''"
+              [attr.disabled]="info.evidenciaSAT == '' ? true : null"
+              [attr.aria-disabled]="info.evidenciaSAT == '' ? true : null"
+              [attr.target]="info.evidenciaSAT != '' ? '_blank' : ''"
+              [attr.href]="info.evidenciaSAT != '' ? info.urlEvdSAT : ''"
+              tooltip="Consulte el sitio de verificaci&oacute;n de comprobantes fiscales digitales por internet del SAT">
+              <i class="fa-solid fa-globe"
+                style="width: 25px !important;height: 25px !important;line-height: 25px !important;font-size: 15px;text-align: center;"></i>
+            </a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p-accordion value="0">
+    <p-accordion-panel value="0">
+      <p-accordion-header>
+        <ng-template #toggleicon let-active="active"><i class="fa-solid"
+            [ngClass]="active ? 'fa-sort-up' : 'fa-sort-down'" style="margin-right: 3px!important;"></i></ng-template>
+        <span class="flex items-center gap-2 w-full">Informaci&oacute;n del CFDI</span>
+      </p-accordion-header>
+      <p-accordion-content>
+        <div class="col-12" [ngSwitch]="info.resultXml">
+          <div *ngSwitchCase="'validoXml'" class="col-12" style="padding: 5px!important;">
+            <p-accordion value="1">
+              <p-accordion-panel value="0" [disabled]="dataCFDI_comprobante.length == 0">
+                <p-accordion-header>
+                  <ng-template #toggleicon let-active="active"><i class="fa-solid"
+                      [ngClass]="active ? 'fa-sort-up' : 'fa-sort-down'"
+                      style="margin-right: 3px!important;"></i></ng-template>
+                  <span class="flex items-center gap-2 w-full">Nodo Comprobante</span>
+                </p-accordion-header>
+                <p-accordion-content>
+                  <div class="col-12">
+                    <div *ngFor="let comp of dataCFDI_comprobante"
+                      [ngClass]="comp.title == 'Sello' || comp.title == 'Certificado' ? 'explain explain_column' : 'col-12 explain'">
+                      <h6 class="title">{{comp.title}}</h6>
+                      <h6 class="content"
+                        [attr.style]="comp.title == 'Sello' || comp.title == 'Certificado' ? 'text-align: justify;word-wrap: break-word;max-width: 100%;' : ''">
+                        {{comp.content}}</h6>
+                    </div>
+                  </div>
+                </p-accordion-content>
+              </p-accordion-panel>
+              <p-accordion-panel value="1" [disabled]="dataCFDIEmisor.length == 0">
+                <p-accordion-header>
+                  <ng-template #toggleicon let-active="active"><i class="fa-solid"
+                      [ngClass]="active ? 'fa-sort-up' : 'fa-sort-down'"
+                      style="margin-right: 3px!important;"></i></ng-template>
+                  <span class="flex items-center gap-2 w-full">Nodo Emisor</span>
+                </p-accordion-header>
+                <p-accordion-content>
+                  <div class="col-12">
+                    <div class="explain" *ngFor="let emi of dataCFDIEmisor">
+                      <h6 class="title" *ngIf="emi.title != 'Rfc del emisor'">{{emi.title}}</h6>
+                      <h6 class="content" *ngIf="emi.title != 'Rfc del emisor'">{{emi.content}}</h6>
+                    </div>
+                  </div>
+                </p-accordion-content>
+              </p-accordion-panel>
+              <p-accordion-panel value="2" [disabled]="dataCFDIReceptor.length == 0">
+                <p-accordion-header>
+                  <ng-template #toggleicon let-active="active"><i class="fa-solid"
+                      [ngClass]="active ? 'fa-sort-up' : 'fa-sort-down'"
+                      style="margin-right: 3px!important;"></i></ng-template>
+                  <span class="flex items-center gap-2 w-full">Nodo Receptor</span>
+                </p-accordion-header>
+                <p-accordion-content>
+                  <div class="col-12">
+                    <div class="explain" *ngFor="let rec of dataCFDIReceptor">
+                      <h6 class="title">{{rec.title}}</h6>
+                      <h6 class="content">{{rec.content}}</h6>
+                    </div>
+                  </div>
+                </p-accordion-content>
+              </p-accordion-panel>
+              <p-accordion-panel value="3" [disabled]="dataConceptosINTERNO.length == 0">
+                <p-accordion-header>
+                  <ng-template #toggleicon let-active="active"><i class="fa-solid"
+                      [ngClass]="active ? 'fa-sort-up' : 'fa-sort-down'"
+                      style="margin-right: 3px!important;"></i></ng-template>
+                  <span class="flex items-center gap-2 w-full">Listado de productos / servicios del CFDI</span>
+                </p-accordion-header>
+                <p-accordion-content>
+                  <div class="col-12">
+                    <p-table #conceptInside [value]="dataConceptosINTERNO"
+                      [globalFilterFields]="dataBuscarConceptoINTERNO" dataKey="id" [resizableColumns]="true"
+                      responsiveLayout="stack" size="small">
+                      <ng-template #caption>
+                        <div class="flex">
+                          <p-iconfield iconPosition="left" class="ml-auto">
+                            <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                            <input pInputText type="text"
+                              (input)="conceptInside.filterGlobal($event.target.value, 'contains')"
+                              placeholder="{{'bus_car' | translate}}" />
+                          </p-iconfield>
+                        </div>
+                      </ng-template>
+                      <ng-template #header>
+                        <tr>
+                          <th class="ultimo" placement="top" tooltip="Articulo homologado"><i
+                              class="fa-solid fa-cart-shopping"></i></th>
+                          <th pSortableColumn="Descripcion">Concepto / Descripci&oacute;n&nbsp;<p-sortIcon
+                              field="Descripcion" /></th>
+                          <th pSortableColumn="Unidad">Unidad de Medida-SAT&nbsp;<p-sortIcon field="Unidad" /></th>
+                          <th pSortableColumn="ClaveProdServ">Cat&aacute;logo SAT&nbsp;<p-sortIcon
+                              field="ClaveProdServ" /></th>
+                          <th pSortableColumn="ValorUnitario">Valor unitario&nbsp;<p-sortIcon field="ValorUnitario" />
+                          </th>
+                          <th pSortableColumn="Cantidad">cantidad&nbsp;<p-sortIcon field="Cantidad" /></th>
+                          <th pSortableColumn="Descuento">descuento&nbsp;<p-sortIcon field="Descuento" /></th>
+                          <th pSortableColumn="Importe">subtotal&nbsp;<p-sortIcon field="Importe" /></th>
+                          <th colspan="2" pSortableColumn="TotalRetenciones"><i
+                              class="fas fa-hand-holding-usd"></i>&nbsp;Retenciones&nbsp;<p-sortIcon
+                              field="TotalRetenciones" /></th>
+                          <th colspan="2" pSortableColumn="TotalTraslados"><i
+                              class="fa-solid fa-right-left"></i>&nbsp;Traslados&nbsp;<p-sortIcon
+                              field="TotalTraslados" /></th>
+                          <th pSortableColumn="Subtotal">Total&nbsp;<p-sortIcon field="Subtotal" /></th>
+                          <th class="ultimo" placement="top" tooltip="No. de serie"><i
+                              class="fa-solid fa-layer-group"></i></th>
+                          <th class="ultimo" placement="top" tooltip="No. de lote"><i
+                              class="fa-solid fa-boxes-stacked"></i></th>
+                          <th class="ultimo" placement="top" tooltip="Pedimento aduanal"><i
+                              class="fa-solid fa-file-signature"></i></th>
+                          <th class="ultimo" placement="top" tooltip="Uso del producto / servicio"><i
+                              class="fa-solid fa-industry"></i></th>
+                          <th class="ultimo" placement="top" tooltip="Participa en prorrateos"><i
+                              class="fa-solid fa-chart-pie"></i></th>
+                        </tr>
+                      </ng-template>
+                      <ng-template #body let-conceptList>
+                        <tr>
+                          <td class="ultimo">
+                            <a class="btn text-bg-success rounded-3 w-100 mb-1"
+                              (click)="verConceptoListaProductosYServicios(conceptList);">
+                              <i class="fa-solid fa-info"></i>
+                            </a>
+                          </td>
+                          <td class="text_large">
+                            <p class="large_text" *ngIf="conceptList.Descripcion != ''">{{conceptList.Descripcion}}</p>
+                            <p class="large_text">{{conceptList.articulo_homologado_folio}}</p>
+                            <p class="large_text">{{conceptList.articulo_homologado_nombre}}</p>
+                            <!--<p class="large_text">{{conceptList.Descripcion+" / "+conceptList.articulo_homologado_folio+" "+conceptList.articulo_homologado_nombre}}</p>-->
+                          </td>
+                          <td style="padding: 5px!important;height: 30px;">{{conceptList.Unidad}}</td>
+                          <td style="padding: 5px!important;height: 30px;">{{conceptList.ClaveProdServ}}</td>
+                          <td style="padding: 5px!important;height: 30px;" class="td_importes">
+                            {{conceptList.ValorUnitario}}</td>
+                          <td style="padding: 5px!important;height: 30px;" class="td_importes">{{conceptList.Cantidad}}
+                          </td>
+                          <td style="padding: 5px!important;height: 30px;" class="td_importes">{{conceptList.Descuento}}
+                          </td>
+                          <td style="padding: 5px!important;height: 30px;" class="td_importes">{{conceptList.Importe}}
+                          </td>
+                          <!--Retenciones-->
+                          <td style="padding: 5px!important;height: 30px;" class="td_importes">
+                            {{conceptList.TotalRetenciones}}</td>
+                          <td class="ultimo" [class]="conceptList.Retenciones_class">
+                            <a class="btn text-bg-success rounded-3 w-100 mb-1"
+                              [ngClass]="conceptList.retenciones.length == 0 ? 'disabled' : ''"
+                              [attr.disabled]="conceptList.retenciones.length == 0 ? true : null"
+                              [attr.aria-disabled]="conceptList.retenciones.length == 0 ? true : null"
+                              (click)="conceptList.retenciones.length > 0 && verConceptoListaRetenciones(conceptList);">
+                              <i class="fa-solid fa-info"></i>
+                            </a>
+                          </td>
+                          <!--Traslados-->
+                          <td style="padding: 5px!important;height: 30px;" class="td_importes">
+                            {{conceptList.TotalTraslados}}</td>
+                          <td class="ultimo" [class]="conceptList.Traslados_class">
+                            <a class="btn text-bg-success rounded-3 w-100 mb-1"
+                              [ngClass]="conceptList.traslados.length == 0 ? 'disabled' : ''"
+                              [attr.disabled]="conceptList.traslados.length == 0 ? true : null"
+                              [attr.aria-disabled]="conceptList.traslados.length == 0 ? true : null"
+                              (click)="conceptList.traslados.length > 0 && verConceptoListaTraslados(conceptList);"><!-- descargaDataProvComprasList(prv.token_cat_proveedores,prv-->
+                              <i class="fa-solid fa-info"></i>
+                            </a>
+                          </td>
+                          <td style="padding: 5px!important;height: 30px;" class="td_importes">{{conceptList.Subtotal}}
+                          </td>
+                          <td class="ultimo">
+                            <a class="btn text-bg-success rounded-3 w-100 mb-1"
+                              [ngClass]="conceptList.articulo_homologado_serie_token == '' ? 'disabled' : ''"
+                              [attr.disabled]="conceptList.articulo_homologado_serie_token == '' ? true : null"
+                              [attr.aria-disabled]="conceptList.articulo_homologado_serie_token == '' ? true : null"
+                              (click)="conceptList.articulo_homologado_serie_token != '' && verConceptoListaProductosSeries(conceptList);">
+                              <i class="fa-solid fa-info"></i>
+                            </a>
+                          </td>
+                          <td class="ultimo">
+                            <a class="btn text-bg-success rounded-3 w-100 mb-1"
+                              [ngClass]="conceptList.articulo_homologado_lote_token == '' ? 'disabled' : ''"
+                              [attr.disabled]="conceptList.articulo_homologado_lote_token == '' ? true : null"
+                              [attr.aria-disabled]="conceptList.articulo_homologado_lote_token == '' ? true : null"
+                              (click)="conceptList.articulo_homologado_lote_token != '' && verConceptoListaProductosLote(conceptList);">
+                              <i class="fa-solid fa-info"></i>
+                            </a>
+                          </td>
+                          <td class="ultimo">
+                            <a class="btn text-bg-success rounded-3 w-100 mb-1"
+                              [ngClass]="conceptList.articulo_homologado_pedimento_token == '' ? 'disabled' : ''"
+                              [attr.disabled]="conceptList.articulo_homologado_pedimento_token == '' ? true : null"
+                              [attr.aria-disabled]="conceptList.articulo_homologado_pedimento_token == '' ? true : null"
+                              (click)="conceptList.articulo_homologado_pedimento_token != '' && verConceptoListaProductosPedimentoAduanal(conceptList);">
+                              <i class="fa-solid fa-info"></i>
+                            </a>
+                          </td>
+                          <td class="ultimo">
+                            <a class="btn text-bg-success rounded-3 w-100 mb-1"
+                              (click)="verConceptoListaUSOArt(conceptList);">
+                              <i class="fa-solid fa-info"></i>
+                            </a>
+                          </td>
+                          <td class="ultimo">
+                            <a class="btn text-bg-success rounded-3 w-100 mb-1"
+                              (click)="verConceptoListaProrrateos(conceptList.num_lista);">
+                              <i class="fa-solid fa-info"></i>
+                            </a>
+                          </td>
+                        </tr>
+                        <tr *ngIf="conceptList === seccion_concepto_prod_and_serv">
+                          <td colspan="13" style="padding: 0!important;">
+                            <p-table #dt [value]="conceptList.conceptoCFDI_referido"
+                              *ngIf="info.dataCFDI_comprobante.length > 0">
+                              <ng-template pTemplate="header">
+                        <tr>
+                          <!--<th>NoIdentificacion</th>-->
+                          <!--<th>ObjetoImp</th>-->
+                          <!--<th>Unidad</th>-->
+                          <th pSortableColumn="Descripcion">Concepto / Descripci&oacute;n&nbsp;<p-sortIcon
+                              field="Descripcion" /></th>
+                          <th pSortableColumn="Unidad">Unidad de Medida-SAT&nbsp;<p-sortIcon field="Unidad" /></th>
+                          <th pSortableColumn="ClaveProdServ">Cat&aacute;logo SAT&nbsp;<p-sortIcon
+                              field="ClaveProdServ" /></th>
+                          <th pSortableColumn="ValorUnitario">valor unitario&nbsp;<p-sortIcon field="ValorUnitario" />
+                          </th>
+                          <th pSortableColumn="Cantidad">Cantidad&nbsp;<p-sortIcon field="Cantidad" /></th>
+                          <th pSortableColumn="Descuento">Descuento&nbsp;<p-sortIcon field="Descuento" /></th>
+                          <th pSortableColumn="Importe">subtotal&nbsp;<p-sortIcon field="Importe" /></th>
+                          <th colspan="2" pSortableColumn="TotalRetenciones"><i
+                              class="fas fa-hand-holding-usd"></i>&nbsp;Retenciones&nbsp;<p-sortIcon
+                              field="TotalRetenciones" /></th>
+                          <th colspan="2" pSortableColumn="TotalTraslados"><i
+                              class="fa-solid fa-right-left"></i>&nbsp;Traslados&nbsp;<p-sortIcon
+                              field="TotalTraslados" /></th>
+                          <th pSortableColumn="Subtotal">Total&nbsp;<p-sortIcon field="Subtotal" /></th>
+                        </tr>
+                      </ng-template>
+                      <ng-template pTemplate="body" let-cfdlist>
+                        <tr>
+                          <!--<td>{{cfdlist.NoIdentificacion}}</td>-->
+                          <!--<td>{{cfdlist.ObjetoImp}}</td>-->
+                          <!--<td>{{cfdlist.ClaveUnidad}}</td>-->
+                          <td class="text_large">
+                            <p class="large_text">{{cfdlist.Descripcion}}</p>
+                          </td>
+                          <td>{{cfdlist.Unidad}}</td>
+                          <td>{{cfdlist.ClaveProdServ}}</td>
+                          <td class="td_importes">{{cfdlist.ValorUnitario}}</td>
+                          <td>{{cfdlist.Cantidad}}</td>
+                          <td class="td_importes">{{cfdlist.Descuento}}</td>
+                          <td class="td_importes">{{cfdlist.Importe}}</td>
+                          <td class="td_importes">{{cfdlist.TotalRetenciones}}</td>
+                          <td class="ultimo">
+                            <a class="btn text-bg-success rounded-3 w-100 mb-1"
+                              [ngClass]="cfdlist.cfdi_retenciones.length == 0 ? 'disabled' : ''"
+                              [attr.disabled]="cfdlist.cfdi_retenciones.length == 0 ? true : null"
+                              [attr.aria-disabled]="cfdlist.cfdi_retenciones.length == 0 ? true : null"
+                              (click)="cfdlist.cfdi_retenciones.length > 0 && verCFDIRetenciones(cfdlist);">
+                              <i class="fa-solid fa-angle-down"
+                                style="width: 25px !important;height: 25px !important;line-height: 25px !important;font-size: 15px;text-align: center;"></i>
+                            </a>
+                          </td>
+                          <td class="td_importes">{{cfdlist.TotalTraslados}}</td>
+                          <td class="ultimo">
+                            <a class="btn text-bg-success rounded-3 w-100 mb-1"
+                              [ngClass]="cfdlist.cfdi_traslados.length == 0 ? 'disabled' : ''"
+                              [attr.disabled]="cfdlist.cfdi_traslados.length == 0 ? true : null"
+                              [attr.aria-disabled]="cfdlist.cfdi_traslados.length == 0 ? true : null"
+                              (click)="cfdlist.cfdi_traslados.length > 0 && verCFDITraslados(cfdlist);">
+                              <i class="fa-solid fa-angle-down"
+                                style="width: 25px !important;height: 25px !important;line-height: 25px !important;font-size: 15px;text-align: center;"></i>
+                            </a>
+                          </td>
+                          <td class="td_importes">{{cfdlist.Subtotal}}</td>
+                        </tr>
+                        <tr *ngIf="cfdlist === concepto_cfdiSeleccionadoRetenciones">
+                          <td colspan="13" style="padding: 0!important;">
+                            <p-table [value]="cfdlist.cfdi_retenciones">
+                              <ng-template pTemplate="header">
+                        <tr>
+                          <th pSortableColumn="Base">Base&nbsp;<p-sortIcon field="Base" /></th>
+                          <th pSortableColumn="Impuesto">Impuesto&nbsp;<p-sortIcon field="Impuesto" /></th>
+                          <th pSortableColumn="TipoFactor">TipoFactor&nbsp;<p-sortIcon field="TipoFactor" /></th>
+                          <th pSortableColumn="TasaOCuota">TasaOCuota&nbsp;<p-sortIcon field="TasaOCuota" /></th>
+                          <th pSortableColumn="Importe">Importe&nbsp;<p-sortIcon field="Importe" /></th>
+                        </tr>
+                      </ng-template>
+                      <ng-template pTemplate="body" let-ret>
+                        <tr>
+                          <td>{{ret.Base}}</td>
+                          <td>{{ret.Impuesto}}</td>
+                          <td>{{ret.TipoFactor}}</td>
+                          <td>{{ret.TasaOCuota}}</td>
+                          <td>{{ret.Importe}}</td>
+                        </tr>
+                      </ng-template>
+                      <ng-template pTemplate="emptymessage">
+                        <tr>
+                          <td colspan="5" class="text-center py-4">
+                            <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                            <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                              {{'no_rows' | translate}}
+                            </p>
+                          </td>
+                        </tr>
+                      </ng-template>
+                    </p-table>
+                    </td>
+                    </tr>
+                    <tr *ngIf="cfdlist === concepto_cfdiSeleccionadoTraslados">
+                      <td colspan="13" style="padding: 0!important;">
+                        <p-table [value]="cfdlist.cfdi_traslados">
+                          <ng-template pTemplate="header">
+                    <tr>
+                      <th pSortableColumn="Base">Base&nbsp;<p-sortIcon field="Base" /></th>
+                      <th pSortableColumn="Impuesto">Impuesto&nbsp;<p-sortIcon field="Impuesto" /></th>
+                      <th pSortableColumn="TipoFactor">TipoFactor&nbsp;<p-sortIcon field="TipoFactor" /></th>
+                      <th pSortableColumn="TasaOCuota">TasaOCuota&nbsp;<p-sortIcon field="TasaOCuota" /></th>
+                      <th pSortableColumn="Importe">Importe&nbsp;<p-sortIcon field="Importe" /></th>
+                    </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-tras>
+                      <tr>
+                        <td>{{tras.Base}}</td>
+                        <td>{{tras.Impuesto}}</td>
+                        <td>{{tras.TipoFactor}}</td>
+                        <td>{{tras.TasaOCuota}}</td>
+                        <td>{{tras.Importe}}</td>
+                      </tr>
+                    </ng-template>
+                    <ng-template pTemplate="emptymessage">
+                      <tr>
+                        <td colspan="5" class="text-center py-4">
+                          <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                          <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                            {{'no_rows' | translate}}
+                          </p>
+                        </td>
+                      </tr>
+                    </ng-template>
+                    </p-table>
+                    </td>
+                    </tr>
+                    </ng-template>
+                    <ng-template pTemplate="emptymessage">
+                      <tr>
+                        <td colspan="12" class="text-center py-4">
+                          <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                          <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                            {{'no_rows' | translate}}
+                          </p>
+                        </td>
+                      </tr>
+                    </ng-template>
+                    </p-table>
+                    <p-table #dt [value]="conceptList.conceptoCFDI_listas"
+                      *ngIf="info.dataCFDI_comprobante.length == 0">
+                      <ng-template pTemplate="header">
+                        <tr>
+                          <!--<th>NoIdentificacion</th>-->
+                          <!--<th>ObjetoImp</th>-->
+                          <!--<th>Unidad</th>-->
+                          <th class="ultimo"></th>
+                          <th pSortableColumn="Descripcion">Concepto / Descripci&oacute;n&nbsp;<p-sortIcon
+                              field="Descripcion" /></th>
+                          <th pSortableColumn="Unidad">Unidad de Medida-SAT&nbsp;<p-sortIcon field="Unidad" /></th>
+                          <th pSortableColumn="ClaveProdServ">Cat&aacute;logo SAT&nbsp;<p-sortIcon
+                              field="ClaveProdServ" /></th>
+                          <th pSortableColumn="ValorUnitario">valor unitario&nbsp;<p-sortIcon field="ValorUnitario" />
+                          </th>
+                          <th pSortableColumn="Cantidad">Cantidad&nbsp;<p-sortIcon field="Cantidad" /></th>
+                          <th pSortableColumn="Descuento">Descuento&nbsp;<p-sortIcon field="Descuento" /></th>
+                          <th pSortableColumn="Importe">subtotal&nbsp;<p-sortIcon field="Importe" /></th>
+                          <th colspan="2" pSortableColumn="TotalRetenciones"><i
+                              class="fas fa-hand-holding-usd"></i>&nbsp;Retenciones&nbsp;<p-sortIcon
+                              field="TotalRetenciones" /></th>
+                          <th colspan="2" pSortableColumn="TotalTraslados"><i
+                              class="fa-solid fa-right-left"></i>&nbsp;Traslados&nbsp;<p-sortIcon
+                              field="TotalTraslados" /></th>
+                          <th pSortableColumn="Subtotal">Total&nbsp;<p-sortIcon field="Subtotal" /></th>
+                        </tr>
+                      </ng-template>
+                      <ng-template pTemplate="body" let-cfdlist>
+                        <tr>
+                          <!--<td>{{cfdlist.NoIdentificacion}}</td>-->
+                          <!--<td>{{cfdlist.ObjetoImp}}</td>-->
+                          <!--<td>{{cfdlist.ClaveUnidad}}</td>-->
+                          <td class="ultimo">
+                            <div class="form-check radio_check" style="justify-content: center;">
+                              <input class="form-check-input" type="checkbox" name="artCatSelect"
+                                [checked]="cfdlist.bloqueado_for_desglose && cfdlist.Descripcion == conceptList.Descripcion"
+                                (click)="seleccionaCFDIConceptForProdYServ(conceptList.num_lista,cfdlist.cfdi_num_lista,$event.target);">
+                            </div>
+                          </td>
+                          <td class="text_large">
+                            <p class="large_text">{{cfdlist.Descripcion}}</p>
+                          </td>
+                          <td>{{cfdlist.Unidad}}</td>
+                          <td>{{cfdlist.ClaveProdServ}}</td>
+                          <td>{{cfdlist.ValorUnitario}}</td>
+                          <td>{{cfdlist.Cantidad}}</td>
+                          <td>{{cfdlist.Descuento}}</td>
+                          <td>{{cfdlist.Importe}}</td>
+                          <td>{{cfdlist.TotalRetenciones}}</td>
+                          <td class="ultimo">
+                            <a class="btn text-bg-success rounded-3 w-100 mb-1"
+                              [ngClass]="cfdlist.cfdi_retenciones.length == 0 ? 'disabled' : ''"
+                              [attr.disabled]="cfdlist.cfdi_retenciones.length == 0 ? true : null"
+                              [attr.aria-disabled]="cfdlist.cfdi_retenciones.length == 0 ? true : null"
+                              (click)="cfdlist.cfdi_retenciones.length > 0 && verCFDIRetenciones(cfdlist);">
+                              <i class="fa-solid fa-angle-down"
+                                style="width: 25px !important;height: 25px !important;line-height: 25px !important;font-size: 15px;text-align: center;"></i>
+                            </a>
+                          </td>
+                          <td>{{cfdlist.TotalTraslados}}</td>
+                          <td class="ultimo">
+                            <a class="btn text-bg-success rounded-3 w-100 mb-1"
+                              [ngClass]="cfdlist.cfdi_traslados.length == 0 ? 'disabled' : ''"
+                              [attr.disabled]="cfdlist.cfdi_traslados.length == 0 ? true : null"
+                              [attr.aria-disabled]="cfdlist.cfdi_traslados.length == 0 ? true : null"
+                              (click)="cfdlist.cfdi_traslados.length > 0 && verCFDITraslados(cfdlist);">
+                              <i class="fa-solid fa-angle-down"
+                                style="width: 25px !important;height: 25px !important;line-height: 25px !important;font-size: 15px;text-align: center;"></i>
+                            </a>
+                          </td>
+                          <td>{{cfdlist.Subtotal}}</td>
+                        </tr>
+                        <tr *ngIf="cfdlist === concepto_cfdiSeleccionadoRetenciones">
+                          <td colspan="13" style="padding: 0!important;">
+                            <p-table [value]="cfdlist.cfdi_retenciones">
+                              <ng-template pTemplate="header">
+                        <tr>
+                          <th pSortableColumn="Base">Base&nbsp;<p-sortIcon field="Base" /></th>
+                          <th pSortableColumn="Impuesto">Impuesto&nbsp;<p-sortIcon field="Impuesto" /></th>
+                          <th pSortableColumn="TipoFactor">TipoFactor&nbsp;<p-sortIcon field="TipoFactor" /></th>
+                          <th pSortableColumn="TasaOCuota">TasaOCuota&nbsp;<p-sortIcon field="TasaOCuota" /></th>
+                          <th pSortableColumn="Importe">Importe&nbsp;<p-sortIcon field="Importe" /></th>
+                        </tr>
+                      </ng-template>
+                      <ng-template pTemplate="body" let-ret>
+                        <tr>
+                          <td>{{ret.Base}}</td>
+                          <td>{{ret.Impuesto}}</td>
+                          <td>{{ret.TipoFactor}}</td>
+                          <td>{{ret.TasaOCuota}}</td>
+                          <td>{{ret.Importe}}</td>
+                        </tr>
+                      </ng-template>
+                      <ng-template pTemplate="emptymessage">
+                        <tr>
+                          <td colspan="5" class="text-center py-4">
+                            <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                            <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                              {{'no_rows' | translate}}
+                            </p>
+                          </td>
+                        </tr>
+                      </ng-template>
+                    </p-table>
+                    </td>
+                    </tr>
+                    <tr *ngIf="cfdlist === concepto_cfdiSeleccionadoTraslados">
+                      <td colspan="13" style="padding: 0!important;">
+                        <p-table [value]="cfdlist.cfdi_traslados">
+                          <ng-template pTemplate="header">
+                    <tr>
+                      <th pSortableColumn="Base">Base&nbsp;<p-sortIcon field="Base" /></th>
+                      <th pSortableColumn="Impuesto">Impuesto&nbsp;<p-sortIcon field="Impuesto" /></th>
+                      <th pSortableColumn="TipoFactor">TipoFactor&nbsp;<p-sortIcon field="TipoFactor" /></th>
+                      <th pSortableColumn="TasaOCuota">TasaOCuota&nbsp;<p-sortIcon field="TasaOCuota" /></th>
+                      <th pSortableColumn="Importe">Importe&nbsp;<p-sortIcon field="Importe" /></th>
+                    </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-tras>
+                      <tr>
+                        <td>{{tras.Base}}</td>
+                        <td>{{tras.Impuesto}}</td>
+                        <td>{{tras.TipoFactor}}</td>
+                        <td>{{tras.TasaOCuota}}</td>
+                        <td>{{tras.Importe}}</td>
+                      </tr>
+                    </ng-template>
+                    <ng-template pTemplate="emptymessage">
+                      <tr>
+                        <td colspan="5" class="text-center py-4">
+                          <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                          <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                            {{'no_rows' | translate}}
+                          </p>
+                        </td>
+                      </tr>
+                    </ng-template>
+                    </p-table>
+                    </td>
+                    </tr>
+                    </ng-template>
+                    <ng-template pTemplate="emptymessage">
+                      <tr>
+                        <td colspan="13" class="text-center py-4">
+                          <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                          <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                            {{'no_rows' | translate}}
+                          </p>
+                        </td>
+                      </tr>
+                    </ng-template>
+                    </p-table>
+                    </td>
+                    </tr>
+                    <tr *ngIf="conceptList === seccion_concepto_retenciones">
+                      <td colspan="13" style="padding: 0!important;">
+                        <div class="col-12">
+                          <p-table #retenBuyDesg [value]="conceptList.retenciones"
+                            [globalFilterFields]="['Base','Impuesto','TipoFactor','TasaOCuota','Importe','impuesto_relacionado_folio','impuesto_relacionado_abreviacion']"
+                            dataKey="id" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]">
+                            <ng-template #caption>
+                              <div class="flex">
+                                <p-iconfield iconPosition="left" class="ml-auto">
+                                  <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                                  <input pInputText type="text"
+                                    (input)="retenBuyDesg.filterGlobal($event.target.value, 'contains')"
+                                    placeholder="{{'bus_car' | translate}}" />
+                                </p-iconfield>
+                              </div>
+                            </ng-template>
+                            <ng-template #header>
+                    <tr>
+                      <th style="width: 100px" pSortableColumn="Base">Base&nbsp;<p-sortIcon field="Base" /></th>
+                      <th style="width: 100px" pSortableColumn="Impuesto">Impuesto&nbsp;<p-sortIcon field="Impuesto" />
+                      </th>
+                      <th style="width: 120px" pSortableColumn="TipoFactor">TipoFactor&nbsp;<p-sortIcon
+                          field="TipoFactor" /></th>
+                      <th style="width: 120px" pSortableColumn="TasaOCuota">TasaOCuota&nbsp;<p-sortIcon
+                          field="TasaOCuota" /></th>
+                      <th style="width: 100px" pSortableColumn="Importe">Importe&nbsp;<p-sortIcon field="Importe" />
+                      </th>
+                      <th style="width: 200px" pSortableColumn="impuesto_relacionado_folio">Impuesto
+                        relacionado&nbsp;<p-sortIcon field="impuesto_relacionado_folio" /></th>
+                    </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-ret let-i="rowIndex">
+                      <tr>
+                        <td>{{ret.Base}}</td>
+                        <td>{{ret.Impuesto}}</td>
+                        <td>{{ret.TipoFactor}}</td>
+                        <td>{{ret.TasaOCuota}}</td>
+                        <td>{{ret.Importe}}</td>
+                        <td>{{ret.impuesto_relacionado_folio+" "+ret.impuesto_relacionado_abreviacion}}</td>
+                      </tr>
+                    </ng-template>
+                    <ng-template pTemplate="emptymessage">
+                      <tr>
+                        <td colspan="6" class="text-center py-4">
+                          <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                          <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                            {{'no_rows' | translate}}
+                          </p>
+                        </td>
+                      </tr>
+                    </ng-template>
+                    </p-table>
+                  </div>
+                  </td>
+                  </tr>
+                  <tr *ngIf="conceptList === seccion_concepto_traslados">
+                    <td colspan="13" style="padding: 0!important;">
+                      <div class="col-12">
+                        <p-table #buyDesgTras [value]="conceptList.traslados"
+                          [globalFilterFields]="[ 'Base','Impuesto','TipoFactor','TasaOCuota','Importe','impuesto_relacionado_folio','impuesto_relacionado_abreviacion']"
+                          dataKey="id" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]">
+                          <ng-template #caption>
+                            <div class="flex">
+                              <p-iconfield iconPosition="left" class="ml-auto">
+                                <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                                <input pInputText type="text"
+                                  (input)="buyDesgTras.filterGlobal($event.target.value, 'contains')"
+                                  placeholder="{{'bus_car' | translate}}" />
+                              </p-iconfield>
+                            </div>
+                          </ng-template>
+                          <ng-template #header>
+                  <tr>
+                    <th style="width: 100px" pSortableColumn="Base">Base&nbsp;<p-sortIcon field="Base" /></th>
+                    <th style="width: 100px" pSortableColumn="Impuesto">Impuesto&nbsp;<p-sortIcon field="Impuesto" />
+                    </th>
+                    <th style="width: 120px" pSortableColumn="TipoFactor">TipoFactor&nbsp;<p-sortIcon
+                        field="TipoFactor" /></th>
+                    <th style="width: 120px" pSortableColumn="TasaOCuota">TasaOCuota&nbsp;<p-sortIcon
+                        field="TasaOCuota" /></th>
+                    <th style="width: 100px" pSortableColumn="Importe">Importe&nbsp;<p-sortIcon field="Importe" /></th>
+                    <th style="width: 200px" pSortableColumn="impuesto_relacionado_folio">Impuesto
+                      relacionado&nbsp;<p-sortIcon field="impuesto_relacionado_folio" /></th>
+                  </tr>
+                  </ng-template>
+                  <ng-template pTemplate="body" let-tras let-i="rowIndex">
+                    <tr>
+                      <td>{{tras.Base}}</td>
+                      <td>{{tras.Impuesto}}</td>
+                      <td>{{tras.TipoFactor}}</td>
+                      <td>{{tras.TasaOCuota}}</td>
+                      <td>{{tras.Importe}}</td>
+                      <td>{{tras.impuesto_relacionado_folio+" "+tras.impuesto_relacionado_abreviacion}}</td>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="emptymessage">
+                    <tr>
+                      <td colspan="6" class="text-center py-4">
+                        <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                        <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                          {{'no_rows' | translate}}
+                        </p>
+                      </td>
+                    </tr>
+                  </ng-template>
+                  </p-table>
+          </div>
+          </td>
+          </tr>
+          <tr *ngIf="conceptList === seccion_concepto_series">
+            <td colspan="19" style="padding: 0!important;">
+              <div class="col-12"></div>
+            </td>
+          </tr>
+          <tr *ngIf="conceptList === seccion_concepto_lotes">
+            <td colspan="19" style="padding: 0!important;">
+              <div class="col-12"></div>
+            </td>
+          </tr>
+          <tr *ngIf="conceptList === seccion_concepto_pedimentos">
+            <td colspan="19" style="padding: 0!important;">
+              <div class="col-12"></div>
+            </td>
+          </tr>
+          <tr *ngIf="conceptList === seccion_concepto_activos">
+            <td colspan="19" style="padding: 0!important;">
+              <div class="col-12 explain">
+                <h6 class="title">Uso del producto / servicio</h6>
+                <h6 class="content">{{conceptList.articulo_homologado_uso}}</h6>
+              </div>
+              <div class="col-12" *ngIf="conceptList.articulo_homologado_activoFijo_token != ''">
+                <div class="col-12 explain">
+                  <h6 class="title">Activos fijos</h6>
+                </div>
+                <div class="col-12 explain">
+                  <h6 class="title">Folio</h6>
+                  <h6 class="content">{{conceptList.articulo_homologado_activoFijo_folio}}</h6>
+                </div>
+                <div class="col-12 explain">
+                  <h6 class="title">Categoria</h6>
+                  <h6 class="content">{{conceptList.articulo_homologado_activoFijo_categoria}}</h6>
+                </div>
+              </div>
+              <div class="col-12" *ngIf="conceptList.articulo_homologado_activoIntangible_token != ''">
+                <div class="col-12 explain">
+                  <h6 class="title">Activos intangibles</h6>
+                </div>
+                <div class="col-12 explain">
+                  <h6 class="title">Folio</h6>
+                  <h6 class="content">{{conceptList.articulo_homologado_activoIntangible_folio}}</h6>
+                </div>
+                <div class="col-12 explain">
+                  <h6 class="title">Categoria</h6>
+                  <h6 class="content">{{conceptList.articulo_homologado_activoIntangible_categoria}}</h6>
+                </div>
+              </div>
+            </td>
+          </tr>
+          <tr *ngIf="conceptList === seccion_concepto_prorrateos">
+            <td colspan="19" style="padding: 0!important;">
+              <div class="col-12"></div>
+            </td>
+          </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="18" class="text-center py-4">
+                <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                  {{'no_rows' | translate}}
+                </p>
+              </td>
+            </tr>
+          </ng-template>
+          </p-table>
+          <p-table [value]="dataConceptosINTERNO" dataKey="id" [resizableColumns]="true"
+            responsiveLayout="stack"><!--[paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30]" -->
+            <ng-template pTemplate="footer" class="footer_importes">
+              <tr>
+                <td class="td_importes" colspan="13"><strong class="row">
+                    <div class="col data_totales_title">Subtotal:</div>
+                    <div class="col data_totales_cant">{{compra_subtotal | currency: info.compras_moneda_code}}</div>
+                  </strong></td>
+              </tr>
+              <tr>
+                <td class="td_importes" colspan="13"><strong class="row">
+                    <div class="col data_totales_title">Descuentos:</div>
+                    <div class="col data_totales_cant">{{compra_descuento | currency: info.compras_moneda_code}}</div>
+                  </strong></td>
+              </tr>
+              <tr>
+                <td class="td_importes" colspan="13"><strong class="row">
+                    <div class="col data_totales_title">Retenciones:</div>
+                    <div class="col data_totales_cant">{{compra_retenciones | currency: info.compras_moneda_code}}</div>
+                  </strong></td>
+              </tr>
+              <tr>
+                <td class="td_importes" colspan="13"><strong class="row">
+                    <div class="col data_totales_title">Traslados:</div>
+                    <div class="col data_totales_cant">{{compra_traslados | currency: info.compras_moneda_code}}</div>
+                  </strong></td>
+              </tr>
+              <tr>
+                <td class="td_importes" colspan="13"><strong class="row">
+                    <div class="col data_totales_title">Total:</div>
+                    <div class="col data_totales_cant">{{compra_total | currency: info.compras_moneda_code}}</div>
+                  </strong></td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+      </p-accordion-content>
+    </p-accordion-panel>
+    <p-accordion-panel value="4"
+      [disabled]="dataCFDI_impuestos_retenidos_lista.length == 0 && dataCFDI_impuestos_trasladados_lista.length == 0">
+      <p-accordion-header>
+        <ng-template #toggleicon let-active="active"><i class="fa-solid"
+            [ngClass]="active ? 'fa-sort-up' : 'fa-sort-down'" style="margin-right: 3px!important;"></i></ng-template>
+        <span class="flex items-center gap-2 w-full">Nodo Impuestos</span>
+      </p-accordion-header>
+      <p-accordion-content>
+        <div class="col-12">
+          <div class="col-12">
+            <div class="explain">
+              <h6 class="title">Retenciones</h6>
+              <!--<h6 class="content">{{"Total "+dataCFDI_impuestos_retenidos_total}}</h6>-->
+            </div>
+            <p-table [value]="dataCFDI_impuestos_retenidos_lista">
+              <ng-template #header>
+                <tr>
+                  <th pSortableColumn="Base">Base&nbsp;<p-sortIcon field="Base" /></th>
+                  <th pSortableColumn="Impuesto">Impuesto&nbsp;<p-sortIcon field="Impuesto" /></th>
+                  <th pSortableColumn="TipoFactor">TipoFactor&nbsp;<p-sortIcon field="TipoFactor" /></th>
+                  <th pSortableColumn="TasaOCuota">TasaOCuota&nbsp;<p-sortIcon field="TasaOCuota" /></th>
+                  <th pSortableColumn="Importe">Importe&nbsp;<p-sortIcon field="Importe" /></th>
+                </tr>
+              </ng-template>
+              <ng-template #body let-ret>
+                <tr>
+                  <td>{{ret.Base}}</td>
+                  <td>{{ret.Impuesto}}</td>
+                  <td>{{ret.TipoFactor}}</td>
+                  <td>{{ret.TasaOCuota}}</td>
+                  <td>{{ret.Importe}}</td>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td colspan="5" class="text-center py-4">
+                    <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                    <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                      {{'no_rows' | translate}}
+                    </p>
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+          <div class="col-12">
+            <p-divider [attr.style]="'margin-top: 50px!important;'" />
+            <div class="explain">
+              <h6 class="title">Traslados</h6>
+              <!--<h6 class="content">{{"Total "+dataCFDI_impuestos_trasladados_total}}</h6>-->
+            </div>
+            <p-table [value]="dataCFDI_impuestos_trasladados_lista">
+              <ng-template #header>
+                <tr>
+                  <th pSortableColumn="Base">Base&nbsp;<p-sortIcon field="Base" /></th>
+                  <th pSortableColumn="Impuesto">Impuesto&nbsp;<p-sortIcon field="Impuesto" /></th>
+                  <th pSortableColumn="TipoFactor">TipoFactor&nbsp;<p-sortIcon field="TipoFactor" /></th>
+                  <th pSortableColumn="TasaOCuota">TasaOCuota&nbsp;<p-sortIcon field="TasaOCuota" /></th>
+                  <th pSortableColumn="Importe">Importe&nbsp;<p-sortIcon field="Importe" /></th>
+                </tr>
+              </ng-template>
+              <ng-template #body let-tras>
+                <tr>
+                  <td>{{tras.Base}}</td>
+                  <td>{{tras.Impuesto}}</td>
+                  <td>{{tras.TipoFactor}}</td>
+                  <td>{{tras.TasaOCuota}}</td>
+                  <td>{{tras.Importe}}</td>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td colspan="5" class="text-center py-4">
+                    <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                    <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                      {{'no_rows' | translate}}
+                    </p>
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+        </div>
+      </p-accordion-content>
+    </p-accordion-panel>
+    <p-accordion-panel value="5" [disabled]="dataCFDIComplemento.length == 0">
+      <p-accordion-header>
+        <ng-template #toggleicon let-active="active"><i class="fa-solid"
+            [ngClass]="active ? 'fa-sort-up' : 'fa-sort-down'" style="margin-right: 3px!important;"></i></ng-template>
+        <span class="flex items-center gap-2 w-full">Nodo Complemento</span>
+      </p-accordion-header>
+      <p-accordion-content>
+        <div class="col-12">
+          <div *ngFor="let last of dataCFDIComplemento"
+            [ngClass]="last.title == 'SelloCFD' || last.title == 'SelloSAT' ? 'explain explain_column' : 'col-12 explain'">
+            <h6 class="title">{{last.title}}</h6>
+            <h6 class="content"
+              [attr.style]="last.title == 'SelloCFD' || last.title == 'SelloSAT' ? 'text-align: justify;word-wrap: break-word;max-width: 100%;' : ''">
+              {{last.content}}</h6>
+          </div>
+        </div>
+      </p-accordion-content>
+    </p-accordion-panel>
+    <p-accordion-panel value="6" [disabled]="dataCFDIRelacionados.length == 0">
+      <p-accordion-header>
+        <ng-template #toggleicon let-active="active"><i class="fa-solid"
+            [ngClass]="active ? 'fa-sort-up' : 'fa-sort-down'" style="margin-right: 3px!important;"></i></ng-template>
+        <span class="flex items-center gap-2 w-full">Nodo Cfdi relacionados</span>
+      </p-accordion-header>
+      <p-accordion-content>
+        <div class="col-12" *ngFor="let rel of dataCFDIRelacionados">
+          <!-- //cfdi:Comprobante//cfdi:CfdiRelacionados-->
+          <div class="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-2 col-xxl-2 explain">
+            <h6 class="title">{{rel.title}}</h6>
+            <h6 class="content">{{rel.content}}</h6>
+          </div>
+        </div>
+      </p-accordion-content>
+    </p-accordion-panel>
+  </p-accordion>
+</div>
+<div *ngSwitchDefault>registre CFDI</div>
+</div>
+</p-accordion-content>
+</p-accordion-panel>
+<p-accordion-panel value="1">
+  <p-accordion-header>
+    <ng-template #toggleicon let-active="active"><i class="fa-solid" [ngClass]="active ? 'fa-sort-up' : 'fa-sort-down'"
+        style="margin-right: 3px!important;"></i></ng-template>
+    <span class="flex items-center gap-2 w-full">Compra a cr&eacute;dito</span>
+  </p-accordion-header>
+  <p-accordion-content>
+    <div class="col-12" style="padding: 0;padding-left: 5px!important;">
+      <div class="col-12" *ngIf="info.compra_contado_credito == 'contado'">Compra de contado</div>
+      <div class="col-12" *ngIf="info.compra_contado_credito == 'credito'">Compra a cr&eacute;dito</div>
+      <div class="col-12" *ngIf="info.compra_contado_credito == 'credito'">{{"Fecha de vencimiento:
+        "+info.fecha_vencimiento}}</div>
+    </div>
+  </p-accordion-content>
+</p-accordion-panel>
+<p-accordion-panel value="2">
+  <p-accordion-header>
+    <ng-template #toggleicon let-active="active"><i class="fa-solid" [ngClass]="active ? 'fa-sort-up' : 'fa-sort-down'"
+        style="margin-right: 3px!important;"></i></ng-template>
+    <span class="flex items-center gap-2 w-full">¿El pago se realiza después o antes de recibir el producto o
+      servicio?</span>
+  </p-accordion-header>
+  <p-accordion-content>
+    <div class="col-12">
+      <div class="col-12 row" style="padding: 0;padding-left: 5px!important;margin-bottom: 5px!important;">
+        <div
+          class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3 form-check form-switch form-check-reverse switch_primario"
+          style="justify-content: start!important;">
+          {{!info.compras_recibeProducto ? "Después" : "Antes (generar orden de pago)"}}
+        </div>
+        <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9"></div>
+      </div>
+    </div>
+  </p-accordion-content>
+</p-accordion-panel>
+<p-accordion-panel value="3">
+  <p-accordion-header>
+    <ng-template #toggleicon let-active="active"><i class="fa-solid" [ngClass]="active ? 'fa-sort-up' : 'fa-sort-down'"
+        style="margin-right: 3px!important;"></i></ng-template>
+    <span class="flex items-center gap-2 w-full">Punto de entrega o recepci&oacute;n</span>
+  </p-accordion-header>
+  <p-accordion-content>
+    <div class="col-12">
+      <div class="col-12" *ngIf="tipoLugarRecepcion == 'proveedor' && proveedorSeleccionado.length > 0">
+        <div class="col-12" *ngFor="let provDir of proveedorSeleccionado">
+          <div class="col-12" *ngIf="provDir.nationality == 118">
+            <p-table #dt [value]="provDir.arrayUbicacion" dataKey="id">
+              <ng-template pTemplate="header">
+                <tr>
+                  <th pSortableColumn="estado_main">Estado&nbsp;<p-sortIcon field="estado_main" /></th>
+                  <th pSortableColumn="municipio_main">Municipio&nbsp;<p-sortIcon field="municipio_main" /></th>
+                  <th pSortableColumn="c_postal_main">C&oacute;digo postal&nbsp;<p-sortIcon field="c_postal_main" />
+                  </th>
+                  <th pSortableColumn="colonia_main">Colonia&nbsp;<p-sortIcon field="colonia_main" /></th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-dir>
+                <tr *ngIf="info.tokenLugarRecepcion == dir.token_direccion">
+                  <td>{{dir.estado_main}}</td>
+                  <td>{{dir.municipio_main}}</td>
+                  <td>{{dir.c_postal_main}}</td>
+                  <td>{{dir.colonia_main}}</td>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td colspan="4" class="text-center py-4">
+                    <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                    <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                      {{'no_rows' | translate}}
+                    </p>
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+          <div class="col-12" *ngIf="provDir.nationality != 118">
+            <p-table #dt [value]="provDir.arrayUbicacion" dataKey="id">
+              <ng-template pTemplate="header">
+                <tr>
+                  <th pSortableColumn="clase">alias&nbsp;<p-sortIcon field="clase" /></th>
+                  <th pSortableColumn="pais">pais&nbsp;<p-sortIcon field="pais" /></th>
+                  <th pSortableColumn="cod_postalext">Direcci&oacute;n&nbsp;<p-sortIcon field="cod_postalext" /></th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-dir>
+                <tr *ngIf="info.tokenLugarRecepcion == dir.token_direccion">
+                  <td>
+                    <div class="form-check radio_check">
+                      <input class="form-check-input" type="radio" name="exampleRadios"
+                        [checked]="info.tokenLugarRecepcion == dir.token_direccion" [value]="dir.token_direccion"
+                        (click)="selectDireccionEnt($event.target);">
+                    </div>
+                  </td>
+                  <td>{{dir.clase}}</td>
+                  <td>{{dir.pais}}</td>
+                  <td>{{dir.cod_postalext}}</td>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td colspan="3" class="text-center py-4">
+                    <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                    <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                      {{'no_rows' | translate}}
+                    </p>
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+        </div>
+      </div>
+      <div class="col-12" *ngIf="tipoLugarRecepcion == 'establecimiento' && arrayEstablecCompras.length > 0">
+        <p-table #dt [value]="arrayEstablecCompras" dataKey="id">
+          <ng-template pTemplate="header">
+            <tr>
+              <th pSortableColumn="estab_alias">alias&nbsp;<p-sortIcon field="estab_alias" /></th>
+              <th pSortableColumn="estab_ubicacion_pais">Direcci&oacute;n completa&nbsp;<p-sortIcon
+                  field="estab_ubicacion_pais" /></th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-estab>
+            <tr *ngIf="info.tokenLugarRecepcion == estab.token_establecimiento">
+              <td>{{estab.estab_alias}}</td>
+              <td>{{estab.estab_ubicacion_pais == 'Mx' ? estab.colonia_main+' CP.'+estab.c_postal_main+',
+                '+estab.municipio_main+', Estado: '+estab.estado_main : estab.dir_completa+',
+                CP.'+estab.cod_postalext+', '+estab.pais_nombre}}</td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="2" class="text-center py-4">
+                <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                  {{'no_rows' | translate}}
+                </p>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+      <div class="col-12" *ngIf="tipoLugarRecepcion == 'N/A'">No aplica</div>
+    </div>
+  </p-accordion-content>
+</p-accordion-panel>
+<p-accordion-panel value="4" [disabled]="proveedorAnticipoTotal == 0">
+  <p-accordion-header>
+    <ng-template #toggleicon let-active="active"><i class="fa-solid" [ngClass]="active ? 'fa-sort-up' : 'fa-sort-down'"
+        style="margin-right: 3px!important;"></i></ng-template>
+    <span class="flex items-center gap-2 w-full">Anticipo a proveedor</span>
+  </p-accordion-header>
+  <p-accordion-content>
+    <div class="col-12 explain">
+      <h6 class="title">Anticipo total registrado:</h6>
+      <h6 class="content">{{proveedorAnticipoTotalFormat}}</h6>
+    </div>
+
+    <div class="col-12 row">
+      <div class="col-12 col-sm-12 col-md-12 col-lg-3 col-xl-4 col-xxl-4">
+        <div class="form-check radio_check" style="line-height: 20px !important;">
+          <input class="form-check-input" type="radio" name="buy_aplica_factura"
+            value="buy_aplicar_anticipo_a_proveedor" [checked]="aplica_anticipo_a_proveedor == 'Sí'"
+            (click)="aplicaAnticipoAProveedor($event.target);">
+          <label class="form-check-label" for="punto_ent_recept">Aplica</label>
+        </div>
+        <div class="form-check radio_check" style="line-height: 20px !important;">
+          <input class="form-check-input" type="radio" name="buy_aplica_factura"
+            value="not_aplicar_anticipo_a_proveedor" [checked]="aplica_anticipo_a_proveedor == 'No'"
+            (click)="aplicaAnticipoAProveedor($event.target);">
+          <label class="form-check-label" for="punto_ent_recept">No aplica</label>
+        </div>
+      </div>
+      <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-4 col-xxl-4 input-group"
+        [ngClass]="aplica_anticipo_a_proveedor != 'Sí' ? 'noneView' : ''">
+        <label for="fechaVencimientoCompra" class="activeInput">Anticipo aplicado:</label>
+        <input class="validate datepicker" id="fechaVencimientoCompra" name="fechaVencimientoCompra" type="number"
+          (keyup)="redacta_anticipo_aplicado($event.target);">
+      </div>
+      <div class="col-12 col-sm-12 col-md-12 col-lg-3 col-xl-4 col-xxl-4 explain"
+        [ngClass]="aplica_anticipo_a_proveedor != 'Sí' ? 'noneView' : ''"
+        style="margin: 0;justify-content: flex-end;padding: 10px;">
+        <h6 class="title">Anticipo restante:</h6>
+        <h6 class="content">{{proveedorAnticipoRestanteFormat}}</h6>
+      </div>
+    </div>
+  </p-accordion-content>
+</p-accordion-panel>
+</p-accordion>
+
+<div class="col-12 row" style="margin-top: 5px!important;">
+  <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6"></div>
+  <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6"
+    style="display: flex !important;justify-content: end!important;padding: 0!important;">
+    <a class="btn btn_extend text-bg-success rounded-3" [ngClass]="!getListasLlenadasCFDI() ? 'disabled' : ''"
+      [attr.disabled]="!getListasLlenadasCFDI() ? true : null"
+      [attr.aria-disabled]="!getListasLlenadasCFDI() ? true : null" name="btnAltaCompra3"
+      style="margin-right: 3px!important;" (click)="getListasLlenadasCFDI() && registraFacturasCompraCFDI();">
+      <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam_pay' | translate}}</a>
+  </div>
+</div>
+</div>

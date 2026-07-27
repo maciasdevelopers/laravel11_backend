@@ -1,0 +1,314 @@
+<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco" #vContent>
+  <div class="contenido"><app-loader></app-loader>
+    <nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+    <div class="contenidoPagina">
+      <div class="listas_ps revanecer">
+        <div id="listaLote" class="lista-div lista-divNoFlex row">
+          <h4 class="col-12">CATALOGO DE UNIDADES DE MEDIDA</h4>
+          <div class="col-12">
+            <div class="btn-group lista_botones col" role="group" aria-label="Basic example">
+              <a class="btn btn_extend bg-indigo-600" (click)="listaUMedTrue();">
+                <i class="fa-solid fa-rotate" style="margin-left: 5px;"></i>&nbsp;{{'list_updt' | translate}}
+              </a>
+              <a class="btn btn_extend bg-indigo-600" data-bs-toggle="modal" data-bs-target="#modalUMedidaEliminadas">
+                <i class="fa-solid fa-trash" style="margin-left: 5px;"></i>&nbsp;{{'rows_deleted' | translate}}
+              </a>
+            </div>
+
+            <p-tabs value="0">
+              <p-tablist>
+                <p-tab value="0">Cat&aacute;logo de unidades de medida</p-tab>
+                <p-tab value="1">Registrar unidad de medida</p-tab>
+              </p-tablist>
+              <p-tabpanels>
+                <p-tabpanel value="0">
+                  <p-table #InventUniMed [value]="catalogoUnidadesMedINVENT" [paginator]="true" [rows]="10"
+                    [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]"
+                    [globalFilterFields]="['unidad_utilizada','token_unidad_medida','folio_unidad_medida','nombre', 'simbolo', 'categoria','sat_vinculo_complete','unidad_deshabilitada']">
+                    <ng-template #caption>
+                      <div class="flex">
+                        <p-iconfield iconPosition="left" class="ml-auto">
+                          <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                          <input pInputText type="text"
+                            (input)="InventUniMed.filterGlobal($event.target.value, 'contains')"
+                            placeholder="{{'bus_car' | translate}}" />
+                        </p-iconfield>
+                      </div>
+                    </ng-template>
+                    <ng-template #header>
+                      <tr>
+                        <th class="ultimo"></th>
+                        <th pSortableColumn="folio_unidad_medida">folio&nbsp;<p-sortIcon field="folio_unidad_medida" />
+                        </th>
+                        <th pSortableColumn="nombre">nombre&nbsp;<p-sortIcon field="nombre" /></th>
+                        <th pSortableColumn="simbolo">simbolo&nbsp;<p-sortIcon field="simbolo" /></th>
+                        <th pSortableColumn="categoria">categoria&nbsp;<p-sortIcon field="categoria" /></th>
+                        <th pSortableColumn="sat_vinculo">Cat&aacute;logo de unidades de medida del SAT&nbsp;<p-sortIcon
+                            field="sat_vinculo" /></th>
+                        <th class="ultimo"></th>
+                        <th class="ultimo"></th>
+                      </tr>
+                    </ng-template>
+                    <ng-template #body let-med>
+                      <tr>
+                        <td class="ultimo">
+                          <a class="btn bg-blue-600" [ngClass]="med.unidad_utilizada ? 'disabled' : ''"
+                            [attr.disabled]="med.unidad_utilizada ? true : null"
+                            [attr.aria-disabled]="med.unidad_utilizada ? true : null" data-bs-toggle="modal"
+                            data-bs-target="#windowUMedidaInfo"
+                            (click)="!med.unidad_utilizada && desglosaUMedida(med.token_unidad_medida);">
+                            <i class="fa-solid fa-info"></i>
+                          </a>
+                        </td>
+                        <td>{{med.folio_unidad_medida}}</td>
+                        <td>{{med.nombre}}</td>
+                        <td>{{med.simbolo}}</td>
+                        <td>{{med.categoria}}</td>
+                        <td>{{med.sat_vinculo_complete}}</td>
+                        <td>
+                          <a class="btn btn_extend rounded-3"
+                            [ngClass]="med.unidad_deshabilitada ? 'text-bg-success' : 'text-bg-danger'"
+                            (click)="med.unidad_deshabilitada ? habilitaUMedida(med.token_unidad_medida) : deshabilitaUMedida(med.token_unidad_medida);">
+                            <i class="fa-solid"
+                              [ngClass]="med.unidad_deshabilitada ? 'fa-circle-check' : 'fa-eye-slash'"></i>&nbsp;{{(med.unidad_deshabilitada
+                            ? 'enable' : 'disable') | translate}}
+                          </a>
+                        </td>
+                        <td>
+                          <a class="btn btn_extend text-bg-danger rounded-3"
+                            [ngClass]="med.unidad_utilizada ? 'disabled' : ''"
+                            [attr.disabled]="med.unidad_utilizada ? true : null"
+                            [attr.aria-disabled]="med.unidad_utilizada ? true : null"
+                            (click)="!med.unidad_utilizada && sendtoPapeleraUMedida(med.token_unidad_medida)">
+                            <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                          </a>
+                        </td>
+                      </tr>
+                    </ng-template>
+                    <ng-template pTemplate="emptymessage">
+                      <tr>
+                        <td colspan="8" class="text-center py-4">
+                          <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                          <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                            {{'no_rows' | translate}}
+                          </p>
+                        </td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
+                  <div class="modal fade bd-example-modal-lg" id="windowUMedidaInfo" tabindex="-1" role="dialog"
+                    aria-labelledby="windowUMedidaInfoLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-fullscreen" style="margin: 1%;width: 98%!important;">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="windowUMedidaInfoLabel">Informaci&oacute;n
+                            de unidad de medida&nbsp;{{desglose_unidad_medida_folio}}</h1>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                            style="background-color: transparent !important;"></button>
+                        </div>
+                        <div class="modal-body" *ngFor="let umed of info_unidad_medida_desglose">
+                          <form class="row" #formRegistroUMedida="ngForm" autocomplete="off"
+                            enctype="multipart/form-data"
+                            (ngSubmit)="editUmed_valida_update(umed.token_unidad_medida) && updateUMedida(umed.token_unidad_medida);">
+                            <div class="col-12 row">
+                              <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6 input-group">
+                                <label class="activeInput">Unidad de medida {{umed.nombre}}</label>
+                                <input id="dataMedNombre" class="validate"
+                                  [ngClass]="umed.unidad_utilizada ? 'disabled' : ''"
+                                  [attr.disabled]="umed.unidad_utilizada ? true : null"
+                                  [attr.aria-disabled]="umed.unidad_utilizada ? true : null" type="text"
+                                  name="dataMedNombre" [value]="umed.nombre"
+                                  (keyup)="!umed.unidad_utilizada && editUmed_nombre(umed.token_unidad_medida,$event.target);">
+                              </div>
+                              <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6 input-group">
+                                <label class="activeInput">Simbolo</label>
+                                <input id="dataMedSimbolo" class="validate"
+                                  [ngClass]="umed.unidad_utilizada ? 'disabled' : ''"
+                                  [attr.disabled]="umed.unidad_utilizada ? true : null"
+                                  [attr.aria-disabled]="umed.unidad_utilizada ? true : null" type="text"
+                                  name="dataMedSimbolo" [value]="umed.simbolo"
+                                  (keyup)="!umed.unidad_utilizada && editUmed_simbolo(umed.token_unidad_medida,$event.target);">
+                              </div>
+                              <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6 input-group">
+                                <label class="activeInput">Categor&iacute;a</label>
+                                <input id="dataMedCategoria" class="validate"
+                                  [ngClass]="umed.unidad_utilizada ? 'disabled' : ''"
+                                  [attr.disabled]="umed.unidad_utilizada ? true : null"
+                                  [attr.aria-disabled]="umed.unidad_utilizada ? true : null" type="text"
+                                  name="dataMedCategoria" [value]="umed.categoria"
+                                  (keyup)="!umed.unidad_utilizada && editUmed_categoria(umed.token_unidad_medida,$event.target);">
+                              </div>
+                              <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6 input-group">
+                                <label for="fechaAltaProd" class="activeInput">Cat&aacute;logo de unidades de medida del
+                                  SAT</label>
+                                <p-select [options]="sat_unidades_de_medida"
+                                  [ngClass]="umed.unidad_utilizada ? 'disabled' : ''" [disabled]="umed.unidad_utilizada"
+                                  [attr.aria-disabled]="umed.unidad_utilizada" id="selectedSATEditMed"
+                                  optionLabel="nombre" [filter]="true" filterBy="nombre" [showClear]="true"
+                                  [placeholder]="umed.sat_vinculo_complete" class="w-full md:w-56"
+                                  (onChange)="!umed.unidad_utilizada && editUmed_sat_homologa(umed.token_unidad_medida,$event.value);">
+                                  <ng-template #selectedItem let-selectedOption>
+                                    <div class="flex items-center gap-2">
+                                      <div>{{umed.categoria+" "+selectedOption.sat_clave+"
+                                        "+selectedOption.unidad_medida}}</div>
+                                    </div>
+                                  </ng-template>
+                                  <ng-template let-prov #item>
+                                    <div class="flex items-center gap-2">
+                                      <div>{{prov.sat_clave+" "+prov.unidad_medida}}</div>
+                                    </div>
+                                  </ng-template>
+                                </p-select>
+                              </div>
+                              <div class="col-12 row"
+                                style="margin-top: 5px!important;padding: 0!important;display: flex !important;justify-content: end!important;padding: 0!important;">
+                                <button class="btn btn_extend text-bg-success rounded-3"
+                                  [ngClass]="!editUmed_valida_update(umed.token_unidad_medida) ? 'disabled' : ''"
+                                  [attr.disabled]="!editUmed_valida_update(umed.token_unidad_medida) ? true : null"
+                                  [attr.aria-disabled]="!editUmed_valida_update(umed.token_unidad_medida) ? true : null"
+                                  type="submit">
+                                  <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+                                </button>
+                              </div>
+                            </div>
+                          </form>
+                        </div>
+                        <div class="modal-footer"><button type="button" class="btn btn-secondary"
+                            data-bs-dismiss="modal">Close</button></div>
+                      </div>
+                    </div>
+                  </div>
+                </p-tabpanel>
+                <p-tabpanel value="1">
+                  <form class="row" #formRegistroUMedida="ngForm" autocomplete="off" enctype="multipart/form-data"
+                    (ngSubmit)="registraUMedida(formRegistroUMedida);">
+                    <div class="col-12 row">
+                      <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6 input-group">
+                        <label class="activeInput">{{'uni_med' | translate}}</label>
+                        <input id="dataMedNombre" class="validate" type="text" name="dataMedNombre"
+                          (keyup)="regUmed_nombre($event.target);" ngModel required>
+                      </div>
+                      <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6 input-group">
+                        <label class="activeInput">Simbolo</label>
+                        <input id="dataMedSimbolo" class="validate" type="text" name="dataMedSimbolo"
+                          (keyup)="regUmed_simbolo($event.target);" ngModel required>
+                      </div>
+                      <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6 input-group">
+                        <label class="activeInput">Categor&iacute;a</label>
+                        <input id="dataMedCategoria" class="validate" type="text" name="dataMedCategoria"
+                          (keyup)="regUmed_categoria($event.target);" ngModel required>
+                      </div>
+                      <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6 input-group">
+                        <label for="fechaAltaProd" class="activeInput">Cat&aacute;logo de unidades de medida del
+                          SAT</label>
+                        <p-select [options]="sat_unidades_de_medida" id="selectedSATMed" optionLabel="nombre"
+                          [filter]="true" filterBy="nombre" [showClear]="true" [placeholder]="'opt_select' | translate"
+                          class="w-full md:w-56" (onChange)="regUmed_sat_homologa($event.value);">
+                          <ng-template #selectedItem let-selectedOption>
+                            <div class="flex items-center gap-2">
+                              <div>{{selectedOption.sat_clave+" "+selectedOption.unidad_medida}}</div>
+                            </div>
+                          </ng-template>
+                          <ng-template let-prov #item>
+                            <div class="flex items-center gap-2">
+                              <div>{{prov.sat_clave+" "+prov.unidad_medida}}</div>
+                            </div>
+                          </ng-template>
+                        </p-select>
+                      </div>
+                      <div class="col-12 row"
+                        style="margin-top: 5px!important;padding: 0!important;display: flex !important;justify-content: end!important;padding: 0!important;">
+                        <button class="btn btn_extend text-bg-success rounded-3"
+                          [ngClass]="!regUmed_valida_registro ? 'disabled' : ''"
+                          [attr.disabled]="!regUmed_valida_registro ? true : null"
+                          [attr.aria-disabled]="!regUmed_valida_registro ? true : null" type="submit">
+                          <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+                        </button>
+                      </div>
+                    </div>
+                  </form>
+                </p-tabpanel>
+              </p-tabpanels>
+            </p-tabs>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade bd-example-modal-lg" id="modalUMedidaEliminadas" tabindex="-1" role="dialog"
+  aria-labelledby="modalUMedidaEliminadasLabel" aria-hidden="true">
+  <div class="modal-dialog modal-fullscreen" style="margin: 1%;width: 98%!important;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="modalUMedidaEliminadasLabel">UNIDADES DE MEDIDA ELIMINADAS
+        </h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+          style="background-color: transparent !important;"></button>
+      </div>
+      <div class="modal-body">
+        <p-table #InventDeletedUniMed [value]="catalogoDeletedUnidadesMedINVENT" [paginator]="true" [rows]="10"
+          [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]"
+          [globalFilterFields]="['token_unidad_medida','folio_unidad_medida','nombre','simbolo','categoria','sat_vinculo_complete']">
+          <ng-template #caption>
+            <div class="flex">
+              <p-iconfield iconPosition="left" class="ml-auto">
+                <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                <input pInputText type="text"
+                  (input)="InventDeletedUniMed.filterGlobal($event.target.value, 'contains')"
+                  placeholder="{{'bus_car' | translate}}" />
+              </p-iconfield>
+            </div>
+          </ng-template>
+          <ng-template #header>
+            <tr>
+              <th pSortableColumn="folio_unidad_medida">folio&nbsp;<p-sortIcon field="folio_unidad_medida" /></th>
+              <th pSortableColumn="nombre">nombre&nbsp;<p-sortIcon field="nombre" /></th>
+              <th pSortableColumn="simbolo">simbolo&nbsp;<p-sortIcon field="simbolo" /></th>
+              <th pSortableColumn="categoria">categoria&nbsp;<p-sortIcon field="categoria" /></th>
+              <th pSortableColumn="sat_vinculo">Cat&aacute;logo de unidades de medida del SAT&nbsp;<p-sortIcon
+                  field="sat_vinculo" /></th>
+              <th class="ultimo"></th>
+              <th class="ultimo"></th>
+            </tr>
+          </ng-template>
+          <ng-template #body let-med>
+            <tr>
+              <td>{{med.folio_unidad_medida}}</td>
+              <td>{{med.nombre}}</td>
+              <td>{{med.simbolo}}</td>
+              <td>{{med.categoria}}</td>
+              <td>{{med.sat_vinculo_complete}}</td>
+              <td>
+                <a class="btn btn_extend text-bg-success rounded-3"
+                  (click)="restaurarUMedida(med.token_unidad_medida);">
+                  <i class="fa-solid fa-trash-arrow-up"></i>&nbsp;{{'restore_row' | translate}}
+                </a>
+              </td>
+              <td>
+                <a class="btn btn_extend text-bg-danger rounded-3"
+                  (click)="eliminacionPermanenteUMedida(med.token_unidad_medida);">
+                  <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                </a>
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="7" class="text-center py-4">
+                <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                  {{'no_rows' | translate}}
+                </p>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+      <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

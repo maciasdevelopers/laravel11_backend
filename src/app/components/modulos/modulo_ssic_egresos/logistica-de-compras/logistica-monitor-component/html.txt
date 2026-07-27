@@ -1,0 +1,317 @@
+<div class="col-12 explain">
+  <h6 class="title">TR:</h6>
+  <h6 class="content">TRANSPORTE</h6>
+</div>
+
+<div class="col-12 explain">
+  <h6 class="title">PT:</h6>
+  <h6 class="content">PUNTO DE TRANSBORDO</h6>
+</div>
+
+<p-timeline [value]="caminoRecorrido">
+  <ng-template #opposite let-nodo>
+    <span class="text-xs text-surface-400 dark:text-surface-500 whitespace-nowrap">
+      @if (nodo.tipo_nodo === 'TRANSPORTE') {
+        {{ nodo.unidad_fecha_salida }}
+      } @else {
+        {{ nodo.fecha_arribo }}
+      }
+    </span>
+  </ng-template>
+  <ng-template #marker let-nodo>
+    @if (nodo.tipo_nodo === 'TRANSPORTE') {
+      <p-avatar [label]="nodo.abrev_nodo" shape="circle" class="salida_transito text-white! text-xs! font-semibold!"/>
+    } @else {
+      <p-avatar [label]="nodo.abrev_nodo" shape="circle" class="punto_transbordo text-white! text-xs! font-semibold!"/>
+    }
+  </ng-template>
+  <ng-template #content let-nodo>
+    <div class="pb-6">
+      <div class="flex items-center gap-2 flex-wrap">
+        @if (nodo.tipo_nodo === 'TRANSPORTE') {
+          <span class="font-medium text-surface-900 dark:text-surface-0" (click)="verDetalleUnidad(nodo)" style="cursor: pointer;"> 
+            @if (nodo.estatus === 'arribado_pendiente_auth') {
+              <i class="fa-solid fa-file-contract" style="color: rgb(254, 138, 0);"></i>
+            } @else if (nodo.estatus === 'en_transito') {
+              <i class="fa-solid fa-truck-fast" style="color: rgb(0, 101, 181);"></i>
+            } @else {
+              <i class="fa-solid fa-check-double" style="color: rgb(0, 134, 93);"></i>
+            }
+            {{ nodo.folio_seguimiento_timeline }}
+          </span>
+        } @else {
+          <span class="font-medium text-surface-900 dark:text-surface-0" (click)="verDetalleTransbordo(nodo)" style="cursor: pointer;"> 
+            {{ nodo.folio_seguimiento_timeline }}
+          </span>
+          <span class="font-medium text-surface-900 dark:text-surface-0" [ngClass]="nodo.autorizado ? 'bg-success-subtle text-success-emphasis' : 'bg-warning-subtle text-warning-emphasis'">
+            {{ nodo.autorizado ? 'Liberado' : 'Retenido en Punto' }}
+          </span>
+        }
+      </div>
+      @if (nodo.tipo_nodo === 'TRANSPORTE') {
+        <p class="mt-2! text-sm! text-surface-600 dark:text-surface-400" style="margin: 0;">📍 {{'origin_address_dispatch' | translate}} {{ nodo.direccion_origen }}</p>
+        <p class="mt-2! text-sm! text-surface-600 dark:text-surface-400" style="margin: 0;">{{'med_trans' | translate}}: {{ nodo.tipo_transporte_extend }}</p>
+        <p class="mt-2! text-sm! text-surface-600 dark:text-surface-400" style="margin: 0;">{{'operator_name_line' | translate}}: {{ nodo.operador_nombre }}</p>
+        <p class="mt-2! text-sm! text-surface-600 dark:text-surface-400" style="margin: 0;">{{'operator_phone' | translate}}: {{ nodo.operador_telefono }}</p>
+      } @else {
+        <p class="mt-2! text-sm! text-surface-600 dark:text-surface-400" style="margin: 0;">📍 {{'origin_address_dispatch' | translate}} {{ nodo.lugar }}</p>
+        <span><i class="fa-regular fa-calendar-check"></i> Arribo Hub: <strong>{{ nodo.fecha_arribo || 'Pendiente' }}</strong></span>
+        <p *ngIf="nodo.observaciones" class="text-xs italic text-slate-500 border-t" style="margin: 0 !important;">"{{ nodo.observaciones }}"</p>
+      }
+      @if (nodo.details) {
+        <div class="mt-3 p-3 rounded-lg bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700">
+          <ul class="space-y-1">
+            @for (detail of nodo.details; track detail) {
+              <li class="text-sm text-surface-600 dark:text-surface-400 font-mono flex items-start gap-2">
+                <!--<svg data-p-icon="minus" class="text-xs mt-1.5 text-surface-400" />-->
+                {{ detail }}
+              </li>
+            }
+          </ul>
+        </div>
+      }
+    </div>
+  </ng-template>
+</p-timeline>
+
+<p-drawer [(visible)]="verLateralUnidad" header="Unidad de transporte" styleClass="w-full! md:w-80!">
+  @if (unidadSeleccionada) {
+    <div class="col-12 explain explain_column" style="margin: 0!important;">
+      <h6 class="title"><i class="fa-solid fa-truck-moving"></i>&nbsp;{{unidadSeleccionada.folio_seguimiento_unidad}}</h6>
+    </div>
+    <div class="col-12 explain explain_column" style="margin: 0!important;">
+      <h6 class="title">{{'med_trans' | translate}}</h6>
+      <h6 class="content">{{unidadSeleccionada.tipo_transporte_extend}}</h6>
+    </div>
+    <div class="col-12 explain explain_column" style="margin: 0!important;">
+      <h6 class="title">{{'operator_name_line' | translate}}</h6>
+      <h6 class="content">{{unidadSeleccionada.operador_nombre}}</h6>
+    </div>
+  
+    <div class="col-12 explain explain_column" style="margin: 0!important;">
+      <h6 class="title">{{'operator_phone' | translate}}</h6>
+      <h6 class="content">{{unidadSeleccionada.operador_telefono}}</h6>
+    </div>
+  
+    <div class="col-12 explain explain_column" style="margin: 0!important;">
+      <h6 class="title">{{'tentative_arrival_date_dest' | translate}}</h6>
+      <h6 class="content">{{unidadSeleccionada.unidad_fecha_tentativa_arribo}}</h6>
+    </div>
+  
+    <p-divider/>
+    @if (unidadSeleccionada.tipo_transporte === 'terrestre') {
+      <div class="col-12 explain explain_column" style="margin: 0!important;">
+        <h6 class="title">{{'truck_tractor_plates' | translate}}</h6>
+        <h6 class="content">{{unidadSeleccionada.identificador_principal}}</h6>
+      </div>
+      <div class="col-12 explain explain_column" style="margin: 0!important;">
+        <h6 class="title">{{'trailer_box_plates' | translate}}</h6>
+        <h6 class="content">{{unidadSeleccionada.identificador_secundario}}</h6>
+      </div>
+      <div class="col-12 explain explain_column" style="margin: 0!important;">
+        <h6 class="title">{{'sct_sict_permit' | translate}}</h6>
+        <h6 class="content">{{unidadSeleccionada.permiso_autorizacion}}</h6>
+      </div>
+    }
+  
+    @if (unidadSeleccionada.tipo_transporte === 'maritimo') {
+      <div class="col-12 explain explain_column" style="margin: 0!important;">
+        <h6 class="title">{{'container_no' | translate}}</h6>
+        <h6 class="content">{{unidadSeleccionada.identificador_principal}}</h6>
+      </div>
+      <div class="col-12 explain explain_column" style="margin: 0!important;">
+        <h6 class="title">{{'booking_number_res' | translate}}</h6>
+        <h6 class="content">{{unidadSeleccionada.identificador_secundario}}</h6>
+      </div>
+    }
+  
+    @if (unidadSeleccionada.tipo_transporte === 'aereo') {
+      <div class="col-12 explain explain_column" style="margin: 0!important;">
+        <h6 class="title">{{'awb_number' | translate}}</h6>
+        <h6 class="content">{{unidadSeleccionada.identificador_principal}}</h6>
+      </div>
+      <div class="col-12 explain explain_column" style="margin: 0!important;">
+        <h6 class="title">{{'flight_code' | translate}}</h6>
+        <h6 class="content">{{unidadSeleccionada.identificador_secundario}}</h6>
+      </div>
+    }
+  
+    <div class="col-12 explain explain_column" style="margin: 0!important;">
+      <h6 class="title">📍 {{'origin_address_dispatch' | translate}}</h6>
+      <h6 class="content" style="text-align: justify;word-wrap: break-word;max-width: 100%;">{{unidadSeleccionada.direccion_origen}}</h6>
+    </div>
+    <div class="col-12 explain explain_column" style="margin: 0!important;">
+      <h6 class="title">📍 {{'destination_address_stop' | translate}}</h6>
+      <h6 class="content" style="text-align: justify;word-wrap: break-word;max-width: 100%;">{{unidadSeleccionada.direccion_destino_especifica}}</h6>
+    </div>
+    
+    <p-table #gralBuyList [value]="unidadSeleccionada.articulos_unidad" dataKey="articulo" [globalFilterFields]="['folio_compra']" showGridlines [resizableColumns]="true" 
+      [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]">
+      <ng-template #caption>
+        <div class="flex" style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;" ngbDropdown>
+          <p-iconfield iconPosition="left" class="ml-auto">
+            <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+            <input pInputText type="text" (input)="gralBuyList.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+          </p-iconfield>
+        </div>
+      </ng-template>
+      <ng-template #header>
+        <tr>
+          <th pResizableColumn pSortableColumn="articulo">{{'article' | translate}}&nbsp;<p-sortIcon field="articulo" /></th>
+          <th pResizableColumn pSortableColumn="cantidad">{{'purchased_quantity' | translate}}&nbsp;<p-sortIcon field="cantidad" /></th>
+          <th pSortableColumn="unidad_medida">{{'uni_med' | translate}}&nbsp;<p-sortIcon field="unidad_medida" /></th>
+        </tr>
+      </ng-template>
+      <ng-template #body let-cBuy let-rowIndex="rowIndex">
+        <tr>
+          <td>{{cBuy.articulo}}</td>
+          <td>{{cBuy.cantidad}}</td>
+          <td>{{cBuy.unidad_medida}}</td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="3" class="text-center py-4">
+            <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+            <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+              {{'no_rows' | translate}}
+            </p>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  }
+</p-drawer>
+
+<p-drawer [(visible)]="verLateralTransbordo" header="Unidad de transporte" styleClass="w-full! md:w-80!">
+  @if (transbordoSeleccionado) {
+    <p-table #gralBuyList [value]="transbordoSeleccionado.articulos_transbordo" dataKey="articulo" [globalFilterFields]="['folio_compra']" showGridlines [resizableColumns]="true" 
+      [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]">
+      <ng-template #caption>
+        <div class="flex" style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;" ngbDropdown>
+          <p-iconfield iconPosition="left" class="ml-auto">
+            <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+            <input pInputText type="text" (input)="gralBuyList.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+          </p-iconfield>
+        </div>
+      </ng-template>
+      <ng-template #header>
+        <tr>
+          <th pResizableColumn pSortableColumn="articulo">{{'article' | translate}}&nbsp;<p-sortIcon field="articulo" /></th>
+          <th pResizableColumn pSortableColumn="cantidad_llego">{{'purchased_quantity' | translate}}&nbsp;<p-sortIcon field="cantidad_llego" /></th>
+          <th pResizableColumn pSortableColumn="cantidad_pendiente_transito">{{'pending_shipping_quantity' | translate}}&nbsp;<p-sortIcon field="cantidad_pendiente_transito" /></th>
+          <th pSortableColumn="unidad_medida">{{'uni_med' | translate}}&nbsp;<p-sortIcon field="unidad_medida" /></th>
+        </tr>
+      </ng-template>
+      <ng-template #body let-cBuy let-rowIndex="rowIndex">
+        <tr>
+          <td>{{cBuy.articulo}}</td>
+          <td>{{cBuy.cantidad_llego}}</td>
+          <td>{{cBuy.cantidad_pendiente_transito}}</td>
+          <td>{{cBuy.unidad_medida}}</td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="4" class="text-center py-4">
+            <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+            <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+              {{'no_rows' | translate}}
+            </p>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  }
+</p-drawer>
+
+<p-timeline [value]="caminoRecorrido">
+  <ng-template #opposite let-nodo>
+    <span class="text-xs text-surface-400 dark:text-surface-500 whitespace-nowrap">
+      {{ nodo.fecha_arribo || 'Pendiente' }}
+    </span>
+  </ng-template>
+
+  <ng-template #marker let-nodo>
+    <!-- El marcador del Timeline actúa como el eje central (Hub) -->
+    <p-avatar [label]="nodo.abrev_nodo" shape="circle" class="punto_transbordo text-white! text-xs! font-semibold!"/>
+  </ng-template>
+
+  <ng-template #content let-nodo>
+    <div class="pb-8 flex flex-col gap-3">
+      
+      <!-- ─── 1. ARRIBA: UNIDADES ENTRANTES (HACIA ATRÁS) ─── -->
+      @if (nodo.unidades_entrantes_atras && nodo.unidades_entrantes_atras.length > 0) {
+        <div class="w-full pl-3 border-l-2 border-orange-400 border-dashed">
+          <span class="text-[11px] uppercase tracking-wider font-bold text-orange-500 block mb-1.5">
+            <i class="fa-solid fa-arrow-right-to-bracket mr-1"></i> Unidades Entrantes / Arribos
+          </span>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+            @for (unidad of nodo.unidades_entrantes_atras; track unidad.id_unidad) {
+              <div class="p-2 rounded-lg border border-surface-200 dark:border-surface-700 bg-surface-50/50 dark:bg-surface-800/50 text-xs">
+                <div class="flex items-center justify-between mb-1">
+                  <span class="font-semibold text-surface-900 dark:text-surface-0 underline decoration-dotted" (click)="verDetalleUnidad(unidad)" style="cursor: pointer;">
+                    <i class="fa-solid fa-truck mr-1 text-orange-400"></i>{{ unidad.folio_seguimiento_timeline }}
+                  </span>
+                  <span class="text-[10px] text-surface-400 font-mono">{{ unidad.unidad_fecha_salida }}</span>
+                </div>
+                <p class="text-surface-600 dark:text-surface-400 m-0 truncate"><strong>Origen:</strong> {{ unidad.direccion_origen }}</p>
+                <p class="text-surface-500 m-0 text-[11px]">Op: {{ unidad.operador_nombre }} ({{ unidad.operador_telefono }})</p>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- ─── 2. CENTRO: EL PUNTO DE TRANSBORDO ACTUAL ─── -->
+      <div class="p-3.5 rounded-xl border border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-900 shadow-xs relative overflow-hidden">
+        <!-- Indicador lateral estético -->
+        <div class="absolute left-0 top-0 bottom-0 w-1 bg-amber-500"></div>
+
+        <div class="flex items-center gap-2 flex-wrap mb-1.5">
+          <span class="font-bold text-surface-900 dark:text-surface-0 text-base" (click)="verDetalleTransbordo(nodo)" style="cursor: pointer;"> 
+            {{ nodo.folio_seguimiento_timeline }}
+          </span>
+          <span class="text-[10px] font-bold px-2 py-0.5 rounded-full uppercase" [ngClass]="nodo.autorizado ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400'">
+            {{ nodo.autorizado ? 'Liberado' : 'Retenido en Punto' }}
+          </span>
+        </div>
+
+        <p class="text-sm text-surface-700 dark:text-surface-300 font-medium m-0">📍 Hub: {{ nodo.lugar }}</p>
+        
+        <div class="mt-1.5 flex flex-col gap-0.5 text-xs text-surface-500">
+          <span><i class="fa-regular fa-calendar-check mr-1"></i> Arribo Registrado: <strong class="text-surface-700 dark:text-surface-300">{{ nodo.fecha_arribo || 'Pendiente de Escala' }}</strong></span>
+          @if (nodo.observaciones) {
+            <p class="text-xs italic text-surface-400 border-t border-surface-100 dark:border-surface-800 mt-1.5 pt-1 mb-0">"{{ nodo.observaciones }}"</p>
+          }
+        </div>
+      </div>
+
+      <!-- ─── 3. ABAJO: UNIDADES SALIENTES (HACIA ADELANTE) ─── -->
+      @if (nodo.unidades_salientes_adelante && nodo.unidades_salientes_adelante.length > 0) {
+        <div class="w-full pl-3 border-l-2 border-emerald-400 border-dashed">
+          <span class="text-[11px] uppercase tracking-wider font-bold text-emerald-500 block mb-1.5">
+            <i class="fa-solid fa-arrow-right-from-bracket mr-1"></i> Unidades Salientes / Siguiente Tramo
+          </span>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+            @for (unidad of nodo.unidades_salientes_adelante; track unidad.id_unidad) {
+              <div class="p-2 rounded-lg border border-surface-200 dark:border-surface-700 bg-surface-50/50 dark:bg-surface-800/50 text-xs">
+                <div class="flex items-center justify-between mb-1">
+                  <span class="font-semibold text-surface-900 dark:text-surface-0 underline decoration-dotted" (click)="verDetalleUnidad(unidad)" style="cursor: pointer;">
+                    <i class="fa-solid fa-truck-ramp-box mr-1 text-emerald-500"></i>{{ unidad.folio_seguimiento_timeline }}
+                  </span>
+                  <span class="text-[10px] bg-surface-200 dark:bg-surface-700 px-1.5 py-0.2 rounded text-surface-600 dark:text-surface-300 uppercase font-mono">{{ unidad.estatus }}</span>
+                </div>
+                <p class="text-surface-600 dark:text-surface-400 m-0 truncate"><strong>Destino:</strong> {{ unidad.direccion_destino_especifica }}</p>
+                <p class="text-surface-500 m-0 text-[11px]">Transporte: {{ unidad.tipo_transporte_extend }}</p>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+    </div>
+  </ng-template>
+</p-timeline>

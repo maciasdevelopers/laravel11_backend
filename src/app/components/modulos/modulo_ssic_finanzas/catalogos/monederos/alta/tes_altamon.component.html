@@ -1,0 +1,228 @@
+<form class="row formDataMonElectro" #formDataMonElectro="ngForm" autocomplete="off"
+  (ngSubmit)="regMonElectro(formDataMonElectro);" *ngIf="viewFormulario">
+  <div class="input-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4">
+    <label for="exampleFormControlInput1" class="activeInput">Medios de pago electr&oacute;nicos</label>
+    <p-select [options]="arrayListMonederos" id="selectedMedioPagoElect" optionLabel="nombre" [filter]="true"
+      filterBy="nombre" optionValue="nombre" [editable]="true" [showClear]="true"
+      [placeholder]="'opt_select' | translate" class="w-full md:w-56"
+      (onChange)="selectListaMonederoElectro($event.value);">
+      <ng-template #selectedItem let-selectedOption>
+        <div class="flex items-center gap-2">
+          <div>{{selectedOption.nombre}}</div>
+        </div>
+      </ng-template>
+      <ng-template let-elect #item>
+        <div class="flex items-center gap-2">
+          <div>{{elect.nombre}}</div>
+        </div>
+      </ng-template>
+    </p-select>
+  </div>
+  <div class="input-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input_group_pass">
+    <label class="activeInput">No. de referencia</label>
+    <input class="txtPasssContrato validate inputWthPass" name="referenciaMonElect" id="referenciaNewMonElect"
+      type="password" (keyup)="validaNoRef($event.target);">
+    <a class="btn" [ngClass]="monderoElect.no_referencia == '' ? 'disabled' : ''"
+      [attr.disabled]="monderoElect.no_referencia == '' ? true : null"
+      [attr.aria-disabled]="monderoElect.no_referencia == '' ? true : null"
+      (click)="monderoElect.no_referencia != '' && verContrato();">
+      <i class="fa-solid" [ngClass]="monderoElect.no_referencia != '' && viewContrato ? 'fa-eye-slash' : 'fa-eye'"></i>
+    </a>
+  </div>
+  <div class="input-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input_group_pass">
+    <label class="activeInput">No. de cuenta</label>
+    <input class="txtPassCuenta validate inputWthPass" name="noCuentaMonElect" id="noCuentaNewMonElect" type="password"
+      required (keyup)="validaNoCuenta($event.target);">
+    <a class="btn" [ngClass]="monderoElect.cuenta == '' ? 'disabled' : ''"
+      [attr.disabled]="monderoElect.cuenta == '' ? true : null"
+      [attr.aria-disabled]="monderoElect.cuenta == '' ? true : null"
+      (click)="monderoElect.cuenta != '' && verCuenta();">
+      <i class="fa-solid" [ngClass]="monderoElect.cuenta != '' && viewCuenta ? 'fa-eye-slash' : 'fa-eye'"></i>
+    </a>
+  </div>
+  <div class="input-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input_group_pass">
+    <label class="activeInput">Clabe interbancaria</label>
+    <input class="txtPassClabeInter validate inputWthPass" name="clabeInterMonElect" id="clabeInterNewMonElect"
+      type="password" maxlength="18" required (keyup)="validaClabeInter($event.target);">
+    <a class="btn" [ngClass]="monderoElect.clabe_inter == '' ? 'disabled' : ''"
+      [attr.disabled]="monderoElect.clabe_inter == '' ? true : null"
+      [attr.aria-disabled]="monderoElect.clabe_inter == '' ? true : null"
+      (click)="monderoElect.clabe_inter != '' && verClabeInter();">
+      <i class="fa-solid"
+        [ngClass]="monderoElect.clabe_inter != '' && viewClabeInterbanc ? 'fa-eye-slash' : 'fa-eye'"></i>
+    </a>
+  </div>
+  <div class="input-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4">
+    <label class="activeInput">Titular</label>
+    <input class="validate" name="titularMonElectronico" type="text" required (keyup)="validaTitular($event.target);">
+  </div>
+  <div class="input-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4">
+    <label for="exampleFormControlInput1" class="activeInput">{{'mon_name' | translate}}</label>
+    <p-select [options]="catalogoMonedasApi" id="selectedMonedaCode" optionLabel="_filtro_busqueda" [filter]="true"
+      filterBy="_filtro_busqueda" [showClear]="true" [placeholder]="'opt_select' | translate" class="w-full md:w-56"
+      (onChange)="selectMonedaMonedero($event.value);">
+      <ng-template #selectedItem let-selectedOption>
+        <div class="flex items-center gap-2">
+          <div>{{selectedOption.code+" "+selectedOption.langEN}}</div>
+        </div>
+      </ng-template>
+      <ng-template let-mon #item>
+        <div class="flex items-center gap-2">
+          <div>{{mon.code+" "+mon.langEN}}</div>
+        </div>
+      </ng-template>
+    </p-select>
+  </div>
+
+  <div class="input-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4">
+    <label class="activeInput">Cuenta contable</label>
+    <input class="validate" name="titularMonElectronico" type="text" required
+      (keyup)="validaCuentaContable($event.target);">
+  </div>
+
+  <div class="col-12">
+    <div class="explain" style="margin-right: 5px;">&Aacute;rea de utilidad:</div>
+    <div class="col-12 form-check radio_check">
+      <input class="form-check-input" name="areaUtilEgresos" type="checkbox" value="egresos"
+        (click)="validaAreaEgresos($event.target);">
+      <label class="form-check-label" for="flexRadioDefault1"><i
+          class="fa-solid fa-arrow-up-short-wide"></i>&nbsp;Egresos y cuentas por pagar</label>
+    </div>
+    <div class="col-12 form-check radio_check">
+      <input class="form-check-input" name="areaUtilIngresos" type="checkbox" value="ingresos"
+        (click)="validaAreaIngresos($event.target);">
+      <label class="form-check-label" for="flexRadioDefault2"><i
+          class="fa-solid fa-arrow-down-short-wide"></i>&nbsp;Ingresos y cuentas por cobrar</label>
+    </div>
+    <div class="col-12 form-check radio_check">
+      <input class="form-check-input" name="areaUtilVHumano" type="checkbox" value="v_humano"
+        (click)="validaAreaVHumano($event.target);">
+      <label class="form-check-label" for="flexRadioDefault3">Valor humano</label>
+    </div>
+  </div>
+
+  <div class="col-12 row">
+    <div class="explain">
+      <h6 class="title">Medios de operaci&oacute;n</h6>
+    </div>
+    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input-group">
+      <label class="activeInput" for="listManejoMonedero" id="lblCheque">Manejo de:</label>
+      <select id="listManejoMonedero" name="listManejoMonedero" (change)="selectManejoMonedero($event.target);">
+        <option value="" disabled selected>{{'opt_select' | translate}}</option>
+        <option value="chequera">Chequera</option>
+        <option value="creditCard">Tarjetas de cr&eacute;dito</option>
+        <option value="debitCard">Tarjetas de d&eacute;bito</option>
+      </select>
+    </div>
+    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input-group">
+      <label class="activeInput" id="lblReferencia" for="txtReferenciaManejoMon">No. de referencia</label>
+      <input #txtReferenciaManejoMon id="txtReferenciaManejoMon" name="txtReferenciaManejoMon" class="validate"
+        type="text" (keyup)="referenciaManejoMon($event.target);">
+    </div>
+    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4"
+      style="display: flex;justify-content: start;align-items: end;margin-top: 5px;margin-bottom: 5px;">
+      <a class="btn btn_extend btn text-bg-success rounded-3" [ngClass]="!validaNoReferencia ? 'disabled' : ''"
+        [attr.disabled]="!validaNoReferencia ? true : null" [attr.aria-disabled]="!validaNoReferencia ? true : null"
+        (click)="validaNoReferencia && addManejoMonedero();">
+        <i class="fa-solid fa-plus"></i>&nbsp;{{'btn_add' | translate}}
+      </a>
+    </div>
+
+    <div class="col-12" style="margin-top: 5px;">
+      <p-table #dt [value]="arrayOptionAddMon" dataKey="id" [paginator]="true" [rows]="10"
+        [rowsPerPageOptions]="[10,20,30,50,100]" [globalFilterFields]="['nombre']">
+        <ng-template #header>
+          <tr>
+            <th pSortableColumn="clave">Manejo de:&nbsp;<p-sortIcon field="clave" /></th>
+            <th pSortableColumn="valor">No. de referencia&nbsp;<p-sortIcon field="valor" /></th>
+            <th class="ultimo"></th>
+          </tr>
+        </ng-template>
+        <ng-template #body let-adi>
+          <tr>
+            <td>{{adi.clave}}</td>
+            <td>{{adi.valor}}</td>
+            <td>
+              <a class="btn btn_extend text-bg-danger rounded-3" (click)="deleteManejoMonedero(adi.num_lista);">
+                <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+              </a>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="3" class="text-center py-4">
+              <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+              <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                {{'no_rows' | translate}}
+              </p>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+
+  <div class="input-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4">
+    <label for="exampleFormControlInput1" class="activeInput">Vincular personal responsable</label>
+    <p-select [options]="arrayPersonal" id="selectedPersonalResponsable" appendTo="body" optionLabel="nombre_completo"
+      [filter]="true" filterBy="nombre_completo" [showClear]="true" [placeholder]="'opt_select' | translate"
+      class="w-full md:w-56" (onChange)="selectResponsableMon($event.value);">
+      <ng-template #selectedItem let-selectedOption>
+        <div class="flex items-center gap-2">
+          <div>{{selectedOption.nombre_completo}}</div>
+        </div>
+      </ng-template>
+      <ng-template let-elect #item>
+        <div class="flex items-center gap-2">
+          <div>{{elect.nombre_completo}}</div>
+        </div>
+      </ng-template>
+    </p-select>
+  </div>
+
+  <div class="input-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4">
+    <label for="exampleFormControlInput1" class="activeInput">Vincular caja</label>
+    <p-select [options]="arrayCajaMonedero" id="selectedCajaVincular" appendTo="body" optionLabel="_filtro_busqueda"
+      [filter]="true" filterBy="_filtro_busqueda" [showClear]="true" [placeholder]="'opt_select' | translate"
+      class="w-full md:w-56" (onChange)="selectCajaMondElect($event.value);">
+      <ng-template #selectedItem let-selectedOption>
+        <div class="flex items-center gap-2">
+          <div>{{selectedOption.caja_folio+" "+selectedOption.caja_alias}}</div>
+        </div>
+      </ng-template>
+      <ng-template let-caj #item>
+        <div class="flex items-center gap-2">
+          <div>{{caj.caja_folio+" "+caj.caja_alias}}</div>
+        </div>
+      </ng-template>
+    </p-select>
+  </div>
+
+  <div class="input-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4">
+    <label for="exampleFormControlInput1" class="activeInput">Vincular cuenta bancaria</label>
+    <p-select [options]="listaCuentasBancarias" id="selectedCuentaBancariaVincular" appendTo="body"
+      optionLabel="_filtro_busqueda" [filter]="true" filterBy="_filtro_busqueda" [showClear]="true"
+      [placeholder]="'opt_select' | translate" class="w-full md:w-56" (onChange)="selectCuentaMondElect($event.value);">
+      <ng-template #selectedItem let-selectedCB>
+        <div class="flex items-center gap-2">
+          <div>{{selectedCB.banco_nombre_comercial+" "+selectedCB.folio_cuenta+" "+selectedCB.cuenta_bancaria}}</div>
+        </div>
+      </ng-template>
+      <ng-template let-cb #item>
+        <div class="flex items-center gap-2">
+          <div>{{cb.banco_nombre_comercial+" "+cb.folio_cuenta+" "+cb.cuenta_bancaria}}</div>
+        </div>
+      </ng-template>
+    </p-select>
+  </div>
+  <p-divider />
+  <div class="col-12" style="display: flex !important;justify-content: end!important;">
+    <button class="btn btn_extend text-bg-success rounded-3" type="submit" name="btnAltaProducto2"
+      [ngClass]="!validaFormMonedero ? 'disabled' : ''" [attr.disabled]="!validaFormMonedero ? true : null"
+      [attr.aria-disabled]="!validaFormMonedero ? true : null">
+      <i class="fa-solid fa-floppy-disk"
+        style="height: 15px!important;line-height: 15px!important;width: 15px!important;font-size: small!important;"></i>&nbsp;{{'sav_cam'
+      | translate}}</button>
+  </div>
+</form>

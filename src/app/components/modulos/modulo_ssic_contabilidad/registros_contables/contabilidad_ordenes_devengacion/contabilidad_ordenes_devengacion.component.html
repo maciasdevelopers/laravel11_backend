@@ -1,0 +1,243 @@
+<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco" #vContent>
+  <div class="contenido"><app-loader></app-loader>
+    <nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+    <div class="contenidoPagina">
+      <div class="listas_ps revanecer">
+        <div id="listaDevengacion" class="lista-div lista-divNoFlex row">
+          <h4 class="col-12">DEVENGACI&Oacute;N DE SERVICIOS</h4>
+          <p-table #orderDevTrue [value]="arrayOrdenesDevengacion"
+            [globalFilterFields]="['folio_devengacion','folio_compra','fecha_registro','proveedor_folio','proveedor_nombre']"
+            showGridlines [resizableColumns]="true" [paginator]="true" [rows]="10"
+            [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]">
+            <ng-template #caption>
+              <div class="flex" style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;" ngbDropdown>
+                <a class="btn btn_extend" [ngClass]="indicadorDevengacion == 'hoy' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="listGeneralDevengacion('hoy');">
+                  <i class="fa-solid fa-calendar-days"></i>&nbsp;Hoy
+                </a>
+                <a class="btn btn_extend" [ngClass]="indicadorDevengacion == 'esta_semana' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="listGeneralDevengacion('esta_semana');">
+                  <i class="fa-solid fa-calendar-days"></i>&nbsp;Esta semana
+                </a>
+                <a class="btn btn_extend" [ngClass]="indicadorDevengacion == 'este_mes' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="listGeneralDevengacion('este_mes');">
+                  <i class="fa-solid fa-calendar"></i>&nbsp;Este mes
+                </a>
+                <a class="btn btn_extend" [ngClass]="indicadorDevengacion == 'mes_anterior' ? ' bg-indigo-600' : ' bg-blue-600'" style="margin-right:5px!important;" (click)="listGeneralDevengacion('mes_anterior');">
+                  <i class="fa-solid fa-arrow-left"></i>&nbsp;mes anterior
+                </a>
+                <a id="menuDropDevRangos" class="btn btn_extend" [ngClass]="indicadorDevengacion == 'otras_fechas' ? ' bg-indigo-600' : 'bg-blue-600'" style="margin-right:5px!important;" ngbDropdownToggle>
+                  <i class="fa-solid fa-list-ul"></i>&nbsp;otras fechas
+                </a>
+                <div class="dropdown-menu-end menu-despegable" ngbDropdownMenu="menuDropDevRangos" style="padding: 0!important; margin: 0!important; width: max-content!important; max-height: 400px; overflow-y: auto;">
+                  <div class="col-12 input-group">
+                    <label for="dev_otras_fechas" class="activeInput">Periodo de fechas</label>
+                    <p-datepicker id="dev_otras_fechas" name="dev_otras_fechas" [(ngModel)]="rangoPeriodoDevengacion" appendTo="body" dateFormat="dd/mm/yy" placeholder="dd/mm/aaaa"
+                      selectionMode="range" (onSelect)="listGeneralDevengacion('otras_fechas');" />
+                  </div>
+                </div>
+                <a class="btn btn_extend" [ngClass]="indicadorDevengacion == 'all_partidas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="listGeneralDevengacion('all_partidas');">
+                  <i class="fa-solid fa-list-ul"></i>&nbsp;todos los registros
+                </a>
+                <p-iconfield iconPosition="left" class="ml-auto">
+                  <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                  <input pInputText type="text" (input)="orderDevTrue.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+                </p-iconfield>
+              </div>
+            </ng-template>
+            <ng-template #header>
+              <tr>
+                <th class="ultimo"></th>
+                <th pSortableColumn="folio_devengacion">folio de recepci&oacute;n&nbsp;<p-sortIcon field="folio_devengacion" /></th>
+                <th pSortableColumn="folio_compra">folio de compra&nbsp;<p-sortIcon field="folio_compra" /></th>
+                <th pSortableColumn="fecha_registro">{{'fecha_reg' | translate}}&nbsp;<p-sortIcon field="fecha_registro" /></th>
+                <th pSortableColumn="proveedor_folio">{{'prov' | translate}}&nbsp;<p-sortIcon field="proveedor_folio" /></th>
+              </tr>
+            </ng-template>
+            <ng-template #body let-ordDev>
+              <tr>
+                <td>
+                  <a class="btn bg-blue-600" (click)="verDesgloseDevengacion(ordDev.uuid_orden_devengacion,ordDev.folio_devengacion);">
+                    <i class="fa-solid fa-info"></i>
+                  </a>
+                </td>
+                <td>{{ordDev.folio_devengacion}}</td>
+                <td>{{ordDev.folio_compra}}</td>
+                <td>{{ordDev.fecha_registro}}</td>
+                <td class="name">{{ordDev.proveedor_folio+" "+ordDev.proveedor_nombre}}</td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="5" class="text-center py-4">
+                  <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                  <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                    {{'no_rows' | translate}}
+                  </p>
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p-dialog [header]="'Informaci&oacute;n de devengaci&oacute;n '+desglose_orden_folio"
+  [modal]="true" [(visible)]="ver_seccion_desglose" [style]="{ width: '70rem' }"
+  [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  @for (detBuy of arrayDetalleCompra; track $index) {
+    <div class="col-12 explain">
+      <h6 class="title">Datos generales de la compra</h6>
+    </div>
+    <div class="col-12 explain">
+      <h6 class="title">Folio</h6>
+      <h6 class="content">{{detBuy.folio}}</h6>
+    </div>
+    <div class="col-12 explain">
+      <h6 class="title">proveedor</h6>
+      <h6 class="content">{{detBuy.proveedor_folio+" "+detBuy.proveedor_nombre}}</h6>
+    </div>
+    <div class="col-12 explain">
+      <h6 class="title">personal que realizó la compra</h6>
+      <h6 class="content">{{detBuy.persCompra}}</h6>
+    </div>
+    <div class="col-12 explain">
+      <h6 class="title">fecha de registro</h6>
+      <h6 class="content">{{detBuy.fecha_altaCompra}}</h6>
+    </div>
+
+    <p-accordion>
+      <p-accordion-panel value="1" [disabled]="servicios_lista.length == 0 ? true : false">
+        <p-accordion-header>
+          <ng-template #toggleicon let-active="active"><i class="fa-solid" [ngClass]="active ? 'fa-sort-up' : 'fa-sort-down'" style="margin-right: 3px!important;"></i></ng-template>
+          <span class="flex items-center gap-2 w-full">Servicios</span>
+        </p-accordion-header>
+        <p-accordion-content>
+          <div class="col-12 row">
+            <p-table [value]="servicios_lista" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }">
+              <ng-template #header>
+                <tr>
+                  <th class="ultimo"></th>
+                  <th pSortableColumn="folio_articulo">folio de articulo&nbsp;<p-sortIcon field="folio_articulo" /></th>
+                  <th pSortableColumn="articulo">articulo&nbsp;<p-sortIcon field="articulo" /></th>
+                  <th pSortableColumn="cantidad">cantidad&nbsp;<p-sortIcon field="cantidad" /></th>
+                  <th>fecha de devengaci&oacute;n</th>
+                  <th>{{'observ' | translate}}</th>
+                  <th>{{'load_files' | translate}}</th>
+                  <th>{{'doc_an' | translate}}</th>
+                  <th class="ultimo"></th>
+                </tr>
+              </ng-template>
+              <ng-template #body let-serv>
+                <tr>
+                  <td class="img_dat">
+                    <div class="col-12"><img class="circle optimizedImage" fill ngSrc="./assets/images/catalogos/default_servicio.jpg" alt=""></div>
+                  </td>
+                  <td>{{serv.folio_articulo}}</td>
+                  <td>{{serv.articulo}}</td>
+                  <td>{{serv.cantidad}}</td>
+                  <td>
+                    <input class="validate" type="date" (change)="validaFechaDevengado($event.target,serv.token_activof_unidad,serv.token_detcompra, true);">
+                  </td>
+                  <td>
+                    <textarea class="validate" (keyup)="observacionesKeyup($event.target,serv.token_activof_unidad,serv.token_detcompra, true);"></textarea>
+                  </td>
+                  <td>
+                    <ngx-file-drop (onFileDrop)="droppedFiles($event,serv.token_activof_unidad, true)">
+                      <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
+                        <a class="btn btn_load_file" (click)="openFileSelector()">{{'load_files' | translate}}</a>
+                      </ng-template>
+                    </ngx-file-drop>
+                  </td>
+                  <td>{{serv.archivos_cargados_files?.length || 0}} archivos</td>
+                  <td class="ultimo">
+                    <a class="btn btn_extend text-bg-success rounded-3" [ngClass]="!validateRegistroDevengar(serv.token_activof_unidad,serv.token_detcompra, true) ? 'disabled' : ''"
+                      (click)="validateRegistroDevengar(serv.token_activof_unidad,serv.token_detcompra, true) && guardaDevengacion(detBuy.uuid_orden_devengacion,detBuy.token_compras,serv.token_detcompra,serv.token_activof_unidad, true);">
+                      <i class="fa-solid fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+                    </a>
+                  </td>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td colspan="9" class="text-center py-4">
+                    <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                    <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                      {{'no_rows' | translate}}
+                    </p>
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+        </p-accordion-content>
+      </p-accordion-panel>
+
+      <p-accordion-panel value="2" [disabled]="activos_diferidos_lista.length == 0 ? true : false">
+        <p-accordion-header>
+          <ng-template #toggleicon let-active="active"><i class="fa-solid" [ngClass]="active ? 'fa-sort-up' : 'fa-sort-down'" style="margin-right: 3px!important;"></i></ng-template>
+          <span class="flex items-center gap-2 w-full">Activos diferidos</span>
+        </p-accordion-header>
+        <p-accordion-content>
+          <div class="col-12 row">
+            <p-table [value]="activos_diferidos_lista" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }">
+              <ng-template #header>
+                <tr>
+                  <th class="ultimo"></th>
+                  <th pSortableColumn="folio_articulo">folio de articulo&nbsp;<p-sortIcon field="folio_articulo" /></th>
+                  <th pSortableColumn="articulo">articulo&nbsp;<p-sortIcon field="articulo" /></th>
+                  <th pSortableColumn="cantidad">cantidad&nbsp;<p-sortIcon field="cantidad" /></th>
+                  <th>fecha de devengaci&oacute;n</th>
+                  <th>{{'observ' | translate}}</th>
+                  <th>{{'load_files' | translate}}</th>
+                  <th>{{'doc_an' | translate}}</th>
+                  <th class="ultimo"></th>
+                </tr>
+              </ng-template>
+              <ng-template #body let-dif>
+                <tr>
+                  <td class="img_dat">
+                    <div class="col-12"><img class="circle optimizedImage" fill ngSrc="./assets/images/catalogos/default_servicio.jpg" alt=""></div>
+                  </td>
+                  <td>{{dif.folio_articulo}}</td>
+                  <td>{{dif.articulo}}</td>
+                  <td>{{dif.cantidad}}</td>
+                  <td>
+                    <input class="validate" type="date" (change)="validaFechaDevengado($event.target,dif.token_activof_unidad,dif.token_detcompra, false);">
+                  </td>
+                  <td>
+                    <textarea class="validate" (keyup)="observacionesKeyup($event.target,dif.token_activof_unidad,dif.token_detcompra, false);"></textarea>
+                  </td>
+                  <td>
+                    <ngx-file-drop (onFileDrop)="droppedFiles($event,dif.token_activof_unidad, false)">
+                      <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
+                        <a class="btn btn_load_file" (click)="openFileSelector()">{{'load_files' | translate}}</a>
+                      </ng-template>
+                    </ngx-file-drop>
+                  </td>
+                  <td>{{dif.archivos_cargados_files?.length || 0}} archivos</td>
+                  <td class="ultimo">
+                    <a class="btn btn_extend text-bg-success rounded-3" [ngClass]="!validateRegistroDevengar(dif.token_activof_unidad,dif.token_detcompra, false) ? 'disabled' : ''"
+                      (click)="validateRegistroDevengar(dif.token_activof_unidad,dif.token_detcompra, false) && guardaDevengacion(detBuy.uuid_orden_devengacion,detBuy.token_compras,dif.token_detcompra,dif.token_activof_unidad, false);">
+                      <i class="fa-solid fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+                    </a>
+                  </td>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td colspan="9" class="text-center py-4">
+                    <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                    <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                      {{'no_rows' | translate}}
+                    </p>
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+        </p-accordion-content>
+      </p-accordion-panel>
+    </p-accordion>
+  }
+</p-dialog>

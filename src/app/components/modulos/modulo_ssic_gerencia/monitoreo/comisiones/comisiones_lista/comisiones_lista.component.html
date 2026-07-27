@@ -1,0 +1,669 @@
+<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco" #vContent>
+  <div class="contenido">
+    <app-loader></app-loader>
+    <nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+    <main class="contenidoPagina">
+      <div class="listas_ps revanecer">
+        <div id="listaClientes" class="lista-div lista-divNoFlex row">
+          <h4 class="col-12">{{'comi' | translate}}</h4>
+
+          <div class="col-12" style="overflow: overlay;">
+            <div class="card card_main" style="height: 100%;">
+              <!--style="height: 100%;display: flex;flex-wrap: wrap;align-items: center;"-->
+              <div class="card-content" style="height: 100%;">
+                <span class="card-title"
+                  style="margin-bottom: 5px;font-weight: bold;text-transform: capitalize;color:#353535;">{{'comi_list' |
+                  translate}}</span>
+                <div style="width: 100%!important;display: flex;flex-wrap: wrap;justify-content: center;">
+
+                  <div class="col-12">
+
+                    <p-tabs value="0">
+                      <p-tablist>
+                        <p-tab value="0" (click)="lista_comisiones_no_concluidas();">Comisiones no concluidas</p-tab>
+                        <p-tab value="1" (click)="lista_comisiones_no_concluidas();">Comisiones no concluidas</p-tab>
+                        <p-tab value="2" (click)="lista_comisiones_concluidas();">Comisiones concluidas</p-tab>
+                        <p-tab value="3" (click)="lista_comisiones_deshabilitadas();">Comisiones eliminadas</p-tab>
+                      </p-tablist>
+                      <p-tabpanels>
+                        <p-tabpanel value="0">
+                          <div class="col-12">
+                            <div class="col-12">
+                              <a (click)="lista_comisiones_general();" class="btn btnGuardar btnBlueHead bg-blue-600">
+                                <i class="fa-solid fa-rotate" style="margin-left: 5px;"></i>&nbsp;{{'list_updt' |
+                                translate}}
+                              </a>
+                            </div>
+                            <div class="col-12 col-sm-9 col-md-3 col-lg-20col-xl-2 col-xxl-20"></div>
+                          </div>
+
+                          <div class="col-12" *ngIf="comi_all_view == true">
+                            <p-table #comiGralAll [value]="array_comisiones_all" [globalFilterFields]="searchComi"
+                              dataKey="id" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]">
+                              <ng-template #caption>
+                                <div class="flex">
+                                  <p-iconfield iconPosition="left" class="ml-auto">
+                                    <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                                    <input pInputText type="text"
+                                      (input)="comiGralAll.filterGlobal($event.target.value, 'contains')"
+                                      placeholder="{{'bus_car' | translate}}" />
+                                  </p-iconfield>
+                                </div>
+                              </ng-template>
+                              <ng-template #header>
+                                <tr>
+                                  <th class="ultimo"></th>
+                                  <th class="ultimo"></th>
+                                  <th class="ultimo"></th>
+                                  <th pSortableColumn="folio_comision">folio&nbsp;<p-sortIcon field="folio_comision" />
+                                  </th>
+                                  <th pSortableColumn="comision_proyecto">{{'proy' | translate}}&nbsp;<p-sortIcon
+                                      field="comision_proyecto" /></th>
+                                  <th pSortableColumn="usuario_comision">{{'employ' | translate}}&nbsp;<p-sortIcon
+                                      field="usuario_comision" /></th>
+                                  <th pSortableColumn="especificaciones">{{'observ' | translate}}&nbsp;<p-sortIcon
+                                      field="especificaciones" /></th>
+                                  <th pSortableColumn="fecha_programada">{{'comi_date' | translate}}&nbsp;<p-sortIcon
+                                      field="fecha_programada" /></th>
+                                  <th pSortableColumn="duracion">{{'comi_time' | translate}}&nbsp;<p-sortIcon
+                                      field="duracion" /></th>
+                                  <th pSortableColumn="recibe_dinero">{{'comi_recibe_dinero' |
+                                    translate}}&nbsp;<p-sortIcon field="recibe_dinero" /></th>
+                                  <th pSortableColumn="comi_tiempo_respuesta">{{'resp_time' |
+                                    translate}}&nbsp;<p-sortIcon field="comi_tiempo_respuesta" /></th>
+                                  <th pSortableColumn="valor_humano">{{'comi_valida_vhum' | translate}}&nbsp;<p-sortIcon
+                                      field="valor_humano" /></th>
+                                  <th pSortableColumn="egresos">{{'comi_valida_eegr' | translate}}&nbsp;<p-sortIcon
+                                      field="egresos" /></th>
+                                  <th pSortableColumn="ubicacion_display_name">{{'ubica_loca' |
+                                    translate}}&nbsp;<p-sortIcon field="ubicacion_display_name" /></th>
+                                </tr>
+                              </ng-template>
+                              <ng-template #body let-lcomi>
+                                <tr>
+                                  <td class="ultimo">
+                                    <a class="btn bg-blue-600"
+                                      routerLink="/sos_inside/contabilidad/comisiones_info/{{lcomi.token_comision_main}}"><i
+                                        class="fa-solid fa-info"></i></a>
+                                  </td>
+                                  <td class="ultimo">
+                                    <a class="btn bg-blue-600"
+                                      [ngClass]="lcomi.comportamiento.length == 0 ? 'disabled' : ''"
+                                      [attr.disabled]="lcomi.comportamiento.length == 0 ? true : null"
+                                      [attr.aria-disabled]="lcomi.comportamiento.length == 0 ? true : null"
+                                      (click)="lcomi.comportamiento.length > 0 && verArbol(lcomi);">
+                                      <i class="fa-solid fa-folder-tree"
+                                        style="width: 25px !important;height: 25px !important;line-height: 25px !important;font-size: 15px;text-align: center;"></i>
+                                    </a>
+                                  </td>
+                                  <td>
+                                    <a class="btn btn_extend bg-blue-600"
+                                      [ngClass]="lcomi.ubicacion_latitud == '' ? 'disabled' : ''"
+                                      [attr.disabled]="lcomi.ubicacion_latitud == '' ? true : null"
+                                      [attr.aria-disabled]="lcomi.ubicacion_latitud == '' ? true : null"
+                                      (click)="lcomi.ubicacion_latitud != '' && verPagos(lcomi);"
+                                      (click)="lcomi.ubicacion_latitud != '' && comisionesVerUbica(lcomi.ubicacion_latitud,lcomi.ubicacion_longitud,lcomi.ubicacion_display_name);">
+                                      <i class="fa-solid fa-location-dot"
+                                        style="width: 25px !important;height: 25px !important;line-height: 25px !important;font-size: 15px;text-align: center;"></i>
+                                      {{'ubica_ver' | translate}}
+                                    </a>
+                                  </td>
+                                  <td>{{lcomi.folio_comision}}</td>
+                                  <td>{{lcomi.comision_proyecto}}</td>
+                                  <td class="name">{{lcomi.usuario_comision}}</td>
+                                  <td>{{lcomi.especificaciones}}</td>
+                                  <td>{{lcomi.fecha_programada}}</td>
+                                  <td>{{lcomi.duracion}}</td>
+                                  <td>{{lcomi.recibe_dinero == false ? 'no' : 'yes' | translate}}{{lcomi.recibe_dinero
+                                    == true ? ' '+lcomi.dinero_recibido+""+lcomi.comision_moneda_name : ''}}</td>
+                                  <td>{{lcomi.comi_tiempo_respuesta+" horas"}}</td>
+                                  <td>{{lcomi.valor_humano == true ? 'yes' : 'no' | translate}}</td>
+
+                                  <td class="td_importes">{{lcomi.egresos == true ? 'yes' : 'no' | translate}}</td>
+                                  <td class="td_importes">{{lcomi.ubicacion_display_name}}</td>
+                                </tr>
+                                <tr *ngIf="lcomi === registroSelectedArbol">
+                                  <td colspan="5">
+                                    <p-tree [value]="lcomi.comportamiento" styleClass="w-full md:w-[30rem]"
+                                      selectionMode="single" />
+                                  </td>
+                                </tr>
+                                <tr *ngIf="lcomi === registroSelectedPagos">
+                                  <td colspan="4">
+                                    <img *ngIf="comi_view_ubica_latitud != '' && comi_view_ubica_longitud != ''"
+                                      style="border-radius: 25px;"
+                                      src='https://maps.locationiq.com/v3/staticmap?key=pk.0dc230e7bb563cb5189f8d8b944d3e1b&center={{comi_view_ubica_latitud}},{{comi_view_ubica_longitud}}&zoom=18&size=100%x400&format=png&maptype=streeets&markers=icon:Either|{{comi_view_ubica_latitud}},{{comi_view_ubica_longitud}}&markers=icon:Either|{{comi_view_ubica_latitud}},{{comi_view_ubica_longitud}}'>
+
+                                    <div *ngIf="comi_view_ubica_latitud == '' || comi_view_ubica_longitud == ''"
+                                      class="alert div_alert_pass">
+                                      <ul>
+                                        <li
+                                          style="text-align: center;text-transform: uppercase;font-size: 25px;font-weight: bold;">
+                                          Seleccione ubicaci&oacute;n de comisi&oacute;n</li>
+                                      </ul>
+                                    </div>
+                                  </td>
+                                </tr>
+                              </ng-template>
+                              <ng-template pTemplate="emptymessage">
+                                <tr>
+                                  <td colspan="14" class="text-center py-4">
+                                    <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                                    <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                      {{'no_rows' | translate}}
+                                    </p>
+                                  </td>
+                                </tr>
+                              </ng-template>
+                            </p-table>
+                          </div>
+                        </p-tabpanel>
+                        <p-tabpanel value="1">
+                          <div class="col-12">
+                            <div class="col-12">
+                              <a (click)="lista_comisiones_no_concluidas();"
+                                class="btn btnGuardar btnBlueHead bg-blue-600">
+                                <i class="fa-solid fa-rotate" style="margin-left: 5px;"></i>&nbsp;{{'list_updt' |
+                                translate}}
+                              </a>
+                            </div>
+                            <div class="col-12 col-sm-9 col-md-3 col-lg-20col-xl-2 col-xxl-20"></div>
+                          </div>
+
+                          <div class="col-12" *ngIf="comi_nconc_view == true"></div>
+                        </p-tabpanel>
+                        <p-tabpanel value="2">
+                          <div class="col-12">
+                            <div class="col-12">
+                              <a (click)="lista_comisiones_concluidas();"
+                                class="btn btnGuardar btnBlueHead bg-blue-600">
+                                <i class="fa-solid fa-rotate" style="margin-left: 5px;"></i>&nbsp;{{'list_updt' |
+                                translate}}
+                              </a>
+                            </div>
+                            <div class="col-12 col-sm-9 col-md-3 col-lg-20col-xl-2 col-xxl-20"></div>
+                          </div>
+
+                          <div class="col-12" *ngIf="comi_cconc_view == true"></div>
+                        </p-tabpanel>
+                        <p-tabpanel value="3">
+                          <div class="col-12">
+                            <div class="col-12">
+                              <a (click)="lista_comisiones_deshabilitadas();"
+                                class="btn btnGuardar btnBlueHead bg-blue-600">
+                                <i class="fa-solid fa-rotate" style="margin-left: 5px;"></i>&nbsp;{{'list_updt' |
+                                translate}}
+                              </a>
+                            </div>
+                            <div class="col-12 col-sm-9 col-md-3 col-lg-20col-xl-2 col-xxl-20"></div>
+                          </div>
+                          <div class="col-12" *ngIf="comi_disabled_view == true">
+                            <table id="terc_table_comissiones_disabled" class="display nowrap white centered"
+                              style="width:100%!important;margin:0!important;">
+                              <thead>
+                                <tr>
+                                  <th class="ultimo"></th>
+                                  <th class="ultimo"></th>
+                                  <th class="ultimo"></th>
+                                  <th>folio</th>
+                                  <th>{{'proy' | translate}}</th>
+                                  <th>{{'employ' | translate}}</th>
+                                  <th>{{'observ' | translate}}</th>
+                                  <th>{{'comi_date' | translate}}</th>
+                                  <th>{{'comi_time' | translate}}</th>
+                                  <th>Recibe dinero</th>
+                                  <th style="width: 150px;">{{'resp_time' | translate}}</th>
+                                  <th style="width: 180px;">{{'comi_valida_vhum' | translate}}</th>
+                                  <th>{{'comi_valida_eegr' | translate}}</th>
+                                  <th>{{'ubica_loca' | translate}}</th>
+                                  <th>{{'complete' | translate}}</th>
+                                  <th>{{'f_delete' | translate}}</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr class="trlink" *ngFor="let dcomi of array_comisiones_deshabilitadas">
+                                  <td class="ultimo">
+                                    <a class="btn bg-blue-600"
+                                      routerLink="/sos_inside/contabilidad/comisiones_info/{{dcomi.token_comision_main}}"><i
+                                        class="fa-solid fa-info"></i></a>
+                                  </td>
+                                  <td class="ultimo">
+                                    <a href="#ubicacionModalView" class="btn btn_extend bg-teal-700 modal-trigger"
+                                      (click)="comisionesVerUbica(dcomi.ubicacion_latitud,dcomi.ubicacion_longitud,dcomi.ubicacion_display_name);"><i
+                                        class="fa-solid fa-location-dot"></i> {{'ubica_ver' | translate}}</a>
+                                  </td>
+                                  <td class="ultimo">
+                                    <a class="btn btn_extend btn text-bg-success rounded-3"
+                                      (click)="rehabilitarComission(dcomi.token_comision_main);"><i
+                                        class="fa-solid fa-trash-arrow-up"></i>&nbsp;{{'restore_row' | translate}}</a>
+                                  </td>
+                                  <td>{{dcomi.folio_comision}}</td>
+                                  <td>{{dcomi.comision_proyecto}}</td>
+                                  <td>{{dcomi.usuario_comision}}</td>
+                                  <td>{{dcomi.especificaciones}}</td>
+                                  <td>{{dcomi.fecha_programada}}</td>
+                                  <td>{{dcomi.duracion}}</td>
+
+                                  <td *ngIf="dcomi.recibe_dinero == false">{{'no' | translate}}</td>
+                                  <td *ngIf="dcomi.recibe_dinero == true">{{'yes' | translate}}
+                                    {{dcomi.dinero_recibido+""+dcomi.comision_moneda_name}}</td>
+
+                                  <td>{{dcomi.comi_tiempo_respuesta+" horas"}}</td>
+
+                                  <td *ngIf="dcomi.valor_humano == false">{{'no' | translate}}</td>
+                                  <td *ngIf="dcomi.valor_humano == true">{{'yes' | translate}}</td>
+
+                                  <td *ngIf="dcomi.egresos == false">{{'no' | translate}}</td>
+                                  <td *ngIf="dcomi.egresos == true">{{'yes' | translate}}</td>
+
+                                  <td>{{dcomi.ubicacion_display_name}}</td>
+                                  <td>{{'yes' | translate}} {{dcomi.concluida_fecha}}</td>
+                                  <td>{{dcomi.fecha_delete_comission}}</td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                        </p-tabpanel>
+                      </p-tabpanels>
+                    </p-tabs>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12" style="margin-top:10px;overflow: overlay;" *ngIf="comi_bool_form_update == false">
+            <div class="card card_main">
+              <div class="card-content" style="height: 100%;display: flex;flex-wrap: wrap;align-items: center;">
+                <span class="card-title"
+                  style="margin-bottom: 5px;font-weight: bold;text-transform: capitalize;color:#353535;">{{'comi_soli' |
+                  translate}}</span>
+                <div style="width: 100%!important;">
+                  <form id="form_reem_new_soli" name="form_reem_new_soli" (ngSubmit)="onSaveComisionSolicitud()">
+                    <div class="col-12 row">
+                      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6">
+                        <label class="activeInput">{{'proy' | translate}}</label>
+                        <input class="validate" name="comi_proyecto" id="comi_proyecto" type="text"
+                          (keyup)="keyupProyectoComision($event.target);">
+                      </div>
+
+                      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6">
+                        <datalist id="empleadosContListComi">
+                          <option *ngFor="let lemploy of arrayEmpleados" [value]="lemploy.nombre_completo">{{"folio
+                            "+lemploy.folio_empleado}}</option>
+                        </datalist>
+                        <label class="activeInput">{{'employ' | translate}}</label>
+                        <input class="validate" name="comi_empleado" id="comi_empleado" type="text"
+                          list="empleadosContListComi" (change)="changeEmpleadoComision($event.target);">
+                      </div>
+
+                      <div class="col-12">
+                        <label class="activeInput">{{'observ' | translate}}</label>
+                        <textarea name="comi_large_observ" id="comi_large_observ" class="validate"
+                          (keyup)="keyupObservaComision($event.target);"></textarea>
+                      </div>
+
+                      <div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                        <label class="activeInput">{{'comi_date' | translate}}</label>
+                        <input class="validate" name="comi_date_salida" id="comi_date_salida" type="date"
+                          (change)="keyupFechaSalidaComision($event.target);">
+                      </div>
+
+                      <div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                        <label class="activeInput">{{'comi_time' | translate}}</label>
+                        <input class="validate" name="comi_time_duracion" id="comi_time_duracion" type="number"
+                          (keyup)="keyupTiempoDuracionComision($event.target);">
+                      </div>
+
+                      <!--<div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2 radio" style="display: flex;flex-wrap: wrap;justify-content: center;align-content: center;margin-top: 10px;">
+                        <p style="color: #353535;font-size: small;height: 15px;line-height: 20px;">{{'comi_recibe_dinero' | translate}}</p>
+                        <div class="switch">
+                          <label>
+                            No
+                            <input type="checkbox" id="comi_recibe_dinero" (click)="changeRecibeDineroComision($event.target);">
+                            <span class="lever"></span>
+                            {{'yes' | translate}}
+                          </label>
+                        </div>
+                      </div>-->
+
+                      <div
+                        class="col-12 col-sm-4 col-md-6 col-lg-2 col-xl-2 col-xxl-2 radio form-check form-switch form-check-reverse switch_primario"
+                        style="height: auto;">
+                        <label class="form-check-label" for="flexSwitchCheckReverse"
+                          style="font-size: smaller!important;width: 100%!important;">{{'comi_recibe_dinero' |
+                          translate}}</label>
+                        <label class="form-check-label" for="flexSwitchCheckReverse"
+                          style="font-size: smaller!important;">No</label>
+                        <input class="form-check-input" type="checkbox" name="radioUploadEvid"
+                          (click)="changeRecibeDineroComision($event.target);" id="comi_recibe_dinero">
+                        <label class="form-check-label" for="flexSwitchCheckReverse"
+                          style="font-size: smaller!important;">{{'yes' | translate}}</label>
+                      </div>
+
+                      <div class="col-12 col-sm-4 col-md-6 col-lg-3 col-xl-3 col-xxl-3">
+                        <label class="activeInput"
+                          [attr.disabled]="comi_recibe_dinero == false ? true : null">{{'total_import' |
+                          translate}}</label>
+                        <input class="validate" name="comi_dinero_recibido" id="comi_dinero_recibido" type="number"
+                          min="1" max="100000000000000" [disabled]="comi_recibe_dinero == false"
+                          (keyup)="keyupDineroRecibido($event.target);">
+                      </div>
+                      <div class="col-12 col-sm-4 col-md-6 col-lg-3 col-xl-3 col-xxl-3">
+                        <datalist id="dataListMonedaNewReemOut">
+                          <option *ngFor="let arraMon of arrayMonedas" [value]="arraMon.moneda">{{"código
+                            "+arraMon.codigo+", "+arraMon.decimales+" decimales"}}</option>
+                        </datalist>
+                        <label class="activeInput"
+                          [attr.disabled]="comi_recibe_dinero == false || comi_dinero_recibido == '' ? true : null">{{'mon_name'
+                          | translate}}</label>
+                        <input class="validate" name="comi_moneda" id="comi_moneda" type="text"
+                          list="dataListMonedaNewReemOut"
+                          [disabled]="comi_recibe_dinero == false || comi_dinero_recibido == ''"
+                          (change)="keyupValidateMonedaComi($event.target);">
+                      </div>
+
+                      <!--<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2 radio input-field">
+                        <p class="radio" style="background-color: #424242;border-radius: 8px 0 0 8px !important;">
+                          <label>
+                            <input type="checkbox" id="comi_recibe_dinero" (click)="changeRecibeDineroComision($event.target);"/><span style="color: white!important;">Recibe dinero</span>
+                          </label>
+                        </p>
+                        <input class="validate" name="comi_dinero_recibido" id="comi_dinero_recibido" type="number" style="border-radius: 0!important;border-right: 1px solid gray;" min="1" max="100000000000000" [disabled]="comi_recibe_dinero == false" (keyup)="keyupDineroRecibido($event.target);">
+                        <input class="validate" name="comi_moneda" id="comi_moneda" type="text" style="border-radius: 0 8px 8px 0 !important;" list="dataListMonedaNewReemOut" [disabled]="comi_recibe_dinero == false || comi_dinero_recibido == ''" (change)="keyupValidateMonedaComi($event.target);">
+                        <datalist id="dataListMonedaNewReemOut"><option *ngFor="let arraMon of arrayMonedas" [value]="arraMon.moneda">{{"código "+arraMon.codigo+", "+arraMon.decimales+" decimales"}}</option></datalist>
+                      </div>-->
+
+                      <div class="col-12">
+                        <div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2 radio"
+                          style="display: flex;flex-wrap: wrap;justify-content: center;align-content: center;margin-top: 5px;">
+                          <p style="color: #353535;font-size: small;height: 15px;line-height: 20px;">
+                            {{'comi_valida_vhum' | translate}}</p>
+                          <div class="switch">
+                            <label>
+                              No
+                              <input id="comi_califica_vhum" type="checkbox" (click)="califica_vhum($event.target);" />
+                              <span class="lever"></span>
+                              {{'yes' | translate}}
+                            </label>
+                          </div>
+                        </div>
+
+                        <div class="col-12 col-sm-8 col-md-3 col-lg-2 col-xl-2 col-xxl-2 buscador row"
+                          style="margin-top: 5px !important;">
+                          <div class="content content_light">
+                            <div class="col-12 row_buscador"
+                              style="display: flex;justify-content: space-between;align-items: center;">
+                              <input class="datasearch" id="txt_buscador_geolocation" type="text" autocomplete="on"
+                                placeholder="ubicacion" style="width: calc(100% - 210px);"
+                                (keyup)="keyup_direccion_location($event.target);">
+                              <a class="btn btn_extend bg-teal-700" style="width: 200px!important;"
+                                *ngIf="comi_ubicacion_direccion == ''" disabled><i class="fa-solid fa-globe"></i>
+                                {{'ubica_search' | translate}}</a>
+                              <a class="btn btn_extend bg-teal-700" style="width: 200px!important;"
+                                *ngIf="comi_ubicacion_direccion != ''" (click)="listar_direcciones();"><i
+                                  class="fa-solid fa-globe"></i> {{'ubica_search' | translate}}</a>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="col-12">
+                        <table class="white centered" style="margin-top:5px!important;width: 100% !important;">
+                          <thead>
+                            <tr>
+                              <th>{{'ubica_loca' | translate}}</th>
+                              <th class="ultimo"></th>
+                              <th class="ultimo"></th>
+                            </tr>
+                          </thead>
+                          <tbody class="upload-name-style" *ngIf="arrayDirecciones.length != 0">
+                            <tr *ngFor="let dir of arrayDirecciones; index as i">
+                              <td>{{dir.display_name}}</td>
+                              <td class="ultimo">
+                                <p class="radio"><label><input type="radio" id="radio_location_{{i}}"
+                                      (click)="get_latitud_longitud(dir.lat,dir.lon,dir.display_name);" /></label></p>
+                              </td>
+                              <td class="ultimo">
+                                <a class="btn btn_extend bg-teal-700"
+                                  *ngIf="comi_ubicacion_latitud == dir.lat && comi_ubicacion_longitud == dir.lon && comi_ubicacion_display_name == dir.display_name"
+                                  data-bs-toggle="modal" data-bs-target="#ubicacionModalRegistro"><i
+                                    class="fa-solid fa-location-dot"></i> {{'ubica_ver' | translate}}</a>
+                              </td>
+                            </tr>
+                          </tbody>
+                          <tbody *ngIf="arrayDirecciones.length == 0">
+                            <tr>
+                              <td colspan="3">{{'no_rows' | translate}}</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+
+                      <div class="col-12 spaceButton" style="margin: 0;padding-top: 3px;padding-bottom: 3px;">
+                        <button [disabled]="comi_validate_to_save == false" class="btn bg-blue-300" type="submit"><i
+                            class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}</button>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12" style="margin-top:10px;overflow: overlay;" *ngIf="comi_bool_form_update == true">
+            <div class="card card_main">
+              <div class="card-content" style="height: 100%;display: flex;flex-wrap: wrap;align-items: center;">
+                <span class="card-title"
+                  style="margin-bottom: 5px;font-weight: bold;text-transform: capitalize;color:#353535;">{{'comi_update'
+                  | translate}}</span>
+                <div class="col-12">
+                  <div class="col-12">
+                    <div class="col-12" style="padding: 0;">
+                      <a (click)="return_form_reg();cleanFormRegistro();"
+                        class="btn btnGuardar btnBlueHead bg-blue-600">
+                        <i class="fa-solid fa-rotate" style="margin-left: 5px;"></i>&nbsp;{{'list_updt' |
+                        translate}}{{'return_form_reg' | translate}}
+                      </a>
+                    </div>
+                    <div class="col-12 col-sm-9 col-md-3 col-lg-20col-xl-2 col-xxl-20"></div>
+                  </div>
+
+                  <form id="form_reem_new_soli" name="form_reem_new_soli">
+                    <div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2 input-field">
+                      <input class="validate" name="comi_proyecto" id="comi_proyecto" type="text"
+                        [value]="comi_proyecto" (keyup)="keyupComisionUpdate_proyecto($event.target);">
+                      <label class="activeInput">{{'proy' | translate}}</label>
+                    </div>
+
+                    <div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2 input-field">
+                      <input class="validate" name="comi_empleado" id="comi_empleado" type="text"
+                        list="empleadosContListComi" [value]="comi_empleado_nombre"
+                        (change)="keyupComisionUpdate_empleado($event.target);">
+                      <datalist id="empleadosContListComi">
+                        <option *ngFor="let lemploy of arrayEmpleados" [value]="lemploy.nombre_completo">{{"folio
+                          "+lemploy.folio_empleado}}</option>
+                      </datalist>
+                      <label class="activeInput">{{'employ' | translate}}</label>
+                    </div>
+
+                    <div class="col-12 input-field text_area_field">
+                      <textarea name="comi_large_observ" id="comi_large_observ" class="validate"
+                        [value]="comi_especificaciones"
+                        (keyup)="keyupComisionUpdate_observaciones($event.target);"></textarea>
+                      <label class="activeInput">{{'observ' | translate}}</label>
+                    </div>
+
+                    <div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2 input-field">
+                      <input class="validate" name="comi_date_salida" id="comi_date_salida" type="date"
+                        [value]="comi_fecha_salida" (change)="keyupComisionUpdate_fechaSalida($event.target);">
+                      <label class="activeInput">{{'comi_date' | translate}}</label>
+                    </div>
+
+                    <div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2 input-field">
+                      <input class="validate" name="comi_time_duracion" id="comi_time_duracion" type="number"
+                        [value]="comi_time_duracion" (keyup)="keyupComisionUpdate_tiempoDuracion($event.target);">
+                      <label class="activeInput">{{'comi_time' | translate}}</label>
+                    </div>
+
+                    <div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+                      <div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2 radio"
+                        style="display: flex;flex-wrap: wrap;justify-content: center;align-content: center;margin-top: 10px;">
+                        <p style="color: #353535;font-size: small;height: 15px;line-height: 20px;">
+                          {{'comi_recibe_dinero' | translate}}</p>
+                        <div class="switch">
+                          <label>
+                            No
+                            <input type="checkbox" id="comi_recibe_dinero" [checked]="comi_recibe_dinero == true"
+                              (click)="keyupComisionUpdate_recibeDinero($event.target);">
+                            <span class="lever"></span>
+                            {{'yes' | translate}}
+                          </label>
+                        </div>
+                      </div>
+                      <div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2 input-field">
+                        <input class="validate" name="comi_dinero_recibido" id="comi_dinero_recibido" type="number"
+                          min="1" max="100000000000000" [disabled]="comi_recibe_dinero == false"
+                          [value]="comi_dinero_recibido" (keyup)="keyupComisionUpdate_dineroRecibido($event.target);">
+                        <label class="activeInput" *ngIf="comi_recibe_dinero == false" disabled>{{'total_import' |
+                          translate}}</label>
+                        <label class="activeInput" *ngIf="comi_recibe_dinero == true">{{'total_import' |
+                          translate}}</label>
+                      </div>
+                      <div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2 input-field">
+                        <input class="validate" name="comi_moneda" id="comi_moneda" type="text"
+                          list="dataListMonedaNewReemOut"
+                          [disabled]="comi_recibe_dinero == false || comi_dinero_recibido == ''"
+                          [value]="comi_moneda_name" (change)="keyupComisionUpdate_moneda($event.target);">
+                        <datalist id="dataListMonedaNewReemOut">
+                          <option *ngFor="let arraMon of arrayMonedas" [value]="arraMon.moneda">{{"código
+                            "+arraMon.codigo+", "+arraMon.decimales+" decimales"}}</option>
+                        </datalist>
+                        <label class="activeInput" *ngIf="comi_recibe_dinero == false || comi_dinero_recibido == ''"
+                          disabled>{{'mon_name' | translate}}</label>
+                        <label class="activeInput"
+                          *ngIf="comi_recibe_dinero == true && comi_dinero_recibido != ''">{{'mon_name' |
+                          translate}}</label>
+                      </div>
+                    </div>
+
+                    <div class="col-12">
+                      <div class="col-12 col-sm-4 col-md-3 col-lg-2 col-xl-2 col-xxl-2 radio"
+                        style="display: flex;flex-wrap: wrap;justify-content: center;align-content: center;margin-top: 5px;">
+                        <p style="color: #353535;font-size: small;height: 15px;line-height: 20px;">{{'comi_valida_vhum'
+                          | translate}}</p>
+                        <div class="switch">
+                          <label>
+                            No
+                            <input id="comi_califica_vhum" type="checkbox" [checked]="comi_califica_vhum == true"
+                              (click)="keyupComisionUpdate_califica_vhum($event.target);" />
+                            <span class="lever"></span>
+                            {{'yes' | translate}}
+                          </label>
+                        </div>
+                      </div>
+
+                      <div class="col-12 col-sm-8 col-md-3 col-lg-2 col-xl-2 col-xxl-2 buscador row"
+                        style="margin-top: 5px !important;">
+                        <div class="content content_light">
+                          <div class="col-12 row_buscador"
+                            style="display: flex;justify-content: space-between;align-items: center;">
+                            <input class="datasearch" id="txt_buscador_geolocation" type="text" autocomplete="on"
+                              placeholder="ubicacion" style="width: calc(100% - 210px);"
+                              (keyup)="keyupComisionUpdate_direccion_location($event.target);">
+                            <a class="btn btn_extend bg-teal-700" style="width: 200px!important;"
+                              *ngIf="comi_ubicacion_direccion == ''" disabled><i class="fa-solid fa-globe"></i>
+                              {{'ubica_search' | translate}}</a>
+                            <a class="btn btn_extend bg-teal-700" style="width: 200px!important;"
+                              *ngIf="comi_ubicacion_direccion != ''"
+                              (click)="keyupComisionUpdate_listar_direcciones();"><i class="fa-solid fa-globe"></i>
+                              {{'ubica_search' | translate}}</a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="col-12">
+                      <table class="white centered" style="margin-top:5px!important;width: 100% !important;">
+                        <thead>
+                          <tr>
+                            <th>{{'ubica_loca' | translate}}</th>
+                            <th class="ultimo"></th>
+                            <th class="ultimo"></th>
+                          </tr>
+                        </thead>
+                        <tbody class="upload-name-style">
+                          <tr>
+                            <td colspan="2">{{comi_ubicacion_display_name}}</td>
+                            <td class="ultimo">
+                              <a class="btn btn_extend bg-teal-700" data-bs-toggle="modal"
+                                data-bs-target="#ubicacionModalRegistro"><i class="fa-solid fa-location-dot"></i>
+                                {{'ubica_ver' | translate}}</a>
+                            </td>
+                          </tr>
+                        </tbody>
+
+                        <tbody class="upload-name-style" *ngIf="arrayDirecciones.length != 0">
+                          <tr *ngFor="let dir of arrayDirecciones; index as i">
+                            <td>{{dir.display_name}}</td>
+                            <td class="ultimo">
+                              <p class="radio"><label><input type="radio" id="radio_location_{{i}}"
+                                    (click)="keyupComisionUpdate_get_latitud_longitud(dir.lat,dir.lon,dir.display_name);" /></label>
+                              </p>
+                            </td>
+                            <td class="ultimo">
+                              <a class="btn btn_extend bg-teal-700"
+                                *ngIf="comi_ubicacion_latitud == dir.lat && comi_ubicacion_longitud == dir.lon && comi_ubicacion_display_name == dir.display_name"
+                                data-bs-toggle="modal" data-bs-target="#ubicacionModalRegistro"><i
+                                  class="fa-solid fa-location-dot"></i> {{'ubica_ver' | translate}}</a>
+                            </td>
+                          </tr>
+                        </tbody>
+                        <tbody *ngIf="arrayDirecciones.length == 0">
+                          <tr>
+                            <td colspan="3">{{'no_rows' | translate}}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+
+                    <div class="col-12 spaceButton" style="margin: 0;padding-top: 3px;padding-bottom: 3px;">
+                      <button [disabled]="comi_validate_to_update == false" class="btn bg-blue-300" type="submit"><i
+                          class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal fade bd-example-modal-lg" id="ubicacionModalRegistro" tabindex="-1" role="dialog"
+            aria-labelledby="ubicacionModalRegistroLabel" aria-hidden="true">
+            <div class="modal-dialog modal-fullscreen" style="margin: 1%;width: 98%!important;">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5 bg-blue-ModalTitle" id="ubicacionModalRegistroLabel">UBICACION
+                    SELECCIONADA</h1>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                    style="background-color: transparent !important;"></button>
+                </div>
+                <div class="modal-body">
+                  <div class="col-12" style="display: flex;flex-wrap: wrap;justify-content: center;">
+                    <img style="border-radius: 25px;"
+                      src='https://maps.locationiq.com/v3/staticmap?key=pk.0dc230e7bb563cb5189f8d8b944d3e1b&center={{comi_ubicacion_latitud}},{{comi_ubicacion_longitud}}&zoom=18&size=1280x500&format=png&maptype=streeets&markers=icon:Either|{{comi_ubicacion_latitud}},{{comi_ubicacion_longitud}}&markers=icon:Either|{{comi_ubicacion_latitud}},{{comi_ubicacion_longitud}}'>
+                  </div>
+                </div>
+                <div class="modal-footer"><button type="button" class="btn btn-secondary"
+                    data-bs-dismiss="modal">Close</button></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </main>
+    <app-footer-inside></app-footer-inside>
+  </div>
+</div>

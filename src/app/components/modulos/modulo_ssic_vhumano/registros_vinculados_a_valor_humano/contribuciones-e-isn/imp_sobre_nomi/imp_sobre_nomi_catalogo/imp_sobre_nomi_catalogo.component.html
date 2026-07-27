@@ -1,0 +1,917 @@
+<p-table #isnList [value]="catalogo_declaraciones_isn" showGridlines [resizableColumns]="true" [paginator]="true"
+  [rows]="10" [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]"
+  [globalFilterFields]="search_declaraciones_isn">
+  <ng-template #caption>
+    <div class="flex" style="display: flex!important;justify-content: start;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;" ngbDropdown>
+      <a class="btn btn_extend bg-indigo-600" style="margin-right:5px!important;"
+        (click)="listando_isn_declaraciones();listando_isn_deleted_declaraciones();">
+        <i class="fa-solid fa-rotate"></i>&nbsp;{{'list_updt' | translate}}
+      </a>
+      <a class="btn btn_extend bg-indigo-600" style="margin-right:5px!important;"
+        [ngClass]="catalogo_deleted_declaraciones_isn.length == 0 ? 'disabled' : ''"
+        [attr.disabled]="catalogo_deleted_declaraciones_isn.length == 0 ? true : null"
+        [attr.aria-disabled]="catalogo_deleted_declaraciones_isn.length == 0 ? true : null"
+        (click)="catalogo_deleted_declaraciones_isn.length > 0 && verDeletedDeclaracionesISN();">
+        <i class="fa-solid fa-trash"></i>&nbsp;Reportes de ISN eliminados
+      </a>
+      <a class="btn btn_extend bg-green-600 descarga_lista_excel" style="height: 25px !important;"
+        [ngClass]="catalogo_declaraciones_isn.length == 0 ? 'disabled' : ''"
+        [attr.disabled]="catalogo_declaraciones_isn.length == 0 ? true : null"
+        [attr.aria-disabled]="catalogo_declaraciones_isn.length == 0 ? true : null"
+        (click)="catalogo_declaraciones_isn.length > 0 && descarga_excel_isn();">
+        <i class="fa-solid fa-file-excel" style="margin-left: 5px;"></i>&nbsp;descargar
+      </a>
+    </div>
+    <div class="flex" style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;" ngbDropdown>
+      <a class="btn btn_extend" [ngClass]="indicador_decla_list_isn == 'hoy' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_isn_declaraciones('hoy');">
+        <i class="fa-solid fa-calendar-days"></i>&nbsp;Hoy
+      </a>
+      <a class="btn btn_extend" [ngClass]="indicador_decla_list_isn == 'esta_semana' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_isn_declaraciones('esta_semana');">
+        <i class="fa-solid fa-calendar-days"></i>&nbsp;Esta semana
+      </a>
+      <a class="btn btn_extend" [ngClass]="indicador_decla_list_isn == 'este_mes' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_isn_declaraciones('este_mes');">
+        <i class="fa-solid fa-calendar-days"></i>&nbsp;Este mes
+      </a>
+      <a class="btn btn_extend" [ngClass]="indicador_decla_list_isn == 'mes_anterior' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_isn_declaraciones('mes_anterior');">
+        <i class="fa-solid fa-arrow-left"></i>&nbsp;mes anterior
+      </a>
+      <a id="menuDropDeclaIsnRangos" class="btn btn_extend" [ngClass]="indicador_decla_list_isn == 'otras_fechas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" ngbDropdownToggle>
+        <i class="fa-solid fa-list-ul"></i>&nbsp;otras fechas
+      </a>
+      <div class="dropdown-menu-end menu-despegable" ngbDropdownMenu="menuDropDeclaIsnRangos" style="padding: 0!important; margin: 0!important; width: max-content!important; max-height: 400px; overflow-y: auto;">
+        <div class="col-12 input-group">
+          <label for="list_decla_isn_otras_fechas" class="activeInput">Periodo de fechas</label>
+          <p-datepicker id="list_decla_isn_otras_fechas" name="list_decla_isn_otras_fechas" [(ngModel)]="rangoPeriodoDeclaListIsn" appendTo="body" dateFormat="dd/mm/yy" 
+            placeholder="dd/mm/aaaa" selectionMode="range" (onSelect)="ver_isn_declaraciones('otras_fechas');" />
+        </div>
+      </div>
+      <a class="btn btn_extend" [ngClass]="indicador_decla_list_isn == 'all_partidas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_isn_declaraciones('all_partidas');">
+        <i class="fa-solid fa-list-ul"></i>&nbsp;todos los registros
+      </a>
+      <p-iconfield iconPosition="left" class="ml-auto">
+        <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+        <input pInputText type="text" (input)="isnList.filterGlobal($event.target.value, 'contains')"
+          placeholder="{{'bus_car' | translate}}" />
+      </p-iconfield>
+    </div>
+  </ng-template>
+  <ng-template #header>
+    <tr>
+      <th rowspan="2" class="ultimo"></th>
+      <th rowspan="2" pResizableColumn pSortableColumn="nomi_imp_folio">folio&nbsp;<p-sortIcon field="nomi_imp_folio"/></th>
+      <th rowspan="2" pResizableColumn pSortableColumn="nomi_imp_fecha_contabilizacion">{{'fecha_cont' | translate}}&nbsp;<p-sortIcon field="nomi_imp_fecha_contabilizacion"/></th>
+      <th rowspan="2" pResizableColumn pSortableColumn="nomi_imp_fecha_presentacion">Fecha de presentaci&oacute;n&nbsp;<p-sortIcon field="nomi_imp_fecha_presentacion"/></th>
+      <th rowspan="2" pResizableColumn pSortableColumn="nomi_imp_fecha_vencimiento">Fecha de vencimiento&nbsp;<p-sortIcon field="nomi_imp_fecha_vencimiento"/></th>
+      <th rowspan="2" pResizableColumn pSortableColumn="nomi_imp_estado_all_info">Estado&nbsp;<p-sortIcon field="nomi_imp_estado_all_info"/></th>
+      <th rowspan="2" pResizableColumn pSortableColumn="nomi_imp_ejercicio">Ejercicio&nbsp;<p-sortIcon field="nomi_imp_ejercicio"/></th>
+      <th rowspan="2" pResizableColumn pSortableColumn="nomi_imp_periodo">Periodo&nbsp;<p-sortIcon field="nomi_imp_periodo"/></th>
+      <th rowspan="2" pResizableColumn pSortableColumn="nomi_imp_tipo_declaracion">Tipo de declaraci&oacute;n&nbsp;<p-sortIcon field="nomi_imp_tipo_declaracion"/></th>
+      <th colspan="5"><i class="fa-solid fa-money-check"></i>&nbsp;Orden de pago</th>
+      <th rowspan="2"><i class="fa-solid fa-file-code"></i>&nbsp;{{'cfdi_xml_import' | translate}}</th>
+      <th rowspan="2"><i class="fa-solid fa-file-pdf"></i>&nbsp;{{'cfdi_pdf_import' | translate}}</th>
+      <th rowspan="2" class="ultimo"></th>
+      <th rowspan="2" class="ultimo"></th>
+    </tr>
+    <tr>
+      <th pResizableColumn pSortableColumn="nomi_imp_impuesto_total_a_pagar">Total a pagar&nbsp;<p-sortIcon field="nomi_imp_impuesto_total_a_pagar"/></th>
+      <th pResizableColumn pSortableColumn="nomi_imp_pago">pagado&nbsp;<p-sortIcon field="nomi_imp_pago"/></th>
+      <th pResizableColumn pSortableColumn="nomi_imp_saldo">Saldo&nbsp;<p-sortIcon field="nomi_imp_saldo"/></th>
+      <th pResizableColumn pSortableColumn="nomi_imp_ord_pago_folio">Orden de pago&nbsp;<p-sortIcon field="nomi_imp_ord_pago_folio"/></th>
+      <th class="ultimo"></th>
+    </tr>
+  </ng-template>
+  <ng-template #body let-isnl>
+    <tr>
+      <td class="ultimo">
+        <a class="btn bg-blue-600" (click)="verDetalleISN(isnl.nomi_imp_token);">
+          <i class="fa-solid fa-info"></i>
+        </a>
+      </td>
+      <td>{{isnl.nomi_imp_folio}}</td>
+      <td class="name">{{isnl.nomi_imp_fecha_contabilizacion}}</td>
+      <td class="name">{{isnl.nomi_imp_fecha_presentacion}}</td>
+      <td class="name">{{isnl.nomi_imp_fecha_vencimiento}}</td>
+      <td class="name">{{isnl.nomi_imp_estado_all_info}}</td>
+      <td class="name">{{isnl.nomi_imp_ejercicio}}</td>
+      <td class="name">{{isnl.nomi_imp_periodo_inicio == isnl.nomi_imp_periodo_fin ? isnl.nomi_imp_periodo_fin : isnl.nomi_imp_periodo_inicio+" - "+isnl.nomi_imp_periodo_fin}}</td>
+      <td class="name">{{isnl.nomi_imp_tipo_declaracion}}</td>
+      <td class="td_importes">{{isnl.nomi_imp_impuesto_total_a_pagar}}</td>
+      <td class="td_importes">{{isnl.nomi_imp_pago}}</td>
+      <td class="td_importes">{{isnl.nomi_imp_saldo}}</td>
+      <td>{{isnl.nomi_imp_ord_pago_folio}}</td>
+      <td class="ultimo">
+        <a class="btn btn_extend text-bg-success rounded-3"
+          [ngClass]="isnl.nomi_imp_ord_pago_token == '' ? 'disabled' : ''"
+          [attr.disabled]="isnl.nomi_imp_ord_pago_token == '' ? true : null"
+          [attr.aria-disabled]="isnl.nomi_imp_ord_pago_token == '' ? true : null"
+          (click)="isnl.nomi_imp_ord_pago_token != '' && verISNSeguimientoOrdenPago(isnl.nomi_imp_token,isnl.nomi_imp_ord_pago_token);">
+          <i class="fa-solid fa-money-check-dollar"></i>&nbsp;Seguimiento
+        </a>
+      </td>
+      <td>
+        @if (isnl.nomi_imp_factura_doc_xml != null) {
+          <a class="btn btn_extend text-bg-primary rounded-4" target="_blank"
+            [ngClass]="isnl.nomi_imp_factura_doc_xml == '' ? 'disabled' : ''"
+            [attr.disabled]="isnl.nomi_imp_factura_doc_xml == '' ? true : null"
+            [attr.aria-disabled]="isnl.nomi_imp_factura_doc_xml == '' ? true : null" [href]="isnl.nomi_imp_url_doc_xml">
+            <i class="fa-solid fa-code"></i>&nbsp;{{isnl.nomi_imp_factura_doc_xml}}
+          </a>
+        } @else {
+          <div class="mb-3" style="margin: 0!important;">
+            <input class="form-control" [ngClass]="!isnl.nomi_imp_habilita_carga_docs ? 'disabled' : ''"
+              [attr.disabled]="!isnl.nomi_imp_habilita_carga_docs ? true : null"
+              [attr.aria-disabled]="!isnl.nomi_imp_habilita_carga_docs ? true : null" type="file" id="facturaxml"
+              placeholder="XML" accept=".xml" style="padding: 0;line-height: 30px;width: 100%!important;"
+              (change)="cargaXmlISN(isnl.nomi_imp_token,$event,$event.target);">
+          </div>
+        }
+      </td>
+      <td>
+        @if (isnl.nomi_imp_factura_doc_pdf != null) {
+          <a class="btn btn_extend text-bg-danger rounded-3" target="_blank"
+            [ngClass]="isnl.nomi_imp_factura_doc_pdf == '' ? 'disabled' : ''"
+            [attr.disabled]="isnl.nomi_imp_factura_doc_pdf == '' ? true : null"
+            [attr.aria-disabled]="isnl.nomi_imp_factura_doc_pdf == '' ? true : null" [href]="isnl.nomi_imp_url_doc_pdf">
+            <i class="fa-solid fa-file-pdf"></i>&nbsp;{{isnl.nomi_imp_factura_doc_pdf}}
+          </a>
+        } @else {
+          <div class="mb-3" style="margin: 0!important;">
+            <input class="form-control" type="file" name="facturaCompraPdf" id="facturapdf" accept=".pdf"
+              placeholder="PDF" style="padding: 0;line-height: 30px;width: 100%!important;"
+              [ngClass]="!isnl.nomi_imp_habilita_carga_docs || isnl.nomi_imp_valida_xml == '' || isnl.nomi_imp_valida_xml == 'errorXml' ? 'disabled' : ''"
+              [attr.disabled]="!isnl.nomi_imp_habilita_carga_docs || isnl.nomi_imp_valida_xml == '' || isnl.nomi_imp_valida_xml == 'errorXml' ? true : null"
+              [attr.aria-disabled]="!isnl.nomi_imp_habilita_carga_docs || isnl.nomi_imp_valida_xml == '' || isnl.nomi_imp_valida_xml == 'errorXml' ? true : null"
+              (change)="isnl.nomi_imp_valida_xml != '' && isnl.nomi_imp_valida_xml == 'validoXml' && escanPdfISN(isnl.nomi_imp_token,$event,$event.target);">
+          </div>
+        }
+      </td>
+      <td>
+        <a class="btn btn_extend text-bg-success rounded-3"
+          [ngClass]="!validaTrabCFDILoaded(isnl.nomi_imp_token) ? 'disabled' : ''"
+          [attr.disabled]="!validaTrabCFDILoaded(isnl.nomi_imp_token) ? true : null"
+          [attr.aria-disabled]="!validaTrabCFDILoaded(isnl.nomi_imp_token) ? true : null"
+          (click)="validaTrabCFDILoaded(isnl.nomi_imp_token) && cargaISNCFDIS(isnl.nomi_imp_token);">
+          <i class="fa-solid fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+        </a>
+      </td>
+      <td class="ultimo">
+        <a class="btn btn_extend text-bg-danger rounded-3" [ngClass]="!isnl.puede_eliminar ? 'disabled' : ''"
+          [attr.disabled]="!isnl.puede_eliminar ? true : null" [attr.aria-disabled]="!isnl.puede_eliminar ? true : null"
+          (click)="isnl.puede_eliminar && deleteISNDeclaracion(isnl.nomi_imp_token);">
+          <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+        </a>
+      </td>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td colspan="18" class="text-center py-4">
+        <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+        <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+          {{'no_rows' | translate}}
+        </p>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<p-dialog header="Informaci&oacute;n de la declaraci&oacute;n de impuestos sobre la n&oacute;mina {{isn_detalle_folio}}" [(visible)]="ver_isn_seguimiento_pagos" [modal]="true" [style]="{ width: '50rem' }"
+  [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  <p-table #opgen [value]="isn_seguimiento_pagos" [globalFilterFields]="searchPagoGeneral" showGridlines [resizableColumns]="true" [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }"
+    [rowsPerPageOptions]="[10,20,30,50,100]">
+    <ng-template #caption>
+      <div class="flex">
+        <p-iconfield iconPosition="left" class="ml-auto">
+          <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+          <input pInputText type="text" (input)="opgen.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+        </p-iconfield>
+      </div>
+    </ng-template>
+    <ng-template #header>
+      <tr>
+        <th rowspan="2" class="ultimo"></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="folio_ordenPago">folio&nbsp;<p-sortIcon field="folio_ordenPago" /></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="fecha_contabilizacion_orden_pago">{{'fecha_cont_pay_order' | translate}}&nbsp;<p-sortIcon field="fecha_contabilizacion_orden_pago" /></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="factura_relacionada_string">{{'doc_ant' | translate}}&nbsp;<p-sortIcon field="factura_relacionada_string" /></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="fecha_contabilizacion_doc_anterior">{{'fecha_cont_doc_ant' | translate}}&nbsp;<p-sortIcon field="fecha_contabilizacion_doc_anterior" /></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="orden_emisor_emp">{{'company_name' | translate}}&nbsp;<p-sortIcon field="orden_emisor_emp" /></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="autorizacion_pay">{{'autho_riza' | translate}}&nbsp;<p-sortIcon field="autorizacion_pay" /></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="fecha_autorizacion_pay">{{'date_autho_riza' | translate}}&nbsp;<p-sortIcon field="fecha_autorizacion_pay" /></th>
+        <th colspan="9" pResizableColumn>{{'payed' | translate}}</th>
+        <th rowspan="2" style="padding-left: 5px;padding-right: 5px;" pResizableColumn pSortableColumn="importe_total_inicial">{{'total_refund' | translate}}&nbsp;<p-sortIcon field="importe_total_inicial" /></th>
+        <th rowspan="2" style="padding-left: 5px;padding-right: 5px;" pResizableColumn pSortableColumn="importe_autorizado_inicial_format">{{'total_refund_auth' | translate}}&nbsp;<p-sortIcon field="importe_autorizado_inicial_format" /></th>
+        <th rowspan="2" style="padding-left: 5px;padding-right: 5px;" pResizableColumn pSortableColumn="importe_autorizado_final">{{'total_refund_auth_converse' | translate}}&nbsp;<p-sortIcon field="importe_autorizado_final" /></th>
+        <th rowspan="2" style="padding-left: 5px;padding-right: 5px;" pResizableColumn pSortableColumn="debe_format">DEBE&nbsp;<p-sortIcon field="debe_format" /></th>
+      </tr>
+      <tr>
+        <th pResizableColumn pSortableColumn="pago_anticipado">{{'prepayment' | translate}}&nbsp;<p-sortIcon field="pago_anticipado" /></th>
+        <th class="ultimo"></th>
+        <th class="noneView"></th>
+        <th pResizableColumn pSortableColumn="pago_realizado_folio">folio&nbsp;<p-sortIcon field="pago_realizado_folio" /></th>
+        <th pResizableColumn pSortableColumn="pago_realizado_fecha_contabilizacion">{{'fecha_cont' | translate}}&nbsp;<p-sortIcon field="pago_realizado_fecha_contabilizacion" /></th>
+        <!--<th pResizableColumn pSortableColumn="pago_realizado_proveedor_name">{{'prov' | translate}}&nbsp;<p-sortIcon field="pago_realizado_proveedor_name"/></th>-->
+        <!--<th pResizableColumn pSortableColumn="pago_realizado_acreedor_name">{{'acree_name' | translate}}&nbsp;<p-sortIcon field="pago_realizado_acreedor_name"/></th>-->
+        <th pResizableColumn pSortableColumn="pago_realizado_forma_pago_vinculada">{{'f_pago' | translate}}&nbsp;<p-sortIcon field="pago_realizado_forma_pago_vinculada" /></th>
+        <th pResizableColumn pSortableColumn="pago_realizado_forma_metodo_pago_cfdi">{{'f_m_pago_cfdi' | translate}}&nbsp;<p-sortIcon field="pago_realizado_forma_metodo_pago_cfdi" /></th>
+        <th pResizableColumn pSortableColumn="pago_realizado_monto">{{'total_import' | translate}}&nbsp;<p-sortIcon field="pago_realizado_monto" /></th>
+        <th pResizableColumn pSortableColumn="pago_realizado_tipo_cambio">{{'mon_tipo_cambio' | translate}}&nbsp;<p-sortIcon field="pago_realizado_tipo_cambio" /></th>
+        <th pResizableColumn pSortableColumn="pago_realizado_observaciones">{{'observ' | translate}}&nbsp;<p-sortIcon field="pago_realizado_observaciones" /></th>
+      </tr>
+    </ng-template>
+    <ng-template #body let-lPay>
+      <tr>
+        <td class="ultimo">
+          <a class="btn bg-red-700" [ngClass]="lPay.factura_relacionada_typo == '---' ? 'disabled' : ''"
+            [attr.disabled]="lPay.factura_relacionada_typo == '---' ? true : null"
+            [attr.aria-disabled]="lPay.factura_relacionada_typo == '---' ? true : null"
+            [attr.target]="lPay.factura_relacionada_typo != '---' ? '_blank' : null"
+            [attr.href]="lPay.factura_relacionada_typo != '---' ? (lPay.factura_relacionada_typo == 'compras' ? 'https://downloads.sos-mexico.com.mx/compras_pdf/'+lPay.factura_relacionada_token : 
+							(lPay.factura_relacionada_typo == 'ventas' ? 'https://downloads.sos-mexico.com.mx/ventas_pdf/'+lPay.factura_relacionada_token : 'https://downloads.sos-mexico.com.mx/reembolso_pdf/'+lPay.factura_relacionada_token)) : null">
+            <i class="fa-solid fa-file-pdf"></i>
+          </a>
+        </td>
+        <td>{{lPay.folio_ordenPago}}</td>
+        <td>{{lPay.fecha_contabilizacion_orden_pago}}</td>
+        <td class="name">{{lPay.factura_relacionada_string}}</td>
+        <td>{{lPay.fecha_contabilizacion_doc_anterior}}</td>
+        <td>{{lPay.orden_emisor_emp}}</td>
+        <td>{{lPay.autorizacion_pay_text}}</td>
+        <td>{{lPay.fecha_autorizacion_pay}}</td>
+        <td class="td_importes">{{lPay.pago_anticipado}}</td>
+        <td class="noneView">{{lPay.status_pago_date}}</td>
+
+        <td class="ultimo">
+          <p class="btn text-bg-success rounded-3" [ngClass]="lPay.status_pago == true ? 'disabled' : ''"
+            [attr.disabled]="lPay.status_pago == true ? true : null"
+            [attr.aria-disabled]="lPay.status_pago == true ? true : null"
+            style="width: 100%!important;border-radius: 25px!important;padding: 3px;">
+            <i class="fa-solid fa-check-double"></i>{{lPay.status_pago_date}}
+          </p>
+        </td>
+        <td>{{lPay.pago_realizado_folio}}</td>
+        <td>{{lPay.pago_realizado_fecha_contabilizacion}}</td>
+        <!--<td class="name">{{lPay.pago_realizado_proveedor_name}}</td>-->
+        <!--<td class="name">{{lPay.pago_realizado_acreedor_name}}</td>-->
+        <td class="name">{{lPay.pago_realizado_forma_pago_vinculada}}</td>
+        <td class="name">{{lPay.pago_realizado_forma_metodo_pago_cfdi}}</td>
+        <td class="td_importes">{{lPay.pago_realizado_monto}}</td>
+        <td class="td_importes">{{lPay.pago_realizado_tipo_cambio}}</td>
+        <td class="name">{{lPay.pago_realizado_observaciones}}</td>
+
+        <td class="td_importes">{{lPay.importe_total_inicial}}</td>
+        <td class="td_importes">{{lPay.importe_autorizado_inicial_format}}</td>
+        <td class="td_importes">{{lPay.importe_autorizado_final}}</td>
+        <td class="td_importes">{{lPay.debe_format}}</td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="22" class="text-center py-4">
+          <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+          <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+            {{'no_rows' | translate}}
+          </p>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <p-table #lpagos_realizados id="pagos_done_lista_general" [value]="isn_pagos_historial"
+    [globalFilterFields]="search_pagos_done" showGridlines [resizableColumns]="true" [paginator]="true" [rows]="10"
+    [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]">
+    <ng-template #caption>
+      <div class="flex">
+        <p-iconfield iconPosition="left" class="ml-auto">
+          <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+          <input pInputText type="text" (input)="lpagos_realizados.filterGlobal($event.target.value, 'contains')"
+            placeholder="{{'bus_car' | translate}}" />
+        </p-iconfield>
+      </div>
+    </ng-template>
+    <ng-template #header>
+      <tr>
+        <th rowspan="2" class="ultimo"></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="folio_pagos">folio&nbsp;<p-sortIcon field="folio_pagos" /></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="fecha_contabilizacion">{{'fecha_cont' | translate}}&nbsp;<p-sortIcon field="fecha_contabilizacion" /></th>
+        <th colspan="2">{{'doc_ant' | translate}}</th>
+        <th colspan="3">status</th>
+        <!--<th colspan="3">{{'ter_cero' | translate}}</th>-->
+        <!--<th colspan="3">financeado a</th>-->
+        <th rowspan="2" pResizableColumn pSortableColumn="medio_pago_vinculado">{{'f_pago' | translate}}&nbsp;<p-sortIcon field="medio_pago_vinculado" /></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="forma_metodo_pago_cfdi">{{'f_m_pago_cfdi' | translate}}&nbsp;<p-sortIcon field="forma_metodo_pago_cfdi" /></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="forma_metodo_pago_anticipos">medio de pago por anticipos&nbsp;<p-sortIcon field="forma_metodo_pago_anticipos" /></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="observacionesPago">{{'observ' | translate}}&nbsp;<p-sortIcon field="observacionesPago" /></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="p_moneda">{{'currency' | translate}}&nbsp;<p-sortIcon field="p_moneda" /></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="monto_pago_format">{{'total_import' | translate}}&nbsp;<p-sortIcon field="monto_pago_format" /></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="tipo_cambio_format">{{'mon_tipo_cambio' | translate}}&nbsp;<p-sortIcon field="tipo_cambio_format" /></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="monto_pago_resultant">{{'total_import_resultant' | translate}}&nbsp;<p-sortIcon field="monto_pago_resultant" /></th>
+      </tr>
+      <tr>
+        <th pResizableColumn pSortableColumn="doc_anterior_folio">folio&nbsp;<p-sortIcon field="doc_anterior_folio" /></th>
+        <th pResizableColumn pSortableColumn="doc_anterior_fecha_contabilizacion">{{'fecha_cont' | translate}}&nbsp;<p-sortIcon field="doc_anterior_fecha_contabilizacion" /></th>
+        <th pResizableColumn pSortableColumn="pago_cancelado">status&nbsp;<p-sortIcon field="pago_cancelado" /></th>
+        <th pResizableColumn pSortableColumn="pago_folio_cancelacion">folio&nbsp;<p-sortIcon field="pago_folio_cancelacion" /></th>
+        <th pResizableColumn pSortableColumn="pago_fecha_contabilizacion_cancelacion">{{'fecha_cont' | translate}}&nbsp;<p-sortIcon field="pago_fecha_contabilizacion_cancelacion" /></th>
+        <!--<th pResizableColumn pSortableColumn="tercero_folio">folio&nbsp;<p-sortIcon field="tercero_folio"/></th>-->
+        <!--<th pResizableColumn pSortableColumn="tercero_name">{{'name' | translate}}&nbsp;<p-sortIcon field="tercero_name"/></th>-->
+        <!--<th pResizableColumn pSortableColumn="tercero_comercial_name">{{'comercial_name' | translate}}&nbsp;<p-sortIcon field="tercero_comercial_name"/></th>-->
+
+        <!--<th pResizableColumn pSortableColumn="financeadoa_folio">folio&nbsp;<p-sortIcon field="financeadoa_folio"/></th>-->
+        <!--<th pResizableColumn pSortableColumn="financeadoa_name">{{'name' | translate}}&nbsp;<p-sortIcon field="financeadoa_name"/></th>-->
+        <!--<th pResizableColumn pSortableColumn="financeadoa_comercial_name">{{'comercial_name' | translate}}&nbsp;<p-sortIcon field="financeadoa_comercial_name"/></th>-->
+      </tr>
+    </ng-template>
+    <ng-template #body let-payDone let-i="rowIndex">
+      <tr>
+        <td class="ultimo">
+          <!-- (click)="payDone.status_pago && pagos_realizados_desglose(payDone.token_pagos);"-->
+          <a class="btn text-bg-success rounded-3" [ngClass]="!payDone.status_pago ? 'disabled' : ''"
+            [attr.data-bs-toggle]="payDone.status_pago ? 'modal' : ''"
+            [attr.data-bs-target]="payDone.status_pago ? '#modalDesglosePagos' : ''">
+            <i class="fa-solid fa-file-invoice-dollar"></i>
+          </a>
+        </td>
+        <td>{{payDone.folio_pagos}}</td>
+        <td>{{payDone.fecha_contabilizacion}}</td>
+
+        <td class="name">{{payDone.doc_anterior_folio}}</td>
+        <td>{{payDone.doc_anterior_fecha_contabilizacion}}</td>
+
+        <td class="name">{{(payDone.pago_cancelado ? 'canceled_reg' : 'approved_reg') | translate}}</td>
+        <td class="name">{{payDone.pago_folio_cancelacion}}</td>
+        <td>{{payDone.pago_fecha_contabilizacion_cancelacion}}</td>
+
+        <!--<td class="name">{{payDone.tercero_folio}}</td>-->
+        <!--<td class="name">{{payDone.tercero_name}}</td>-->
+        <!--<td class="name">{{payDone.tercero_comercial_name}}</td>-->
+
+        <!--<td [ngClass]="payDone.orden_factura_relacionada_typo == 'anticipos' ? 'name' : ''">{{payDone.orden_factura_relacionada_typo == 'anticipos' ? payDone.financeadoa_folio : ''}}</td>-->
+        <!--<td [ngClass]="payDone.orden_factura_relacionada_typo == 'anticipos' ? 'name' : ''">{{payDone.orden_factura_relacionada_typo == 'anticipos' ? payDone.financeadoa_name : ''}}</td>-->
+        <!--<td [ngClass]="payDone.orden_factura_relacionada_typo == 'anticipos' ? 'name' : ''">{{payDone.orden_factura_relacionada_typo == 'anticipos' ? payDone.financeadoa_comercial_name : ''}}</td>-->
+
+        <td>{{payDone.medio_pago_vinculado}}</td>
+        <td class="name">{{payDone.forma_metodo_pago_cfdi}}</td>
+        <td [ngClass]="payDone.orden_factura_relacionada_typo == 'anticipos' ? 'name' : ''">{{payDone.orden_factura_relacionada_typo == 'anticipos' ? payDone.forma_pago_pago : ''}}</td>
+        <td class="name">{{payDone.observacionesPago}}</td>
+        <td>{{payDone.p_moneda}}</td>
+        <td class="td_importes">{{payDone.monto_pago_format}}</td>
+        <td class="td_importes">{{payDone.tipo_cambio_format}}</td>
+        <td class="td_importes">{{payDone.monto_pago_resultant}}</td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="16" class="text-center py-4">
+          <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+          <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+            {{'no_rows' | translate}}
+          </p>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</p-dialog>
+
+<p-dialog header="Declaraci&oacute;n de impuestos sobre la n&oacute;mina" [(visible)]="modal_desglose_declaracion_isn"
+  [modal]="true" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  @for (isninfo of desglose_impdeclaraciones_nomina; track isninfo.id; let i = $index) {
+    <div class="col-12 explain">
+      <h6 class="title">Folio</h6>
+      <h6 class="content">{{isninfo.nomi_imp_folio}}</h6>
+    </div>
+    @if (isninfo.vinculacion_a_pagos) {
+      <div class="col-12 row" style="padding: 0!important;">
+        <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3 col-xxl-2 explain">
+          <h6 class="title">{{'fecha_cont' | translate}}</h6>
+          <h6 class="content">{{isninfo.nomi_imp_fecha_contabilizacion}}</h6>
+        </div>
+    
+        <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3 col-xxl-2 explain">
+          <h6 class="title">Fecha de presentaci&oacute;n</h6>
+          <h6 class="content">{{isninfo.nomi_imp_fecha_presentacion}}</h6>
+        </div>
+        <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3 col-xxl-2 explain">
+          <h6 class="title">Fecha de vencimiento</h6>
+          <h6 class="content">{{isninfo.nomi_imp_fecha_vencimiento}}</h6>
+        </div>
+        <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3 col-xxl-4 explain">
+          <h6 class="title">Estado</h6>
+          <h6 class="content">{{isninfo.nomi_imp_estado_name}}</h6>
+        </div>
+        <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3 col-xxl-2 explain">
+          <h6 class="title">Ejercicio y periodo</h6>
+          <h6 class="content">{{isninfo.nomi_imp_periodo}}</h6>
+        </div>
+        <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3 col-xxl-2 explain">
+          <h6 class="title">Tipo de declaraci&oacute;n</h6>
+          <h6 class="content">{{isninfo.nomi_imp_tipo_declaracion}}</h6>
+        </div>
+    
+        <ul class="list-group" style="padding: 0!important;">
+          <li class="list-group-item disabled" aria-disabled="true">
+            <strong>Determinaci&oacute;n del impuesto</strong>
+          </li>
+          <li class="list-group-item row" style="padding: 0!important;">
+            <div class="col-9">A) Total de remuneraciones erogadas</div>
+            <div class="col-3 content div_importes">{{isninfo.nomi_imp_total_remuneraciones_erogadas_format}}</div>
+          </li>
+          <li class="list-group-item row" style="padding: 0!important;">
+            <div class="col-9">B) % Sobre el total de remuneraciones erogadas</div>
+            <div class="col-3 content div_importes">{{isninfo.nomi_imp_porcent_sobre_total_remuneraciones_erogadas_format}}
+            </div>
+          </li>
+          <li class="list-group-item row" [ngClass]="isninfo.nomi_imp_tipo_declaracion == 'Normal' ? 'noneView' : ''">
+            <div class="col-12">C) Complementarias</div>
+            <div class="col-12 row" style="padding-bottom: 0!important;">
+              <div class="col-9" style="padding: 0!important;">Impuesto a cargo</div>
+              <div class="col-3 content div_importes" style="padding: 0!important;">
+                {{isninfo.nomi_imp_complementarias_impuesto_a_cargo_format}}</div>
+              <p-divider />
+            </div>
+            <div class="col-12 row" style="padding-top: 0!important;">
+              <div class="col-9" style="padding: 0!important;">Saldo a favor</div>
+              <div class="col-3 content div_importes" style="padding: 0!important;">
+                {{isninfo.nomi_imp_complementarias_saldo_a_favor_format}}</div>
+            </div>
+          </li>
+          <li class="list-group-item row" style="padding: 0!important;">
+            <div class="col-9">D) Impuesto actualizado</div>
+            <div class="col-3 content div_importes">{{isninfo.nomi_imp_impuesto_actualizado_format}}</div>
+          </li>
+          <li class="list-group-item row" style="padding: 0!important;">
+            <div class="col-9">E) Descuento</div>
+            <div class="col-3 content div_importes">{{isninfo.nomi_imp_impuesto_descuento_format}}</div>
+          </li>
+          <li class="list-group-item row" style="padding: 0!important;">
+            <div class="col-9">F) Recargos</div>
+            <div class="col-3 content div_importes">{{isninfo.nomi_imp_impuesto_recargos_format}}</div>
+          </li>
+          <li class="list-group-item row" style="padding: 0!important;">
+            <div class="col-9">G) Recargos condonados</div>
+            <div class="col-3 content div_importes">{{isninfo.nomi_imp_impuesto_recargos_condonados_format}}</div>
+          </li>
+    
+          <li class="list-group-item row" style="padding: 0!important;">
+            <div class="col-9">H) Subsidio no. de resoluci&oacute;n</div>
+            <div class="col-12 row" style="padding-bottom: 0!important;">
+              <div class="col-9" style="padding: 0!important;">H1) Sobre el impuesto a pagar</div>
+              <div class="col-3 content div_importes" style="padding: 0!important;">
+                {{isninfo.nomi_imp_subsi_n_resolu_impuesto_pagar_format}}</div>
+              <p-divider />
+            </div>
+            <div class="col-12 row" style="padding-top: 0!important;">
+              <div class="col-9" style="padding: 0!important;">H2) Sobre recargos (%)</div>
+              <div class="col-3 content div_importes" style="padding: 0!important;">
+                {{isninfo.nomi_imp_subsi_n_resolu_recargos_format}}</div>
+            </div>
+          </li>
+    
+          <li class="list-group-item row" style="padding: 0!important;">
+            <div class="col-9">I) Compensaci&oacute;n no. de resoluci&oacute;n</div>
+            <div class="col-12 row" style="padding-bottom: 0!important;">
+              <div class="col-9" style="padding: 0!important;">I1) Sobre el impuesto a pagar</div>
+              <div class="col-3 content div_importes" style="padding: 0!important;">
+                {{isninfo.nomi_imp_compensa_n_resolucion_format}}</div>
+              <p-divider />
+            </div>
+            <div class="col-12 row" style="padding-top: 0!important;">
+              <div class="col-9" style="padding: 0!important;">I2) Sobre recargos</div>
+              <div class="col-3 content div_importes" style="padding: 0!important;">
+                {{isninfo.nomi_imp_compensa_n_resolu_recargos_format}}</div>
+            </div>
+          </li>
+    
+          <li class="list-group-item row" style="padding: 0!important;">
+            <div class="col-9"><strong>J) Total a pagar</strong></div>
+            <div class="col-3 content div_importes">{{isninfo.nomi_imp_impuesto_total_a_pagar_format}}</div>
+          </li>
+          <li class="list-group-item row" style="padding: 0!important;">
+            <div class="col-9"><strong>K) Saldo a favor</strong></div>
+            <div class="col-3 content div_importes">{{isninfo.nomi_imp_impuesto_saldo_a_favor_format}}</div>
+          </li>
+        </ul>
+    
+        <div class="col-12 explain" style="margin-bottom: 10px!important;">
+          <h6 class="title">{{'observ' | translate}}</h6>
+          <h6 class="content">{{isninfo.observaciones}}</h6>
+        </div>
+        <div class="col-12 row">
+          <div class="explain">
+            <h6 class="title">Anexos registrados</h6>
+          </div>
+          <p-table #anexView [value]="isninfo.isnAnexos" showGridlines [resizableColumns]="true" [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]"
+            [globalFilterFields]="['name_documento']">
+            <ng-template #caption>
+              <div class="flex">
+                <p-iconfield iconPosition="left" class="ml-auto">
+                  <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                  <input pInputText type="text" (input)="anexView.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+                </p-iconfield>
+              </div>
+            </ng-template>
+            <ng-template #header>
+              <tr>
+                <th pResizableColumn pSortableColumn="name_documento">{{'file' | translate}}&nbsp;<p-sortIcon field="name_documento" /></th>
+                <th class="ultimo"></th>
+              </tr>
+            </ng-template>
+            <ng-template #body let-docs>
+              <tr>
+                <td>{{docs.name_documento}}</td>
+                <td>
+                  <a class="btn" [ngClass]="docs.extension == 'pdf' ? 'text-bg-danger rounded-3' : 'text-bg-primary rounded-4'" target="_blank" [href]="docs.url" style="width: 25px!important;border-radius: 50%!important;">
+                    <i class="fa-solid" [ngClass]="docs.extension == 'pdf' ? 'fa-file-pdf' : 'fa-globe'"></i>
+                  </a>
+                </td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="2" class="text-center py-4">
+                  <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                  <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                    {{'no_rows' | translate}}
+                  </p>
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+      </div>
+    }
+    @else {
+      @if (imp_sobre_nomina_form) {
+        <!--.nomi_imp_token-->
+        <form class="formNominaImp" #formNominaImp="ngForm" autocomplete="off" [formGroup]="isnForm" name="formNominaImp" enctype="multipart/form-data" (ngSubmit)="validate_isn_update(isninfo) && isn_actualizar(formNominaImp,isninfo);">
+          <div class="col-12 row" style="padding: 0!important;">
+            <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+              <label for="contribNominaFechaPago" class="activeInput">{{'fecha_cont' | translate}}</label>
+              <input id="contribNominaFechaPago" type="date" name="contribNominaFechaPago" [value]="isninfo.nomi_imp_fecha_contabilizacion_edit" (change)="select_fecha_contabilizacion($event.target,isninfo);">
+            </div>
+            <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+              <label for="contribNominaFechaPresentacion" class="activeInput">Fecha de presentaci&oacute;n</label>
+              <input id="contribNominaFechaPresentacion" type="date" name="contribNominaFechaPresentacion"  [value]="isninfo.nomi_imp_fecha_presentacion_edit" (change)="select_fecha_presentacion($event.target,isninfo);">
+            </div>
+            <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+              <label for="contribNominaFechaVencimiento" class="activeInput">Fecha de vencimiento</label>
+              <input id="contribNominaFechaVencimiento" type="date" name="contribNominaFechaVencimiento" [value]="isninfo.nomi_imp_fecha_vencimiento_edit" (change)="select_fecha_vencimiento($event.target,isninfo);">
+            </div>
+            <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+              <label for="contribNominaEstado" class="activeInput">Estado</label>
+              <p-select [options]="entidades_federativas" id="contribNominaEstado" name="contribNominaEstado" formControlName="estado" optionValue="entidad" optionLabel="entidad" [filter]="true" filterBy="entidad"
+                [showClear]="true" [placeholder]="'opt_select' | translate" class="w-full md:w-56" (onChange)="changeEstadoMonina($event.value,isninfo);">
+                <ng-template #selectedItem let-sel>
+                  <div class="flex items-center gap-2">
+                    <div>{{sel.rfc_gobierno+' '+sel.entidad}}</div>
+                  </div>
+                </ng-template>
+                <ng-template let-ent #item>
+                  <div class="flex items-center gap-2">
+                    <div>{{ent.rfc_gobierno+' '+ent.entidad}}</div>
+                  </div>
+                </ng-template>
+              </p-select>
+            </div>
+            <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-4 input-group">
+              <label for="contribNominaEjercicio" class="activeInput">Ejercicio</label>
+              <p-datepicker id="contribNominaEjercicio" name="contribNominaEjercicio" formControlName="ejercicio" view="year"
+                dateFormat="yy" [placeholder]="'opt_select' | translate" [readonlyInput]="true" (onSelect)="selectEjercicio(isninfo);" />
+            </div>
+            <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-4 input-group">
+              <label for="contribNominaEjercicioPeriodo" class="activeInput">Periodo</label>
+              <p-datepicker id="contribNominaEjercicioPeriodo" [ngClass]="modelNominaImp.ejercicio == '' ? 'disabled' : ''" [disabled]="modelNominaImp.ejercicio == ''"
+                [attr.aria-disabled]="modelNominaImp.ejercicio == '' ? true : null" name="contribNominaEjercicioPeriodo" formControlName="periodo" view="month" 
+                [minDate]="min_ejercicio" [maxDate]="max_ejercicio" selectionMode="range" dateFormat="MM/yy" [readonlyInput]="true" (onSelect)="selectEjercicioPeriodo(isninfo);"/>
+            </div>
+            <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-4 input-group">
+              <label for="contribNominaTipoDeclaracion" class="activeInput">Tipo de declaraci&oacute;n</label>
+              <p-select [options]="tipos_declaracion" id="contribNominaTipoDeclaracion" name="contribNominaTipoDeclaracion" formControlName="tipo_declaracion" 
+                optionValue="tipo" optionLabel="tipo" [filter]="true" filterBy="tipo" [showClear]="true" [placeholder]="'opt_select' | translate" class="w-full md:w-56"
+                (onChange)="changeTipoDeclaracion($event.value,isninfo);">
+                <ng-template #selectedItem let-sel>
+                  <div class="flex items-center gap-2">
+                    <div>{{sel.tipo}}</div>
+                  </div>
+                </ng-template>
+                <ng-template let-reg #item>
+                  <div class="flex items-center gap-2">
+                    <div>{{reg.tipo}}</div>
+                  </div>
+                </ng-template>
+              </p-select>
+            </div>
+      
+            <ul class="list-group">
+              <li class="list-group-item disabled" aria-disabled="true">
+                <strong>Determinaci&oacute;n del impuesto</strong>
+              </li>
+              <li class="list-group-item row" style="padding: 0!important;">
+                <div class="col-9">A) Total de remuneraciones erogadas</div>
+                <div class="col-3">
+                  <input id="total_remuneraciones_erogadas" type="number" class="input-monto" placeholder="$ 0.00" [value]="isninfo.nomi_imp_total_remuneraciones_erogadas"
+                    (keyup)="importeTotalRemuneracionesErogadas($event.target,isninfo);calculando_totales();">
+                </div>
+              </li>
+              <li class="list-group-item row" style="padding: 0!important;">
+                <div class="col-9">B) % Sobre el total de remuneraciones erogadas</div>
+                <div class="col-3">
+                  <input id="porcent_sobre_total_remuneraciones_erogadas" type="number" class="input-monto" placeholder="$ 0.00" [value]="isninfo.nomi_imp_porcent_sobre_total_remuneraciones_erogadas"
+                    (keyup)="importePorcentSobreTotalRemuneracionesErogadas($event.target,isninfo);calculando_totales();">
+                </div>
+              </li>
+              <li class="list-group-item row noneView" style="padding: 0!important;" id="impuesto_complementarias">
+                <div class="col-12">C) Complementarias</div>
+                <div class="col-12 row" style="padding-bottom: 0!important;">
+                  <div class="col-9" style="padding: 0!important;">Impuesto a cargo</div>
+                  <div class="col-3" style="padding: 0!important;">
+                    <input id="complementarias_impuesto_a_cargo" type="number" class="input-monto" placeholder="$ 0.00" [value]="isninfo.nomi_imp_complementarias_impuesto_a_cargo"
+                      (keyup)="importeComplementariasImpuestoACargo($event.target,isninfo);calculando_totales();">
+                  </div>
+                  <p-divider />
+                </div>
+                <div class="col-12 row" style="padding-top: 0!important;">
+                  <div class="col-9" style="padding: 0!important;">Saldo a favor</div>
+                  <div class="col-3" style="padding: 0!important;">
+                    <input id="complementarias_saldo_a_favor" type="number" class="input-monto" placeholder="$ 0.00" [value]="isninfo.nomi_imp_complementarias_saldo_a_favor"
+                      (keyup)="importeComplementariasSaldoAFavor($event.target,isninfo);calculando_totales();">
+                  </div>
+                </div>
+              </li>
+              <li class="list-group-item row" style="padding: 0!important;">
+                <div class="col-9">D) Impuesto actualizado</div>
+                <div class="col-3">
+                  <input id="impuesto_actualizado" type="number" class="input-monto" placeholder="$ 0.00" [value]="isninfo.nomi_imp_impuesto_actualizado"
+                    (keyup)="importeImpuestoActualizado($event.target,isninfo);calculando_totales();">
+                </div>
+              </li>
+              <li class="list-group-item row" style="padding: 0!important;">
+                <div class="col-9">E) Descuento</div>
+                <div class="col-3">
+                  <input id="impuesto_descuento" type="number" class="input-monto" placeholder="$ 0.00" [value]="isninfo.nomi_imp_impuesto_descuento"
+                    (keyup)="importeImpuestoDescuento($event.target,isninfo);calculando_totales();">
+                </div>
+              </li>
+              <li class="list-group-item row" style="padding: 0!important;">
+                <div class="col-9">F) Recargos</div>
+                <div class="col-3">
+                  <input id="impuesto_recargos" type="number" class="input-monto" placeholder="$ 0.00" [value]="isninfo.nomi_imp_impuesto_recargos"
+                    (keyup)="importeImpuestoRecargos($event.target,isninfo);calculando_totales();">
+                </div>
+              </li>
+              <li class="list-group-item row" style="padding: 0!important;">
+                <div class="col-9">G) Recargos condonados</div>
+                <div class="col-3">
+                  <input id="impuesto_recargos_condonados" type="number" class="input-monto" placeholder="$ 0.00" [value]="isninfo.nomi_imp_impuesto_recargos_condonados"
+                    (keyup)="importeImpuestoRecargosCondonados($event.target,isninfo);calculando_totales();">
+                </div>
+              </li>
+      
+              <li class="list-group-item row" style="padding: 0!important;">
+                <div class="col-9">H) Subsidio no. de resoluci&oacute;n</div>
+                <div class="col-12 row" style="padding-bottom: 0!important;">
+                  <div class="col-9" style="padding: 0!important;">H1) Sobre el impuesto a pagar</div>
+                  <div class="col-3" style="padding: 0!important;">
+                    <input id="subsi_n_resolu_impuesto_pagar" type="number" class="input-monto" placeholder="$ 0.00" [value]="isninfo.nomi_imp_subsi_n_resolu_impuesto_pagar"
+                      (keyup)="importeSubsiNResoluImpuestoPagar($event.target,isninfo);calculando_totales();">
+                  </div>
+                  <p-divider />
+                </div>
+                <div class="col-12 row" style="padding-top: 0!important;">
+                  <div class="col-9" style="padding: 0!important;">H2) Sobre recargos (%)</div>
+                  <div class="col-3" style="padding: 0!important;">
+                    <input id="subsi_n_resolu_recargos" type="number" class="input-monto" placeholder="$ 0.00" [value]="isninfo.nomi_imp_subsi_n_resolu_recargos"
+                      (keyup)="importeSubsiNResoluRecargos($event.target,isninfo);calculando_totales();">
+                  </div>
+                </div>
+              </li>
+      
+              <li class="list-group-item row" style="padding: 0!important;">
+                <div class="col-9">I) Compensaci&oacute;n no. de resoluci&oacute;n</div>
+                <div class="col-12 row" style="padding-bottom: 0!important;">
+                  <div class="col-9" style="padding: 0!important;">I1) Sobre el impuesto a pagar</div>
+                  <div class="col-3" style="padding: 0!important;">
+                    <input id="compensa_n_resolucion" type="number" class="input-monto" placeholder="$ 0.00"
+                      [value]="isninfo.nomi_imp_compensa_n_resolucion"
+                      (keyup)="importeCompensaNResolucion($event.target,isninfo);calculando_totales();">
+                  </div>
+                  <p-divider />
+                </div>
+                <div class="col-12 row" style="padding-top: 0!important;">
+                  <div class="col-9" style="padding: 0!important;">I2) Sobre recargos</div>
+                  <div class="col-3" style="padding: 0!important;">
+                    <input id="compensa_n_resolu_recargos" type="number" class="input-monto" placeholder="$ 0.00"
+                      [value]="isninfo.nomi_imp_compensa_n_resolu_recargos"
+                      (keyup)="importeCompensaNResolucionRecargos($event.target,isninfo);calculando_totales();">
+                  </div>
+                </div>
+              </li>
+      
+              <li class="list-group-item row" style="padding: 0!important;">
+                <div class="col-9"><strong>J) Total a pagar</strong></div>
+                <div class="col-3">
+                  <input id="impuesto_total_a_pagar" type="number" class="input-monto" placeholder="$ 0.00"
+                    [value]="isninfo.nomi_imp_impuesto_total_a_pagar"
+                    (keyup)="importeImpuestoTotalAPagar($event.target,isninfo);">
+                </div>
+              </li>
+              <li class="list-group-item row" style="padding: 0!important;">
+                <div class="col-9"><strong>K) Saldo a favor</strong></div>
+                <div class="col-3">
+                  <input id="impuesto_saldo_a_favor" type="number" class="input-monto" placeholder="$ 0.00"
+                    [value]="isninfo.nomi_imp_impuesto_saldo_a_favor"
+                    (keyup)="importeImpuestoSaldoAFavor($event.target,isninfo);">
+                </div>
+              </li>
+            </ul>
+      
+            <div class="col-12 input-group" style="margin-bottom: 10px!important;">
+              <label class="activeInput">{{'observ' | translate}}</label>
+              <textarea id="pago_large_observ" class="validate" [value]="isninfo.observaciones"
+                (keyup)="keyupObservacionContribucionNomina($event.target,isninfo);"></textarea>
+            </div>
+      
+            <div class="col-12 row">
+              <div class="explain">
+                <h6 class="title">Anexos registrados</h6>
+              </div>
+              <p-table #anexList [value]="isninfo.isnAnexos" showGridlines [resizableColumns]="true" [paginator]="true"
+                [rows]="10" [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]"
+                [globalFilterFields]="['name_documento']">
+                <ng-template #caption>
+                  <div class="flex">
+                    <p-iconfield iconPosition="left" class="ml-auto">
+                      <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                      <input pInputText type="text" (input)="anexList.filterGlobal($event.target.value, 'contains')"
+                        placeholder="{{'bus_car' | translate}}" />
+                    </p-iconfield>
+                  </div>
+                </ng-template>
+                <ng-template #header>
+                  <tr>
+                    <th pResizableColumn pSortableColumn="name_documento">{{'file' | translate}}&nbsp;<p-sortIcon
+                        field="name_documento" /></th>
+                    <th class="ultimo"></th>
+                    <th class="ultimo"><i class="fa-solid fa-eraser"></i></th>
+                  </tr>
+                </ng-template>
+                <ng-template #body let-docs>
+                  <tr>
+                    <td>{{docs.name_documento}}</td>
+                    <td>
+                      <a class="btn"
+                        [ngClass]="docs.extension == 'pdf' ? 'text-bg-danger rounded-3' : 'text-bg-primary rounded-4'"
+                        target="_blank" [href]="docs.url" style="width: 25px!important;border-radius: 50%!important;">
+                        <i class="fa-solid" [ngClass]="docs.extension == 'pdf' ? 'fa-file-pdf' : 'fa-globe'"></i>
+                      </a>
+                    </td>
+                    <td>
+                      <div class="form-check form-switch form-check-reverse switch_primario switch_delete"
+                        style="justify-content: center;flex-direction: column;">
+                        <input class="form-check-input selectSwitchProvProd" name="selectImpProd" type="checkbox"
+                          [checked]="docs.eliminacion_proceso == true"
+                          (click)="deleteAnexoDocs(isninfo,docs.token_documento);"
+                          style="width: 80%!important;">
+                      </div>
+                    </td>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                  <tr>
+                    <td colspan="3" class="text-center py-4">
+                      <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                      <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                        {{'no_rows' | translate}}
+                      </p>
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
+            <div class="col-12 row">
+              <div class="explain">
+                <h6 class="title">Anexos para registrar</h6>
+              </div>
+              <div class="col-12 field_file_drop">
+                <ngx-file-drop dropZoneLabel="Drop files here" (onFileDrop)="droppedImpNomina($event)" (onFileOver)="fileOverImpNomina($event)" (onFileLeave)="fileLeaveImpNomina($event)">
+                  <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
+                    <a class="btn btn_load_file" type="button" style="color: #0782d0 !important;" (click)="openFileSelector()">
+                      {{'load_files' | translate}} / {{'browse_files' | translate}}
+                    </a>
+                  </ng-template>
+                </ngx-file-drop>
+                <p-table #dt [value]="filesImpNomina" dataKey="id" [paginator]="true" [rows]="10"
+                  [rowsPerPageOptions]="[10,20,30,50,100]" [globalFilterFields]="['nombre']" style="top:5px!important;">
+                  <ng-template #header>
+                    <tr>
+                      <th pSortableColumn="relativePath">{{'file' | translate}}&nbsp;<p-sortIcon field="relativePath" /></th>
+                      <th class="ultimo"></th>
+                    </tr>
+                  </ng-template>
+                  <ng-template #body let-item let-rowIndex="rowIndex">
+                    <tr>
+                      <td><strong>{{ item.relativePath }}</strong></td>
+                      <td class="ultimo">
+                        <a class="btn btn_extend text-bg-danger rounded-3" (click)="deleteAnexosImpNomina(rowIndex);">
+                          <i class="fa-solid fa-xmark"></i>
+                        </a>
+                      </td>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="emptymessage">
+                    <tr>
+                      <td colspan="2" class="text-center py-4">
+                        <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                        <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                          {{'no_rows' | translate}}
+                        </p>
+                      </td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+              </div>
+            </div>
+            <div class="col-12" style="display: flex !important;justify-content: end!important;margin-top: 5px!important;">
+              <button class="btn btn_extend text-bg-success rounded-3"
+                [ngClass]="!validate_isn_update(isninfo) ? 'disabled' : ''"
+                [attr.disabled]="!validate_isn_update(isninfo) ? true : null"
+                [attr.aria-disabled]="!validate_isn_update(isninfo) ? true : null">
+                <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+              </button>
+            </div>
+          </div>
+        </form>
+      }
+    }
+  }
+</p-dialog>
+
+<p-dialog header="Reportes de ISN eliminados" [(visible)]="modal_deleted_declaraciones_isn" [modal]="true"
+  [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  <p-table #isnDeleted [value]="catalogo_deleted_declaraciones_isn" showGridlines [resizableColumns]="true"
+    [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]"
+    [globalFilterFields]="search_declaraciones_isn">
+    <ng-template #caption>
+      <div class="flex">
+        <p-iconfield iconPosition="left" class="ml-auto">
+          <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+          <input pInputText type="text" (input)="isnDeleted.filterGlobal($event.target.value, 'contains')"
+            placeholder="{{'bus_car' | translate}}" />
+        </p-iconfield>
+      </div>
+    </ng-template>
+    <ng-template #header>
+      <tr>
+        <th pResizableColumn pSortableColumn="nomi_imp_folio">folio&nbsp;<p-sortIcon field="nomi_imp_folio" /></th>
+        <th pResizableColumn pSortableColumn="nomi_imp_fecha_contabilizacion">{{'fecha_cont' |
+          translate}}&nbsp;<p-sortIcon field="nomi_imp_fecha_contabilizacion" /></th>
+        <th pResizableColumn pSortableColumn="nomi_imp_fecha_vencimiento">Fecha de vencimiento&nbsp;<p-sortIcon
+            field="nomi_imp_fecha_vencimiento" /></th>
+        <th pResizableColumn pSortableColumn="nomi_imp_estado_all_info">Estado&nbsp;<p-sortIcon
+            field="nomi_imp_estado_all_info" /></th>
+        <th pResizableColumn pSortableColumn="nomi_imp_ejercicio">Ejercicio&nbsp;<p-sortIcon
+            field="nomi_imp_ejercicio" /></th>
+        <th pResizableColumn pSortableColumn="nomi_imp_periodo">Periodo&nbsp;<p-sortIcon field="nomi_imp_periodo" />
+        </th>
+        <th pResizableColumn pSortableColumn="nomi_imp_tipo_declaracion">Tipo de declaraci&oacute;n&nbsp;<p-sortIcon
+            field="nomi_imp_tipo_declaracion" /></th>
+        <th pResizableColumn pSortableColumn="nomi_imp_impuesto_total_a_pagar">Total a pagar&nbsp;<p-sortIcon
+            field="nomi_imp_impuesto_total_a_pagar" /></th>
+        <th class="ultimo"></th>
+        <th class="ultimo"></th>
+      </tr>
+    </ng-template>
+    <ng-template #body let-isnl>
+      <tr>
+        <td>{{isnl.nomi_imp_folio}}</td>
+        <td class="name">{{isnl.nomi_imp_fecha_contabilizacion}}</td>
+        <td class="name">{{isnl.nomi_imp_fecha_vencimiento}}</td>
+        <td class="name">{{isnl.nomi_imp_estado_all_info}}</td>
+        <td class="name">{{isnl.nomi_imp_ejercicio}}</td>
+        <td class="name">{{isnl.nomi_imp_periodo_inicio == isnl.nomi_imp_periodo_fin ? isnl.nomi_imp_periodo_fin : isnl.nomi_imp_periodo_inicio+" - "+isnl.nomi_imp_periodo_fin}}</td>
+        <td class="name">{{isnl.nomi_imp_tipo_declaracion}}</td>
+        <td class="td_importes">{{isnl.nomi_imp_impuesto_total_a_pagar}}</td>
+        <td>
+          <a class="btn btn_extend text-bg-success rounded-3" (click)="restauraISNDeclaracion(isnl.nomi_imp_token);">
+            <i class="fa-solid fa-trash-arrow-up"></i>&nbsp;{{'restore_row' | translate}}
+          </a>
+        </td>
+        <td>
+          <a class="btn btn_extend text-bg-danger rounded-3"
+            (click)="deletePermanenteISNDeclaracion(isnl.nomi_imp_token);">
+            <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+          </a>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="10" class="text-center py-4">
+          <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+          <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+            {{'no_rows' | translate}}
+          </p>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</p-dialog>

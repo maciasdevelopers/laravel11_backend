@@ -1,0 +1,123 @@
+CREATE TABLE nomina (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  num_nomina INT NOT NULL,
+  empresa_rfc VARCHAR(13) NOT NULL,
+  registro_patronal VARCHAR(20),
+  periodo_inicio DATE NOT NULL,
+  periodo_fin DATE NOT NULL,
+  periodicidad ENUM('semanal','quincenal','mensual') NOT NULL,
+  fecha_generacion DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE nomina_detalle (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  nomina_id INT NOT NULL,
+  clave_trabajador VARCHAR(20) NOT NULL,
+  nombre_trabajador VARCHAR(255) NOT NULL,
+  
+  dias_trabajados DECIMAL(5,2),
+  sueldo DECIMAL(10,2),
+  otras_percepciones DECIMAL(10,2),
+  total_percepciones DECIMAL(10,2),
+  total_en_especie DECIMAL(10,2),
+  
+  total_imss DECIMAL(10,2),
+  total_isr DECIMAL(10,2),
+  subsidio_empleo DECIMAL(10,2),
+  otras_deducciones DECIMAL(10,2),
+  total_deducciones DECIMAL(10,2),
+  
+  neto_pagado DECIMAL(10,2),
+  total_efectivo DECIMAL(10,2),
+  
+  nss VARCHAR(15),
+  rfc VARCHAR(13),
+  curp VARCHAR(18),
+  
+  salario_diario DECIMAL(10,2),
+  salario_integrado DECIMAL(10,2),
+  dias_jornada VARCHAR(20),          -- Ej: "Día", "Mixto"
+  fecha_alta DATE,
+  tipo_salario VARCHAR(20),          -- Ej: "Fijo", "Variable"
+  unidad_trabajada VARCHAR(50),      -- Ej: "Hora", "Día"
+  laboradas DECIMAL(10,2),
+  
+  FOREIGN KEY (nomina_id) REFERENCES nomina(id)
+);
+
+
+create table vhum_nominas_main(
+	id int(10) primary key not null auto_increment,
+	token_nominas_periodos text,
+	nomina_folio_interior int(5),
+	nomina_subfolio varchar(5),
+	nomina_numero int,
+	nomina_periodo_fecha_inicio varchar(10),
+	nomina_periodo_fecha_fin varchar(10),
+	nomina_periodicidad ENUM('semanal','catorcenal','quincenal','mensual'),
+	nomina_empresa int(10),
+  foreign key (nomina_empresa) references main_empresas(id)
+);
+
+create table vhum_nominas_recibos(
+	id int(10) primary key not null auto_increment,
+	token_nomina_recibo text,
+	trabajador int(10),
+	periodo_nomina int(10),
+  dias_trabajados DECIMAL(5,2),
+  sueldo DECIMAL(10,2),
+  total_percepciones DECIMAL(10,2),
+  total_deducciones DECIMAL(10,2),
+  neto_pagado DECIMAL(10,2),
+  total_en_especie DECIMAL(10,2),
+  salario_por_hora DECIMAL(10,2),
+  total_imss DECIMAL(10,2),
+  horas_por_dia DECIMAL(10,2),
+  total_isr DECIMAL(10,2),
+  subsidio_empleo DECIMAL(10,2),
+  otras_deducciones DECIMAL(10,2),
+  total_deducciones DECIMAL(10,2),
+  total_efectivo DECIMAL(10,2),
+  salario_diario DECIMAL(10,2),
+  salario_integrado DECIMAL(10,2),
+  dias_jornada VARCHAR(20),
+  faltas DECIMAL(5,2),
+  folio_fiscal VARCHAR(100),-- UUID CFDI
+  serie_folio VARCHAR(50),
+  xml_url TEXT,
+  pdf_url TEXT,
+  fecha_emision DATETIME,
+  fecha_timbrado DATETIME,
+  FOREIGN KEY (trabajador) REFERENCES vhum_empleados_catalogo(id),
+  FOREIGN KEY (periodo_nomina) REFERENCES vhum_nominas_periodos(id)
+);
+
+CREATE TABLE nomina_percepciones (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  recibo_id INT NOT NULL,
+  clave_sat VARCHAR(10),        -- Ej: P001
+  concepto VARCHAR(100),        -- Ej: Sueldo, Despensa
+  importe DECIMAL(10,2),
+  FOREIGN KEY (recibo_id) REFERENCES nomina_recibos(id)
+);
+
+CREATE TABLE nomina_deducciones (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  recibo_id INT NOT NULL,
+  clave_sat VARCHAR(10),        -- Ej: D001
+  concepto VARCHAR(100),        -- Ej: ISR, IMSS
+  importe DECIMAL(10,2),
+  FOREIGN KEY (recibo_id) REFERENCES nomina_recibos(id)
+);
+
+CREATE TABLE nomina_pagos (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  recibo_id INT NOT NULL,
+  forma_pago ENUM('transferencia','efectivo','cheque') NOT NULL,
+  cuenta_bancaria VARCHAR(20),
+  clabe VARCHAR(18),
+  banco VARCHAR(100),
+  monto DECIMAL(10,2),
+  fecha_pago DATE,
+  FOREIGN KEY (recibo_id) REFERENCES nomina_recibos(id)
+);

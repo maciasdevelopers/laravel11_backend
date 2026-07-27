@@ -1,0 +1,37 @@
+<div class="chatbot-container">
+  <!-- Botón flotante -->
+  <button class="btn btn-primary rounded-circle chatbot-trigger" (click)="toggleChat()">
+    <i class="fas fa-comments"></i>
+  </button>
+
+  <!-- Ventana de chat -->
+  <div class="chat-window card shadow" *ngIf="chatVisible">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <h6 class="mb-0">{{ 'chatbot_title' | translate }}</h6>
+      <button type="button" class="btn-close btn-close-white" (click)="toggleChat()"></button>
+    </div>
+    <div class="card-body">
+      <form [formGroup]="chatForm" (ngSubmit)="enviarMensaje()">
+        <div class="mb-3">
+          <label class="form-label">{{ 'nombre' | translate }}</label>
+          <input type="text" class="form-control" formControlName="nombre" [placeholder]="'escribe_tu_nombre' | translate">
+        </div>
+        <div class="mb-3">
+          <label class="form-label">{{ 'email' | translate }}</label>
+          <input type="email" class="form-control" formControlName="email" [placeholder]="'escribe_tu_email' | translate">
+        </div>
+        <div class="mb-3">
+          <label class="form-label">{{ 'area_comunicacion' | translate }}</label>
+          <p-select [options]="areas" formControlName="area" [placeholder]="'selecciona_area' | translate" class="w-100" appendTo="body"></p-select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">{{ 'mensaje' | translate }}</label>
+          <textarea class="form-control" formControlName="mensaje" rows="3" [placeholder]="'como_podemos_ayudarte' | translate"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary w-100" [disabled]="chatForm.invalid">
+          {{ 'enviar' | translate }}
+        </button>
+      </form>
+    </div>
+  </div>
+</div>

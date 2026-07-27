@@ -1,0 +1,523 @@
+<!--$factura_relacionada_typo = "compras";-->
+<p-dialog header="Informaci&oacute;n de compras" [(visible)]="compra_info_view" [modal]="true" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  @for (detBuy of data_compra_detalle; track $index) {
+    <div class="col-12 row">
+      <div class="col-12 explain">
+        <h6 class="title">Datos generales de la compra</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">Folio</h6>
+        <h6 class="content">{{detBuy.folio}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">proveedor</h6>
+        <h6 class="content">{{detBuy.proveedor_folio+" "+detBuy.proveedor_nombre}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">personal que realizó la compra</h6>
+        <h6 class="content">{{detBuy.persCompra}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">fecha de registro</h6>
+        <h6 class="content">{{detBuy.fecha_altaCompra}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">forma de pago</h6>
+        <h6 class="content">{{detBuy.forma_pago}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">M&eacute;todo de pago</h6>
+        <h6 class="content">{{detBuy.metodo_pago}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">Recibi&oacute; factura</h6>
+        <h6 class="content">{{detBuy.recibeFactura}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">{{'total_import' | translate}}</h6>
+        <h6 class="content">{{detBuy.compra_total}}</h6>
+      </div>
+    </div>
+  }
+</p-dialog>
+
+<!--$factura_relacionada_typo = "ventas";-->
+<p-dialog header="Informaci&oacute;n de ventas" [(visible)]="venta_info_view" [modal]="true" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  @for (detBuy of data_venta_detalle; track $index) {
+    <div class="col-12 row">
+      <div class="col-12 explain">
+        <h6 class="title">Datos generales de la compra</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">Folio</h6>
+        <h6 class="content">{{detBuy.folio}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">proveedor</h6>
+        <h6 class="content">{{detBuy.proveedor_folio+" "+detBuy.proveedor_nombre}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">personal que realizó la compra</h6>
+        <h6 class="content">{{detBuy.persCompra}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">fecha de registro</h6>
+        <h6 class="content">{{detBuy.fecha_altaCompra}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">forma de pago</h6>
+        <h6 class="content">{{detBuy.forma_pago}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">M&eacute;todo de pago</h6>
+        <h6 class="content">{{detBuy.metodo_pago}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">Recibi&oacute; factura</h6>
+        <h6 class="content">{{detBuy.recibeFactura}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">{{'total_import' | translate}}</h6>
+        <h6 class="content">{{detBuy.compra_total}}</h6>
+      </div>
+    </div>
+  }
+</p-dialog>
+
+<!--$factura_relacionada_typo = "reembolsos";-->
+<p-dialog header="Informaci&oacute;n de reembolsos" [(visible)]="reembolso_info_view" [modal]="true" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  @for (detreem of data_reembolso_detalle; track $index) {
+    <div class="col-12" style="margin-top: 10px;">
+      <div class="cabecera cabecera_gray_light col-12 row">
+        <div class="col-12 col-sm-3 col-md-3 col-lg-4 col-xl-4 col-xxl-4">
+          <h6 class="title">REEMBOLSO FOLIO</h6>
+          <h6 class="content contentMayus">{{detreem.folio_reem}}</h6>
+        </div>
+        <div class="col-12 col-sm-3 col-md-3 col-lg-4 col-xl-4 col-xxl-4">
+          <h6 class="title">{{'fecha_reg' | translate}}</h6>
+          <h6 class="content">{{detreem.fecha_solicitud}}</h6>
+        </div>
+        <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-4">
+          <h6 class="title">emisor</h6>
+          <h6 class="content contentName">{{detreem.nombreEmiPers+" ("+detreem.emisor_company+")"}}</h6>
+        </div>
+        <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6">
+          <h6 class="title">deuda total</h6>
+          <h6 class="content" style="background-color: #e7e7ea;margin: 0px;padding: 2px;color: #353535!important;font-weight: bold;border-radius: 25pc;">
+            {{detreem.saldototal+" "+detreem.moneda_entrante+" / "+detreem.saldototal_conversion+" "+detreem.moneda_saliente}}</h6>
+        </div>
+        <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6">
+          <h6 class="title">pago realizado</h6>
+          <h6 class="content" style="background-color: #e7e7ea;margin: 0px;padding: 2px;color: #353535!important;font-weight: bold;border-radius: 25pc;">
+            {{detreem.saldoPagado+" "+detreem.moneda_entrante+" / "+detreem.saldoPagado_conversion+" "+detreem.moneda_saliente}}</h6>
+        </div>
+        <div class="col-12">
+          <h6 class="title">total por pagar</h6>
+          <h6 class="content" style="background-color: #e7e7ea;margin: 0px;padding: 2px;color: #353535!important;font-weight: bold;border-radius: 25pc;">
+            {{detreem.saldoPagar+" "+detreem.moneda_entrante+" / "+detreem.saldoPagar_conversion+" "+detreem.moneda_saliente}}</h6>
+        </div>
+        <div class="col-12">
+          <h6 class="title">Lista de facturas</h6>
+        </div>
+      </div>
+    
+      <div class="card card_main col-12 row">
+        <h6 class="header-black">Lista de facturas</h6>
+        <div class="container">
+          <!-- Tabla de la izquierda con scroll -->
+          <div class="table-left">
+            <p-table #reemSolicitudesGeneral [value]="detreem.solicitudes_general" dataKey="id" showGridlines [resizableColumns]="true" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]"
+              [globalFilterFields]="['num_lista','folio_solicitud','fecha_solicitud','fecha_gasto_html','ticket_gasto','pagado_a','rfc_prov','name_prov','forma_pago_clave','forma_pago_forma','observaciones',
+                'autorizacion_vh','fecha_registro_auth_vh','hora_registro_auth_vh','comments_auth_vh','fecha_registro_auth_egr','hora_registro_auth_egr','comments_auth_egr']"
+              [responsiveLayout]="'scroll'" styleClass="scrollable-table">
+              <ng-template #caption>
+                <div class="flex">
+                  <p-iconfield iconPosition="left" class="ml-auto">
+                    <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                    <input pInputText type="text" (input)="reemSolicitudesGeneral.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+                  </p-iconfield>
+                </div>
+              </ng-template>
+              <ng-template #header>
+                <tr>
+                  <th pResizableColumn pSortableColumn="num_lista">No.&nbsp;<p-sortIcon field="num_lista" /></th>
+                  <th pResizableColumn pSortableColumn="folio_solicitud">folio / fecha solicitud&nbsp;<p-sortIcon field="folio_solicitud" /></th>
+                  <th pResizableColumn pSortableColumn="fecha_gasto_html">{{'date_gasto' | translate}}&nbsp;<p-sortIcon field="fecha_gasto_html" /></th>
+                  <th pResizableColumn pSortableColumn="ticket_gasto" style="padding-left: 10px;padding-right: 10px;">{{'ticket_gasto' | translate}}&nbsp;<p-sortIcon field="ticket_gasto" /></th>
+                  <th pResizableColumn pSortableColumn="pagado_a">{{'pay_to' | translate}}&nbsp;<p-sortIcon field="pagado_a" /></th>
+                  <th pResizableColumn pSortableColumn="forma_pago_forma">{{'f_pago' | translate}}&nbsp;<p-sortIcon field="forma_pago_forma" /></th>
+                  <th pResizableColumn pSortableColumn="observaciones">{{'observ' | translate}}&nbsp;<p-sortIcon field="observaciones" /></th>
+                  <th pResizableColumn pSortableColumn="autorizacion_vh">{{'ssic_menu_vhn' | translate}}&nbsp;<p-sortIcon field="autorizacion_vh" /></th>
+                  <th pResizableColumn pSortableColumn="fecha_registro_auth_egr">{{'ssic_menu_egr' | translate}}&nbsp;<p-sortIcon field="fecha_registro_auth_egr" /></th>
+                  <th class="ultimo" style="padding-right: 5px;">
+                    <p style="margin: 0!important;width: auto;border-radius: 25px;padding-left: 5px;padding-right: 5px;text-transform: math-auto;"
+                      class="btn btn_extend bg-indigo-600">
+                      <i class="fa-solid fa-file" style="width: 25px !important;height: 25px !important;line-height: 25px !important;font-size: 15px;text-align: center;"></i>
+                      {{'files_uploaded' | translate}}
+                    </p>
+                  </th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-cancd>
+                <tr>
+                  <!-- Columnas de la izquierda -->
+                  <td>{{cancd.num_lista}}</td>
+                  <td>{{cancd.folio_solicitud+" - "+cancd.fecha_solicitud}}</td>
+                  <td>{{cancd.fecha_gasto_html}}</td>
+                  <td>{{cancd.ticket_gasto}}</td>
+                  <td>{{cancd.pagado_a == 'prov' ? ['prov' | translate]+" : "+cancd.rfc_prov+" "+cancd.name_prov : ['gen_pub' | translate]}}</td>
+                  <td>{{cancd.forma_pago_clave+" "+cancd.forma_pago_forma}}</td>
+                  <td>{{cancd.observaciones}}</td>
+                  <td>{{cancd.autorizacion_vh == 'N' ? "N/A" : ['yes_auth' | translate]+" "+cancd.fecha_registro_auth_vh+" - "+cancd.hora_registro_auth_vh+" "+['observ' | translate]+" : "+cancd.comments_auth_vh}}</td>
+                  <td>{{'yes_auth' | translate}} {{cancd.fecha_registro_auth_egr+" - "+cancd.hora_registro_auth_egr}} {{'observ' | translate}}: {{cancd.comments_auth_egr}}</td>
+                  <td class="ultimo">
+                    <a class="btn btn_extend bg-indigo-600" [ngClass]="cancd.anexos.length == 0 ? 'disabled' : ''" [attr.disabled]="cancd.anexos.length == 0 ? true : null"
+                      [attr.aria-disabled]="cancd.anexos.length == 0 ? true : null" (click)="cancd.anexos.length > 0 && verDocumentos(cancd);">
+                      <i class="fa-solid fa-angle-down" style="width: 25px !important;height: 25px !important;line-height: 25px !important;font-size: 15px;text-align: center;"></i>
+                      {{'file_list_open' | translate}}
+                    </a>
+                  </td>
+                </tr>
+                <tr *ngIf="cancd === solicitudSeleccionadaDocs">
+                  <td colspan="10">
+                    <p-table [value]="cancd.anexos">
+                      <ng-template pTemplate="header">
+                        <tr>
+                          <th style="text-align: right;">Nombre del Documento</th>
+                          <th class="ultimo"></th>
+                        </tr>
+                      </ng-template>
+                      <ng-template pTemplate="body" let-doc>
+                        <tr>
+                          <td style="text-align: right;">{{ doc.name_documento }}</td>
+                          <td class="ultimo">
+                            <a class="btn btn_extend text-bg-primary rounded-4" (click)="viewDocumento(detreem.token_reem,cancd.token_solicitud_reem,doc.token_docs);">
+                              <i class="fa-solid fa-globe"></i>
+                            </a>
+                          </td>
+                        </tr>
+                      </ng-template>
+                      <ng-template pTemplate="emptymessage">
+                        <tr>
+                          <td colspan="10" class="text-center py-4">
+                            <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                            <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                              {{'no_rows' | translate}}
+                            </p>
+                          </td>
+                        </tr>
+                      </ng-template>
+                    </p-table>
+                  </td>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td colspan="10" class="text-center py-4">
+                    <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                    <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                      {{'no_rows' | translate}}
+                    </p>
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+          <!-- Tabla de la derecha fija -->
+          <div class="table-right">
+            <p-table #reemSolicitudesGeneral [value]="detreem.solicitudes_general" dataKey="id" showGridlines [resizableColumns]="true" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]"
+              [globalFilterFields]="['importe_requerido_info'+'moneda_origen_codigo','importe_requerido_info_conversion','moneda_final_codigo']" [responsiveLayout]="'scroll'" styleClass="fixed-table">
+              <ng-template #caption>
+                <div class="flex">
+                  <p-iconfield iconPosition="left" class="ml-auto">
+                    <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                    <input pInputText type="text" (input)="reemSolicitudesGeneral.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+                  </p-iconfield>
+                </div>
+              </ng-template>
+              <ng-template #header>
+                <tr>
+                  <th colspan="2">Total</th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-cancd>
+                <tr>
+                  <td class="td_importes">{{cancd.importe_requerido_info+" "+cancd.moneda_origen_codigo}}</td>
+                  <td class="td_importes">{{cancd.importe_requerido_info_conversion+" "+cancd.moneda_final_codigo}}</td>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td colspan="2" class="text-center py-4">
+                    <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                    <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                      {{'no_rows' | translate}}
+                    </p>
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</p-dialog>
+
+<!--$factura_relacionada_typo = "anticipos";-->
+<p-dialog header="Informaci&oacute;n de anticipos" [(visible)]="anticipo_info_view" [modal]="true" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  @for (detBuy of data_anticipo_detalle; track $index) {
+    <div class="col-12 row">
+      <div class="col-12 explain">
+        <h6 class="title">Datos generales de la compra</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">Folio</h6>
+        <h6 class="content">{{detBuy.folio}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">proveedor</h6>
+        <h6 class="content">{{detBuy.proveedor_folio+" "+detBuy.proveedor_nombre}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">personal que realizó la compra</h6>
+        <h6 class="content">{{detBuy.persCompra}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">fecha de registro</h6>
+        <h6 class="content">{{detBuy.fecha_altaCompra}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">forma de pago</h6>
+        <h6 class="content">{{detBuy.forma_pago}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">M&eacute;todo de pago</h6>
+        <h6 class="content">{{detBuy.metodo_pago}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">Recibi&oacute; factura</h6>
+        <h6 class="content">{{detBuy.recibeFactura}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">{{'total_import' | translate}}</h6>
+        <h6 class="content">{{detBuy.compra_total}}</h6>
+      </div>
+    </div>
+  }
+</p-dialog>
+
+<!--$factura_relacionada_typo = "nominas_especie";-->
+<p-dialog header="Informaci&oacute;n de nominas en especie" [(visible)]="nominas_especie_info_view" [modal]="true" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  @for (detBuy of data_nominas_especie_detalle; track $index) {
+    <div class="col-12 row">
+      <div class="col-12 explain">
+        <h6 class="title">Datos generales de la compra</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">Folio</h6>
+        <h6 class="content">{{detBuy.folio}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">proveedor</h6>
+        <h6 class="content">{{detBuy.proveedor_folio+" "+detBuy.proveedor_nombre}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">personal que realizó la compra</h6>
+        <h6 class="content">{{detBuy.persCompra}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">fecha de registro</h6>
+        <h6 class="content">{{detBuy.fecha_altaCompra}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">forma de pago</h6>
+        <h6 class="content">{{detBuy.forma_pago}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">M&eacute;todo de pago</h6>
+        <h6 class="content">{{detBuy.metodo_pago}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">Recibi&oacute; factura</h6>
+        <h6 class="content">{{detBuy.recibeFactura}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">{{'total_import' | translate}}</h6>
+        <h6 class="content">{{detBuy.compra_total}}</h6>
+      </div>
+    </div>
+  }
+</p-dialog>
+
+<!--$factura_relacionada_typo = "nominas";-->
+<p-dialog header="Informaci&oacute;n de nominas" [(visible)]="nominas_info_view" [modal]="true" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  @for (detBuy of data_nominas_detalle; track $index) {
+    <div class="col-12 row">
+      <div class="col-12 explain">
+        <h6 class="title">Datos generales de la compra</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">Folio</h6>
+        <h6 class="content">{{detBuy.folio}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">proveedor</h6>
+        <h6 class="content">{{detBuy.proveedor_folio+" "+detBuy.proveedor_nombre}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">personal que realizó la compra</h6>
+        <h6 class="content">{{detBuy.persCompra}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">fecha de registro</h6>
+        <h6 class="content">{{detBuy.fecha_altaCompra}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">forma de pago</h6>
+        <h6 class="content">{{detBuy.forma_pago}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">M&eacute;todo de pago</h6>
+        <h6 class="content">{{detBuy.metodo_pago}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">Recibi&oacute; factura</h6>
+        <h6 class="content">{{detBuy.recibeFactura}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">{{'total_import' | translate}}</h6>
+        <h6 class="content">{{detBuy.compra_total}}</h6>
+      </div>
+    </div>
+  }
+</p-dialog>
+
+<!--$factura_relacionada_typo = "impuestos sobre nómina";-->
+<p-dialog header="Informaci&oacute;n de ventas" [(visible)]="impuestos_sobre_nomina_info_view" [modal]="true" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  @for (detBuy of data_impuestos_sobre_nomina_detalle; track $index) {
+    <div class="col-12 row">
+      <div class="col-12 explain">
+        <h6 class="title">Datos generales de la compra</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">Folio</h6>
+        <h6 class="content">{{detBuy.folio}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">proveedor</h6>
+        <h6 class="content">{{detBuy.proveedor_folio+" "+detBuy.proveedor_nombre}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">personal que realizó la compra</h6>
+        <h6 class="content">{{detBuy.persCompra}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">fecha de registro</h6>
+        <h6 class="content">{{detBuy.fecha_altaCompra}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">forma de pago</h6>
+        <h6 class="content">{{detBuy.forma_pago}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">M&eacute;todo de pago</h6>
+        <h6 class="content">{{detBuy.metodo_pago}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">Recibi&oacute; factura</h6>
+        <h6 class="content">{{detBuy.recibeFactura}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">{{'total_import' | translate}}</h6>
+        <h6 class="content">{{detBuy.compra_total}}</h6>
+      </div>
+    </div>
+  }
+</p-dialog>
+
+<!--$factura_relacionada_typo = "aportaciones de seguridad social";-->
+<p-dialog header="Informaci&oacute;n de aportaciones de seguridad social" [(visible)]="aportaciones_de_seguridad_social_info_view" [modal]="true" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  @for (detBuy of data_aportaciones_de_seguridad_social_detalle; track $index) {
+    <div class="col-12 row">
+      <div class="col-12 explain">
+        <h6 class="title">Datos generales de la compra</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">Folio</h6>
+        <h6 class="content">{{detBuy.folio}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">proveedor</h6>
+        <h6 class="content">{{detBuy.proveedor_folio+" "+detBuy.proveedor_nombre}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">personal que realizó la compra</h6>
+        <h6 class="content">{{detBuy.persCompra}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">fecha de registro</h6>
+        <h6 class="content">{{detBuy.fecha_altaCompra}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">forma de pago</h6>
+        <h6 class="content">{{detBuy.forma_pago}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">M&eacute;todo de pago</h6>
+        <h6 class="content">{{detBuy.metodo_pago}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">Recibi&oacute; factura</h6>
+        <h6 class="content">{{detBuy.recibeFactura}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">{{'total_import' | translate}}</h6>
+        <h6 class="content">{{detBuy.compra_total}}</h6>
+      </div>
+    </div>
+  }
+</p-dialog>
+
+<!--$factura_relacionada_typo = "declaraciones de impuestos federales";-->
+<p-dialog header="Informaci&oacute;n de declaraciones de impuestos federales" [(visible)]="declaraciones_impuestos_federales_info_view" [modal]="true" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  @for (detBuy of data_declaraciones_impuestos_federales_detalle; track $index) {
+    <div class="col-12 row">
+      <div class="col-12 explain">
+        <h6 class="title">Datos generales de la compra</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">Folio</h6>
+        <h6 class="content">{{detBuy.folio}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">proveedor</h6>
+        <h6 class="content">{{detBuy.proveedor_folio+" "+detBuy.proveedor_nombre}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">personal que realizó la compra</h6>
+        <h6 class="content">{{detBuy.persCompra}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">fecha de registro</h6>
+        <h6 class="content">{{detBuy.fecha_altaCompra}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">forma de pago</h6>
+        <h6 class="content">{{detBuy.forma_pago}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">M&eacute;todo de pago</h6>
+        <h6 class="content">{{detBuy.metodo_pago}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">Recibi&oacute; factura</h6>
+        <h6 class="content">{{detBuy.recibeFactura}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">{{'total_import' | translate}}</h6>
+        <h6 class="content">{{detBuy.compra_total}}</h6>
+      </div>
+    </div>
+  }
+</p-dialog>

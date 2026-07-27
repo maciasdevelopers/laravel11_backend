@@ -1,0 +1,238 @@
+<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco" #vContent>
+	<div class="contenido"><app-loader></app-loader>
+		<nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+		<div class="contenidoPagina">
+			<div class="listas_ps revanecer">
+				<div id="catalogosEstablecimientos" class="lista-div row">
+					<h4 class="col-12">CATALOGO DE ESTABLECIMIENTOS</h4>
+					<div class="col-12 col-sm-12 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+						<h6>Establecimientos existentes</h6>
+						<div class="busqueda row"> 
+							<div class="col s1 m2 col-md-3 col-lg-2">
+								<a class="btn" placement="top" tooltip="Registrar nuevo activo intangible"><i class="fa-solid fa-cart-shopping"></i></a>
+							</div>
+							<div class="col s1 m2 col-md-3 col-lg-2">
+								<a class="btn" placement="top" tooltip="Buscar por concepto"><i class="fa-solid fa-cart-shopping"></i></a>
+							</div>
+							<div class="col s1 m2 col-md-3 col-lg-2">
+								<a class="btn" placement="top" tooltip="Amortización contable"><i class="fa-solid fa-cart-shopping"></i></a>
+							</div>
+							<div class="col s1 m2 col-md-3 col-lg-2">
+								<a class="btn" placement="top" tooltip="Amortización fiscal"><i class="fa-solid fa-cart-shopping"></i></a>
+							</div>
+							<div class="col s8 m4 col-md-3 col-lg-2">
+								<input class="datasearch" type="text" id="buscaactivointang" disabled placeholder="{{'bus_car' | translate}}">
+							</div>
+						</div>
+			
+						<table class="centered responsive-table" id="tabListaCatEstablecim">
+              <thead>
+                <tr>
+                  <th>folio</th>
+                  <th>alias</th>
+                  <th class="ultimo"></th>
+                  <th class="ultimo"></th>
+                </tr>
+              </thead>
+              <tbody *ngIf="arrayEstablecimientosVigentes.length != 0">
+							  <tr *ngFor="let estTrue of arrayEstablecimientosVigentes">
+							  	<td class="noneView">{{estTrue.estab_folio}}</td>
+							  	<td>{{estTrue.estab_folio}}</td>
+							  	<td>{{estTrue.estab_alias}}</td>
+									<td>
+										<a routerLink="/egresos_catalogodeestablecimientos_perfil/{{estTrue.estab_token}}"   
+											class="btn text-bg-success rounded-3">
+											<i class="fa-solid fa-info"></i>
+										</a>
+									</td>
+									<td>
+										<a class="btn btn_extend text-bg-danger rounded-3"
+											(click)="funcDeleteEstablecimiento(estTrue.estab_token);">
+											<i class="fa-solid fa-trash"></i>
+										</a>
+									</td>
+								</tr>
+							</tbody>
+							<tbody *ngIf="arrayEstablecimientosVigentes.length == 0">
+                <tr>
+                  <td colspan="7">{{'no_rows' | translate}}</td>
+                </tr>
+							</tbody>
+						</table>
+					</div>
+			
+					<div class="col-12 col-sm-12 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+						<h6>Establecimientos eliminados</h6>
+						<div class="busqueda row"> 
+							<div class="col s1 m2 col-md-3 col-lg-2">
+								<a class="btn" placement="top" tooltip="Buscar por concepto"><i class="fa-solid fa-cart-shopping"></i></a>
+							</div>
+							<div class="col s1 m2 col-md-3 col-lg-2">
+								<a class="btn" placement="top" tooltip="Amortización contable"><i class="fa-solid fa-cart-shopping"></i></a>
+							</div>
+							<div class="col s1 m2 col-md-3 col-lg-2">
+								<a class="btn" placement="top" tooltip="Amortización fiscal"><i class="fa-solid fa-cart-shopping"></i></a>
+							</div>
+							<div class="col s9 m6 col-md-3 col-lg-2">
+								<input class="datasearch" type="text" id="buscaactivo" disabled placeholder="{{'bus_car' | translate}}">
+							</div>
+						</div>
+			
+						<table class="centered responsive-table">
+              <thead>
+                <tr>
+                  <th>folio</th>
+                  <th>alias</th>
+                  <th>{{'f_delete' | translate}}</th>
+                  <th class="ultimo"></th>
+                  <th class="ultimo"></th>
+                </tr>
+              </thead>
+              <tbody *ngIf="arrayEstablecimientosDeleted.length != 0">
+                <tr *ngFor="let estTrueDel of arrayEstablecimientosDeleted">
+                  <td>{{estTrueDel.estab_folio}}</td>
+                  <td>{{estTrueDel.estab_alias}}</td>
+                  <td>{{estTrueDel.estab_fecha_delete}}</td>
+                  <td>
+                    <a class="btn text-bg-success rounded-3"
+											(click)="funcRestartEstablecimiento(estTrueDel.estab_token);">
+											<i class="fa-solid fa-trash-arrow-up"></i>&nbsp;{{'restore_row' | translate}}
+										</a>
+									</td>
+									<td>
+										<a class="btn btn_extend text-bg-danger rounded-3"
+											(click)="funcDeleteDefinitivamenteEstablecimiento(estTrueDel.estab_token);">
+											<i class="fa-solid fa-trash"></i>
+										</a>
+									</td>
+                </tr>
+              </tbody>
+              <tbody *ngIf="arrayEstablecimientosDeleted.length == 0">
+                <tr>
+                  <td colspan="7">{{'no_rows' | translate}}</td>
+                </tr>
+              </tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+
+
+
+
+import { NgForm, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Component, OnInit, ElementRef, ViewEncapsulation, Renderer2, ViewChild, Input } from '@angular/core';
+import { Usuarios } from '../../../../modelos/Usuarios';
+import { ValidatorServService } from '../../../../servicios/validator-serv.service';
+import { PaisService } from '../../../../servicios/ssic/pais.service';
+import { DireccionesService } from '../../../../servicios/ssic/direcciones.service';
+import { ServEncryptService } from '../../../../servicios/ssic/serv-encrypt.service';
+import { EmpleadosService } from '../../../../servicios/ssic/empleados.service'; 
+import Swal from 'sweetalert2';
+import { DomSanitizer } from '@angular/platform-browser';
+import numeral from 'numeral';
+import { QRCodeComponent } from 'angularx-qrcode';
+//<qrcode [qrdata]="'Tu cadena de datos'" [width]="256" [errorCorrectionLevel]="'M'"></qrcode> imports QRCodeComponent,
+
+@Component({
+  selector: 'app-interno-egresos-catalogos',
+  templateUrl: './listaestablecimiento.component.html',
+  standalone: false,
+  styleUrls: [
+    '../../../../styles/listas_ps.css',
+    '../../../../styles/datatable.css',
+    '../../../../styles/dropdown.css',
+    '../../../../styles/tabs.css',
+    '../../../../styles/input_group.css',
+    '../../../../styles/file_input.css',
+    '../../../../styles/buttons.css',
+    '../../../../styles/modals.css',
+    '../../../../styles/cabecera.css',
+    '../../../../styles/cards.css',
+    '../../../../styles/clientes.css',
+    '../../../../styles/collapsible.css',
+    '../../../../styles/row.css',
+    '../../../../styles/encabezados.css',
+    '../../../../styles/buscador.css',
+    '../../../../styles/radioButtons.css',
+    '../../../../styles/paginador.css',
+    '../../../../styles/loading.css',
+    '../../../../styles/navegador.css',
+    '../../../../styles/listas_ps.css',
+    '../../../../styles/landing.css',
+    '../../../../styles/colores.css',
+    '../inventarios.css',
+    './listaestablecimiento.component.css'
+  ],
+  encapsulation: ViewEncapsulation.None,
+})
+
+export class EstablecimientosInventariosComponent implements OnInit {
+
+  public usuario: Usuarios;
+
+  arrayEstablecimientosVigentes:any = [];
+  arrayEstablecimientosDeleted:any = [];
+
+  constructor(
+    private sanitizer: DomSanitizer,
+    private renderer: Renderer2,
+    public validator: ValidatorServService,
+    public encryptor: ServEncryptService,
+    private dirServ: DireccionesService,
+    public _pais: PaisService,
+    public _personal: EmpleadosService
+  ) {
+    this.usuario = new Usuarios(1, "", "", "", "", "", "", "", 1, 1, "", "", "", "");
+  }
+  ngOnInit(): void {
+    //establecimientos
+    this.recargaEstablecimientos();
+  }
+  //establecimientos
+  recargaEstablecimientos() {
+    this.dirServ.listaEstablecimientos().subscribe(
+      response => {
+        console.log(response.status);
+        if (response.status == 'success') {
+          this.arrayEstablecimientosVigentes = response.dirAlm;
+          console.log(this.arrayEstablecimientosVigentes);
+        }
+      },
+      error => {
+        console.log(error);
+      }
+    )
+
+    this.dirServ.listaEstablecimientosDeleted().subscribe(
+      response => {
+        console.log(response.status);
+        if (response.status == 'success') {
+          this.arrayEstablecimientosDeleted = response.dirAlm;
+          console.log(this.arrayEstablecimientosDeleted);
+        }
+      },
+      error => {
+        console.log(error);
+      }
+    )
+  }
+
+  funcViewEstablecimiento(token_establecim: any) { }
+  funcDeleteEstablecimiento(token_establecim: any) { }
+  funcRestartEstablecimiento(token_establecim: any) { }
+  funcDeleteDefinitivamenteEstablecimiento(token_establecim: any) { }
+
+}
+
+
+            Route::post("inventarios_catalogos_productosInventarios",[INVENT_ProductosController::class,"catalogoProductosInventarios"]);
+            Route::post("inventarios_catalogos_productosMostrador",[INVENT_ProductosController::class,"catalogoProductosMostrador"]);

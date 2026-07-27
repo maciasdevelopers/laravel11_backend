@@ -1,0 +1,139 @@
+      <p-table #devoList [value]="listaDevoluciones" [paginator]="true" [rows]="10"
+        [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]"
+        [globalFilterFields]="['folio_devolucion','fecha_registro_devolucion','folio_compra','proveedor_folio','proveedor_nombre','establecimiento_folio','observaciones','authorized','authorized_fecha','cancelado','cancelado_fecha']">
+        <ng-template #caption>
+          <div class="flex" style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;" ngbDropdown>
+            <!--<a class="btn btn_extend" [ngClass]="indicadorComprasGeneral == 'hoy' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="lista_general_compras('hoy');">
+              <i class="fa-solid fa-calendar-days"></i>&nbsp;Hoy
+            </a>
+            <a class="btn btn_extend" [ngClass]="indicadorComprasGeneral == 'esta_semana' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="lista_general_compras('esta_semana');">
+              <i class="fa-solid fa-calendar-days"></i>&nbsp;Esta semana
+            </a>
+            <a class="btn btn_extend" [ngClass]="indicadorComprasGeneral == 'este_mes' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="lista_general_compras('este_mes');">
+              <i class="fa-solid fa-calendar-days"></i>&nbsp;Este mes
+            </a>
+            <a class="btn btn_extend" [ngClass]="indicadorComprasGeneral == 'mes_anterior' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="lista_general_compras('mes_anterior');">
+              <i class="fa-solid fa-arrow-left"></i>&nbsp;mes anterior
+            </a>
+            <a id="menuDropBuyRangos" class="btn btn_extend" [ngClass]="indicadorComprasGeneral == 'otras_fechas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" ngbDropdownToggle>
+              <i class="fa-solid fa-list-ul"></i>&nbsp;otras fechas
+            </a>
+            <div class="dropdown-menu-end menu-despegable" ngbDropdownMenu="menuDropBuyRangos" style="padding: 0!important; margin: 0!important; width: max-content!important; max-height: 400px; overflow-y: auto;">
+              <div class="col-12 input-group">
+                <label for="buy_otras_fechas" class="activeInput">Periodo de fechas</label>
+                <p-datepicker id="buy_otras_fechas" name="buy_otras_fechas" [(ngModel)]="rangoPeriodoCompras" appendTo="body" dateFormat="dd/mm/yy" 
+                  placeholder="dd/mm/aaaa" selectionMode="range" (onSelect)="lista_general_compras('otras_fechas');" />
+              </div>
+            </div>
+            <a class="btn btn_extend" [ngClass]="indicadorComprasGeneral == 'all_partidas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="lista_general_compras('all_partidas');">
+              <i class="fa-solid fa-list-ul"></i>&nbsp;todos los registros
+            </a>-->
+            <p-iconfield iconPosition="left" class="ml-auto">
+              <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+              <input pInputText type="text" (input)="devoList.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+            </p-iconfield>
+          </div>
+        </ng-template>
+        <ng-template #header>
+          <tr>
+            <th pSortableColumn="folio_devolucion">folio de devoluci&oacute;n&nbsp;<p-sortIcon field="folio_devolucion" /></th>
+            <th pSortableColumn="fecha_registro_devolucion">{{'fecha_reg' | translate}}&nbsp;<p-sortIcon field="fecha_registro_devolucion" /></th>
+            <th pSortableColumn="folio_compra">compra vinculada&nbsp;<p-sortIcon field="folio_compra" /></th>
+            <th pSortableColumn="proveedor_folio">{{'prov' | translate}}&nbsp;<p-sortIcon field="proveedor_folio" /></th>
+            <th pSortableColumn="establecimiento_folio">Establecimiento&nbsp;<p-sortIcon field="establecimiento_folio" /></th>
+            <th pSortableColumn="observaciones">{{'observ' | translate}}&nbsp;<p-sortIcon field="observaciones" /></th>
+            <th>articulos vinculados</th>
+            <th class="ultimo"></th>
+            <th class="ultimo"></th>
+          </tr>
+        </ng-template>
+        <ng-template #body let-dev>
+          <tr>
+            <td>{{dev.folio_devolucion}}</td>
+            <td>{{dev.fecha_registro_devolucion}}</td>
+            <td>{{dev.folio_compra}}</td>
+            <td>{{dev.proveedor_folio+" "+dev.proveedor_nombre}}</td>
+            <td>{{dev.establecimiento_folio}}</td>
+            <td>{{dev.observaciones}}</td>
+            <td>
+              <a class="btn btn_extend bg-blue-600" [ngClass]="dev.desglose.length == 0 ? 'disabled' : ''"
+                [attr.disabled]="dev.desglose.length == 0 ? true : null"
+                [attr.aria-disabled]="dev.desglose.length == 0 ? true : null"
+                (click)="dev.desglose.length > 0 && abreDesgloseDevoluciones(dev);">
+                <i class="fa-solid fa-angle-down"
+                  style="width: 25px !important;height: 25px !important;line-height: 25px !important;font-size: 15px;text-align: center;"></i>
+                {{'file_list_open' | translate}}
+              </a>
+            </td>
+            <td>
+              <a class="btn btn_extend text-bg-success rounded-3" [ngClass]="dev.authorized ? 'disabled' : ''"
+                [attr.disabled]="dev.authorized ? true : null" [attr.disabled]="dev.authorized ? true : null"
+                (click)="!dev.authorized && autorizaDevolucion(dev.token_compras_devoluciones);">
+                <i class="fa-solid fa-check-double"></i>&nbsp;{{dev.authorized ? 'Devoluci&oacute;n autorizada'+dev.authorized_fecha : 'Autorizar devoluci&oacute;n'}}
+              </a>
+            </td>
+            <td>
+              <a class="btn btn_extend text-bg-danger rounded-3"
+                [ngClass]="dev.authorized || dev.cancelado ? 'disabled' : ''"
+                [attr.disabled]="dev.authorized || dev.cancelado ? true : null"
+                [attr.disabled]="dev.authorized || dev.cancelado ? true : null"
+                (click)="!dev.cancelado && cancelaDevolucion(dev.token_compras_devoluciones);">
+                <i class="fa-solid fa-eraser"></i>&nbsp;{{dev.cancelado ? 'Devoluci&oacute;n Cancelada'+dev.cancelado_fecha : 'Cancelar devoluci&oacute;n'}}
+              </a>
+            </td>
+          </tr>
+          @if (dev === seccionDevolucionDesglose) {
+            <tr>
+              <td colspan="9">
+                <div class="col-12">
+                  <p-table [value]="dev.desglose" [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }"
+                    [rowsPerPageOptions]="[10,20,30,50,100]">
+                    <ng-template #header>
+                      <tr>
+                        <th pSortableColumn="producto_folio">{{'prod' | translate}}&nbsp;<p-sortIcon field="producto_folio" /></th>
+                        <th pSortableColumn="folio_rechazo">rechazo&nbsp;<p-sortIcon field="folio_rechazo" /></th>
+                        <th pSortableColumn="lo_pedido">Es lo que se ha pedido&nbsp;<p-sortIcon field="lo_pedido" /></th>
+                        <th pSortableColumn="llego_tiempo">Lleg&oacute; a tiempo&nbsp;<p-sortIcon field="llego_tiempo" /></th>
+                        <th pSortableColumn="buen_estado">Lleg&oacute; en buen estado&nbsp;<p-sortIcon field="buen_estado" /></th>
+                        <th pSortableColumn="calidad_recepcion">Es de la calidad que esperaba&nbsp;<p-sortIcon field="calidad_recepcion" /></th>
+                        <th pSortableColumn="observaciones">{{'observ' | translate}}&nbsp;<p-sortIcon field="observaciones" /></th>
+                      </tr>
+                    </ng-template>
+                    <ng-template #body let-des>
+                      <tr>
+                        <td>{{des.producto_folio+" "+des.producto_nombre}}</td>
+                        <td>{{des.folio_rechazo+" "+des.fecha_rechazo}}</td>
+                        <td>{{des.lo_pedido ? ['yes' | translate] : 'No'}}</td>
+                        <td>{{des.llego_tiempo ? ['yes' | translate] : 'No'}}</td>
+                        <td>{{des.buen_estado ? ['yes' | translate] : 'No'}}</td>
+                        <td>{{des.calidad_recepcion ? ['yes' | translate] : 'No'}}</td>
+                        <td>{{des.observaciones}}</td>
+                      </tr>
+                    </ng-template>
+                    <ng-template pTemplate="emptymessage">
+                      <tr>
+                        <td colspan="9" class="text-center py-4">
+                          <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                          <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                            {{'no_rows' | translate}}
+                          </p>
+                        </td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
+                </div>
+              </td>
+            </tr>
+          }
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="9" class="text-center py-4">
+            <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+            <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+              {{'no_rows' | translate}}
+            </p>
+          </td>
+        </tr>
+      </ng-template>
+      </p-table>

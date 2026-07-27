@@ -1,0 +1,410 @@
+@for (detailprort of detalleProrrateo; track $index) {
+  <div class="col-12 explain">
+    <h6 class="title">fecha de registro:</h6>
+    <h6 class="content">{{detailprort.fecha_sistema_prorrateo}}</h6>
+  </div>
+  <div class="col-12 explain">
+    <h6 class="title">folio de compra:</h6>
+    <h6 class="content">{{detailprort.folio_compra}}</h6>
+  </div>
+  <div class="col-12 explain">
+    <h6 class="title">folio de prorrateo:</h6>
+    <h6 class="content">{{detailprort.folio_prorrateo}}</h6>
+  </div>
+  <p-divider />
+  <div class="col-12 explain">
+    <h6 class="title">Gastos por distribuir:</h6>
+  </div>
+
+  <div class="col-12 row" style="padding: 0!important;">
+    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+      <label class="activeInput">{{'fecha_cont' | translate}}</label>
+      <input id="fechaContabilizacionPago" name="fechaContabilizacionCompra" type="date" (change)="select_fecha_contabilizacion($event.target);">
+    </div>
+  
+    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+      <label for="prorrateables" class="activeInput">{{'mon_name' | translate}}</label>
+      <p-select [options]="catalogo_monedas_api" [(ngModel)]="prorrateo_moneda_opcion" name="prorrateo_moneda_opcion" id="selectedMonedaCode" optionLabel="_filtro_busqueda" [filter]="true"
+        filterBy="_filtro_busqueda" [showClear]="true" [placeholder]="'opt_select' | translate"
+        class="w-full md:w-56" (onChange)="keyupMonedaPagoSave($event.value);">
+        <ng-template #selectedItem let-selectedOption>
+          <div class="flex items-center gap-2">
+            <div>{{selectedOption.code+" "+selectedOption.langEN}}</div>
+          </div>
+        </ng-template>
+        <ng-template let-mon #item>
+          <div class="flex items-center gap-2">
+            <div>{{mon.code+" "+mon.langEN}}</div>
+          </div>
+        </ng-template>
+      </p-select>
+    </div>
+  </div>
+
+  <p-table #dt [value]="gastosADistribuir" dataKey="id" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]" style="padding: 0;">
+    <ng-template pTemplate="header">
+      <tr>
+        <th class="ultimo"></th>
+        <th pSortableColumn="articulo">articulo&nbsp;<p-sortIcon field="articulo" /></th>
+        <th pSortableColumn="documento_anterior">{{'doc_ant' | translate}}&nbsp;<p-sortIcon field="documento_anterior" /></th>
+        <th pSortableColumn="totalDetCompFormat">importe&nbsp;<p-sortIcon field="totalDetCompFormat" /></th>
+        <th>cantidad de prorrateo</th>
+        <th pSortableColumn="resta">resta&nbsp;<p-sortIcon field="resta" /></th>
+        <th class="ultimo"></th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-itemGasto let-position="rowIndex">
+      <tr [style]="itemGasto.viewPrort">
+        <td>
+          <a class="btn bg-blue-600" (click)="verHistorialProrrateo(itemGasto,detailprort.token_prorrateo);">
+            <i class="fa-solid fa-info"></i>
+          </a>
+        </td>
+        <td class="name">{{itemGasto.articulo}}</td>
+        <td class="name">{{itemGasto.documento_anterior}}</td>
+        <td class="td_importes">${{itemGasto.totalDetCompFormat}}</td>
+        <td>
+          <input type="number" class="cantProrrateo" [disabled]="itemGasto.resta <= 0"
+            (keyup)="cantProrrateo($event.target,itemGasto);" (change)="cantProrrateo($event.target,itemGasto);">
+        </td>
+        <td class="td_importes">${{itemGasto.restaFormat}}</td>
+        <td>
+          <div class="form-check radio_check">
+            <input class="form-check-input" type="checkbox" name="GastoXDistribuirTkn" [checked]="itemGasto.selected" [disabled]="!enableSelectGasto(itemGasto)"
+              (click)="selectProrratea($event.target,itemGasto);">
+          </div>
+        </td>
+      </tr>
+      @if (itemGasto === prorrateoVerHistorial) {
+        <tr>
+          <td colspan="7">
+            <div class="col-12">
+              <p-table [value]="historialProrrateo" [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }">
+                <ng-template #header>
+                  <tr>
+                    <th pSortableColumn="articulo">articulo&nbsp;<p-sortIcon field="articulo"/></th>
+                    <th pSortableColumn="detalleCompra_cantidad">cantidad&nbsp;<p-sortIcon field="detalleCompra_cantidad"/></th>
+                    <th pSortableColumn="totalDetCompFormat">importe de compra&nbsp;<p-sortIcon field="totalDetCompFormat"/></th>
+                    <th pSortableColumn="histPrort_cantidad">importe de prorrateo&nbsp;<p-sortIcon field="histPrort_cantidad"/></th>
+                    <th pSortableColumn="histPrort_incremento">incremento&nbsp;<p-sortIcon field="histPrort_incremento"/></th>
+                    <th class="ultimo"></th>
+                  </tr>
+                </ng-template>
+                <ng-template #body let-hist>
+                  <tr>
+                    <td class="noneView">{{hist.c_token}}</td>
+                    <td>{{hist.articulo}}</td>
+                    <td>{{hist.detalleCompra_cantidad}}</td>
+                    <td>{{hist.totalDetCompFormat}}</td>
+                    <td>${{hist.histPrort_cantidad}}</td>
+                    <td>{{hist.histPrort_incremento}}</td>
+                    <td>
+                      <a class="btn btn_extend text-bg-danger rounded-3" (click)="deleteHistorialProrrateo(tokenProrrateoCompra,hist.token_detalle_prorrt,hist.token_rel_prort,hist.token_detcompra);">
+                        <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                      </a>
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
+          </td>
+        </tr>
+      }
+    </ng-template>
+  </p-table>
+  
+  <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+    <label for="prorrateables" class="activeInput">Aplicar a:</label>
+    <p-select [options]="listaOpcion" id="prorrateables" name="prorrateables" optionLabel="valor" [filter]="true" filterBy="valor" optionValue="clave" 
+      appendTo="body" [showClear]="true" [placeholder]="'opt_select' | translate" class="w-full md:w-56" (onChange)="prorrateoAplicarA($event.value);">
+      <ng-template #selectedItem let-selectedOption>
+        <div class="flex items-center gap-2">
+          <div>{{selectedOption.valor}}</div>
+        </div>
+      </ng-template>
+    </p-select>
+  </div>
+
+  @switch (opcionProrrateoSelect) {
+    @case ('mercancias') {
+      <p-table [value]="arrayMercancias" [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }">
+        <ng-template #header>
+          <tr>
+            <th class="ultimo"></th>
+            <th pSortableColumn="producto">producto&nbsp;<p-sortIcon field="producto" /></th>
+            <th pSortableColumn="documento_anterior_compra">{{'doc_ant' | translate}}&nbsp;<p-sortIcon field="documento_anterior_compra" /></th>
+            <th pSortableColumn="cantidad">cantidad&nbsp;<p-sortIcon field="cantidad" /></th>
+            <th pSortableColumn="costo_ajustado">precio unitario&nbsp;<p-sortIcon field="costo_ajustado" /></th>
+            <th pSortableColumn="totalDetCompFormat">importe&nbsp;<p-sortIcon field="totalDetCompFormat" /></th>
+          </tr>
+        </ng-template>
+        <ng-template #body let-prtMerc>
+          <tr>
+            <td>
+              <div class="form-check radio_check">
+                <input class="form-check-input" type="checkbox" name="selectMerc" [checked]="prtMerc.merc_selected" [disabled]="listaverticalProrrat.length === 0" (click)="selectMercanciaProrrateada($event.target,prtMerc);">
+              </div>
+            </td>
+            <td class="name">{{prtMerc.producto}}</td>
+            <td class="name">{{prtMerc.documento_anterior_compra}}</td>
+            <td>{{prtMerc.cantidad}}</td>
+            <td class="td_importes">${{prtMerc.costo_ajustado_format}}</td>
+            <td class="td_importes">{{prtMerc.totalDetCompFormat}}</td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="14" class="text-center py-4">
+              <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+              <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                {{'no_rows' | translate}}
+              </p>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    }
+    @case ('actFijos') {
+      <p-table [value]="arrayActivosFijos" [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }">
+        <ng-template #header>
+          <tr>
+            <th class="ultimo"></th>
+            <th pSortableColumn="folio_activof_unidad">activo&nbsp;<p-sortIcon field="folio_activof_unidad" /></th>
+            <th pSortableColumn="documento_anterior_compra">{{'doc_ant' | translate}}&nbsp;<p-sortIcon field="documento_anterior_compra" /></th>
+            <th pSortableColumn="servicio">servicio&nbsp;<p-sortIcon field="servicio" /></th>
+            <th pSortableColumn="cantidad">cantidad&nbsp;<p-sortIcon field="cantidad" /></th>
+            <th pSortableColumn="costo_ajustado">importe final ajustado&nbsp;<p-sortIcon field="costo_ajustado" /></th>
+          </tr>
+        </ng-template>
+        <ng-template #body let-actfList>
+          <tr>
+            <td>
+              <div class="form-check radio_check">
+                <input class="form-check-input" type="checkbox" name="selectActFijo" [checked]="actfList.act_fijo_selected" (click)="selectActivoFijoProrrateado($event.target,actfList);">
+              </div>
+            </td>
+            <td class="name"><strong>{{actfList.folio_activof_unidad}}</strong> {{actfList.activo}}</td>
+            <td class="name">{{actfList.documento_anterior_compra}}</td>
+            <td class="name">{{actfList.servicio}}</td>
+            <td>{{actfList.cantidad}}</td>
+            <td class="td_importes">${{actfList.costo_ajustado_format+" "+actfList.moneda}}</td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="14" class="text-center py-4">
+              <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+              <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                {{'no_rows' | translate}}
+              </p>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    }
+    @case ('actDiferidos') {
+      <p-table #intanListTrue [value]="arrayActivosDiferidos"
+        [globalFilterFields]="['token_act_intang','folio_activo','categoria','tipo_amortizacion_desc','amort_contable','amort_fiscal','periodo_deprec']"
+        showGridlines [resizableColumns]="true" [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]">
+        <ng-template #caption>
+          <div class="flex" style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;" ngbDropdown>
+            <p-iconfield iconPosition="left" class="ml-auto">
+              <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+              <input pInputText type="text" (input)="intanListTrue.filterGlobal($event.target.value, 'contains')"
+                placeholder="{{'bus_car' | translate}}" />
+            </p-iconfield>
+          </div>
+        </ng-template>
+        <ng-template #header>
+          <tr>
+            <th rowspan="2" class="ultimo"></th>
+            <th rowspan="2" pSortableColumn="folio_activo">Folio&nbsp;<p-sortIcon field="folio_activo" /></th>
+            <th rowspan="2" pSortableColumn="categoria">Categoria&nbsp;<p-sortIcon field="categoria" /></th>
+            <th rowspan="2" pSortableColumn="categoria_cuenta_contable">Cuenta contable&nbsp;<p-sortIcon field="categoria_cuenta_contable" /></th>
+            <th colspan="4">Amortizaci&oacute;n contable&nbsp;</th>
+            <th colspan="4">Amortizaci&oacute;n fiscal&nbsp;</th>
+            <th rowspan="2">{{'observ' | translate}}</th>
+            <th rowspan="2" class="ultimo"></th>
+          </tr>
+          <tr>
+            <th pSortableColumn="amortizacion_contable_periodo">Periodo&nbsp;<p-sortIcon field="amortizacion_contable_periodo" /></th>
+            <th pSortableColumn="amortizacion_contable_tiempo_ejecucion">Tiempo de amortizaci&oacute;n&nbsp;<p-sortIcon field="amortizacion_contable_tiempo_ejecucion" /></th>
+            <th pSortableColumn="amortizacion_contable_cuenta">Cuenta contable&nbsp;<p-sortIcon field="amortizacion_contable_cuenta" /></th>
+            <th pSortableColumn="amortizacion_contable_cuenta_dos">Cuenta contable dos<p-sortIcon field="amortizacion_contable_cuenta_dos" /></th>
+
+            <th pSortableColumn="amortizacion_fiscal_periodo">Periodo&nbsp;<p-sortIcon field="amortizacion_fiscal_periodo" /></th>
+            <th pSortableColumn="amortizacion_fiscal_tiempo_ejecucion">Tiempo de amortizaci&oacute;n&nbsp;<p-sortIcon field="amortizacion_fiscal_tiempo_ejecucion" /></th>
+            <th pSortableColumn="amortizacion_fiscal_cuenta">Cuenta contable&nbsp;<p-sortIcon field="amortizacion_fiscal_cuenta" /></th>
+            <th pSortableColumn="amortizacion_fiscal_cuenta_dos">Cuenta contable dos&nbsp;<p-sortIcon field="amortizacion_fiscal_cuenta_dos" /></th>
+          </tr>
+        </ng-template>
+        <ng-template #body let-acti>
+          <tr>
+            <td>
+              <div class="form-check radio_check">
+                <input class="form-check-input" type="checkbox" name="selectActFijo" [checked]="acti.act_diferido_selected" (click)="selectActivoDiferidoProrrateado($event.target,acti);">
+              </div>
+            </td>
+            <td>{{acti.folio_activo}}</td>
+            <td>{{acti.categoria}}</td>
+            <td>{{acti.categoria_cuenta_contable}}</td>
+            
+            <td>{{acti.amortizacion_contable_periodo}}</td>
+            <td>{{acti.amortizacion_contable_tiempo_ejecucion}}</td>
+            <td>{{acti.amortizacion_contable_cuenta}}</td>
+            <td>{{acti.amortizacion_contable_cuenta_dos}}</td>
+
+            <td>{{acti.amortizacion_fiscal_periodo}}</td>
+            <td>{{acti.amortizacion_fiscal_tiempo_ejecucion}}</td>
+            <td>{{acti.amortizacion_fiscal_cuenta}}</td>
+            <td>{{acti.amortizacion_fiscal_cuenta_dos}}</td>
+            
+            <td>{{acti.activo_observaciones}}</td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="14" class="text-center py-4">
+              <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+              <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                {{'no_rows' | translate}}
+              </p>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    }
+  }
+  
+  <div class="col-12 card-panel teal">
+    @if (arraySelectedProrrateos.length === 0) {
+      <p-table [value]="listaverticalProrrat" [paginator]="true" [rows]="10">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Gasto / Distribución Seleccionada</th>
+            <th>Configuración Opcional</th>
+            <th class="ultimo"></th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-select let-vIdx="rowIndex">
+          <tr>
+            <td>{{select.name}} (Monto: ${{select.cant_art_prorrateo}})</td>
+            <td>
+              <button type="button" class="btn btn-sm" [class.btn-success]="select.aplica_contable" [class.btn-secondary]="!select.aplica_contable" (click)="toggleGastoOpcional('contable', vIdx)">
+                {{ select.aplica_contable ? '✓ Contable Activo' : '✗ Contable Omitido' }}
+              </button>
+              &nbsp;
+              <button type="button" class="btn btn-sm" [class.btn-success]="select.aplica_fiscal" [class.btn-secondary]="!select.aplica_fiscal" (click)="toggleGastoOpcional('fiscal', vIdx)">
+                {{ select.aplica_fiscal ? '✓ Fiscal Activo' : '✗ Fiscal Omitido' }}
+              </button>
+            </td>
+            <td>
+              <a class="btn btn_extend text-bg-danger rounded-3" (click)="btnDeleteProrrateoVertical(select);">
+                <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+              </a>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    } @else {
+      <p-table [value]="arraySelectedProrrateos" class="tableProrrat" responsiveLayout="scroll">
+        <ng-template pTemplate="header">
+          <tr>
+            <th rowspan="2">articulo</th>
+            <th rowspan="2">tipo</th>
+            <th rowspan="2">precio unitario</th>
+            <th rowspan="2"><i class="fa-solid fa-boxes-stacked"></i>&nbsp;total de articulos</th>
+            <th rowspan="2" style="width: 100px;">&#x25;</th>
+            @for (selectHead of listaverticalProrrat; track $index) {
+              <th colspan="2" class="thProrrt" style="background-color: #353535!important; color: white!important; border-left: 1px solid white;">
+                <div class="col-12" style="display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem;">
+                  <span>Prt {{$index + 1}} - {{selectHead.name}}</span>
+                  <a class="btn btn-sm text-bg-danger p-1 m-0" (click)="btnDeleteProrrateoVertical(selectHead);">
+                    <i class="fa-solid fa-eraser"></i>
+                  </a>
+                </div>
+              </th>
+            }
+            <th rowspan="2">Prorrateo total</th>
+            <th rowspan="2">sumatoria</th>
+            <th rowspan="2" class="ultimo"></th>
+          </tr>
+          <tr>
+            @for (selectHead of listaverticalProrrat; track $index) {
+              <th>Gasto contable&nbsp;</th>
+              <!--<span class="badge" [class.text-bg-success]="selectHead.aplica_contable" [class.text-bg-secondary]="!selectHead.aplica_contable" style="cursor:pointer;position: relative;right: 0;" (click)="toggleGastoOpcional('contable', $index)">C</span>-->
+              <th>Gasto fiscal&nbsp;<span class="badge" [class.text-bg-success]="selectHead.aplica_fiscal" [class.text-bg-secondary]="!selectHead.aplica_fiscal" style="cursor:pointer;position: relative;right: 0;" (click)="toggleGastoOpcional('fiscal', $index)">F</span></th>
+            }
+          </tr>
+        </ng-template>
+    
+        <ng-template pTemplate="body" let-rowData let-i="rowIndex">
+          <tr>
+            <td>{{ rowData.name_art_prorrateo }}</td>
+            <td>{{ rowData.tipo_art_prorrateo }}</td>
+            <td class="td_importes">${{ rowData.costo_ajustado_format }}</td>
+            <td>{{ rowData['detalle'][0]['numero_articulos_prorratea'] }}</td>
+    
+            <td [ngClass]="arraySelectedProrrateos.length === 1 ? 'td_importes' : ''">
+              @if (arraySelectedProrrateos.length === 1) {
+                100%
+              } @else {
+                <input style="text-align: right!important;" type="number" [value]="rowData.trPorcentaje_juega" 
+                  (keyup)="percentProrrateo($event.target, i, rowData.token_art_detbuy_prorrateo)"
+                  (change)="percentProrrateo($event.target, i, rowData.token_art_detbuy_prorrateo)"/>
+              }
+            </td>
+            @for (select of rowData.detalle; track $index) {
+              <td class="second td_importes" [style.opacity]="listaverticalProrrat[$index]?.aplica_contable ? '1' : '0.4'">${{ select.result_porcentaje_contable_juega }}</td>
+              <td class="second td_importes" [style.opacity]="listaverticalProrrat[$index]?.aplica_fiscal ? '1' : '0.4'">
+                @if (listaverticalProrrat[$index]?.aplica_fiscal) {
+                  <input type="number" class="form-control form-control-sm p-1" [value]="select.result_porcentaje_fiscal_juega" (change)="gastoFiscalManual($event.target, select)"/>
+                } @else {
+                  ${{ select.result_porcentaje_fiscal_juega }}
+                }
+              </td>
+            }
+            <td class="td_importes">${{ rowData.trTotales }}</td>
+            <td class="td_importes" style="font-weight: bold;">
+              ${{ ( (parseNum(rowData.costo_ajustado) || 0) + (parseNum(rowData.trTotales) || 0) ).toFixed(decimales_monedaOrden) }}
+            </td>
+            <td>
+              <a class="btn btn_extend text-bg-danger rounded-3" style="width:100% !important" (click)="btnDeleteProrrateoHorizontal(i);">
+                <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+              </a>
+            </td>
+          </tr>
+        </ng-template>
+    
+        <ng-template pTemplate="footer">
+          <tr>
+            <td class="td_importes" colspan="4">Total:</td>
+            <td class="td_importes">{{ porcentajeTotal }}%</td>
+            @for (selectHead of listaverticalProrrat; track $index) {
+              <td class="second td_importes">${{selectHead.cant_art_prorrateo_contable}}</td>
+              <td class="second td_importes">${{selectHead.cant_art_prorrateo_fiscal}}</td>
+            }
+            <td class="second td_importes">${{ calculaTotalProrrateo.toFixed(decimales_monedaOrden) }}</td>
+            <td class="second td_importes">${{ prorrateoTotal.toFixed(decimales_monedaOrden) }}</td>
+            <td></td>
+          </tr>
+        </ng-template>
+      </p-table>
+    }
+  </div>
+  
+  <div class="col-12 row" style="display: flex; justify-content: end; padding-top: 0; padding-bottom: 0;">
+    <div style="width: max-content; padding: 0;">
+      <div class="btn-group lista_botones col" role="group">
+        <a class="btn btn_extend text-bg-success rounded-3" style="border-right: 2px white solid;"
+          [ngClass]="!boolCalcular ? 'disabled' : ''" (click)="boolCalcular && calcularProrrateoPorc();">
+          <i class="fa-solid fa-calculator"></i>&nbsp;Calcular
+        </a>
+        <a class="btn btn_extend text-bg-success rounded-3" style="border-right: 2px white solid;"
+          [ngClass]="!validaSaveProrrateo ? 'disabled' : ''" (click)="validaSaveProrrateo && btnGuardarProrrateoAffect();">
+          <i class="fa-solid fa-cart-plus"></i>&nbsp;{{'sav_cam' | translate}}
+        </a>
+      </div>
+    </div>
+  </div>
+}

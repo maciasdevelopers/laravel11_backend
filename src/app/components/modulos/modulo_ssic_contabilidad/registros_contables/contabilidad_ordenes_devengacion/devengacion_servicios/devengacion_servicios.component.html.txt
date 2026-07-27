@@ -1,0 +1,1795 @@
+// ... [Código previo de tu función, inicialización de $compras->save(), etc.] ...
+
+if ($insertCompra) {
+  $obtenCompra = $compras->id;
+
+  // --- 1. PRODUCTOS Y SERVICIOS DE LA EMPRESA (Tus consultas actuales) ---
+  $productos = DB::table("in_egr_catalogo_productos")
+    ->where(["admin_empresa" => $vEmp->id, "status" => true])
+    ->pluck("id", "token_cat_productos")->toArray();
+
+  $servicios = DB::table("in_egr_catalogo_servicios")
+    ->where(["administrador" => $vEmp->id, "status" => true])
+    ->pluck("id", "token_cat_servicios")->toArray();
+
+  $globales = DB::table('in_egr_catalogo_servicios')
+    ->whereIn('folio_sistema', ['999999998', '999999999'])
+    ->whereNull('administrador')
+    ->select('id', 'token_cat_servicios', 'folio_sistema')
+    ->get()
+    ->keyBy('token_cat_servicios');
+
+  // --- 2. DETECTAR CONTENIDO ANTES O DURANTE EL CICLO ---
+  $tieneProductos = false;
+  $tieneServicios = false;
+
+  foreach ($compra_conceptos as $vDet) {
+    $tokenArticulo = $vDet['articulo_homologado_token'];
+    
+    // Identificamos el tipo de artículo mediante el Token
+    if (isset($productos[$tokenArticulo])) {
+      $tieneProductos = true;
+    } elseif (isset($servicios[$tokenArticulo])) {
+      $tieneServicios = true;
+    } elseif (isset($globales[$tokenArticulo])) {
+      $global = $globales[$tokenArticulo];
+      // Folio 999999998 = Activo Fijo (Entra a almacén/inventario de activos)
+      // Folio 999999999 = Activo Diferido (Gasto que se devenga)
+      if ($global->folio_sistema == '999999998') {
+        $tieneProductos = true; 
+      } else {
+        $tieneServicios = true;
+      }
+    }
+  }
+
+  // --- 3. EJECUCIÓN DE LAS ÓRDENES CORRESPONDIENTES ---
+  
+  // Si la jerarquía es 'P' y hay productos listados, generamos Orden de Recepción
+  if ($vEmp->jerarquia_main == 'P' && $tieneProductos) {
+    $folioRecepcionOrden = DB::select("SELECT COALESCE(MAX(ord_rec.folio_recepcion) + 1, 1) AS folio FROM eegr_compras_orden_recepcion AS ord_rec JOIN main_empresas AS emp 
+      ON ord_rec.empresa = emp.id JOIN main_empresa_usuario AS empuser ON emp.id = empuser.empresa JOIN teci_usuarios_catalogo AS users ON empuser.usuario = users.id
+      WHERE emp.empresa_token = ? AND users.usuario_token = ?", [$empresa, $usuario]);
+
+    $orden_recept = new OrdenRecepcionModelo();
+    $orden_recept->uuid_orden_recepcion = Str::uuid()->toString();
+    $orden_recept->folio_recepcion = $folioRecepcionOrden[0]->folio;
+    $orden_recept->fecha_recepcion = $tentativa_recepcion_compra;
+    $orden_recept->proveedor = $idProveedor;
+    $orden_recept->orden_compra = $obtenCompra;
+    $orden_recept->almacen = $idRecepcionLugar;
+    $orden_recept->estado = 'pendiente';
+    $orden_recept->orden_bloqueada = !$classRecibeArtPago ? FALSE : TRUE;
+    $orden_recept->observaciones = "Generado automáticamente por artículos tipo Producto/Activo Fijo.";
+    $orden_recept->empresa = $vEmp->id;
+    $newOrderRecept = $orden_recept->save();
+    
+    if (!$newOrderRecept) {
+      throw new \Exception("Error al guardar orden de recepción de compra.");
+    }
+  }
+
+  // Si la jerarquía es 'P' y hay servicios listados, generamos Orden de Devengación
+  if ($vEmp->jerarquia_main == 'P' && $tieneServicios) {
+    $folioDevengacion = DB::select("SELECT COALESCE(MAX(ord_dev.folio_devengacion) + 1, 1) AS folio FROM eegr_compras_orden_devengacion AS ord_dev ... WHERE ... "); // Tu Query de folios para devengación
+
+    $orden_deveng = new OrdenDevengacionModelo(); // O el modelo que corresponda a tu tabla
+    $orden_deveng->uuid_orden_devengacion = Str::uuid()->toString();
+    $orden_deveng->folio_devengacion = $folioDevengacion[0]->folio;
+    $orden_deveng->fecha_emision = time();
+    $orden_deveng->orden_compra = $obtenCompra;
+    $orden_deveng->estado = 'pendiente';
+    $orden_deveng->observaciones = "Generado automáticamente por conceptos tipo Servicio/Activo Diferido.";
+    $orden_deveng->empresa = $vEmp->id;
+    $newOrderDeveng = $orden_deveng->save();
+
+    if (!$newOrderDeveng) {
+      throw new \Exception("Error al guardar orden de devengación de compra.");
+    }
+  }
+
+  // --- 4. CONTINUAR CON EL PROCESAMIENTO INDIVIDUAL (Tu foreach original para Kardex, Activos, etc.) ---
+  $contadorDetallecompra = 0;
+  foreach ($compra_conceptos as $vDet) {
+    // ... Aquí dejas exactamente tu lógica actual que registra el artículo, procesaKardex, etc. ...
+    
+    $contadorDetallecompra++;
+  }
+
+// ... [Resto de las validaciones de bitácora y respuestas JSON] ...
+
+  <p-accordion value="0">
+    <p-accordion-panel value="0">
+      <p-accordion-header>
+        <ng-template #toggleicon let-active="active"><i class="fa-solid" [ngClass]="active ? 'fa-sort-up' : 'fa-sort-down'" style="margin-right: 3px!important;"></i></ng-template>
+        <span class="flex items-center gap-2 w-full">Informaci&oacute;n del CFDI</span>
+      </p-accordion-header>
+      <p-accordion-content>
+        <div class="col-12 row">
+        </div>
+      </p-accordion-content>
+    </p-accordion-panel>
+    <p-accordion-panel value="1">
+      <p-accordion-header>
+        <ng-template #toggleicon let-active="active"><i class="fa-solid" [ngClass]="active ? 'fa-sort-up' : 'fa-sort-down'" style="margin-right: 3px!important;"></i></ng-template>
+        <span class="flex items-center gap-2 w-full">Compra a cr&eacute;dito</span>
+      </p-accordion-header>
+      <p-accordion-content>
+        <div class="col-12">
+        </div>
+      </p-accordion-content>
+    </p-accordion-panel>
+    <p-accordion-panel value="2">
+      <p-accordion-header>
+        <ng-template #toggleicon let-active="active"><i class="fa-solid" [ngClass]="active ? 'fa-sort-up' : 'fa-sort-down'" style="margin-right: 3px!important;"></i></ng-template>
+        <span class="flex items-center gap-2 w-full">¿El pago se realiza después o antes de recibir el producto o servicio?</span>
+      </p-accordion-header>
+      <p-accordion-content>
+        <div class="col-12">
+        </div>
+      </p-accordion-content>
+    </p-accordion-panel>
+    <p-accordion-panel value="3">
+      <p-accordion-header>
+        <ng-template #toggleicon let-active="active"><i class="fa-solid" [ngClass]="active ? 'fa-sort-up' : 'fa-sort-down'" style="margin-right: 3px!important;"></i></ng-template>
+        <span class="flex items-center gap-2 w-full">Punto de entrega o recepci&oacute;n</span>
+      </p-accordion-header>
+      <p-accordion-content>
+        <div class="col-12">
+        </div>
+      </p-accordion-content>
+    </p-accordion-panel>
+  </p-accordion>
+
+<div class="col-12 explain mb-3">
+  <h6 class="title">Partidas pendientes por verificar y recibir</h6>
+</div>
+
+<p-table [value]="arrayTodasLasPartidas" [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '65rem' }">
+  <ng-template #header>
+    <tr>
+      <th>Rubro</th>
+      <th>Folio</th>
+      <th>Concepto / Artículo</th>
+      <th>Cant.</th>
+      <th>Específicos de Recepción / Contabilidad</th>
+      <th>Evidencia / Ubicación</th>
+      <th class="ultimo"></th>
+    </tr>
+  </ng-template>
+
+  <ng-template #body let-partida>
+    <tr [ngClass]="{'bg-blue-50': partida.tipo_articulo === 'producto', 
+                    'bg-orange-50': partida.tipo_articulo === 'Activo fijo', 
+                    'bg-purple-50': partida.tipo_articulo === 'servicio' || partida.tipo_articulo === 'Activo diferido'}">
+      
+      <td>
+        <span class="badge" 
+          [ngClass]="{
+            'bg-blue-500 text-white': partida.tipo_articulo === 'producto',
+            'bg-orange-500 text-white': partida.tipo_articulo === 'Activo fijo',
+            'bg-purple-500 text-white': partida.tipo_articulo === 'servicio',
+            'bg-teal-500 text-white': partida.tipo_articulo === 'Activo diferido'
+          }">
+          {{ partida.tipo_articulo | uppercase }}
+        </span>
+      </td>
+
+      <td>{{ partida.folio_articulo || partida.folio_activod_unidad }}</td>
+      <td>
+        <strong>{{ partida.articulo }}</strong>
+        <small class="d-block text-muted" *ngIf="partida.tipo_articulo === 'Activo diferido'">
+          Amortización: {{partida.amort_contable_tiempo}} meses ({{partida.amort_contable_periodo}})
+        </small>
+      </td>
+      <td>{{ partida.cantidad || 'N/A' }}</td>
+
+      <td>
+        @switch (partida.tipo_articulo) {
+          
+          @case ('producto') {
+            <div class="flex flex-column gap-1">
+              <label class="small text-muted">Fecha Entrada Almacén:</label>
+              <input type="date" class="form-control form-control-sm" (change)="producto_fecha_recepcion($event.target, partida)">
+            </div>
+          }
+
+          @case ('Activo fijo') {
+            <div class="row g-1">
+              <div class="col-6">
+                <input type="text" class="form-control form-control-sm" placeholder="No. de Serie" (keyup)="keyupACTFFoliadoSerie($event.target, partida)">
+              </div>
+              <div class="col-6">
+                <input type="date" class="form-control form-control-sm" (change)="activo_fecha_contabilizacion($event.target, partida)">
+              </div>
+              <div class="col-12 mt-1 flex gap-2">
+                <label class="small"><input type="checkbox" [(ngModel)]="partida.lo_pedido"> ¿Es lo pedido?</label>
+                <label class="small"><input type="checkbox" [(ngModel)]="partida.buenEstado"> ¿Buen estado?</label>
+              </div>
+            </div>
+          }
+
+          @case ('servicio') {
+            <div class="flex flex-column gap-1">
+              <label class="small text-muted">Fecha de Devengación Fiscal:</label>
+              <input type="date" class="form-control form-control-sm" (change)="validaFechaDevengado($event.target, partida.token_activof_unidad, partida.token_detcompra)">
+            </div>
+          }
+
+          @case ('Activo diferido') {
+            <div class="flex flex-column gap-1">
+              <label class="small text-muted">Inicio de Amortización:</label>
+              <input type="date" class="form-control form-control-sm" [(ngModel)]="partida.amort_contable_fecha_apartir">
+            </div>
+          }
+        }
+        
+        <textarea class="form-control form-control-sm mt-1" rows="1" placeholder="Observaciones..." (keyup)="actualizarObservacionesGenericas($event.target, partida)"></textarea>
+      </td>
+
+      <td>
+        @if (partida.tipo_articulo === 'producto' || partida.tipo_articulo === 'Activo fijo') {
+          <p-select [options]="establecimientos_registrados" optionLabel="estab_folio" appendTo="body" [placeholder]="'Destino'" class="w-full" (onChange)="activo_establecimiento($event.value, partida)"></p-select>
+        }
+        
+        @if (partida.tipo_articulo === 'servicio' || partida.tipo_articulo === 'Activo diferido') {
+          <ngx-fi-le-drop dropZoneLabel="PDF/XML" (onFileDrop)="droppedDevenFiles($event, partida.token_activof_unidad)">
+            <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
+              <button class="btn btn-sm bg-indigo-600 text-white p-1" type="button" (click)="openFileSelector()"><i class="fa-solid fa-upload"></i></button>
+              <span class="small ms-1 text-muted">({{partida.archivos_cargados_files?.length || 0}})</span>
+            </ng-template>
+          </ngx-file-drop>
+        }
+      </td>
+
+      <td class="ultimo">
+        <a class="btn text-bg-success btn-sm rounded-3" (click)="guardarPartidaUnificada(partida)">
+          <i class="fa-solid fa-floppy-disk"></i>
+        </a>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+
+
+{
+    "total": 1,
+    "compras": [
+        {
+            "uuid_orden_recepcion": "b297729e-e503-4287-b0ec-f404285b03b3",
+            "token_compras": "VFRvZ1c4blYyNk5iUnJoWTZVajVtdz09OjoxMjM0NTY3ODEyMzQ1Njc4",
+            "persCompra": "Macias Hernandez Guadalupe Angel",
+            "recibeFactura": true,
+            "proveedor_token": "NnBCbXhFdWxsMlVQeEI4R3FxeTlhOVYvN2tQVUtwMVlwdEJhWXJNZ0IxTEMvNTBpTktNOUVhbE8yTFBGZTVJTzNtc0MrK1ZaYkFnYkhEaHdXMDczOFE9PTo6MTIzNDU2NzgxMjM0NTY3OA==",
+            "proveedor_folio": "PRV-000000040",
+            "proveedor_nombre": "TPN CONSULTORES",
+            "folio": "COMP-000000096",
+            "fecha_sistemaCompras": "19-05-2026 11:42:39",
+            "fecha_altaCompra": "06-01-2025 07:40:11",
+            "forma_pago": "03",
+            "metodo_pago": "PUE",
+            "productos": [],
+            "activos_fijos": [],
+            "servicios": [
+                {
+                    "token_articulo": "SlhQclZRclJhU0ZtYWVRbXZmVGNLQT09OjoxMjM0NTY3ODEyMzQ1Njc4",
+                    "recibido": false,
+                    "tipo_articulo": "servicio",
+                    "folio_articulo": "SERV-999999999",
+                    "token_detcompra": "bklTOWZzbVdiL25XeVJ2UVl0d0lqL0dTcWVJSFJVZTg3ZitGNVpuK0R3REhWc2E3cXZ1c1NCWURZcWR5SXBMZ01TSFMyZEJ2NytTVTJOYTFMSi81YjJlMlRWNlErR01pcDdUTFUvUDdoYXpINVo2bXhtMWlaL1d5UE51WDkyNlV4UC9YckxTQkZ4eWhmcDRoU01QY0pDcGZzSWord1QyMW50NkI2Sk9FSjZvU24ydmVuWlBVNm9icE5LR0ROdE5VYklUNTZQYjhRK0I3VnF4ZHVPL1hUYzNhYzNOVnVlVENnN1NlVHlYWE5KNy9VSndiWmc5UzBFZHhnRFRaK1BEWXNnOFdzZVR1SFdDWlNwbXZ0ZVNHSUYycTVOekZieWVKeUFOaU5tYWZwdHVBekdYTngwNjJaNnZGNVVVVFA4b2FkMXNRaThMdUxkdTc1dEdBKysxL0VnPT06OjEyMzQ1Njc4MTIzNDU2Nzg=",
+                    "articulo": "contratación de activo diferido",
+                    "cantidad": null,
+                    "boolRecibido": false,
+                    "fecha_devengado": "",
+                    "folio_devengado": "",
+                    "observaciones": "",
+                    "checked_recept": false,
+                    "validado_por": "",
+                    "archivos_cargados_names": [],
+                    "archivos_cargados_files": [],
+                    "seleccionado": false
+                }
+            ],
+            "activos_diferidos": [
+                {
+                    "token_activod_unidad": "f1b31e69-f8f9-4477-9d47-0b7708614884",
+                    "act_ivo_recep_fecha_contabilizacion": "",
+                    "token_articulo": "d5c85989-b004-4b8a-94bc-d7b44fb27d98",
+                    "recibido": false,
+                    "tipo_articulo": "Activo diferido",
+                    "folio_articulo": "ACTD-000000002",
+                    "folio_activod_unidad": "ACT-EI1-0007",
+                    "amort_contable_periodo": "Por mes",
+                    "amort_contable_tiempo": "12",
+                    "amort_contable_fecha_apartir": "06-01-2025",
+                    "amort_contable_observaciones": "Es un test",
+                    "amort_fiscal_periodo": "Por mes",
+                    "amort_fiscal_tiempo": "12",
+                    "amort_fiscal_fecha_apartir": "06-01-2025",
+                    "amort_fiscal_observaciones": "Es un test",
+                    "token_detcompra": "bklTOWZzbVdiL25XeVJ2UVl0d0lqL0dTcWVJSFJVZTg3ZitGNVpuK0R3REhWc2E3cXZ1c1NCWURZcWR5SXBMZ01TSFMyZEJ2NytTVTJOYTFMSi81YjJlMlRWNlErR01pcDdUTFUvUDdoYXpINVo2bXhtMWlaL1d5UE51WDkyNlV4UC9YckxTQkZ4eWhmcDRoU01QY0pDcGZzSWord1QyMW50NkI2Sk9FSjZvU24ydmVuWlBVNm9icE5LR0ROdE5VYklUNTZQYjhRK0I3VnF4ZHVPL1hUYzNhYzNOVnVlVENnN1NlVHlYWE5KNy9VSndiWmc5UzBFZHhnRFRaK1BEWXNnOFdzZVR1SFdDWlNwbXZ0ZVNHSUYycTVOekZieWVKeUFOaU5tYWZwdHVBekdYTngwNjJaNnZGNVVVVFA4b2FkMXNRaThMdUxkdTc1dEdBKysxL0VnPT06OjEyMzQ1Njc4MTIzNDU2Nzg=",
+                    "clasificacion": "---",
+                    "articulo": "RENTA MENSUAL SERVIDOR VIRTUAL PLUS",
+                    "cantidad": 1,
+                    "cantidad_background": "1",
+                    "unidad_medida": "No aplica",
+                    "fecha_recep": null,
+                    "folio_recep": null,
+                    "observaciones": null,
+                    "checked_recept": false,
+                    "establecimiento": "",
+                    "archivos_cargados_names": [],
+                    "archivos_cargados_files": [],
+                    "validado_por": null,
+                    "seleccionado": false
+                }
+            ],
+            "validaTimerFact": false,
+            "fechaTimerFact": null
+        }
+    ],
+    "code": 200,
+    "status": "success"
+}
+
+@for (detailprort of detalleProrrateo; track $index) {
+  <div class="col-12 explain">
+    <h6 class="title">fecha de registro:</h6>
+    <h6 class="content">{{detailprort.fecha_sistema_prorrateo}}</h6>
+  </div>
+  <div class="col-12 explain">
+    <h6 class="title">folio de compra:</h6>
+    <h6 class="content">{{detailprort.folio_compra}}</h6>
+  </div>
+  <div class="col-12 explain">
+    <h6 class="title">folio de prorrateo:</h6>
+    <h6 class="content">{{detailprort.folio_prorrateo}}</h6>
+  </div>
+  <p-divider />
+  <div class="col-12 explain">
+    <h6 class="title">Gastos por distribuir:</h6>
+  </div>
+
+  <div class="col-12 row" style="padding: 0!important;">
+    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+      <label class="activeInput">{{'fecha_cont' | translate}}</label>
+      <input id="fechaContabilizacionPago" name="fechaContabilizacionCompra" type="date" (change)="select_fecha_contabilizacion($event.target);">
+    </div>
+  
+    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+      <label for="prorrateables" class="activeInput">{{'mon_name' | translate}}</label>
+      <p-select [options]="catalogo_monedas_api" [(ngModel)]="prorrateo_moneda_opcion" name="prorrateo_moneda_opcion" id="selectedMonedaCode" optionLabel="_filtro_busqueda" [filter]="true"
+        filterBy="_filtro_busqueda" [showClear]="true" [placeholder]="'opt_select' | translate"
+        class="w-full md:w-56" (onChange)="keyupMonedaPagoSave($event.value);">
+        <ng-template #selectedItem let-selectedOption>
+          <div class="flex items-center gap-2">
+            <div>{{selectedOption.code+" "+selectedOption.langEN}}</div>
+          </div>
+        </ng-template>
+        <ng-template let-mon #item>
+          <div class="flex items-center gap-2">
+            <div>{{mon.code+" "+mon.langEN}}</div>
+          </div>
+        </ng-template>
+      </p-select>
+    </div>
+  </div>
+
+  <p-table #dt [value]="gastosADistribuir" dataKey="id" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]" [globalFilterFields]="['nombre']" style="padding: 0;">
+    <ng-template pTemplate="header">
+      <tr>
+        <th class="ultimo"></th>
+        <th pSortableColumn="articulo">articulo&nbsp;<p-sortIcon field="articulo" /></th>
+        <th pSortableColumn="documento_anterior">{{'doc_ant' | translate}}&nbsp;<p-sortIcon field="documento_anterior" /></th>
+        <th pSortableColumn="totalDetCompFormat">importe&nbsp;<p-sortIcon field="totalDetCompFormat" /></th>
+        <th>cantidad de prorrateo</th>
+        <th pSortableColumn="restaTtotal">resta&nbsp;<p-sortIcon field="restaTtotal" /></th>
+        <th class="ultimo"></th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-itemGasto let-position="rowIndex">
+      <tr [style]="itemGasto.viewPrort">
+        <td>
+          <a class="btn bg-blue-600" (click)="verHistorialProrrateo(itemGasto,detailprort.token_prorrateo);">
+            <i class="fa-solid fa-info"></i>
+          </a>
+        </td>
+        <td class="name">{{itemGasto.articulo}}</td>
+        <td class="name">{{itemGasto.documento_anterior}}</td>
+        <td class="td_importes">${{itemGasto.totalDetCompFormat}}</td>
+        <td>
+          <input type="number" class="cantProrrateo" [ngClass]="itemGasto.resta <= 0 ? 'disabled' : ''"
+            [attr.disabled]="itemGasto.resta <= 0 ? true : null" [attr.aria-disabled]="itemGasto.resta <= 0 ? true : null"
+            (keyup)="itemGasto.resta > 0 && cantProrrateo($event.target,itemGasto);">
+        </td>
+        <td class="td_importes">${{itemGasto.restaFormat}}</td>
+        <td>
+          <div class="form-check radio_check">
+            <input class="form-check-input" type="checkbox" name="GastoXDistribuirTkn" [checked]="itemGasto.selected" [ngClass]="!enableSelectGasto(itemGasto) ? 'disabled' : ''"
+              [attr.disabled]="!enableSelectGasto(itemGasto) ? true : null" [attr.aria-disabled]="!enableSelectGasto(itemGasto) ? true : null"
+              (click)="enableSelectGasto(itemGasto) && selectProrratea($event.target,itemGasto);">
+          </div>
+        </td>
+      </tr>
+      @if (itemGasto === prorrateoVerHistorial) {
+        <tr>
+          <td colspan="7">
+            <div class="col-12">
+              <p-table [value]="historialProrrateo" [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]">
+                <ng-template #header>
+                  <tr>
+                    <th pSortableColumn="articulo">articulo&nbsp;<p-sortIcon field="articulo"/></th>
+                    <th pSortableColumn="detalleCompra_cantidad">cantidad&nbsp;<p-sortIcon field="detalleCompra_cantidad"/></th>
+                    <th pSortableColumn="totalDetCompFormat">importe de compra&nbsp;<p-sortIcon field="totalDetCompFormat"/></th>
+                    <th pSortableColumn="histPrort_cantidad">importe de prorrateo&nbsp;<p-sortIcon field="histPrort_cantidad"/></th>
+                    <th pSortableColumn="histPrort_incremento">incremento&nbsp;<p-sortIcon field="histPrort_incremento"/></th>
+                    <th class="ultimo"></th>
+                  </tr>
+                </ng-template>
+                <ng-template #body let-hist>
+                  <tr>
+                    <td class="noneView">{{hist.c_token}}</td>
+                    <td>{{hist.articulo}}</td>
+                    <td>{{hist.detalleCompra_cantidad}}</td>
+                    <td>{{hist.totalDetCompFormat}}</td>
+                    <td>${{hist.histPrort_cantidad}}</td>
+                    <td>{{hist.histPrort_incremento}}</td>
+                    <td>
+                      <a class="btn btn_extend text-bg-danger rounded-3" (click)="deleteHistorialProrrateo(tokenProrrateoCompra,hist.token_detalle_prorrt,hist.token_rel_prort,hist.token_detcompra);">
+                        <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                      </a>
+                    </td>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                  <tr>
+                    <td colspan="6" class="text-center py-4">
+                      <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                      <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                        {{'no_rows' | translate}}
+                      </p>
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
+          </td>
+        </tr>
+      }
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="7" class="text-center py-4">
+          <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+          <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+            {{'no_rows' | translate}}
+          </p>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+  
+  <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+    <label for="prorrateables" class="activeInput">Aplicar a:</label>
+    <p-select [options]="listaOpcion" id="prorrateables" name="prorrateables" optionLabel="valor" [filter]="true" filterBy="valor" optionValue="clave" 
+      appendTo="body" [showClear]="true" [placeholder]="'opt_select' | translate" class="w-full md:w-56" (onChange)="prorrateoAplicarA($event.value);">
+      <ng-template #selectedItem let-selectedOption>
+        <div class="flex items-center gap-2">
+          <div>{{selectedOption.valor}}</div>
+        </div>
+      </ng-template>
+      <ng-template let-dep #item>
+        <div class="flex items-center gap-2">
+          <div>{{dep.valor}}</div>
+        </div>
+      </ng-template>
+    </p-select>
+  </div>
+  @switch (opcionProrrateoSelect) {
+    @case ('mercancias') {
+      <p-table [value]="arrayMercancias" [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]">
+        <ng-template #header>
+          <tr>
+            <th class="ultimo"></th>
+            <th pSortableColumn="producto">producto&nbsp;<p-sortIcon field="producto" /></th>
+            <th pSortableColumn="documento_anterior_compra">{{'doc_ant' | translate}}&nbsp;<p-sortIcon field="documento_anterior_compra" /></th>
+            <th pSortableColumn="cantidad">cantidad&nbsp;<p-sortIcon field="cantidad" /></th>
+            <th pSortableColumn="costo_ajustado">precio unitario&nbsp;<p-sortIcon field="costo_ajustado" /></th>
+            <th pSortableColumn="totalDetCompFormat">importe&nbsp;<p-sortIcon field="totalDetCompFormat" /></th>
+          </tr>
+        </ng-template>
+        <ng-template #body let-prtMerc let-i="rowIndex">
+          <tr>
+            <td>
+              <div class="form-check radio_check">
+                <input class="form-check-input" type="checkbox" name="selectMerc" [checked]="prtMerc.merc_selected" [ngClass]="listaverticalProrrat.length == 0 ? 'disabled' : ''"
+                  [attr.disabled]="listaverticalProrrat.length == 0 ? true : null" [attr.aria-disabled]="listaverticalProrrat.length == 0 ? true : null" (click)="selectMercanciaProrrateada($event.target,prtMerc);">
+              </div>
+            </td>
+            <td class="name">{{prtMerc.producto}}</td>
+            <td class="name">{{prtMerc.documento_anterior_compra}}</td>
+            <td>{{prtMerc.cantidad}}</td>
+            <td class="td_importes">${{prtMerc.costo_ajustado_format}}</td>
+            <td class="td_importes">{{prtMerc.totalDetCompFormat}}</td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="6" class="text-center py-4">
+              <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+              <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                {{'no_rows' | translate}}
+              </p>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    }
+    @case ('actFijos') {
+      <p-table [value]="arrayActivosFijos" [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }"
+        [rowsPerPageOptions]="[10,20,30,50,100]">
+        <ng-template #header>
+          <tr>
+            <th class="ultimo"></th>
+            <th pSortableColumn="folio_activof_unidad">activo&nbsp;<p-sortIcon field="folio_activof_unidad" /></th>
+            <th pSortableColumn="documento_anterior_compra">{{'doc_ant' | translate}}&nbsp;<p-sortIcon field="documento_anterior_compra" /></th>
+            <th pSortableColumn="servicio">servicio&nbsp;<p-sortIcon field="servicio" /></th>
+            <th pSortableColumn="cantidad">cantidad&nbsp;<p-sortIcon field="cantidad" /></th>
+            <th pSortableColumn="costo_ajustado">importe final ajustado&nbsp;<p-sortIcon field="costo_ajustado" /></th>
+          </tr>
+        </ng-template>
+        <ng-template #body let-actfList let-i="rowIndex">
+          <tr>
+            <td>
+              <div class="form-check radio_check">
+                <input class="form-check-input" type="checkbox" name="selectActFijo" [checked]="actfList.act_fijo_selected" (click)="selectActivoFijoProrrateado($event.target,actfList);">
+              </div>
+            </td>
+            <td class="name"><strong>{{actfList.folio_activof_unidad}}</strong> {{actfList.activo}}</td>
+            <td class="name">{{actfList.documento_anterior_compra}}</td>
+            <td class="name">{{actfList.servicio}}</td>
+            <td>{{actfList.cantidad}}</td>
+            <td class="td_importes">${{actfList.costo_ajustado_format+" "+actfList.moneda}}</td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="6" class="text-center py-4">
+              <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+              <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                {{'no_rows' | translate}}
+              </p>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    }
+    @default {
+      <p>{{'opt_select' | translate}}</p>
+    }
+  }
+  
+  <div class="col-12 card-panel teal">
+    @if (arraySelectedProrrateos.length == 0) {
+      <p-table #dt [value]="listaverticalProrrat" datakey="id" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]" [globalFilterFields]="['nombre']">
+        <ng-template pTemplate="header">
+          <tr>
+            <th pSortableColumn="name">prorrateo&nbsp;<p-sortIcon field="name" /></th>
+            <th class="ultimo"></th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-select>
+          <tr>
+            <td>{{select.name}}</td>
+            <td>
+              <a class="btn btn_extend text-bg-danger rounded-3" (click)="btnDeleteProrrateoVertical(select);">
+                <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+              </a>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="2" class="text-center py-4">
+              <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+              <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                {{'no_rows' | translate}}
+              </p>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    } @else {
+      <p-table [value]="arraySelectedProrrateos" class="tableProrrat" responsiveLayout="scroll">
+        <!-- CABECERA -->
+        <ng-template pTemplate="header">
+          <tr>
+            <th rowspan="2">articulo</th>
+            <th rowspan="2">tipo</th>
+            <th rowspan="2">precio unitario</th>
+            <th rowspan="2"><i class="fa-solid fa-boxes-stacked"></i>&nbsp;total de articulos</th>
+            <th rowspan="2" style="width: 100px;">&#x25;</th>
+            <!-- Columnas dinámicas -->
+            @for (selectHead of listaverticalProrrat; track $index) {
+              <th colspan="2" class="thProrrt" [style]="listaverticalProrrat.length > 1 ? 'background-color: #353535!important;color: white!important;border-left: 1px solid white;' : 'background-color: #353535!important;color: white!important;'">
+                <div class="col-12" style="display: flex;justify-content: end;align-items: center;">
+                  {{'Prt ' + ($index + 1) + ' ' + selectHead.name}}&nbsp;
+                  <a class="btn btn_extend text-bg-danger rounded-3" (click)="btnDeleteProrrateoVertical(selectHead);">
+                    <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                  </a>
+                </div>
+              </th>
+            }
+            <th rowspan="2">Prorrateo total</th>
+            <th rowspan="2">sumatoria</th>
+            <th rowspan="2" class="ultimo"></th>
+          </tr>
+          <tr>
+            @for (selectHead of listaverticalProrrat; track $index) {
+              <th pResizableColumn pSortableColumn="proveedor_folio">Gasto contable<p-sortIcon field="proveedor_nombre" /></th>
+              <th pResizableColumn pSortableColumn="proveedor_nombre">Gasto fiscal&nbsp;<p-sortIcon field="proveedor_nombre" /></th>
+            }
+          </tr>
+        </ng-template>
+    
+        <!-- CUERPO -->
+        <ng-template pTemplate="body" let-rowData let-i="rowIndex">
+          <tr>
+            <td>{{ rowData.name_art_prorrateo }}</td>
+            <td>{{ rowData.tipo_art_prorrateo }}</td>
+            <td class="td_importes">${{ rowData.costo_ajustado_format }}</td>
+            <td>{{ rowData['detalle'][0]['numero_articulos_prorratea'] }}</td>
+    
+            <!-- Porcentaje editable -->
+            <td [ngClass]="arraySelectedProrrateos.length === 1 ? 'td_importes' : ''">
+              @if (arraySelectedProrrateos.length === 1) {
+                100%
+              } @else{
+                <input style="text-align: right!important;" type="text" [placeholder]="rowData.trPorcentaje_juega || null" 
+                  onkeypress="if(this.value.length > 4) return false;" (keyup)="percentProrrateo($event.target, i, rowData.token_art_detbuy_prorrateo)"/>
+              }
+            </td>
+            <!-- Columnas prorrateo dinámicas -->
+            @for (select of rowData.detalle; track $index) {
+              <td class="second td_importes">${{ select.result_porcentaje_contable_juega }}</td>
+              <td class="second td_importes">${{ select.result_porcentaje_fiscal_juega }}</td>
+            }
+            <td class="td_importes">${{ rowData.trTotales }}</td>
+            <td class="td_importes" style="font-weight: bold;">
+              ${{ ( (rowData['detalle'][0]['costo_ajustado'] * 1) + (rowData.trTotales * 1) ).toFixed(decimales_monedaOrden)}}
+            </td>
+            <td>
+              <a class="btn btn_extend text-bg-danger rounded-3" style="width:100% !important" (click)="btnDeleteProrrateoHorizontal(i);">
+                <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+              </a>
+            </td>
+          </tr>
+        </ng-template>
+    
+        <!-- FILA DE TOTALES -->
+        <ng-template pTemplate="footer" style="display: contents!important;">
+          <tr>
+            <td class="td_importes" colspan="4">Total:</td>
+            <td class="td_importes">{{ porcentajeTotal }}%</td>
+            @for (selectHead of listaverticalProrrat; track $index) {
+              <td class="second td_importes">${{selectHead.cant_art_prorrateo}}</td>
+              <td class="second td_importes">${{selectHead.cant_art_prorrateo}}</td>
+            }
+            <td class="second td_importes">${{(calculaTotalProrrateo).toFixed(decimales_monedaOrden)}}</td>
+            <td class="second td_importes">${{(prorrateoTotal).toFixed(decimales_monedaOrden)}}</td>
+            <td></td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="5" class="text-center py-4">
+              <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+              <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                {{'no_rows' | translate}}
+              </p>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    }
+  </div>
+  
+  <div class="col-12 row" style="display: flex;justify-content: end;padding-top: 0;padding-bottom: 0;">
+    <div style="width: max-content;padding: 0;">
+      <div class="btn-group lista_botones col" role="group" aria-label="Basic example">
+        <a class="btn btn_extend text-bg-success rounded-3" style="border-right: 2px white solid;"
+          [ngClass]="!boolCalcular ? 'disabled' : ''" [attr.disabled]="!boolCalcular ? true : null"
+          [attr.aria-disabled]="!boolCalcular ? true : null" (click)="boolCalcular && calcularProrrateoPorc();">
+          <i class="fa-solid fa-calculator"></i>&nbsp;Calcular
+        </a>
+        <a class="btn btn_extend text-bg-success rounded-3" style="border-right: 2px white solid;"
+          [ngClass]="!validaSaveProrrateo ? 'disabled' : ''" [attr.disabled]="!validaSaveProrrateo ? true : null"
+          [attr.aria-disabled]="!validaSaveProrrateo ? true : null"
+          (click)="validaSaveProrrateo && btnGuardarProrrateoAffect();">
+          <i class="fa-solid fa-cart-plus"></i>&nbsp;{{'sav_cam' | translate}}
+        </a>
+      </div>
+    </div>
+  </div>
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import { Component,OnInit, ElementRef, Renderer2, ViewChild, Input, ChangeDetectorRef } from '@angular/core';
+import { ComprasServService } from '../../../../../../../servicios/ssic/compras-serv.service';
+import { ProductosService } from '../../../../../../../servicios/ssic/productos.service';
+import { ActFijosService } from '../../../../../../../servicios/ssic/act-fijos.service';
+import { ActIntangiblesService } from '../../../../../../../servicios/ssic/act-intangibles.service';
+import { ValidatorServService } from '../../../../../../../servicios/validator-serv.service';
+import { MonedasService } from '../../../../../../../servicios/monedas.service';
+import { TranslateService } from '@ngx-translate/core';
+import { prorrateoModelo } from '../../../../../../../modelos/prorrateoModelo';
+import numeral from 'numeral';
+
+import Swal from 'sweetalert2';
+import { ComunicacionInternaService } from '../../../../../../../servicios/comunicacion-interna.service';
+@Component({
+  selector: 'app_egresos_compras_prorrateos_info',
+  templateUrl: './compras_prorrateos_info.component.html',
+  standalone:false,
+  styleUrls: [
+    '../../../../../../../styles/listas_ps.css',
+    '../../../../../../../styles/datatable.css',
+    '../../../../../../../styles/dropdown.css',
+    '../../../../../../../styles/tabs.css',
+    '../../../../../../../styles/input_group.css',
+    '../../../../../../../styles/file_input.css',
+    '../../../../../../../styles/buttons.css',
+    '../../../../../../../styles/modals.css',
+    '../../../../../../../styles/cabecera.css',
+    '../../../../../../../styles/cards.css',
+    '../../../../../../../styles/clientes.css',
+    '../../../../../../../styles/collapsible.css',
+    '../../../../../../../styles/row.css',
+    '../../../../../../../styles/encabezados.css',
+    '../../../../../../../styles/buscador.css',
+    '../../../../../../../styles/radioButtons.css',
+    '../../../../../../../styles/paginador.css',
+    '../../../../../../../styles/landing.css',
+    '../../../../../../../styles/explain.css',
+    '../../../../../../../styles/switches.css',
+    '../../../../../../../styles/colores.css',
+    '../../../../../../../styles/diseños_contables.css',
+    '../../../../egresos.css',
+    './compras_prorrateos_info.component.css'
+  ],
+  //providers: [RequisicionesService,ServClientesService]
+})
+
+export class ComprasProrrateosInfoComponent implements OnInit {
+  //prorrateoModelo import { acreedoresModelo } from '../../../../../../modelos/acreedoresModelo';
+  public prorratModelo: prorrateoModelo;
+  public tokenProrrateoCompra:string = '';
+  public porcentajeTotal:string = '100.00';
+  public prorrateoTotal:number = 0;
+  public boolCalcular:boolean = false;
+
+  //booleans
+  //arrays
+    detalleProrrateo:any = [];
+    gastosADistribuir:any = [];
+
+    prorrateoVerHistorial:any;
+    historialProrrateo:any = [];
+
+    listaOpcion:any = [
+      {clave:"mercancias", valor:"Mercancias"},
+      {clave:"actFijos", valor: "Activos fijos"},
+      {clave:"actDiferidos", valor: "Activos Diferidos"}
+    ];
+    public opcionProrrateoSelect: string = '';
+
+    arrayMercancias:any = [];
+    arrayActivosFijos:any = [];
+    arraySelectedProrrateos:any = [];
+
+    listaverticalProrrat:any = [];
+    public prorrateo_fecha_contabilizacion: string = "";
+    //monedas
+    catalogo_monedas_api: any = [];
+    prorrateo_moneda_opcion = null;
+    public moneda_monedaOrden:string = '';
+    public decimales_monedaOrden:number = 0;
+    public prorrateo_moneda_code: string = "";
+    public prorrateo_moneda_decimales: number = 0;
+
+  constructor(
+    private validator:ValidatorServService,
+    private _comprServ: ComprasServService,
+    private prodServ:ProductosService,
+    private actFijosServ:ActFijosService,
+    private servicioMonedas: MonedasService,
+    private translate:TranslateService,
+    private relInterna:ComunicacionInternaService,
+    private cd: ChangeDetectorRef,
+    private actIntanServ:ActIntangiblesService) {
+    this.prorratModelo = new prorrateoModelo("",0,"",0,0,"","","","","","","","",0);
+  }
+
+  @Input() set tokenProrrateo(value: string) {
+    if (value) {
+      this.tokenProrrateoCompra = value;
+      this.verfInfoProrrateo();
+    }
+  }
+
+  ngOnInit(): void {
+    this.monedas_lista();
+    this.monedaEmpresa();
+  }
+
+  monedas_lista() {
+    this.servicioMonedas.getApiMonedasCatalogo().subscribe(
+      response => {
+        if (response.status == 'success') {
+          this.catalogo_monedas_api = response.monedas;
+          console.log(this.catalogo_monedas_api);
+        }
+      }
+    )
+  }
+
+  monedaEmpresa(){
+    this.servicioMonedas.monedaEmpresa().subscribe(
+      response => {
+        console.log(response);
+        if (response.status == 'success') {
+          this.moneda_monedaOrden = response.moneda;
+          this.decimales_monedaOrden = response.decimales;
+        }
+      },
+      error => {
+        console.log(error);
+      }
+    );
+  }
+
+  verfInfoProrrateo(){
+    this._comprServ.detailProrrateos(this.tokenProrrateoCompra).subscribe(
+      response => {
+        if (response.status == 'success') {
+          console.log("pror");
+          this.detalleProrrateo = response.datosProrrateo;
+          response.datosProrrateo.forEach((prt:any) => {
+            this.gastosADistribuir = prt.detcompra;
+          });
+          console.log(this.detalleProrrateo);
+        }
+      },
+      error => {
+        console.log(error);
+      }
+    );
+  }
+
+  prodMercanciasProcessBuyFaceProrrateos(){
+    this.prodServ.prodMercanciasProcessBuyFaceProrrateos(0).subscribe(
+      response => {
+        console.log(response);
+        if (response.status == 'success') {
+          this.arrayMercancias = response.listado;
+        }
+      },
+      error => {
+        console.log(error);
+      }
+    );
+  }
+
+  activoscomprasFijosGet(){
+    this.actFijosServ.activoscomprasFijosGet(0).subscribe(
+      response => {
+        console.log(response);
+        if (response.status == 'success') {
+          this.arrayActivosFijos = response.datosActivo;
+        }
+      },
+      error => {
+        console.log(error);
+      }
+    );
+  }
+
+  select_fecha_contabilizacion(event: any): void {
+    const validacion = event.value != "" && this.validator.filtroFecha(event.value);
+    this.prorrateo_fecha_contabilizacion = validacion ? event.value : '';
+    validacion ? this.validator.correctoInputRow(event) : this.validator.errorInputRow(event);
+    console.log(this.prorrateo_fecha_contabilizacion);
+  }
+
+  keyupMonedaPagoSave(opcion: any) {
+    console.log(opcion._filtro_busqueda);
+    var selectedMonedaCode = document.getElementById("selectedMonedaCode");
+    const mnd = this.catalogo_monedas_api.find((row: any) => row._filtro_busqueda === opcion._filtro_busqueda);
+    this.prorrateo_moneda_code = typeof mnd !== 'undefined' ? mnd.code : '';
+    this.prorrateo_moneda_decimales = typeof mnd !== 'undefined' ? mnd.decimales : '';
+    //this.pay_order_tipo_cambio = typeof mnd !== 'undefined' && mnd.code == "MXN" ? 1.00 : 0;
+    typeof mnd !== 'undefined' ? this.validator.correctoSelectBrowser(selectedMonedaCode) : this.validator.errorSelectBrowser(selectedMonedaCode);
+  }
+
+  //prorrateos
+    verHistorialProrrateo(itemGasto:any,token_prorrateo:any) {
+      this.prorrateoVerHistorial = this.prorrateoVerHistorial === itemGasto ? null : itemGasto;
+      this.prorrateoVerHistorial === itemGasto ? this.descargarHistorialProrrateo(token_prorrateo,itemGasto) : null;
+    }
+
+    descargarHistorialProrrateo(token_prorrateo:any,itemGasto:any){
+      this._comprServ.historialegresosprorrateos(token_prorrateo,itemGasto.token_detalle_prorrt).subscribe(
+        response => {
+          if (response.status == 'success') {
+            this.historialProrrateo = response.datosProrrateo;
+            console.log(this.historialProrrateo);
+          }
+        },
+        error => {
+          console.log(error);
+        }
+      )
+    }
+
+    deleteHistorialProrrateo(token_prorrateo:any,token_detalle_prorrt:any,token_rel_prort:any,token_detcompra:any){
+      this._comprServ.deletehistorialegresosprorrateos(token_prorrateo,token_detalle_prorrt,token_rel_prort,token_detcompra).subscribe(
+        response => {
+          let translate_response = this.translate.instant(response.message);
+          if (response.status == 'success') {
+            Swal.fire({
+              position:'center',
+              icon: 'success',
+              title: translate_response,
+              showConfirmButton:false,
+              timer: 3000
+            })
+            location.reload();
+          }
+          if (response.status == 'error') {
+            Swal.fire({
+              position:'top-end',
+              icon: 'warning',
+              title: translate_response,
+              showConfirmButton:false,
+              timer: 3000
+            })
+          }
+        },
+        error => {
+          console.log(error);
+        }
+      )
+    }
+
+    cantProrrateo(event:any,itemGasto:any){
+      console.log(itemGasto)
+      const validacion = event.value != '' && this.validator.filtroCosto(event.value) && event.value <= itemGasto.resta;
+      itemGasto.cant_art_prorrateo = validacion ? event.value : '';
+      if (validacion) {
+        this.validator.correctoInputRow(event);
+      } else {
+        this.validator.errorInputRow(event);
+      }
+      console.log(itemGasto)
+    }
+
+    enableSelectGasto(itemGasto:any):Boolean{
+      return itemGasto.resta > 0 && itemGasto.cant_art_prorrateo != '';
+    }
+
+    selectProrratea(event:any,itemGasto:any){
+      const montoConfirmado = parseFloat(itemGasto.cant_art_prorrateo);
+      const validacion = itemGasto.token_detalle_prorrt != '' && itemGasto.cant_art_prorrateo > 0 && this.validator.filtroCosto(itemGasto.cant_art_prorrateo);
+      if (event.checked && validacion) {
+        itemGasto.selected = true;
+        const saldoAnterior = parseFloat(itemGasto.resta);
+        const nuevoSaldo = saldoAnterior - montoConfirmado;
+        itemGasto.resta = nuevoSaldo;
+        itemGasto.restaFormat = nuevoSaldo.toFixed(this.decimales_monedaOrden);
+
+        this.listaverticalProrrat.push({
+          "name":itemGasto.articulo,
+          "token_detalle_prorrt":itemGasto.token_detalle_prorrt,
+          "token_prorrateo":this.tokenProrrateoCompra,
+          "cant_art_prorrateo": montoConfirmado.toFixed(this.decimales_monedaOrden),
+          "total_prorrateo":0,
+        });
+        
+        if (parseFloat(itemGasto.restaTtotal) <= 0) {
+          itemGasto.viewPrort = 'pointer-events: none;opacity: 0.6;';
+        }
+      } else {
+        const itemEliminar = this.listaverticalProrrat.findIndex((rowVert:any) => rowVert.token_detalle_prorrt === itemGasto.token_detalle_prorrt);
+        this.listaverticalProrrat.splice(itemEliminar,1);
+        itemGasto.viewPrort = '';
+        itemGasto.selected = false;
+        itemGasto.resta = itemGasto.total;
+        itemGasto.restaFormat = itemGasto.totalDetCompFormat;
+      }
+    }
+
+    prorrateoAplicarA(clave:any){
+      var prorrateables = document.getElementById("prorrateables");
+      let option = this.listaOpcion.find((row:any) => clave != ''&& row.clave === clave);
+      const validacion = clave != "" && this.validator.filtroAlfaNumerico(clave) && typeof option !== 'undefined';
+      this.opcionProrrateoSelect = validacion ? option.clave : '';
+      validacion ? this.validator.correctoSelectBrowser(prorrateables) : this.validator.errorSelectBrowser(prorrateables);
+      if (validacion) {
+        switch (clave) {
+          case 'mercancias':
+            if (this.arrayMercancias.length === 0) this.prodMercanciasProcessBuyFaceProrrateos();
+            break;
+          case 'actFijos':
+            if (this.arrayActivosFijos.length === 0) this.activoscomprasFijosGet();
+            break;
+          default:
+            break;
+        }
+      }
+    }
+    
+    extraeDetalleInterior(prtMerc:any,gastos:any){//,tipo_art_prorrateo:string
+      return gastos.map((gasto:any) => ({
+        //"tipo_art_prorrateo": tipo_art_prorrateo,
+        "costo_ajustado":prtMerc.costo_ajustado,
+        "totalDetCompFormat":prtMerc.totalDetCompFormat || prtMerc.costo_ajustado_format,
+        "numero_articulos_prorratea":prtMerc.cantidad,
+        "cant_art_prorrateo":gasto.cant_art_prorrateo,
+        "porcentaje_juega":parseFloat('0').toFixed(this.decimales_monedaOrden),
+        "result_porcentaje_contable_juega":parseFloat('0').toFixed(this.decimales_monedaOrden),
+        "result_porcentaje_fiscal_juega":parseFloat('0').toFixed(this.decimales_monedaOrden),
+        "total_prorrateo": prtMerc.totalProrrateo,
+        "desv_art_prorrateo": prtMerc.desvioProrrateo,
+        //tokens
+        "token_prorrateo":gasto.token_prorrateo,
+        "token_detalle_prorrt":gasto.token_detalle_prorrt,
+        "token_art_detbuy_prorrateo": prtMerc.token_detcompra,
+        "total_detalle":prtMerc.costo_ajustado,
+        "totalCompra":prtMerc.totalCompra,
+      }));
+    }
+
+    recorreSelectedProrrateos(){
+      this.arraySelectedProrrateos.forEach((prtSel:any,index:any) => {
+        prtSel.trColor = index % 2 === 0 ? "trSecond trColorUno" : "trSecond trColorDos";
+  
+        if (this.arraySelectedProrrateos.length == 1) {
+          prtSel.trPorcentaje_juega = parseFloat('100').toFixed(this.decimales_monedaOrden);
+          prtSel.detalle.forEach((selDet:any) => {
+            selDet.porcentaje_juega = parseFloat('100').toFixed(this.decimales_monedaOrden);
+          });
+        } else {
+          prtSel.trPorcentaje_juega = parseFloat('0').toFixed(this.decimales_monedaOrden);
+          this.porcentajeTotal = parseFloat('0').toFixed(this.decimales_monedaOrden);
+          prtSel.detalle.forEach((selDet:any) => {
+            selDet.porcentaje_juega = parseFloat('0').toFixed(this.decimales_monedaOrden);
+            selDet.total_prorrateo = parseFloat('0').toFixed(this.decimales_monedaOrden);
+            selDet.desv_art_prorrateo = parseFloat('0').toFixed(this.decimales_monedaOrden);
+          });
+        }
+      });
+    }
+
+    calcularProrrateoPorc(){
+      var sumatoria_total_prorrat:number = 0;
+      this.listaverticalProrrat.forEach((gasto:any) => gasto.total_prorrateo = 0);
+
+      this.arraySelectedProrrateos.forEach((prtSel:any) => {
+        let acumuladoTrTotales:number = 0;
+        const total_precio_unitario = parseFloat(prtSel.costo_ajustado) || 0;
+        prtSel.detalle.forEach((detSelectos:any,index:any) => {
+          var total_detalle:any = parseFloat(detSelectos.total_detalle) || 0;
+          var totalCompra:any = parseFloat(detSelectos.totalCompra) || 1;
+          var porcentaje:any = (parseFloat(detSelectos.porcentaje_juega) || 0) / 100;
+  
+          var resultCantProrrateo = (parseFloat(detSelectos.cant_art_prorrateo) || 0) * porcentaje;
+          detSelectos.result_porcentaje_contable_juega = resultCantProrrateo.toFixed(this.decimales_monedaOrden);
+          detSelectos.result_porcentaje_fiscal_juega = resultCantProrrateo.toFixed(this.decimales_monedaOrden);
+          var prorrateoUno = resultCantProrrateo * (total_detalle / totalCompra);
+          var prorrateoDos = prorrateoUno / (parseFloat(detSelectos.numero_articulos_prorratea) || 1);
+          
+          detSelectos.total_prorrateo = prorrateoUno.toFixed(this.decimales_monedaOrden);
+
+          if (prtSel.tipo_art_prorrateo == 'mercancia') {
+            acumuladoTrTotales += prorrateoDos;
+            detSelectos.desv_art_prorrateo = prorrateoDos.toFixed(this.decimales_monedaOrden);
+            this.listaverticalProrrat[index]['total_prorrateo'] += prorrateoDos;
+          } else {
+            detSelectos.desv_art_prorrateo = 'NA';
+            acumuladoTrTotales += resultCantProrrateo;
+            this.listaverticalProrrat[index]['total_prorrateo'] += resultCantProrrateo;
+          }
+        });
+        console.log(total_precio_unitario);
+
+        sumatoria_total_prorrat += (total_precio_unitario + acumuladoTrTotales);
+        prtSel.trTotales = acumuladoTrTotales.toFixed(this.decimales_monedaOrden);
+      });
+      console.log(sumatoria_total_prorrat);
+      
+      this.listaverticalProrrat.forEach((gasto: any) => {
+        // Convertimos la suma numérica final al formato de moneda de la empresa
+        gasto.total_prorrateo = gasto.total_prorrateo.toFixed(this.decimales_monedaOrden);
+      });
+
+      this.prorrateoTotal = sumatoria_total_prorrat;
+      console.log(this.arraySelectedProrrateos);
+      console.log(this.listaverticalProrrat);
+    }
+
+    get calculaTotalProrrateo(){
+      let sum_total_prorrateo:number = 0;
+      this.listaverticalProrrat.forEach((pro:any) => {
+        sum_total_prorrateo += parseFloat(pro.total_prorrateo);
+      });
+      console.log(sum_total_prorrateo);
+      return sum_total_prorrateo;
+    }
+
+    selectMercanciaProrrateada(event:any,prtMerc:any){
+      this.boolCalcular = false;
+      if (event.checked) {
+        prtMerc.merc_selected = true;
+        this.arraySelectedProrrateos.push({
+          "tipo_art_prorrateo": 'mercancia',
+          "name_art_prorrateo": prtMerc.producto,
+          "token_art_detbuy_prorrateo": prtMerc.token_detcompra,
+          "token_art_prorrateo": prtMerc.token_cat_productos,
+          "trColor":"",
+          "costo_ajustado":prtMerc.costo_ajustado,
+          "costo_ajustado_format":prtMerc.costo_ajustado_format,
+          "trTotales":(0).toFixed(this.decimales_monedaOrden),
+          "trPorcentaje_juega":(0).toFixed(this.decimales_monedaOrden),
+          "detalle":this.extraeDetalleInterior(prtMerc,this.listaverticalProrrat)
+        });
+      } else {
+        prtMerc.merc_selected = false;
+        const prt_sel_index = this.arraySelectedProrrateos.findIndex((p_r_i:any) => p_r_i.token_art_prorrateo === prtMerc.token_cat_productos);
+        this.arraySelectedProrrateos.splice(prt_sel_index,1);
+      }
+      this.recorreSelectedProrrateos();
+      console.log(this.arraySelectedProrrateos);
+      this.calcularProrrateoPorc();
+    }
+
+    selectActivoFijoProrrateado(event:any,actfList:any){
+      this.boolCalcular = false;
+      if (event.checked) {
+        actfList.act_fijo_selected = true;
+        this.arraySelectedProrrateos.push({
+          "tipo_art_prorrateo": 'activo fijo',
+          "name_art_prorrateo": actfList.activo+" - "+actfList.folio_activof_unidad,
+          "token_art_detbuy_prorrateo": actfList.token_detcompra,
+          "token_art_prorrateo": actfList.token_act_fijos,
+          "token_activof_unidad": actfList.token_activof_unidad,
+          "trColor":"",
+          "costo_ajustado":actfList.costo_ajustado,
+          "costo_ajustado_format":actfList.costo_ajustado_format+" "+actfList.moneda,
+          "trTotales":(0).toFixed(this.decimales_monedaOrden),
+          "trPorcentaje_juega":(0).toFixed(this.decimales_monedaOrden),
+          "detalle":this.extraeDetalleInterior(actfList,this.listaverticalProrrat)
+        });
+      } else {
+        actfList.act_fijo_selected = false;
+        const prt_sel_index = this.arraySelectedProrrateos.findIndex((p_r_i:any) => p_r_i.token_activof_unidad === actfList.token_activof_unidad);
+        this.arraySelectedProrrateos.splice(prt_sel_index,1);
+      }
+
+      this.recorreSelectedProrrateos();
+      console.log(this.arraySelectedProrrateos);
+      this.calcularProrrateoPorc();
+    }
+
+    percentProrrateo(event:any,iPosition:any,token_art_detbuy_prorrateo:any){
+      const selectos = this.arraySelectedProrrateos[iPosition];
+      var percentFor:any = 0;
+      if (event.value != '' && this.validator.filtroCosto(event.value) == true && selectos['token_art_detbuy_prorrateo'] == token_art_detbuy_prorrateo) {
+        selectos['trPorcentaje_juega'] = parseFloat(event.value);
+        for (let i1 = 0; i1 < selectos['detalle'].length; i1++) {
+          const detalleSelectos = selectos['detalle'][i1];
+          detalleSelectos['porcentaje_juega'] = parseFloat(event.value).toFixed(this.decimales_monedaOrden);
+        }
+
+        for (let a = 0; a < this.arraySelectedProrrateos.length; a++) {
+          const detalleSelectos = this.arraySelectedProrrateos[a];
+          if (detalleSelectos['trPorcentaje_juega'] != "" && this.validator.filtroCosto(detalleSelectos['trPorcentaje_juega']) == true) {
+            percentFor = parseFloat(percentFor) + parseFloat(detalleSelectos['trPorcentaje_juega']);
+          }
+        }
+
+        this.porcentajeTotal = parseFloat(percentFor).toFixed(this.decimales_monedaOrden);
+
+        if (percentFor < 100) {
+          this.validator.correctoInputRow(event);
+          this.boolCalcular = false;
+        } else if (percentFor == 100){
+          this.validator.correctoInputRow(event);
+          this.boolCalcular = true;
+        } else if (percentFor > 100){
+          this.validator.errorInputRow(event);
+          this.boolCalcular = false;
+        }
+
+      } else {
+        this.validator.errorInputRow(event);
+        this.boolCalcular = false;
+        selectos['trPorcentaje_juega'] = parseFloat('0').toFixed(this.decimales_monedaOrden);
+        for (let i1 = 0; i1 < selectos['detalle'].length; i1++) {
+          const detalleSelectos = selectos['detalle'][i1];
+          detalleSelectos['porcentaje_juega'] = parseFloat('0').toFixed(this.decimales_monedaOrden);
+        }
+        for (let a = 0; a < this.arraySelectedProrrateos.length; a++) {
+          const detalleSelectos = this.arraySelectedProrrateos[a];
+          if (detalleSelectos['trPorcentaje_juega'] != "" && this.validator.filtroCosto(detalleSelectos['trPorcentaje_juega']) == true) {
+            percentFor = parseFloat(percentFor) + parseFloat(detalleSelectos['trPorcentaje_juega']);
+          }
+        }
+        this.porcentajeTotal = parseFloat(percentFor).toFixed(this.decimales_monedaOrden);
+      }
+    }
+
+    btnDeleteProrrateoVertical(selectHead:any){// token_detalle_prorrt:any,jPosition:any
+      Swal.fire({
+        title: this.translate.instant("swal_attenc"),
+        text: this.translate.instant("swal_delete"),
+        icon: 'warning',
+        confirmButtonColor: '#388E3C',
+        confirmButtonText: this.translate.instant("swal_yes_delete"),
+        showCancelButton: true,
+        cancelButtonColor: '#D32F2F',
+        cancelButtonText: this.translate.instant("swal_cancel"),
+      }).then((result) => {
+        if (result.isConfirmed) {
+          const index_eliminar = this.listaverticalProrrat.findIndex((row:any) => row.token_detalle_prorrt == selectHead.token_detalle_prorrt);
+          const elementoAEliminar = this.listaverticalProrrat[index_eliminar];
+          const del_cant_art_prorrateo = elementoAEliminar ? elementoAEliminar['cant_art_prorrateo'] : 0;
+          this.listaverticalProrrat.splice(index_eliminar,1);
+
+          if (this.arraySelectedProrrateos.length > 0) {
+            var num_detalle:any = 0;
+            this.arraySelectedProrrateos.forEach((selPrt:any) => {
+              const indexInterno = selPrt.detalle.findIndex((d: any) => d.token_detalle_prorrt == selectHead.token_detalle_prorrt);
+              if (indexInterno !== -1) {
+                selPrt.detalle.splice(indexInterno,1);
+              }
+              num_detalle = selPrt.detalle.length;
+            });
+
+            if (num_detalle == 0) {
+              this.arraySelectedProrrateos = [];
+              this.porcentajeTotal = (0).toFixed(this.decimales_monedaOrden);
+            }
+            if (this.arraySelectedProrrateos.length == 1) {
+              this.arraySelectedProrrateos[0].trPorcentaje_juega = (100).toFixed(this.decimales_monedaOrden);
+              this.porcentajeTotal = (100).toFixed(this.decimales_monedaOrden);
+              this.boolCalcular = true;
+            } 
+            //else if (this.arraySelectedProrrateos.length > 1) {
+            //  this.boolCalcular = false;
+            //  this.porcentajeTotal = (0).toFixed(this.decimales_monedaOrden);
+            //  this.arraySelectedProrrateos.forEach((prtFor:any) => {
+            //    prtFor.trPorcentaje_juega = (0).toFixed(this.decimales_monedaOrden);
+            //    prtFor.trTotales = (0).toFixed(this.decimales_monedaOrden);
+            //    prtFor.detalle.forEach((eachDet:any) => {
+            //      eachDet.porcentaje_juega = 0;
+            //      eachDet.total_prorrateo = 0;
+            //      eachDet.desv_art_prorrateo = 0;
+            //    });
+            //  });
+            //}
+            this.calcularProrrateoPorc();
+          }
+
+          this.gastosADistribuir.forEach((compraProrrateo:any) => {
+            if (compraProrrateo.token_detalle_prorrt == selectHead.token_detalle_prorrt) {
+              compraProrrateo.viewPrort = '';
+              const nuevoTotal = parseFloat(compraProrrateo.restaTtotal) + parseFloat(del_cant_art_prorrateo);
+              compraProrrateo.restaTtotal += parseFloat(nuevoTotal.toFixed(this.decimales_monedaOrden));
+            }
+          });
+
+          this.calcularProrrateoPorc();
+          this.cd.detectChanges();
+        }
+      })
+    }
+
+    btnDeleteProrrateoHorizontal(iPosition:any){
+      console.log(iPosition);
+      Swal.fire({
+        title: this.translate.instant("swal_attenc"),
+        text: "¿Desea eliminar este prorrateo?",
+        icon: 'warning',
+        confirmButtonColor: '#388E3C',
+        confirmButtonText: this.translate.instant("swal_yes_insert"),
+        showCancelButton: true,
+        cancelButtonColor: '#D32F2F',
+        cancelButtonText: this.translate.instant("swal_cancel"),
+      }).then((result) => {
+        if (result.isConfirmed) {
+          //token_art_prorrateo
+
+          this.arraySelectedProrrateos.splice(iPosition,1);
+          this.boolCalcular = false;
+
+          this.calcularProrrateoPorc();
+          this.cd.detectChanges();
+        }
+      })
+    }
+
+    get validaSaveProrrateo():boolean{
+      const validacion_fecha_contabilizacion = this.prorrateo_fecha_contabilizacion != "" && this.validator.filtroFecha(this.prorrateo_fecha_contabilizacion);
+      
+      const mnd = this.catalogo_monedas_api.find((row: any) => row.code === this.prorrateo_moneda_code);
+      const validacion_moneda = this.prorrateo_moneda_code != '' && this.validator.filtroAlfaNumerico(this.prorrateo_moneda_code) == true && typeof mnd !== 'undefined';
+
+      const porcentajeTotalNum = parseFloat(this.porcentajeTotal);
+    
+      // Condición 1: Debe haber al menos un producto/activo seleccionado
+      const tieneSeleccionados = this.arraySelectedProrrateos && this.arraySelectedProrrateos.length > 0;
+    
+      // Condición 2: Debe haber gastos asignados en la tabla vertical
+      const tieneGastos = this.listaverticalProrrat && this.listaverticalProrrat.length > 0;
+
+      // Condición 3: El porcentaje de distribución debe ser exactamente 100
+      const esPorcentajeCorrecto = porcentajeTotalNum === 100;
+
+      // Retorna true solo si todas las condiciones de integridad se cumplen
+      return validacion_fecha_contabilizacion && validacion_moneda && tieneSeleccionados && tieneGastos && esPorcentajeCorrecto;
+    }
+
+    btnGuardarProrrateoAffect(){
+      Swal.fire({
+        title: this.translate.instant("swal_attenc"),
+        text: this.translate.instant("swal_insert"),
+        icon: 'warning',
+        confirmButtonColor: '#388E3C',
+        confirmButtonText: this.translate.instant("swal_yes_insert"),
+        showCancelButton: true,
+        cancelButtonColor: '#D32F2F',
+        cancelButtonText: this.translate.instant("swal_cancel"),
+      }).then((result) => {
+        if (result.isConfirmed) {
+          if (this.arraySelectedProrrateos.length != 0) {
+            this._comprServ.guardarprorrateos(this.prorrateo_fecha_contabilizacion,this.prorrateo_moneda_code,this.arraySelectedProrrateos).subscribe(
+              response => {
+                let translate_response = this.translate.instant(response.message);
+                if (response.status == 'success') {
+                  Swal.fire({
+                    position:'center',
+                    icon: 'success',
+                    title: translate_response,
+                    showConfirmButton:false,
+                    timer: 3000
+                  })
+                  location.reload();
+                }
+                if (response.status == 'error') {
+                  Swal.fire({
+                    position:'top-end',
+                    icon: 'warning',
+                    title: translate_response,
+                    showConfirmButton:false,
+                    timer: 3000
+                  })
+                }
+              },
+              error => {
+                console.log(error);
+              }
+            );
+          } else {
+            Swal.fire({
+              position:'top-end',
+              icon: 'warning',
+              title: 'debe seleccionar productos en compras autorizadas para hacer el prorrateo correspondiente',
+              showConfirmButton:false,
+              timer: 3000
+            });
+          }
+        }
+      })
+    }
+}
+
+
+<div class="col-12 row">
+  <div class="col-12">
+    <div class="btn-group lista_botones col" role="group" aria-label="Basic example">
+      <!--<a class="btn btn_extend bg-indigo-600" (click)="miniMizaCtalogosProv();">
+        <i class="fa-solid" [ngClass]="!bool_compress_proveedores ? 'fa-compress' : 'fa-expand'"></i>&nbsp;{{(!bool_compress_proveedores ? 'contraer' : 'mostrar')+" catálogo de proveedores"}}</a>-->
+    </div>
+  </div>
+  <div id="soli_cot_prov_cat" class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3 col-xxl-3">
+    <div class="buscador row" style="margin-top: 10px!important">
+      <div class="content" style="padding: 0;">
+        <div class="col-12 row_buscador">
+          <input class="datasearch" type="text" [(ngModel)]="buyComprasBuscar" autocomplete="on"
+            placeholder="{{'bus_car' | translate}}">
+        </div>
+      </div>
+    </div>
+    <!--[value]="arrayComprasGeneral | filter:buyComprasBuscar"-->
+    <p-table [value]="arrayComprasGeneral" [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }"
+      [rowsPerPageOptions]="[10,20,30,50,100]">
+      <ng-template #header>
+        <tr>
+          <th class="ultimo"></th>
+          <th pSortableColumn="folio_compra">folio&nbsp;<p-sortIcon field="folio_compra" /></th>
+          <th pSortableColumn="fecha_registro">{{'fecha_reg' | translate}}&nbsp;<p-sortIcon field="fecha_registro" />
+          </th>
+          <th pSortableColumn="proveedor_folio">{{'prov' | translate}}&nbsp;<p-sortIcon field="proveedor_folio" /></th>
+        </tr>
+      </ng-template>
+      <ng-template #body let-cBuy>
+        <tr>
+          <td>
+            <div class="form-check radio_check">
+              <input class="form-check-input" type="radio" name="compraRow"
+                (click)="compraDesgloseDevengacion(cBuy.token_compras);">
+            </div>
+          </td>
+          <td>{{cBuy.folio_compra}}</td>
+          <td>{{cBuy.fecha_registro}}</td>
+          <td>{{cBuy.proveedor_folio+" "+cBuy.proveedor_nombre}}</td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="4" class="text-center py-4">
+            <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+            <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+              {{'no_rows' | translate}}
+            </p>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+  <div id="soli_cot_registros" class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9 col-xxl-9">
+    <div class="col-12 row" *ngFor="let detBuy of arrayDetalleCompra">
+      <div class="col-12 explain">
+        <h6 class="title">Datos generales de la compra</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">Folio</h6>
+        <h6 class="content">{{detBuy.folio}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">proveedor</h6>
+        <h6 class="content">{{detBuy.proveedor_folio+" "+detBuy.proveedor_nombre}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">personal que realizó la compra</h6>
+        <h6 class="content">{{detBuy.persCompra}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">fecha de registro</h6>
+        <h6 class="content">{{detBuy.fecha_altaCompra}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">forma de pago</h6>
+        <h6 class="content">{{detBuy.forma_pago}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">M&eacute;todo de pago</h6>
+        <h6 class="content">{{detBuy.metodo_pago}}</h6>
+      </div>
+      <div class="col-12 explain">
+        <h6 class="title">Recibi&oacute; factura</h6>
+        <h6 class="content">{{detBuy.recibeFactura}}</h6>
+      </div>
+
+      <div class="col-12 row" style="margin-top: 10px!important;">
+        <div class="col-12 explain">
+          <h6 class="title">articulos comprados</h6>
+        </div>
+
+        <div class="buscador row" style="margin-top: 10px!important">
+          <div class="content">
+            <div class="col-12 col-sm-6 col-md-3 col-lg-2"></div>
+            <div class="col-12 col-sm-6 col-md-3 col-lg-2 row_buscador">
+              <input class="datasearch" type="text" [(ngModel)]="buyArtBuscar" autocomplete="on"
+                placeholder="{{'bus_car' | translate}}">
+            </div>
+          </div>
+        </div>
+        <!--[value]="arrayArticulos | filter:buyArtReceptBuscar"-->
+        <p-table [value]="arrayArticulos" [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }"
+          [rowsPerPageOptions]="[10,20,30,50,100]">
+          <ng-template #header>
+            <tr>
+              <th class="ultimo"></th>
+              <th pSortableColumn="tipo_articulo">tipo de articulo&nbsp;<p-sortIcon field="tipo_articulo" /></th>
+              <th pSortableColumn="folio_articulo">folio de articulo&nbsp;<p-sortIcon field="folio_articulo" /></th>
+              <th pSortableColumn="articulo">articulo&nbsp;<p-sortIcon field="articulo" /></th>
+              <th pSortableColumn="precio_unitario">precio unitario&nbsp;<p-sortIcon field="precio_unitario" /></th>
+              <th class="ultimo"></th>
+              <th pSortableColumn="totalDetCompFormat">importe&nbsp;<p-sortIcon field="totalDetCompFormat" /></th>
+              <th class="ultimo"></th>
+            </tr>
+          </ng-template>
+          <ng-template #body let-artList>
+            <tr>
+              <td class="img_dat">
+                <div class="col-12"><img class="circle optimizedImage" fill
+                    ngSrc="./assets/images/catalogos/default_servicio.jpg" alt=""></div>
+              </td>
+              <td>{{artList.tipo_articulo}}</td>
+              <td>{{artList.folio_articulo}}</td>
+              <td>{{artList.articulo}}</td>
+              <td>{{artList.precio_unitario}}</td>
+              <td class="ultimo">
+                <a class="btn btn_extend bg-indigo-600" (click)="verImpuestosUno(artList);"><i
+                    class="fa-solid fa-info"></i>&nbsp;impuestos relacionados</a>
+              </td>
+              <td>{{artList.totalDetCompFormat}}</td>
+
+              <td class="ultimo">
+                <a class="btn bg-indigo-600"
+                  (click)="verRechazoFor(artList,detBuy.token_compras,artList.token_detcompra);"><!--data-bs-toggle="modal" data-bs-target="#historialRechazos" -->
+                  <i class="fa-solid fa-info"></i>
+                </a>
+              </td>
+            </tr>
+            <tr *ngIf="artList === seccionImpuestosUno">
+              <td colspan="11">
+                <div class="col-12">
+                  <div class="col-12 explain">
+                    <h6 class="title">impuestos relacionados</h6>
+                  </div>
+                  <p-table [value]="artList.impuestos_det_buy" [paginator]="true" [rows]="10"
+                    [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]">
+                    <ng-template #header>
+            <tr>
+              <th pSortableColumn="retencion_traslado">Tipo&nbsp;<p-sortIcon field="retencion_traslado" /></th>
+              <th pSortableColumn="base">Base&nbsp;<p-sortIcon field="base" /></th>
+              <th pSortableColumn="impuesto">Impuesto&nbsp;<p-sortIcon field="impuesto" /></th>
+              <th pSortableColumn="tipo_factor">TipoFactor&nbsp;<p-sortIcon field="tipo_factor" /></th>
+              <th pSortableColumn="tasa_cuota">TasaOCuota&nbsp;<p-sortIcon field="tasa_cuota" /></th>
+              <th pSortableColumn="importe">Importe&nbsp;<p-sortIcon field="importe" /></th>
+            </tr>
+          </ng-template>
+          <ng-template #body let-imp_art>
+            <tr>
+              <td>{{imp_art.retencion_traslado}}</td>
+              <td>{{imp_art.base}}</td>
+              <td>{{imp_art.impuesto}}</td>
+              <td>{{imp_art.tipo_factor}}</td>
+              <td>{{imp_art.tasa_cuota}}</td>
+              <td>{{imp_art.importe}}</td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="6" class="text-center py-4">
+                <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                  {{'no_rows' | translate}}
+                </p>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+      </td>
+      </tr>
+      <tr *ngIf="artList === seccionRechazos">
+        <td colspan="11">
+          <div class="col-12">
+            <div class="col-12 explain">
+              <h6 class="title">historial de cancelaci&oacute;n de recepci&oacute;n</h6>
+            </div>
+        <th>{{'observ' | translate}}</th>
+        <th>historial de devoluciones</th>
+
+        <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6 input-group">
+          <label for="ivap" class="activeInput">fecha de devengaci&oacute;n</label>
+          <input class="validate" type="date"
+            (change)="validaFechaDevengado($event.target,artList.token_articulo,artList.token_detcompra);">
+        </div>
+
+        <div class="col-12 input-group" style="margin-bottom: 10px!important;">
+          <label for="ivap" class="activeInput">{{'observ' | translate}}</label>
+          <textarea id="reem_large_observ" class="validate"
+            (keyup)="observacionesKeyup($event.target,artList.token_articulo,artList.token_detcompra);"></textarea>
+        </div>
+
+        <ngx-fi-le-drop dropZoneLabel="Drop files here" (onFileDrop)="droppedDevenFiles($event)"
+          (onFileOver)="fileOverDevenFiles($event)" (onFileLeave)="fileLeaveDevenFiles($event)">
+          <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">{{'load_files' | translate}} / {{'browse_files' | translate}}
+            <but_ton class="btn bg-indigo-600" style="width: auto;font-size: small;" type="button"
+              (click)="openFileSelector()">{{'browse_files' | translate}}</button>
+          </ng-template>
+        </ngx-file-drop>
+        <table class="white centered" style="margin-top:5px!important;width: 100% !important;">
+          <thead>
+            <tr>
+              <th>{{'file' | translate}}</th>
+              <th class="ultimo"></th>
+            </tr>
+          </thead>
+          <tbody class="upload-name-style" *ngIf="docsDevengacionNames.length != 0">
+            <tr *ngFor="let item of docsDevengacionNames; index as i">
+              <td><strong>{{item.nameFile}}</strong></td>
+              <td class="ultimo">
+                <a class="btn btn_extend text-bg-danger rounded-3" (click)="deleteAnexosDevenFiles(i);">
+                  <i class="fa-solid fa-xmark"></i>
+                </a>
+              </td>
+            </tr>
+          </tbody>
+          <tbody *ngIf="docsDevengacionNames.length == 0">
+            <tr>
+              <td colspan="2">{{'no_rows' | translate}}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="col-12 row" style="margin-top: 5px!important;">
+          <div class="col-12 col-sm-12 col-md-6 col-lg-8 col-xl-8 col-xxl-9"></div>
+          <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3"
+            style="display: flex !important;justify-content: end!important;padding: 0!important;">
+            <a class="btn btn_extend text-bg-success rounded-3"
+              [ngClass]="!validateRegistroDevengar(artList.token_articulo,artList.token_detcompra) ? 'disabled' : ''"
+              [attr.disabled]="!validateRegistroDevengar(artList.token_articulo,artList.token_detcompra) ? true : null"
+              [attr.aria-disabled]="!validateRegistroDevengar(artList.token_articulo,artList.token_detcompra) ? true : null"
+              (click)="validateRegistroDevengar(artList.token_articulo,artList.token_detcompra) && guardaDevengacionServicio(detBuy.token_compras,artList.token_detcompra,artList.token_articulo);">
+              <i class="fa-solid fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+            </a>
+          </div>
+        </div>
+    </div>
+    </td>
+    </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="8" class="text-center py-4">
+          <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+          <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+            {{'no_rows' | translate}}
+          </p>
+        </td>
+      </tr>
+    </ng-template>
+    </p-table>
+  </div>
+
+  <div class="col-12 row" style="margin-top: 10px!important;">
+    <div class="col-12 explain">
+      <h6 class="title">articulos recibidos</h6>
+    </div>
+
+    <div class="buscador row" style="margin-top: 10px!important">
+      <div class="content">
+        <div class="col-12 col-sm-6 col-md-3 col-lg-2"></div>
+        <div class="col-12 col-sm-6 col-md-3 col-lg-2 row_buscador">
+          <input class="datasearch" type="text" [(ngModel)]="buyArtReceptBuscar" autocomplete="on"
+            placeholder="{{'bus_car' | translate}}">
+        </div>
+      </div>
+    </div>
+    <!--[value]="arrayArticulosRecibidos | filter:buyArtReceptBuscar"-->
+    <p-table [value]="arrayArticulosRecibidos" [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }"
+      [rowsPerPageOptions]="[10,20,30,50,100]">
+      <ng-template #header>
+        <tr>
+          <th class="ultimo"></th>
+          <th pSortableColumn="tipo_articulo">tipo de articulo&nbsp;<p-sortIcon field="tipo_articulo" /></th>
+          <th pSortableColumn="folio_articulo">Folio de articulo&nbsp;<p-sortIcon field="folio_articulo" /></th>
+          <th pSortableColumn="articulo">Articulo&nbsp;<p-sortIcon field="articulo" /></th>
+          <th pSortableColumn="cantidad">cantidad&nbsp;<p-sortIcon field="cantidad" /></th>
+          <th pSortableColumn="precio_unitario">Precio unitario&nbsp;<p-sortIcon field="precio_unitario" /></th>
+          <th class="ultimo"></th>
+          <th pSortableColumn="totalDetCompFormat">Importe&nbsp;<p-sortIcon field="totalDetCompFormat" /></th>
+          <th pSortableColumn="fecha_recep">Fecha de recepci&oacute;n&nbsp;<p-sortIcon field="fecha_recep" /></th>
+          <th pSortableColumn="folio_recep">Folio&nbsp;<p-sortIcon field="folio_recep" /></th>
+          <th pSortableColumn="lo_pedido">Es lo que se ha pedido&nbsp;<p-sortIcon field="lo_pedido" /></th>
+          <th pSortableColumn="llegoTiempo">Lleg&oacute; a tiempo&nbsp;<p-sortIcon field="llegoTiempo" /></th>
+          <th pSortableColumn="buenEstado">Lleg&oacute; en buen estado&nbsp;<p-sortIcon field="buenEstado" /></th>
+          <th pSortableColumn="calidadRecepcion">Es de la calidad que esperaba&nbsp;<p-sortIcon
+              field="calidadRecepcion" /></th>
+          <th pSortableColumn="observaciones">{{'observ' | translate}}&nbsp;<p-sortIcon field="observaciones" /></th>
+        </tr>
+      </ng-template>
+      <ng-template #body let-recibArt>
+        <tr>
+          <td class="img_dat">
+            <div class="col-12">
+              <img class="circle optimizedImage" fill ngSrc="./assets/images/catalogos/default_servicio.jpg" alt="">
+            </div>
+          </td>
+          <td>{{recibArt.tipo_articulo}}</td>
+          <td>{{recibArt.folio_articulo}}</td>
+          <td>{{recibArt.articulo}}</td>
+          <td>{{recibArt.cantidad}}</td>
+          <td>{{recibArt.precio_unitario}}</td>
+          <td class="ultimo">
+            <a class="btn btn_extend bg-indigo-600" (click)="verImpuestosDos(recibArt);">
+              <i class="fa-solid fa-info"></i>&nbsp;Impuestos relacionados
+            </a>
+          </td>
+          <td>{{recibArt.totalDetCompFormat}}</td>
+          <td>{{recibArt.fecha_recep}}</td>
+          <td>{{recibArt.folio_recep}}</td>
+          <td class="tdSymbol"><i class="fa-solid" [ngClass]="recibArt.lo_pedido ? 'fa-check' : 'fa-xmark'"></i></td>
+          <td class="tdSymbol"><i class="fa-solid" [ngClass]="recibArt.llegoTiempo ? 'fa-check' : 'fa-xmark'"></i></td>
+          <td class="tdSymbol"><i class="fa-solid" [ngClass]="recibArt.buenEstado ? 'fa-check' : 'fa-xmark'"></i></td>
+          <td class="tdSymbol"><i class="fa-solid" [ngClass]="recibArt.calidadRecepcion ? 'fa-check' : 'fa-xmark'"></i>
+          </td>
+          <td>{{recibArt.observaciones}}</td>
+        </tr>
+        <tr *ngIf="recibArt === seccionImpuestosDos">
+          <td colspan="7">
+            <div class="col-12">
+              <p-table [value]="recibArt.impuestos_det_buy" [paginator]="true" [rows]="10"
+                [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]">
+                <ng-template #header>
+        <tr>
+          <th pSortableColumn="retencion_traslado">Tipo&nbsp;<p-sortIcon field="retencion_traslado" /></th>
+          <th pSortableColumn="base">Base&nbsp;<p-sortIcon field="base" /></th>
+          <th pSortableColumn="impuesto">Impuesto&nbsp;<p-sortIcon field="impuesto" /></th>
+          <th pSortableColumn="tipo_factor">TipoFactor&nbsp;<p-sortIcon field="tipo_factor" /></th>
+          <th pSortableColumn="tasa_cuota">TasaOCuota&nbsp;<p-sortIcon field="tasa_cuota" /></th>
+          <th pSortableColumn="importe">Importe&nbsp;<p-sortIcon field="importe" /></th>
+        </tr>
+      </ng-template>
+      <ng-template #body let-imp_art>
+        <tr>
+          <td>{{imp_art.retencion_traslado}}</td>
+          <td>{{imp_art.base}}</td>
+          <td>{{imp_art.impuesto}}</td>
+          <td>{{imp_art.tipo_factor}}</td>
+          <td>{{imp_art.tasa_cuota}}</td>
+          <td>{{imp_art.importe}}</td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="6" class="text-center py-4">
+            <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+            <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+              {{'no_rows' | translate}}
+            </p>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+  </td>
+  </tr>
+  </ng-template>
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td colspan="15" class="text-center py-4">
+        <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+        <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+          {{'no_rows' | translate}}
+        </p>
+      </td>
+    </tr>
+  </ng-template>
+  </p-table>
+</div>
+</div>
+</div>
+</div>

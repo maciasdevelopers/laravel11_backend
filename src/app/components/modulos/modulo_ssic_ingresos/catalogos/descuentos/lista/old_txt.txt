@@ -1,0 +1,744 @@
+
+
+					<ul class="nav nav_tabs tabs" id="myTab" role="tablist">
+						<li class="nav-item tab col" role="presentation">
+							<button class="nav-link active" id="tabDescTrue" (click)="listasDescuentosVigentes();" data-toggle="tab" data-target="#DescTrue" type="button" role="tab" aria-controls="DescTrue" aria-selected="true">Descuentos vigentes</button>
+						</li>
+						<li class="nav-item tab col" role="presentation">
+							<button class="nav-link" id="tabDescDisabled" (click)="listasDescuentosDeshabilitados();" data-toggle="tab" data-target="#DescDisabled" type="button" role="tab" aria-controls="DescDisabled" aria-selected="true">Descuentos deshabilitados</button>
+						</li>
+					</ul>
+					<div class="tab-content col-12" style="padding:0!important;margin-top: 10px!important;" id="myTabContent">
+						<div class="tab-pane fade show active" id="DescTrue" role="tabpanel" aria-labelledby="tabDescTrue" style="padding:0!important;">
+
+						</div>
+						<div class="tab-pane fade" id="DescDisabled" role="tabpanel" aria-labelledby="tabDescDisabled" style="padding:0!important;">
+
+						</div>
+					</div>
+
+					<div class="modal fade bd-example-modal-lg" id="windowDescuentoData" tabindex="-1" role="dialog" aria-labelledby="windowDescuentoDataLabel" aria-hidden="true">
+						<div class="modal-dialog modal-fullscreen" style="margin: 1%;width: 98%!important;">
+							<div class="modal-content">
+								<div class="modal-header">
+									<h1 class="modal-title fs-5 bg-blue-ModalTitle" id="windowDescuentoDataLabel">Informaci&oacute;n de descuento registrado</h1>
+									<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: transparent !important;"></button>
+								</div>
+								<div class="modal-body">
+									<div class="col-12" *ngFor="let detalleDescfor of datosDetalleDesc">
+										<div *ngIf="enabledAccess == null || enabledAccess == '' || detalleDescfor.validateVinculo == true">
+											<div class="row rowServ" id="rowDescuentoAct">
+
+												<div class="col-12 col-sm-6 col-md-3 col-lg-2">
+													<h6 class="errorTh">* Folio registrado</h6>
+													<h6>{{detalleDescfor.folio_descuento}}</h6>
+												</div>
+												<div class="col-12 col-sm-6 col-md-3 col-lg-2">
+													<h6 *ngIf="detalleDescfor.status_activacion == true" class="errorTh">* &Uacute;ltima activaci&oacute;n</h6>
+													<h6 *ngIf="detalleDescfor.status_activacion == false" class="errorTh">* &Uacute;ltima desactivaci&oacute;n</h6>
+													<a style="width: 100%!important;" class="btn btnGuardar btnStop waves-effect waves-light tooltipped"
+														*ngIf="detalleDescfor.status_activacion == true" data-position="top" data-tooltip="Detener descuento" disabled>
+														{{detalleDescfor.fecha_activacion+" "}}<i style="width: 10%!important;" class="fas fa-ban"></i>
+													</a>
+
+													<a class="btn btnGuardar btnNotActiv waves-effect waves-light tooltipped"
+														*ngIf="detalleDescfor.status_activacion == false" data-position="top" data-tooltip="Habilitar descuento" disabled>
+														{{detalleDescfor.fecha_activacion+" "}}<i style="width: 10%!important;" class="fas fa-bell"></i>
+													</a>
+												</div>
+												<div class="col-12 col-sm-6 col-md-3 col-lg-2">
+													<h6 class="errorTh">* Alias</h6>
+													<h6>{{detalleDescfor.alias_descuento}}</h6>
+												</div>
+
+												<div class="col-12 col-sm-6 col-md-3 col-lg-2">
+													<h6 class="errorTh">* Concepto</h6>
+													<h6>{{detalleDescfor.concepto_descuento}}</h6>
+												</div>
+												<div class="col-12 col-sm-6 col-md-3 col-lg-2">
+													<h6 class="errorTh">* Aplicación</h6>
+													<h6>{{detalleDescfor.cuo_porc}}</h6>
+												</div>
+
+												<div class="col-12 col-sm-6 col-md-3 col-lg-2">
+													<h6 class="errorTh">* Monto de aplicación</h6>
+													<h6 *ngIf="detalleDescfor.cuo_porc == 'cuota'">${{detalleDescfor.cantidad_base}}</h6>
+													<h6 *ngIf="detalleDescfor.cuo_porc == 'porcentaje'">{{detalleDescfor.cantidad_base}}%</h6>
+												</div>
+
+												<div class="col-12 col-sm-6 col-md-3 col-lg-2">
+													<h6 class="errorTh">* Tipo de descuento</h6>
+													<h6>{{detalleDescfor.aplicacion}}</h6>
+												</div>
+
+												<div class="col-12 col-sm-6 col-md-3 col-lg-2">
+													<h6 class="errorTh">* Inicia descuento</h6>
+													<h6 *ngIf="detalleDescfor.periodo_inicio == ''">---</h6>
+													<h6 *ngIf="detalleDescfor.periodo_inicio != ''">{{detalleDescfor.periodo_inicio}}</h6>
+												</div>
+												<div class="col-12 col-sm-6 col-md-3 col-lg-2">
+													<h6 class="errorTh">* Termina descuento</h6>
+													<h6 *ngIf="detalleDescfor.periodo_fin == ''">---</h6>
+													<h6 *ngIf="detalleDescfor.periodo_fin != ''">{{detalleDescfor.periodo_fin}}</h6>
+												</div>
+
+											</div>
+										</div>
+										<div *ngIf="enabledAccess != null && enabledAccess != '' && detalleDescfor.validateVinculo == false">
+											<div class="row rowServ" id="rowDescuentoAct">
+
+												<div class="col-12 col-sm-6 col-md-3 col-lg-2">
+													<h6 class="errorTh">* Folio registrado</h6>
+													<h6>{{detalleDescfor.folio_descuento}}</h6>
+												</div>
+												<div class="col-12 col-sm-6 col-md-3 col-lg-2">
+													<h6 *ngIf="detalleDescfor.status_activacion == true" class="errorTh">* &Uacute;ltima activaci&oacute;n</h6>
+													<h6 *ngIf="detalleDescfor.status_activacion == false" class="errorTh">* &Uacute;ltima desactivaci&oacute;n</h6>
+													<a (click)="desactivaDescuento($event.target,detalleDescfor.token_descuentos);" style="width: 100%!important;"
+														class="btn btnGuardar btnStop waves-effect waves-light tooltipped"
+														*ngIf="detalleDescfor.status_activacion == true" data-position="top" data-tooltip="Detener descuento">
+														{{detalleDescfor.fecha_activacion+" "}}<i style="width: 10%!important;" class="fas fa-ban"></i>
+													</a>
+
+													<a (click)="activaDescuento($event.target,detalleDescfor.token_descuentos);" style="width: 100%!important;"
+														class="btn btnGuardar btnNotActiv waves-effect waves-light tooltipped"
+														*ngIf="detalleDescfor.status_activacion == false" data-position="top" data-tooltip="Habilitar descuento">
+														{{detalleDescfor.fecha_activacion+" "}}<i style="width: 10%!important;" class="fas fa-bell"></i>
+													</a>
+												</div>
+												<div class="col-12 col-sm-6 col-md-3 col-lg-2">
+													<h6 class="errorTh">* Alias</h6>
+													<input (keyup)="aliasServDesc($event.target);" value="{{detalleDescfor.alias_descuento}}"
+														 class="validate" name="aliasDescuento" type="text">
+												</div>
+
+												<div class="col-12 col-sm-6 col-md-3 col-lg-2">
+													<h6 class="errorTh">* Concepto</h6>
+													<input *ngIf="descuentosModelo.alias == ''" value="{{detalleDescfor.concepto_descuento}}" class="validate" name="conceptoDescuento" type="text" disabled>
+													<input *ngIf="descuentosModelo.alias != ''" value="{{detalleDescfor.concepto_descuento}}" (keyup)="conceptoServDesc($event.target);" class="validate" name="conceptoDescuento" type="text">
+												</div>
+												<div class="col-12 col-sm-6 col-md-3 col-lg-2" *ngIf="descuentosModelo.concepto == ''">
+													<h6 class="errorTh">* Aplicación</h6>
+													<select name="selectCotaPorcDescuento" disabled>
+														<option value="" disabled selected>{{'opt_select' | translate}}</option>
+														<option *ngIf="detalleDescfor.cuo_porc == 'cuota'" value="cuota" disabled selected>Cuota</option>
+														<option *ngIf="detalleDescfor.cuo_porc == 'porcentaje'" value="cuota">Cuota</option>
+														<option *ngIf="detalleDescfor.cuo_porc == 'porcentaje'" value="porcentaje" disabled selected>Porcentaje</option>
+														<option *ngIf="detalleDescfor.cuo_porc == 'cuota'" value="porcentaje">Porcentaje</option>
+													</select>
+												</div>
+												<div class="col-12 col-sm-6 col-md-3 col-lg-2" *ngIf="descuentosModelo.concepto != ''">
+													<h6 class="errorTh">* Aplicación</h6>
+													<select (change)="cuotaPorcServDesc($event.target);" name="selectCotaPorcDescuento">
+														<option value="" disabled selected>{{'opt_select' | translate}}</option>
+														<option *ngIf="detalleDescfor.cuo_porc == 'cuota'" value="cuota" disabled selected>Cuota</option>
+														<option *ngIf="detalleDescfor.cuo_porc == 'porcentaje'" value="cuota">Cuota</option>
+														<option *ngIf="detalleDescfor.cuo_porc == 'porcentaje'" value="porcentaje" disabled selected>Porcentaje</option>
+														<option *ngIf="detalleDescfor.cuo_porc == 'cuota'" value="porcentaje">Porcentaje</option>
+													</select>
+												</div>
+
+												<div class="col-12 col-sm-6 col-md-3 col-lg-2">
+													<h6 class="errorTh">* Monto de aplicación</h6>
+													<input value="{{detalleDescfor.cantidad_base}}" *ngIf="descuentosModelo.aplicacion == ''" type="number" name="cantidadBaseDescuento" disabled>
+													<input value="{{detalleDescfor.cantidad_base}}" *ngIf="descuentosModelo.aplicacion != ''" (keyup)="cantidadBaseKeyUp($event.target);" type="number" name="cantidadBaseDescuento">
+												</div>
+
+												<div class="col-12 col-sm-6 col-md-3 col-lg-2" *ngIf="descuentosModelo.monto == ''">
+													<h6 class="errorTh">* Tipo de descuento</h6>
+													<select name="selectTipo" class="validate" name="selectTipoDescuento" disabled>
+														<option >{{'opt_select' | translate}}</option>
+														<option *ngIf="detalleDescfor.aplicacion == 'eventual'" value="eventual" disabled selected>Eventual</option>
+														<option *ngIf="detalleDescfor.aplicacion != 'eventual'" value="eventual">Eventual</option>
+														<option *ngIf="detalleDescfor.aplicacion == 'indeterminado'" value="pIndeterminado" disabled selected>Periodo Indeterminado</option>
+														<option *ngIf="detalleDescfor.aplicacion != 'indeterminado'" value="pIndeterminado">Periodo Indeterminado</option>
+														<option *ngIf="detalleDescfor.aplicacion == 'determinado'" value="pDeterminado" disabled selected>Periodo Determinado</option>
+														<option *ngIf="detalleDescfor.aplicacion != 'determinado'" value="pDeterminado">Periodo Determinado</option>
+													</select>
+												</div>
+												<div class="col-12 col-sm-6 col-md-3 col-lg-2" *ngIf="descuentosModelo.monto != ''">
+													<h6 class="errorTh">* Tipo de descuento</h6>
+													<select name="selectTipo" (change)="tipoDescuentoServDesc($event.target);" class="validate" name="selectTipoDescuento">
+														<option >{{'opt_select' | translate}}</option>
+														<option *ngIf="detalleDescfor.aplicacion == 'usa'" value="eventual" disabled selected>Eventual</option>
+														<option *ngIf="detalleDescfor.aplicacion != 'usa'" value="eventual">Eventual</option>
+														<option *ngIf="detalleDescfor.aplicacion == 'ind'" value="pIndeterminado" disabled selected>Periodo Indeterminado</option>
+														<option *ngIf="detalleDescfor.aplicacion != 'ind'" value="pIndeterminado">Periodo Indeterminado</option>
+														<option *ngIf="detalleDescfor.aplicacion == 'det'" value="pDeterminado" disabled selected>Periodo Determinado</option>
+														<option *ngIf="detalleDescfor.aplicacion != 'det'" value="pDeterminado">Periodo Determinado</option>
+													</select>
+												</div>
+
+												<div class="col-12 col-sm-6 col-md-3 col-lg-2">
+													<h6 class="errorTh">* Inicia descuento</h6>
+													<input *ngIf="descuentosModelo.tipo == '' || descuentosModelo.tipo == 'eventual'"
+														value="{{detalleDescfor.periodo_inicio}}" class="datepicker" name="fechaInicioDesc" type="date" disabled>
+													<input *ngIf="descuentosModelo.tipo != '' && descuentosModelo.tipo != 'eventual'"
+														value="{{detalleDescfor.periodo_inicio}}" (change)="fechaInicioServDesc($event.target);" class="datepicker" name="fechaInicioDesc" type="date">
+												</div>
+												<div class="col-12 col-sm-6 col-md-3 col-lg-2">
+													<h6 class="errorTh">* Termina descuento</h6>
+													<input *ngIf="descuentosModelo.tipo == '' || descuentosModelo.tipo != 'pDeterminado'"
+														value="{{detalleDescfor.periodo_fin}}" class="datepicker" name="fechaFinDesc" type="date" disabled>
+													<input id="asfechaFinDesc" *ngIf="descuentosModelo.tipo != '' && descuentosModelo.tipo == 'pDeterminado'"
+														value="{{detalleDescfor.periodo_fin}}" (keyup)="fechaFinServDesc($event.target);" class="datepicker" name="fechaFinDesc" type="date">
+												</div>
+
+												<div class="col-12">
+													<div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+													<div class="col-12 col-sm-6 col-md-3 col-lg-2 col-xl-2 col-xxl-2">
+														<a *ngIf="descuentosModelo.alias == detalleDescfor.alias_descuento &&
+															descuentosModelo.concepto == detalleDescfor.concepto_descuento &&
+															descuentosModelo.aplicacion == detalleDescfor.cuo_porc &&
+															descuentosModelo.monto == detalleDescfor.cantidad_base &&
+															descuentosModelo.tipo == detalleDescfor.aplicacion &&
+															descuentosModelo.fecha_inicia == detalleDescfor.periodo_inicio &&
+															descuentosModelo.fecha_termina == detalleDescfor.periodo_fin"
+															class="btn btnRow btnGuardar text-bg-success rounded-3" disabled><!--descuentosModelo.fecha_inicia > descuentosModelo.fecha_termina-->
+															<i class="fas fa-sign-in-alt"></i>
+														</a>
+
+														<a *ngIf="descuentosModelo.alias != detalleDescfor.alias_descuento ||
+															descuentosModelo.concepto != detalleDescfor.concepto_descuento ||
+															descuentosModelo.aplicacion != detalleDescfor.cuo_porc ||
+															descuentosModelo.monto != detalleDescfor.cantidad_base ||
+															descuentosModelo.tipo != detalleDescfor.aplicacion ||
+															descuentosModelo.fecha_inicia != detalleDescfor.periodo_inicio ||
+															descuentosModelo.fecha_termina != detalleDescfor.periodo_fin"
+															(click)="updateDescuento($event.target,detalleDescfor.token_descuentos);"
+															class="btn btnRow btnGuardar text-bg-success rounded-3">
+															<i class="fas fa-sign-in-alt"></i>
+														</a>
+													</div>
+													<div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2 col-xxl-2"></div>
+												</div>
+
+											</div>
+										</div>
+									</div>
+									<div class="col-12">
+										<div class="card">
+											<div class="card-header">
+												<h6>productos/mercancias</h6>
+											</div>
+											<div class="card-content white-text" *ngIf="enabledAccess == null || enabledAccess == '' || validateVinculo == true">
+												<ul class="collapsable" id="ulDescProm">
+													<li class="licollapsible">
+														<div class="collapsable-header"><div class="chip">Catalogo</div></div>
+														<div class="collapsable-body">
+															<div class="busqueda">
+																<div class="input-field">
+																	<input class="validate" type="text" id="inputBuscaListaSD" disabled>
+																	<label  for="first_name" id="infoListaServDesc">Busqueda...</label>
+																</div>
+															</div>
+															<table id="theadListaServiciosVDescuentos" class="centered responsive-table tabThead">
+																<thead id="theadListaServiciosVDescuentos" class="theadLista">
+																	<tr>
+																		<th class="ultimo"></th>
+																		<th>producto</th>
+																		<th></th>
+																	</tr>
+																</thead>
+																<tbody *ngIf="prodDetalleDesc.length > 0">
+																	<tr *ngFor="let serfdesc of prodDetalleDesc | paginate:{id:'pageservDetalleDesc',itemsPerPage:10,currentPage:pageservDetalleDesc}; index as i">
+																		<td class="img"><img style="margin-right: 5px;" src="{{serfdesc.imagen}}" alt="Contact Person"></td>
+																		<td>{{serfdesc.clasificacion+" "+serfdesc.producto}}</td>
+																		<td *ngIf="serfdesc.vincDescProd == true">vinculado</td>
+																		<td *ngIf="serfdesc.vincDescProd == false">no vinculado</td>
+																	</tr>
+																</tbody>
+																<tbody *ngIf="prodDetalleDesc.length == 0">
+																	<tr>
+																		<td colspan="3">{{'no_rows' | translate}}</td>
+																	</tr>
+																</tbody>
+															</table>
+															<paginado-controles class="paginador"
+																id="pageservDetalleDesc"
+																(pageChange)="pageservDetalleDesc = $event"
+																previousLabel="{{'prev' | translate}}"
+																nextLabel="{{'next' | translate}}">
+															</paginado-controles>
+														</div>
+													</li>
+													<li class="licollapsible">
+														<div class="collapsable-header"><div class="chip">vinculados</div></div>
+														<div class="collapsable-body">
+															<div class="busqueda">
+																<div class="input-field">
+																	<input class="validate" type="text" id="inputBuscaListaSD" disabled>
+																	<label  for="first_name" id="infoListaServDesc">Busqueda...</label>
+																</div>
+															</div>
+															<table id="theadListaServiciosVDescuentos" class="centered responsive-table tabThead">
+																<thead id="theadListaServiciosVDescuentos" class="theadLista">
+																	<tr>
+																		<th class="ultimo"></th>
+																		<th>producto</th>
+																	</tr>
+																</thead>
+																<tbody *ngIf="prodDetalleVinculados.length > 0">
+																	<tr *ngFor="let serfdesc of prodDetalleVinculados | paginate:{id:'pageservDetalleVinculados',itemsPerPage:10,currentPage:pageservDetalleVinculados}; index as i">
+																		<td class="img"><img style="margin-right: 5px;" src="{{serfdesc.imagen}}" alt="Contact Person"></td>
+																		<td>{{serfdesc.clasificacion+" "+serfdesc.producto}}</td>
+																	</tr>
+																</tbody>
+																<tbody *ngIf="prodDetalleVinculados.length == 0">
+																	<tr>
+																		<td colspan="2">{{'no_rows' | translate}}</td>
+																	</tr>
+																</tbody>
+															</table>
+															<paginado-controles class="paginador"
+																id="pageservDetalleVinculados"
+																(pageChange)="pageservDetalleVinculados = $event"
+																previousLabel="{{'prev' | translate}}"
+																nextLabel="{{'next' | translate}}">
+															</paginado-controles>
+														</div>
+													</li>
+													<li class="licollapsible">
+														<div class="collapsable-header"><div class="chip">productos desvinculados recientemente</div></div>
+														<div class="collapsable-body">
+															<div class="busqueda">
+																<div class="input-field">
+																	<input class="validate" type="text" id="inputBuscaListaSD" disabled>
+																	<label  for="first_name" id="infoListaServDesc">Busqueda...</label>
+																</div>
+															</div>
+															<table id="theadListaServiciosVDescuentos" class="centered responsive-table tabThead">
+																<thead id="theadListaServiciosVDescuentos" class="theadLista">
+																	<tr>
+																		<th class="ultimo"></th>
+																		<th>producto</th>
+																	</tr>
+																</thead>
+																<tbody *ngIf="prodDetalleDeleted.length > 0">
+																	<tr *ngFor="let serfdesc of prodDetalleDeleted | paginate:{id:'pageservDetalleVinculados',itemsPerPage:10,currentPage:pageservDetalleVinculados}; index as i">
+																		<td class="img"><img style="margin-right: 5px;" src="{{serfdesc.imagen}}" alt="Contact Person"></td>
+																		<td>{{serfdesc.clasificacion+" "+serfdesc.producto}}</td>
+																	</tr>
+																</tbody>
+																<tbody *ngIf="prodDetalleDeleted.length == 0">
+																	<tr><td colspan="2">{{'no_rows' | translate}}</td></tr>
+																</tbody>
+															</table>
+															<paginado-controles class="paginador"
+																id="pageservDetalleVinculados"
+																(pageChange)="pageservDetalleVinculados = $event"
+																previousLabel="{{'prev' | translate}}"
+																nextLabel="{{'next' | translate}}">
+															</paginado-controles>
+														</div>
+													</li>
+												</ul>
+											</div>
+											<div class="card-content white-text" *ngIf="enabledAccess != null && enabledAccess != '' && validateVinculo == false">
+												<ul class="collapsable" id="ulDescProm">
+													<li class="licollapsible">
+														<div class="collapsable-header"><div class="chip">Catalogo</div></div>
+														<div class="collapsable-body">
+															<div class="busqueda">
+																<div class="input-field">
+																	<input class="validate" type="text" id="inputBuscaListaSD" disabled>
+																	<label  for="first_name" id="infoListaServDesc">Busqueda...</label>
+																</div>
+															</div>
+															<table id="theadListaServiciosVDescuentos" class="centered responsive-table tabThead">
+																<thead id="theadListaServiciosVDescuentos" class="theadLista">
+																	<tr>
+																		<th class="ultimo"></th>
+																		<th>producto</th>
+																		<th class="ultimo"></th>
+																	</tr>
+																</thead>
+																<tbody *ngIf="prodDetalleDesc.length > 0">
+																	<tr *ngFor="let serfdesc of prodDetalleDesc | paginate:{id:'pageservDetalleDesc',itemsPerPage:10,currentPage:pageservDetalleDesc}; index as i">
+																		<td class="img"><img style="margin-right: 5px;" src="{{serfdesc.imagen}}" alt="Contact Person"></td>
+																		<td>{{serfdesc.clasificacion+" "+serfdesc.producto}}</td>
+																		<td *ngIf="serfdesc.vincDescProd == true">---</td>
+																		<td *ngIf="serfdesc.vincDescProd == false">
+																			<div class="switch">
+																				<label>
+																					<input class="selectSwitchProdDesc" name="selectImpServ" type="checkbox"
+																					 	(click)="vincdescproddescuento($event.target,serfdesc.c_token);" style="width: auto;">
+																					<span class="lever tooltipped" data-position="left" data-tooltip="vincular/desvincular producto"></span>
+																				</label>
+																			</div>
+																		</td>
+																	</tr>
+																</tbody>
+																<tbody *ngIf="prodDetalleDesc.length == 0">
+																	<tr>
+																		<td colspan="3">{{'no_rows' | translate}}</td>
+																	</tr>
+																</tbody>
+															</table>
+															<paginado-controles class="paginador"
+																id="pageservDetalleDesc"
+																(pageChange)="pageservDetalleDesc = $event"
+																previousLabel="{{'prev' | translate}}"
+																nextLabel="{{'next' | translate}}">
+															</paginado-controles>
+														</div>
+													</li>
+													<li class="licollapsible">
+														<div class="collapsable-header"><div class="chip">vinculados</div></div>
+														<div class="collapsable-body">
+															<div class="busqueda">
+																<div class="input-field">
+																	<input class="validate" type="text" id="inputBuscaListaSD" disabled>
+																	<label  for="first_name" id="infoListaServDesc">Busqueda...</label>
+																</div>
+															</div>
+															<table id="theadListaServiciosVDescuentos" class="centered responsive-table tabThead">
+																<thead id="theadListaServiciosVDescuentos" class="theadLista">
+																	<tr>
+																		<th class="ultimo"></th>
+																		<th>producto</th>
+																		<th class="ultimo"></th>
+																	</tr>
+																</thead>
+																<tbody *ngIf="prodDetalleVinculados.length > 0">
+																	<tr *ngFor="let serfdesc of prodDetalleVinculados | paginate:{id:'pageservDetalleVinculados',itemsPerPage:10,currentPage:pageservDetalleVinculados}; index as i">
+																		<td class="img"><img style="margin-right: 5px;" src="{{serfdesc.imagen}}" alt="Contact Person"></td>
+																		<td>{{serfdesc.clasificacion+" "+serfdesc.producto}}</td>
+																		<td>
+																			<div class="switch">
+																				<label>
+																					<input class="selectSwitchProdDesc" name="selectImpServ" type="checkbox" checked
+																					 	(click)="unVincdescproddescuento($event.target,serfdesc.tokenDescDetalle,serfdesc.c_token);" style="width: auto;">
+																					<span class="lever tooltipped" data-position="left" data-tooltip="vincular/desvincular producto"></span>
+																				</label>
+																			</div>
+																		</td>
+																	</tr>
+																</tbody>
+																<tbody *ngIf="prodDetalleVinculados.length == 0">
+																	<tr>
+																		<td colspan="3">{{'no_rows' | translate}}</td>
+																	</tr>
+																</tbody>
+															</table>
+															<paginado-controles class="paginador"
+																id="pageservDetalleVinculados"
+																(pageChange)="pageservDetalleVinculados = $event"
+																previousLabel="{{'prev' | translate}}"
+																nextLabel="{{'next' | translate}}">
+															</paginado-controles>
+														</div>
+													</li>
+													<li class="licollapsible">
+														<div class="collapsable-header"><div class="chip">productos desvinculados recientemente</div></div>
+														<div class="collapsable-body">
+															<div class="busqueda">
+																<div class="input-field">
+																	<input class="validate" type="text" id="inputBuscaListaSD" disabled>
+																	<label  for="first_name" id="infoListaServDesc">Busqueda...</label>
+																</div>
+															</div>
+															<table id="theadListaServiciosVDescuentos" class="centered responsive-table tabThead">
+																<thead id="theadListaServiciosVDescuentos" class="theadLista">
+																	<tr>
+																		<th class="ultimo"></th>
+																		<th>producto</th>
+																		<th class="ultimo"></th>
+																	</tr>
+																</thead>
+																<tbody *ngIf="prodDetalleDeleted.length > 0">
+																	<tr *ngFor="let serfdesc of prodDetalleDeleted | paginate:{id:'pageservDetalleVinculados',itemsPerPage:10,currentPage:pageservDetalleVinculados}; index as i">
+																		<td class="img"><img style="margin-right: 5px;" src="{{serfdesc.imagen}}" alt="Contact Person"></td>
+																		<td>{{serfdesc.clasificacion+" "+serfdesc.producto}}</td>
+																		<td>
+																			<div class="switch">
+																				<label>
+																					<input class="selectSwitchProdDesc" name="selectImpServ" type="checkbox" (click)="vincdescproddescuento($event.target,serfdesc.c_token);" style="width: auto;">
+																					<span class="lever tooltipped" data-position="left" data-tooltip="vincular/desvincular producto"></span>
+																				</label>
+																			</div>
+																		</td>
+																	</tr>
+																</tbody>
+																<tbody *ngIf="prodDetalleDeleted.length == 0">
+																	<tr><td colspan="3">{{'no_rows' | translate}}</td></tr>
+																</tbody>
+															</table>
+															<paginado-controles class="paginador"
+																id="pageservDetalleVinculados"
+																(pageChange)="pageservDetalleVinculados = $event"
+																previousLabel="{{'prev' | translate}}"
+																nextLabel="{{'next' | translate}}">
+															</paginado-controles>
+														</div>
+													</li>
+												</ul>
+											</div>
+										</div>
+									</div>
+
+									<div class="col-12">
+										<div class="card">
+											<div class="card-header">
+												<h6>servicios</h6>
+											</div>
+											<div class="card-content white-text" *ngIf="enabledAccess == null || enabledAccess == '' || validateVinculo == true">
+												<ul class="collapsable" id="ulDescProm">
+													<li class="licollapsible">
+														<div class="collapsable-header"><div class="chip">Catalogo</div></div>
+														<div class="collapsable-body">
+															<div class="busqueda">
+																<div class="input-field">
+																	<input class="validate" type="text" id="inputBuscaListaSD" disabled>
+																	<label  for="first_name" id="infoListaServDesc">Busqueda...</label>
+																</div>
+															</div>
+															<table id="theadListaServiciosVDescuentos" class="centered responsive-table tabThead">
+																<thead id="theadListaServiciosVDescuentos" class="theadLista">
+																	<tr>
+																		<th class="ultimo"></th>
+																		<th>Servicio</th>
+																		<th></th>
+																	</tr>
+																</thead>
+																<tbody *ngIf="servDetalleDesc.length > 0">
+																	<tr *ngFor="let serfdesc of servDetalleDesc | paginate:{id:'pageprodDetalleDesc',itemsPerPage:10,currentPage:pageprodDetalleDesc}; index as i">
+																		<!--<td class="noneView">{{serfdesc.c_token}}</td>-->
+																		<td class="img"><img style="margin-right: 5px;" src="{{serfdesc.imagen}}" alt="Contact Person"></td>
+																		<td>{{serfdesc.clasificacion+" "+serfdesc.servicio}}</td>
+																		<td *ngIf="serfdesc.vincDescServ == true">vinculado</td>
+																		<td *ngIf="serfdesc.vincDescServ == false">no vinculado</td>
+																	</tr>
+																</tbody>
+																<tbody *ngIf="servDetalleDesc.length == 0">
+																	<tr>
+																		<td colspan="3">{{'no_rows' | translate}}</td>
+																	</tr>
+																</tbody>
+															</table>
+															<paginado-controles class="paginador"
+																id="pageprodDetalleDesc"
+																(pageChange)="pageprodDetalleDesc = $event"
+																previousLabel="{{'prev' | translate}}"
+																nextLabel="{{'next' | translate}}">
+															</paginado-controles>
+														</div>
+													</li>
+													<li class="licollapsible">
+														<div class="collapsable-header"><div class="chip">vinculados</div></div>
+														<div class="collapsable-body">
+															<div class="busqueda">
+																<div class="input-field">
+																	<input class="validate" type="text" id="inputBuscaListaSD" disabled>
+																	<label  for="first_name" id="infoListaServDesc">Busqueda...</label>
+																</div>
+															</div>
+															<table class="centered responsive-table tabThead">
+																<thead class="theadLista">
+																	<tr>
+																		<th class="ultimo"></th>
+																		<th>Servicio</th>
+																	</tr>
+																</thead>
+																<tbody *ngIf="servDetalleVinculados.length > 0">
+																	<tr *ngFor="let serfdesc of servDetalleVinculados | paginate:{id:'pageprodDetalleVinculados',itemsPerPage:10,currentPage:pageprodDetalleVinculados}; index as i">
+																		<td class="img"><img style="margin-right: 5px;" src="{{serfdesc.imagen}}" alt="Contact Person"></td>
+																		<td>{{serfdesc.clasificacion+" "+serfdesc.servicio}}</td>
+																	</tr>
+																</tbody>
+																<tbody *ngIf="servDetalleVinculados.length == 0">
+																	<tr>
+																		<td colspan="2">{{'no_rows' | translate}}</td>
+																	</tr>
+																</tbody>
+															</table>
+															<paginado-controles class="paginador"
+																id="pageprodDetalleVinculados"
+																(pageChange)="pageprodDetalleVinculados = $event"
+																previousLabel="{{'prev' | translate}}"
+																nextLabel="{{'next' | translate}}">
+															</paginado-controles>
+														</div>
+													</li>
+													<li class="licollapsible">
+														<div class="collapsable-header"><div class="chip">servicios desvinculados recientemente</div></div>
+														<div class="collapsable-body">
+															<div class="busqueda">
+																	<div class="input-field">
+																			<input class="validate" type="text" id="inputBuscaListaSD" disabled>
+																			<label  for="first_name" id="infoListaServDesc">Busqueda...</label>
+																	</div>
+															</div>
+															<table id="theadListaServiciosVDescuentos" class="centered responsive-table tabThead">
+																<thead id="theadListaServiciosVDescuentos" class="theadLista">
+																	<tr>
+																		<th class="ultimo"></th>
+																		<th>Servicio</th>
+																	</tr>
+																</thead>
+																<tbody *ngIf="servDetalleDeleted.length > 0">
+																	<tr *ngFor="let serfdesc of servDetalleDeleted | paginate:{id:'pageprodDetalleDeleted',itemsPerPage:10,currentPage:pageprodDetalleDeleted}; index as i">
+																		<td class="img"><img style="margin-right: 5px;" src="{{serfdesc.imagen}}" alt="Contact Person"></td>
+																		<td>{{serfdesc.clasificacion+" "+serfdesc.servicio}}</td>
+																	</tr>
+																</tbody>
+																<tbody *ngIf="servDetalleDeleted.length == 0"><tr><td colspan="2">{{'no_rows' | translate}}</td></tr></tbody>
+															</table>
+															<paginado-controles class="paginador"
+																id="pageprodDetalleDeleted"
+																(pageChange)="pageprodDetalleDeleted = $event"
+																previousLabel="{{'prev' | translate}}"
+																nextLabel="{{'next' | translate}}">
+															</paginado-controles>
+														</div>
+													</li>
+												</ul>
+											</div>
+											<div class="card-content white-text" *ngIf="enabledAccess != null && enabledAccess != '' && validateVinculo == false">
+												<ul class="collapsable" id="ulDescProm">
+													<li class="licollapsible">
+														<div class="collapsable-header"><div class="chip">Catalogo</div></div>
+														<div class="collapsable-body">
+															<div class="busqueda">
+																<div class="input-field">
+																	<input class="validate" type="text" id="inputBuscaListaSD" disabled>
+																	<label  for="first_name" id="infoListaServDesc">Busqueda...</label>
+																</div>
+															</div>
+															<table id="theadListaServiciosVDescuentos" class="centered responsive-table tabThead">
+																<thead id="theadListaServiciosVDescuentos" class="theadLista">
+																	<tr>
+																		<th class="ultimo"></th>
+																		<th>Servicio</th>
+																		<th class="ultimo"></th>
+																	</tr>
+																</thead>
+																<tbody *ngIf="servDetalleDesc.length > 0">
+																	<tr *ngFor="let serfdesc of servDetalleDesc | paginate:{id:'pageprodDetalleDesc',itemsPerPage:10,currentPage:pageprodDetalleDesc}; index as i">
+																		<!--<td class="noneView">{{serfdesc.c_token}}</td>-->
+																		<td class="img"><img style="margin-right: 5px;" src="{{serfdesc.imagen}}" alt="Contact Person"></td>
+																		<td>{{serfdesc.clasificacion+" "+serfdesc.servicio}}</td>
+																		<td *ngIf="serfdesc.vincDescServ == true" class="ultimo">---</td>
+																		<td *ngIf="serfdesc.vincDescServ == false" class="ultimo">
+																			<div class="switch">
+																				<label>
+																					<input class="selectSwitchProdDesc" name="selectImpServ" type="checkbox"
+																					 	(click)="vincdescservdescuento($event.target,serfdesc.c_token);" style="width: auto;">
+																					<span class="lever tooltipped" data-position="left" data-tooltip="vincular servicio"></span>
+																				</label>
+																			</div>
+																		</td>
+																	</tr>
+																</tbody>
+																<tbody *ngIf="servDetalleDesc.length == 0">
+																	<tr>
+																		<td colspan="3">{{'no_rows' | translate}}</td>
+																	</tr>
+																</tbody>
+															</table>
+															<paginado-controles class="paginador"
+																id="pageprodDetalleDesc"
+																(pageChange)="pageprodDetalleDesc = $event"
+																previousLabel="{{'prev' | translate}}"
+																nextLabel="{{'next' | translate}}">
+															</paginado-controles>
+														</div>
+													</li>
+													<li class="licollapsible">
+														<div class="collapsable-header"><div class="chip">vinculados</div></div>
+														<div class="collapsable-body">
+															<div class="busqueda">
+																<div class="input-field">
+																	<input class="validate" type="text" id="inputBuscaListaSD" disabled>
+																	<label  for="first_name" id="infoListaServDesc">Busqueda...</label>
+																</div>
+															</div>
+															<table class="centered responsive-table tabThead">
+																<thead class="theadLista">
+																	<tr>
+																		<th class="ultimo"></th>
+																		<th>Servicio</th>
+																		<th class="ultimo"></th>
+																	</tr>
+																</thead>
+																<tbody *ngIf="servDetalleVinculados.length > 0">
+																	<tr *ngFor="let serfdesc of servDetalleVinculados | paginate:{id:'pageprodDetalleVinculados',itemsPerPage:10,currentPage:pageprodDetalleVinculados}; index as i">
+																		<td class="img"><img style="margin-right: 5px;" src="{{serfdesc.imagen}}" alt="Contact Person"></td>
+																		<td>{{serfdesc.clasificacion+" "+serfdesc.servicio}}</td>
+																		<td>
+																			<div class="switch">
+																				<label>
+																					<input class="selectSwitchProdDesc" name="selectImpServ" type="checkbox" checked
+																						(click)="unVincdescservdescuento($event.target,serfdesc.tokenDescDetalle,serfdesc.c_token);" style="width: auto;">
+																					<span class="lever tooltipped" data-position="left" data-tooltip="desvincular servicio"></span>
+																				</label>
+																			</div>
+																		</td>
+																	</tr>
+																</tbody>
+																<tbody *ngIf="servDetalleVinculados.length == 0">
+																	<tr>
+																		<td colspan="3">{{'no_rows' | translate}}</td>
+																	</tr>
+																</tbody>
+															</table>
+															<paginado-controles class="paginador"
+																id="pageprodDetalleVinculados"
+																(pageChange)="pageprodDetalleVinculados = $event"
+																previousLabel="{{'prev' | translate}}"
+																nextLabel="{{'next' | translate}}">
+															</paginado-controles>
+														</div>
+													</li>
+													<li class="licollapsible">
+														<div class="collapsable-header"><div class="chip">servicios desvinculados recientemente</div></div>
+														<div class="collapsable-body">
+															<div class="busqueda">
+																	<div class="input-field">
+																			<input class="validate" type="text" id="inputBuscaListaSD" disabled>
+																			<label  for="first_name" id="infoListaServDesc">Busqueda...</label>
+																	</div>
+															</div>
+															<table id="theadListaServiciosVDescuentos" class="centered responsive-table tabThead">
+																<thead id="theadListaServiciosVDescuentos" class="theadLista">
+																	<tr>
+																		<th class="ultimo"></th>
+																		<th>Servicio</th>
+																		<th class="ultimo"></th>
+																	</tr>
+																</thead>
+																<tbody *ngIf="servDetalleDeleted.length > 0">
+																	<tr *ngFor="let serfdesc of servDetalleDeleted | paginate:{id:'pageprodDetalleDeleted',itemsPerPage:10,currentPage:pageprodDetalleDeleted}; index as i">
+																		<td class="img"><img style="margin-right: 5px;" src="{{serfdesc.imagen}}" alt="Contact Person"></td>
+																		<td>{{serfdesc.clasificacion+" "+serfdesc.servicio}}</td>
+																		<td *ngIf="serfdesc.vincDescServ == true" class="ultimo">---</td>
+																		<td *ngIf="serfdesc.vincDescServ == false" class="ultimo">
+																			<div class="switch">
+																				<label>
+																					<input class="selectSwitchProdDesc" name="selectImpServ" type="checkbox" (click)="vincdescservdescuento($event.target,serfdesc.c_token);" style="width: auto;">
+																					<span class="lever tooltipped" data-position="left" data-tooltip="vincular/desvincular producto"></span>
+																				</label>
+																			</div>
+																		</td>
+																	</tr>
+																</tbody>
+																<tbody *ngIf="servDetalleDeleted.length == 0"><tr><td colspan="3">{{'no_rows' | translate}}</td></tr></tbody>
+															</table>
+															<paginado-controles class="paginador"
+																id="pageprodDetalleDeleted"
+																(pageChange)="pageprodDetalleDeleted = $event"
+																previousLabel="{{'prev' | translate}}"
+																nextLabel="{{'next' | translate}}">
+															</paginado-controles>
+														</div>
+													</li>
+												</ul>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div>
+							</div>
+						</div>
+					</div>
+

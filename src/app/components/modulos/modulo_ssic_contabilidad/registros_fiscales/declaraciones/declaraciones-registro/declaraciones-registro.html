@@ -1,0 +1,269 @@
+@if (declaracion_form) {
+  <form class="formDeclaracionImp" #formDeclaracionImp="ngForm" autocomplete="off" name="formDeclaracionImp" enctype="multipart/form-data" (ngSubmit)="validate_declaracion_reg && declaracionRegistro(formDeclaracionImp);">
+    <div class="col-12 row" style="padding: 0!important;">
+      <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-4 input-group">
+        <label for="declaFechaCont" class="activeInput">{{'fecha_cont' | translate}}</label>
+        <input id="declaFechaCont" type="date" name="declaFechaCont" (change)="select_fecha_contabilizacion($event.target);">
+      </div>
+      <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-4 input-group">
+        <label for="declaTipo" class="activeInput">Tipo de declaración</label>
+        <p-select [options]="tipos_declaracion" id="declaTipo" name="declaTipo" optionLabel="entidad" [filter]="true" appendTo="body" filterBy="entidad" [showClear]="true" [placeholder]="'opt_select' | translate"
+          class="w-full md:w-56" (onChange)="changeTipoDeclaracion($event.value);">
+          <ng-template #selectedItem let-sel>
+            <div class="flex items-center gap-2">
+              <div>{{sel.tipo}}</div>
+            </div>
+          </ng-template>
+          <ng-template let-reg #item>
+            <div class="flex items-center gap-2">
+              <div>{{reg.tipo}}</div>
+            </div>
+          </ng-template>
+        </p-select>
+      </div>
+      <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-4 input-group">
+        <label for="declaPeriodicidad" class="activeInput">Periodicidad</label>
+        <p-select [options]="tipos_periodicidad" id="declaPeriodicidad" name="declaPeriodicidad" optionLabel="entidad"
+          [filter]="true" appendTo="body" filterBy="entidad" [showClear]="true" [placeholder]="'opt_select' | translate"
+          class="w-full md:w-56" (onChange)="changePeriodicidad($event.value);">
+          <ng-template #selectedItem let-selectedOption>
+            <div class="flex items-center gap-2">
+              <div>{{selectedOption.periodicidad}}</div>
+            </div>
+          </ng-template>
+          <ng-template let-prov #item>
+            <div class="flex items-center gap-2">
+              <div>{{prov.periodicidad}}</div>
+            </div>
+          </ng-template>
+        </p-select>
+      </div>
+      <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-4 input-group">
+        <label for="declaEjercicio" class="activeInput">Ejercicio</label>
+        <p-datepicker id="declaEjercicio" name="declaEjercicio" [(ngModel)]="ejercicio" view="year" dateFormat="yy" [placeholder]="'opt_select' | translate" [readonlyInput]="true" (onSelect)="selectEjercicio();" />
+      </div>
+      <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-4 input-group">
+        <label for="declaPeriodo" class="activeInput">Periodo</label>
+        <p-datepicker id="declaPeriodo" [ngClass]="modelDeclaraciones.ejercicio == '' ? 'disabled' : ''"
+          [disabled]="modelDeclaraciones.ejercicio == ''"
+          [attr.aria-disabled]="modelDeclaraciones.ejercicio == '' ? true : null" name="declaPeriodo"
+          [(ngModel)]="periodo" view="month" [minDate]="min_ejercicio" [maxDate]="max_ejercicio" selectionMode="range"
+          dateFormat="MM/yy" [placeholder]="'opt_select' | translate" [readonlyInput]="true"
+          (onSelect)="selectEjercicioPeriodo();" />
+      </div>
+      <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-4 input-group">
+        <label for="declaFechaPresent" class="activeInput">Fecha de presentaci&oacute;n</label>
+        <input id="declaFechaPresent" type="date" name="declaFechaPresent" (change)="select_fecha_presentacion($event.target);">
+      </div>
+      <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+        <label for="declaMedioPresent" class="activeInput">Medio de presentaci&oacute;n</label>
+        <p-select [options]="medios_presentacion" id="declaMedioPresent" name="declaMedioPresent" optionLabel="entidad"
+          [filter]="true" appendTo="body" filterBy="entidad" [showClear]="true" [placeholder]="'opt_select' | translate"
+          class="w-full md:w-56" (onChange)="changeMedioPresentacion($event.value);">
+          <ng-template #selectedItem let-sel>
+            <div class="flex items-center gap-2">
+              <div>{{sel.medio}}</div>
+            </div>
+          </ng-template>
+          <ng-template let-med #item>
+            <div class="flex items-center gap-2">
+              <div>{{med.medio}}</div>
+            </div>
+          </ng-template>
+        </p-select>
+      </div>
+      <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+        <label for="declaVencimOblig" class="activeInput">Vencimiento obligaci&oacute;n</label>
+        <input id="declaVencimOblig" type="date" name="declaVencimOblig" (change)="select_vencimiento_obligacion($event.target);">
+      </div>
+      <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+        <label for="declaVersion" class="activeInput">Versi&oacute;n</label>
+        <input id="declaVersion" type="text" name="declaVersion" placeholder="0" (input)="keyup_version($event.target);">
+      </div>
+      <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+        <label for="declaNumOperacion" class="activeInput">Numero de operaci&oacute;n</label>
+        <input id="declaNumOperacion" type="text" name="declaNumOperacion" (input)="keyup_numero_operacion($event.target);">
+      </div>
+      <div class="col-12 input-group">
+        <label for="declaNumOperacion" class="activeInput">L&iacute;nea de captura</label>
+        <input id="declaNumOperacion" type="text" name="declaNumOperacion" (input)="keyup_linea_de_captura($event.target);">
+      </div>
+  
+      <p-divider />
+      <div class="col-12 explain">
+        <h6 class="title">Impuestos que declara:</h6>
+      </div>
+      <div class="col-12 input-group">
+        <label for="desgPayConcepto" class="activeInput">Concepto de pago</label>
+        <p-select [options]="impuestos_list_declaracion" id="desgPayConcepto" name="desgPayConcepto" [(ngModel)]="impuesto_selected" optionLabel="folio_impuesto" [filter]="true" appendTo="body" [showClear]="true" 
+          filterBy="folio_impuesto,concepto_impuesto,abreviacion_impuesto" [placeholder]="'opt_select' | translate" optionValue="token_catalogo_impuesto" class="w-full md:w-56" (onChange)="changeDesgPayConcepto($event.value);">
+          <ng-template #selectedItem let-sel>
+            <div class="flex items-center gap-2">
+              <div>{{sel.folio_impuesto+' '+sel.concepto_impuesto+' ('+sel.abreviacion_impuesto+')'}}</div>
+            </div>
+          </ng-template>
+          <ng-template let-imp #item>
+            <div class="flex items-center gap-2">
+              <div>{{imp.folio_impuesto+' '+imp.concepto_impuesto+' ('+imp.abreviacion_impuesto+')'}}</div>
+            </div>
+          </ng-template>
+        </p-select>
+      </div>
+      <div class="col-12 col-sm-12 col-md-6 col-lg-3 col-xl-2 col-xxl-2 input-group">
+        <label for="desgPayImporteAFavor" class="activeInput">Importe a favor</label>
+        <input id="desgPayImporteAFavor" type="number" name="desgPayImporteAFavor" placeholder="0.00" (input)="keyupDesgPayImporteAFavor($event.target);">
+      </div>
+      <div class="col-12 col-sm-12 col-md-6 col-lg-3 col-xl-2 col-xxl-2 input-group">
+        <label for="desgPayACargo" class="activeInput">A cargo</label>
+        <input id="desgPayACargo" type="number" name="desgPayACargo" placeholder="0.00" (input)="keyupDesgPayACargo($event.target);">
+      </div>
+      <div class="col-12 col-sm-12 col-md-6 col-lg-3 col-xl-2 col-xxl-2 input-group">
+        <label for="desgPayActualizaciones" class="activeInput">Actualizaciones</label>
+        <input id="desgPayActualizaciones" type="number" name="desgPayActualizaciones" placeholder="0.00" (input)="keyupDesgPayActualizaciones($event.target);">
+      </div>
+      <div class="col-12 col-sm-12 col-md-6 col-lg-3 col-xl-2 col-xxl-2 input-group">
+        <label for="desgPayRecargos" class="activeInput">Recargos</label>
+        <input id="desgPayRecargos" type="number" name="desgPayRecargos" placeholder="0.00" (input)="keyupDesgPayRecargos($event.target);">
+      </div>
+      <div class="col-12 col-sm-12 col-md-6 col-lg-3 col-xl-2 col-xxl-2 input-group">
+        <label for="desgPayOtrosCargos" class="activeInput">Otros cargos</label>
+        <input id="desgPayOtrosCargos" type="number" name="desgPayOtrosCargos" placeholder="0.00" (input)="keyupDesgPayOtrosCargos($event.target);">
+      </div>
+      <div class="col-12 col-sm-12 col-md-6 col-lg-3 col-xl-2 col-xxl-2 input-group">
+        <label for="desgPayOtrosAbonos" class="activeInput">Otros abonos</label>
+        <input id="desgPayOtrosAbonos" type="number" name="desgPayOtrosAbonos" placeholder="0.00" (input)="keyupDesgPayOtrosAbonos($event.target);">
+      </div>
+      <div class="col-12" style="display: flex !important;justify-content: end!important;">
+        <div class="explain">
+          <h6 class="title">Cantidad a pagar</h6>
+          <h6 class="content">{{formatNumber(desgPayCantidadACargo)}}</h6>
+        </div>
+      </div>
+      <div class="col-12" style="display: flex !important;justify-content: end!important;margin-top: 5px!important;">
+        <a class="btn btn_extend text-bg-success rounded-3" [ngClass]="!validaDesglose ? 'disabled' : ''"
+          [attr.disabled]="!validaDesglose ? true : null" [attr.aria-disabled]="!validaDesglose ? true : null"
+          (click)="validaDesglose && addImpuestosDeclarar();">
+          <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+        </a>
+      </div>
+  
+      <p-table #decDesNew [value]="modelDeclaraciones.declaraciones_lista_pagar" showGridlines [resizableColumns]="true"
+        [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]"
+        [globalFilterFields]="['concepto_pago_name','a_cargo','actualizaciones','recargos','otros_cargos','otros_abonos','cantidad_a_pagar']">
+        <ng-template #caption>
+          <div class="flex"
+            style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;"
+            ngbDropdown>
+            <p-iconfield iconPosition="left" class="ml-auto">
+              <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+              <input pInputText type="text" (input)="decDesNew.filterGlobal($event.target.value, 'contains')"
+                placeholder="{{'bus_car' | translate}}" />
+            </p-iconfield>
+          </div>
+        </ng-template>
+        <ng-template #header>
+          <tr>
+            <th class="ultimo"></th>
+            <th pResizableColumn pSortableColumn="concepto_pago_name">concepto de pago&nbsp;<p-sortIcon field="concepto_pago_name"/></th>
+            <th pResizableColumn pSortableColumn="importe_a_favor">Importe a favor&nbsp;<p-sortIcon field="importe_a_favor"/></th>
+            <th pResizableColumn pSortableColumn="a_cargo">A cargo&nbsp;<p-sortIcon field="a_cargo"/></th>
+            <th pResizableColumn pSortableColumn="actualizaciones">Actualizaciones&nbsp;<p-sortIcon field="actualizaciones"/></th>
+            <th pResizableColumn pSortableColumn="recargos">Recargos&nbsp;<p-sortIcon field="recargos"/></th>
+            <th pResizableColumn pSortableColumn="otros_cargos">Otros cargos&nbsp;<p-sortIcon field="otros_cargos"/></th>
+            <th pResizableColumn pSortableColumn="otros_abonos">Otros abonos&nbsp;<p-sortIcon field="otros_abonos"/></th>
+            <th pResizableColumn pSortableColumn="cantidad_a_pagar">Cantidad a pagar&nbsp;<p-sortIcon field="cantidad_a_pagar"/></th>
+            <th class="ultimo"></th>
+          </tr>
+        </ng-template>
+        <ng-template #body let-ldec let-posicion="rowIndex">
+          <tr>
+            <td>{{posicion + 1}}</td>
+            <td class="name">{{ldec.concepto_pago_name}}</td>
+            <td class="td_importes">{{formatNumber(ldec.importe_a_favor)}}</td>
+            <td class="td_importes">{{formatNumber(ldec.a_cargo)}}</td>
+            <td class="td_importes">{{formatNumber(ldec.actualizaciones)}}</td>
+            <td class="td_importes">{{formatNumber(ldec.recargos)}}</td>
+            <td class="td_importes">{{formatNumber(ldec.otros_cargos)}}</td>
+            <td class="td_importes">{{formatNumber(ldec.otros_abonos)}}</td>
+            <td class="td_importes">{{formatNumber(ldec.cantidad_a_pagar)}}</td>
+            <td class="ultimo">
+              <a class="btn btn_extend text-bg-danger rounded-3" (click)="deleteDeclaracion(posicion);">
+                <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+              </a>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="10" class="text-center py-4">
+              <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+              <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                {{'no_rows' | translate}}
+              </p>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="footer">
+          <tr>
+            <td colspan="2" class="td_importes"><strong>TOTAL A PAGAR</strong></td>
+            <td class="td_importes"><strong>{{calculo_importe_a_favor}}</strong></td>
+            <td class="td_importes"><strong>{{calculo_total_a_cargo}}</strong></td>
+            <td class="td_importes"><strong>{{calculo_total_actualizaciones}}</strong></td>
+            <td class="td_importes"><strong>{{calculo_total_recargos}}</strong></td>
+            <td class="td_importes"><strong>{{calculo_total_otros_cargos}}</strong></td>
+            <td class="td_importes"><strong>{{calculo_total_otros_abonos}}</strong></td>
+            <td class="td_importes"><strong>{{calculo_total_cantidad_a_pagar}}</strong></td>
+            <td></td>
+          </tr>
+        </ng-template>
+      </p-table>
+  
+      <div class="col-12 input-group" style="margin-bottom: 10px!important;">
+        <label class="activeInput">{{'observ' | translate}}</label>
+        <textarea id="pago_large_observ" class="validate"
+          (input)="keyupObservacionDeclaracion($event.target);"></textarea>
+      </div>
+  
+      <div class="col-12 field_file_drop">
+        <ngx-file-drop dropZoneLabel="Drop files here" (onFileDrop)="droppedDeclaracion($event)" (onFileOver)="fileOverDeclaracion($event)" (onFileLeave)="fileLeaveDeclaracion($event)">
+          <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
+						<a class="btn btn_load_file" type="button" style="color: #0782d0 !important;" (click)="openFileSelector()">
+							{{'load_files' | translate}} / {{'browse_files' | translate}}
+						</a>
+					</ng-template>
+        </ngx-file-drop>
+        <table class="white centered" style="margin-top:5px!important;width: 100% !important;">
+          <thead>
+            <tr>
+              <th>{{'file' | translate}}</th>
+              <th class="ultimo"></th>
+            </tr>
+          </thead>
+          <tbody class="upload-name-style" *ngIf="filesDeclaracion.length != 0">
+            <tr *ngFor="let item of filesDeclaracion; index as i">
+              <td><strong>{{ item.relativePath }}</strong></td>
+              <td class="ultimo">
+                <a class="btn btn_extend text-bg-danger rounded-3" (click)="deleteAnexosDeclaracion(i);">
+                  <i class="fa-solid fa-xmark"></i>
+                </a>
+              </td>
+            </tr>
+          </tbody>
+          <tbody *ngIf="filesDeclaracion.length == 0">
+            <tr>
+              <td colspan="2">{{'no_rows' | translate}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+  
+      <div class="col-12" style="display: flex !important;justify-content: end!important;margin-top: 5px!important;">
+        <button class="btn btn_extend text-bg-success rounded-3" [ngClass]="!validate_declaracion_reg ? 'disabled' : ''"
+          [attr.disabled]="!validate_declaracion_reg ? true : null"
+          [attr.aria-disabled]="!validate_declaracion_reg ? true : null">
+          <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+        </button>
+      </div>
+    </div>
+  </form>
+}

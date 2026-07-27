@@ -1,0 +1,506 @@
+@for (vUnidad of listado_unidades; track $index; let idx = $index) {
+  <div class="alert alert-info col-12">
+    <div class="fw-bold mb-1">
+      <i class="fa-solid fa-circle-info"></i> 📦 Unidad {{ idx + 1 }}
+    </div>
+    <div class="fw-bold mb-1">{{vUnidad.direccion_origen+" - "+vUnidad.direccion_destino_especifica}}</div>
+    <p-divider [attr.style]="'margin-top: 15px!important; margin-bottom: 5px!important;'" />
+    <div class="col-12 row">
+      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 explain explain_column" style="margin: 0!important;">
+        <h6 class="title">Fecha de salida</h6>
+        <h6 class="content">{{vUnidad.unidad_fecha_salida}}</h6>
+      </div>
+      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 explain explain_column" style="margin: 0!important;">
+        <h6 class="title">Fecha tentativa de arribo final</h6>
+        <h6 class="content">{{vUnidad.unidad_fecha_tentativa_arribo}}</h6>
+      </div>      
+      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 explain explain_column" style="margin: 0!important;">
+        <h6 class="title">Fecha real de arribo</h6>
+        <h6 class="content">{{vUnidad.unidad_fecha_real_arribo_reg}}</h6>
+      </div>
+      <div class="col-12 explain explain_column" style="margin: 0!important;">
+        <h6 class="title">Comentarios de arribo</h6>
+        <h6 class="content">{{vUnidad.observaciones_arribo_reg}}</h6>
+      </div>
+      
+      <p-divider [attr.style]="'margin-top: 15px!important; margin-bottom: 5px!important;'" />
+      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 explain explain_column" style="margin: 0!important;">
+        <h6 class="title">Medio de transporte</h6>
+        <h6 class="content">{{vUnidad.tipo_transporte_extend}}</h6>
+      </div>
+      <div class="col-12 col-sm-12 col-md-3 col-lg-6 col-xl-4 col-xxl-4 explain explain_column" style="margin: 0!important;">
+        <h6 class="title">Nombre del Operador / L&iacute;nea</h6>
+        <h6 class="content">{{vUnidad.operador_nombre}}</h6>
+      </div>
+  
+      <div class="col-12 col-sm-12 col-md-3 col-lg-6 col-xl-4 col-xxl-4 explain explain_column" style="margin: 0!important;">
+        <h6 class="title">Tel&eacute;fono del Operador</h6>
+        <h6 class="content">{{vUnidad.operador_telefono}}</h6>
+      </div>
+      <p-divider [attr.style]="'margin-top: 15px!important; margin-bottom: 5px!important;'" />
+      @if (vUnidad.tipo_transporte === 'terrestre') {
+        <div class="col-12 col-md-4 explain explain_column" style="margin: 0!important;">
+          <h6 class="title">Placas del Camion / Tractor</h6>
+          <h6 class="content">{{vUnidad.identificador_principal}}</h6>
+        </div>
+        <div class="col-12 col-md-4 explain explain_column" style="margin: 0!important;">
+          <h6 class="title">Placas del Remolque / Caja</h6>
+          <h6 class="content">{{vUnidad.identificador_secundario}}</h6>
+        </div>
+        <div class="col-12 col-md-4 explain explain_column" style="margin: 0!important;">
+          <h6 class="title">Permiso SCT / SICT</h6>
+          <h6 class="content">{{vUnidad.permiso_autorizacion}}</h6>
+        </div>
+      }
+  
+      @if (vUnidad.tipo_transporte === 'maritimo') {
+        <div class="col-12 col-md-6 explain explain_column" style="margin: 0!important;">
+          <h6 class="title">No. Contenedor (Container No.)</h6>
+          <h6 class="content">{{vUnidad.identificador_principal}}</h6>
+        </div>
+        <div class="col-12 col-md-6 explain explain_column" style="margin: 0!important;">
+          <h6 class="title">Booking Number / Reserva</h6>
+          <h6 class="content">{{vUnidad.identificador_secundario}}</h6>
+        </div>
+      }
+  
+      @if (vUnidad.tipo_transporte === 'aereo') {
+        <div class="col-12 col-md-6 explain explain_column" style="margin: 0!important;">
+          <h6 class="title">N&uacute;mero de Gu&iacute;a A&eacute;rea (AWB)</h6>
+          <h6 class="content">{{vUnidad.identificador_principal}}</h6>
+        </div>
+        <div class="col-12 col-md-6 explain explain_column" style="margin: 0!important;">
+          <h6 class="title">C&oacute;digo de Vuelo</h6>
+          <h6 class="content">{{vUnidad.identificador_secundario}}</h6>
+        </div>
+      }
+  
+      <div class="col-12 col-md-6 explain explain_column" style="margin: 0!important;">
+        <h6 class="title">📍 Direcci&oacute;n de Origen (Despacho)</h6>
+        <h6 class="content">{{vUnidad.direccion_origen}}</h6>
+      </div>
+      <div class="col-12 col-md-6 explain explain_column" style="margin: 0!important;">
+        <h6 class="title">📍 Direcci&oacute;n de Destino (Paradero)</h6>
+        <h6 class="content">{{vUnidad.direccion_destino_especifica}}</h6>
+      </div>
+  
+      <!--<div class="col-12 col-md-6 explain explain_column" style="margin: 0!important;">
+        <h6 class="title">XML Carta Porte / Traslado</h6>
+        <input class="form-control" id="facturaTrasladoXML" name="facturaTrasladoXML" type="file" accept=".xml" style="padding: 0;line-height: 30px;width: 100%!important;"
+          (change)="subirXmlTransporte($event,$event.target,transporte)">
+      </div>
+      <div class="col-12 col-md-6 explain explain_column" style="margin: 0!important;">
+        <h6 class="title">PDF Carta Porte / Traslado</h6>
+        <input class="form-control" id="facturaTrasladoPDF" name="facturaTrasladoPDF" type="file" [ngClass]="resultXml != 'validoXml' ? 'disabled' : ''" style="padding: 0;line-height: 30px;width: 100%!important;"
+          [attr.disabled]="resultXml != 'validoXml' ? true : null" [attr.aria-disabled]="resultXml != 'validoXml' ? true : null"
+          accept=".pdf" placeholder="PDF" (change)="resultXml == 'validoXml' && escanPdfCompra($event,$event.target,transporte);">
+      </div>-->
+  
+      <div class="col-12">
+        <span class="fw-bold text-secondary">📋 Distribuci&oacute;n de Mercanc&iacute;a para esta Unidad:</span>
+        <p-table #gralBuyList [value]="vUnidad.articulos" [(selection)]="vUnidad.articulos_seleccionados" dataKey="articulo" [globalFilterFields]="['folio_compra']" showGridlines [resizableColumns]="true" 
+          [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]">
+          <ng-template #caption>
+            <div class="flex" style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;" ngbDropdown>
+              <p-iconfield iconPosition="left" class="ml-auto">
+                <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                <input pInputText type="text" (input)="gralBuyList.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+              </p-iconfield>
+            </div>
+          </ng-template>
+          <ng-template #header>
+            <tr>
+              <th pResizableColumn pSortableColumn="articulo">articulo&nbsp;<p-sortIcon field="articulo" /></th>
+              <th pResizableColumn pSortableColumn="cantidad">cantidad registrada&nbsp;<p-sortIcon field="cantidad" /></th>
+              <th pSortableColumn="unidad_medida">{{'uni_med' | translate}}&nbsp;<p-sortIcon field="unidad_medida" /></th>
+            </tr>
+          </ng-template>
+          <ng-template #body let-cBuy let-rowIndex="rowIndex">
+            <tr>
+              <td>{{cBuy.articulo}}</td>
+              <td>{{cBuy.cantidad}}</td>
+              <td>{{cBuy.unidad_medida}}</td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="7" class="text-center py-4">
+                <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                  {{'no_rows' | translate}}
+                </p>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+      
+      @if (!vUnidad.arribo_autorizado) {
+        <div class="col-12 explain explain_column" style="margin: 0!important;">
+          <h6 class="title">Autorizar llegada:</h6>
+          <h6 class="content">{{vUnidad.new_auth_arribo_tipo == "liberacionaduana" ? "Llegada a aduana / punto intermedio" : "Arribo final a almacén"}}</h6>
+        </div>
+
+        <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input-group">
+          <label for="fechaSalidaCompra" class="activeInput"><span class="obligatorio">Fecha de autorizaci&oacute;n</span></label>
+          <input class="validate datepicker" id="fechaSalidaCompra" name="fechaSalidaCompra" type="date" required (change)="select_fecha_auth($event.target,vUnidad);">
+        </div>
+        <!--<div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input-group">
+          <label for="fechaSalidaCompra" class="activeInput"><span class="obligatorio">Tipo de autorizaci&oacute;n</span></label>
+          <p-select 
+            [options]="tiposAutorizaciones" 
+            id="tipo_auto_rizacion_l"
+            name="etapa_del_traslado" 
+            optionLabel="valor" 
+            optionValue="clave" 
+            appendTo="body" 
+            [placeholder]="'Selecciona el estatus actual' | translate" 
+            class="w-full" 
+            (onChange)="onAuthTipoChange($event.value,vUnidad)">
+          </p-select>
+        </div>-->
+
+        @if (vUnidad.new_auth_arribo_origen == 'externo') {
+          <div class="col-12 col-sm-12 col-md-3 col-lg-6 col-xl-4 col-xxl-4 input-group">
+            <label for="nombreDelOperadorLinea" class="activeInput"><span class="obligatorio">Nombre de quien autoriza</span></label>
+            <input id="nombreDelOperadorLinea" name="nombreDelOperadorLinea" class="validate" type="text" required (keyup)="autoriza_nombre_persona($event.target,vUnidad);">
+          </div>
+        }
+
+        <div class="col-12 input-group">
+          <label for="especificacionesTransporte" class="activeInput">{{'observ' | translate}}</label>
+          <textarea class="validate" id="especificacionesTransporte" name="especificacionesTransporte" (keyup)="observaciones_autorizacion($event.target,vUnidad);" minlength="5" style="max-height: 80px!important;"></textarea>
+        </div>
+        
+        <div class="col-12 field_file_drop">
+          <ngx-file-drop dropZoneLabel="Drop files here" (onFileDrop)="droppedTransito($event)" (onFileOver)="fileOverTransito($event)" (onFileLeave)="fileLeaveTransito($event)">
+            <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">                
+              <a class="btn btn_load_file" type="button" style="color: #0782d0 !important;" (click)="openFileSelector()">
+                {{'load_files' | translate}} / {{'browse_files' | translate}}
+              </a>
+            </ng-template>
+          </ngx-file-drop>
+        
+          <p-table #docsList [value]="anexosTransitoFiles" [globalFilterFields]="['relativePath']" dataKey="id" [resizableColumns]="true" responsiveLayout="stack">
+            <ng-template #caption>
+              <div class="flex">
+                <p-iconfield iconPosition="left" class="ml-auto">
+                  <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                  <input pInputText type="text" (input)="docsList.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+                </p-iconfield>
+              </div>
+            </ng-template>
+            <ng-template #header>
+              <tr>
+                <th>{{'file' | translate}}</th>
+                <th class="ultimo"></th>
+              </tr>
+            </ng-template>
+            <ng-template #body let-item let-rowIndex="rowIndex">
+              <tr>
+                <td><strong>{{ item.relativePath }}</strong></td>
+                <td class="ultimo">
+                  <a class="btn btn_extend text-bg-danger rounded-3" (click)="deleteAnexosTransito(rowIndex);">
+                    <i class="fa-solid fa-xmark"></i>
+                  </a>
+                </td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="2" class="text-center py-4">
+                  <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                  <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                    {{'no_rows' | translate}}
+                  </p>
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+
+        <div class="col-12" style="display: flex !important;justify-content: end!important;margin-top: 5px!important;">
+          @if (!validate_autorizacion(vUnidad)) {
+            <a class="btn btn_extend text-bg-success rounded-3 disabled" disabled aria-disabled="true">
+              <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+            </a>
+          } @else {
+            <a class="btn btn_extend text-bg-success rounded-3" (click)="registrarUnidadAutorizacion(vUnidad);">
+              <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+            </a>
+          }
+        </div>
+      }
+
+    </div>
+  </div>
+}
+
+<!--<div class="alert alert-info col-12 mb-3 shadow-sm rounded-3">
+  <div class="fw-bold mb-1">
+    <i class="fa-solid fa-circle-info"></i> Resumen del Tramo Anterior (Historial de Ubicaciones):
+  </div>
+  <div class="row">
+    @for (hito of listado_unidades; track $index) {
+      <div class="col-12 row styleMeasures" style="font-size: 0.85rem;" [ngClass]="!hito.registro_activo ? 'disabledView' : ''">
+        <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 explain explain_column" style="margin: 0!important;">
+          <h6 class="title">Etapa del Traslado</h6>
+          <h6 class="content">{{hito.etapa_anterior}}</h6>
+        </div>
+  
+        <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 explain explain_column" style="margin: 0!important;">
+          <h6 class="title">Fecha de salida</h6>
+          <h6 class="content">{{hito.fecha_real_salida}}</h6>
+        </div>
+  
+        <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 explain explain_column" style="margin: 0!important;">
+          <h6 class="title">Fecha tentativa de arribo final</h6>
+          <h6 class="content">{{hito.fecha_tentativa_arribo}}</h6>
+        </div>
+  
+        <div class="col-12 explain explain_column" style="margin: 0!important;">
+          <h6 class="title">Especificaciones globales de salida</h6>
+          <h6 class="content">{{hito.observaciones_salida}}</h6>
+        </div>
+
+        <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 explain explain_column" style="margin: 0!important;">
+          <h6 class="title">Fecha real de arribo</h6>
+          <h6 class="content">{{hito.fecha_real_arribo_reg}}</h6>
+        </div>
+  
+        <div class="col-12 explain explain_column" style="margin: 0!important;">
+          <h6 class="title">Comentarios de arribo</h6>
+          <h6 class="content">{{hito.observaciones_arribo_reg}}</h6>
+        </div>
+
+        <div class="col-12 explain">
+          <h6 class="title">Unidades / Medios de Transporte Despachados:</h6>
+        </div>
+        <div class="col-12">
+          @for (transporte of hito.unidades_anteriores; track $index; let idx = $index) {
+            <div class="card card_main col-12" style="padding: 0!important;">
+              <div class="card-body" style="padding: 10px!important;">
+                <h5 class="card-title">📦 Unidad {{ idx + 1 }}</h5>
+                <div class="inside">
+                  <div class="col-12 row">
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 explain explain_column" style="margin: 0!important;">
+                      <h6 class="title">Medio de transporte</h6>
+                      <h6 class="content">{{transporte.tipo_transporte_extend}}</h6>
+                    </div>
+                    <div class="col-12 col-sm-12 col-md-3 col-lg-6 col-xl-4 col-xxl-4 explain explain_column" style="margin: 0!important;">
+                      <h6 class="title">Nombre del Operador / L&iacute;nea</h6>
+                      <h6 class="content">{{transporte.operador_nombre}}</h6>
+                    </div>
+          
+                    <div class="col-12 col-sm-12 col-md-3 col-lg-6 col-xl-4 col-xxl-4 explain explain_column" style="margin: 0!important;">
+                      <h6 class="title">Tel&eacute;fono del Operador</h6>
+                      <h6 class="content">{{transporte.operador_telefono}}</h6>
+                    </div>
+                    <p-divider [attr.style]="'margin-top: 15px!important; margin-bottom: 5px!important;'" />
+                    @if (transporte.tipo_transporte === 'terrestre') {
+                      <div class="col-12 col-md-4 explain explain_column" style="margin: 0!important;">
+                        <h6 class="title">Placas del Camion / Tractor</h6>
+                        <h6 class="content">{{transporte.identificador_principal}}</h6>
+                      </div>
+                      <div class="col-12 col-md-4 explain explain_column" style="margin: 0!important;">
+                        <h6 class="title">Placas del Remolque / Caja</h6>
+                        <h6 class="content">{{transporte.identificador_secundario}}</h6>
+                      </div>
+                      <div class="col-12 col-md-4 explain explain_column" style="margin: 0!important;">
+                        <h6 class="title">Permiso SCT / SICT</h6>
+                        <h6 class="content">{{transporte.permiso_autorizacion}}</h6>
+                      </div>
+                    }
+          
+                    @if (transporte.tipo_transporte === 'maritimo') {
+                      <div class="col-12 col-md-6 explain explain_column" style="margin: 0!important;">
+                        <h6 class="title">No. Contenedor (Container No.)</h6>
+                        <h6 class="content">{{transporte.identificador_principal}}</h6>
+                      </div>
+                      <div class="col-12 col-md-6 explain explain_column" style="margin: 0!important;">
+                        <h6 class="title">Booking Number / Reserva</h6>
+                        <h6 class="content">{{transporte.identificador_secundario}}</h6>
+                      </div>
+                    }
+          
+                    @if (transporte.tipo_transporte === 'aereo') {
+                      <div class="col-12 col-md-6 explain explain_column" style="margin: 0!important;">
+                        <h6 class="title">N&uacute;mero de Gu&iacute;a A&eacute;rea (AWB)</h6>
+                        <h6 class="content">{{transporte.identificador_principal}}</h6>
+                      </div>
+                      <div class="col-12 col-md-6 explain explain_column" style="margin: 0!important;">
+                        <h6 class="title">C&oacute;digo de Vuelo</h6>
+                        <h6 class="content">{{transporte.identificador_secundario}}</h6>
+                      </div>
+                    }
+          
+                    <div class="col-12 col-md-6 explain explain_column" style="margin: 0!important;">
+                      <h6 class="title">📍 Direcci&oacute;n de Origen (Despacho)</h6>
+                      <h6 class="content">{{transporte.direccion_origen}}</h6>
+                    </div>
+                    <div class="col-12 col-md-6 explain explain_column" style="margin: 0!important;">
+                      <h6 class="title">📍 Direcci&oacute;n de Destino (Paradero)</h6>
+                      <h6 class="content">{{transporte.direccion_destino_especifica}}</h6>
+                    </div>
+          
+                    <!-_-<div class="col-12 col-md-6 explain explain_column" style="margin: 0!important;">
+                      <h6 class="title">XML Carta Porte / Traslado</h6>
+                      <input class="form-control" id="facturaTrasladoXML" name="facturaTrasladoXML" type="file" accept=".xml" style="padding: 0;line-height: 30px;width: 100%!important;"
+                        (change)="subirXmlTransporte($event,$event.target,transporte)">
+                    </div>
+                    <div class="col-12 col-md-6 explain explain_column" style="margin: 0!important;">
+                      <h6 class="title">PDF Carta Porte / Traslado</h6>
+                      <input class="form-control" id="facturaTrasladoPDF" name="facturaTrasladoPDF" type="file" [ngClass]="resultXml != 'validoXml' ? 'disabled' : ''" style="padding: 0;line-height: 30px;width: 100%!important;"
+                        [attr.disabled]="resultXml != 'validoXml' ? true : null" [attr.aria-disabled]="resultXml != 'validoXml' ? true : null"
+                        accept=".pdf" placeholder="PDF" (change)="resultXml == 'validoXml' && escanPdfCompra($event,$event.target,transporte);">
+                    </div>-_->
+          
+                    <div class="col-12">
+                      <span class="fw-bold text-secondary">📋 Distribuci&oacute;n de Mercanc&iacute;a para esta Unidad:</span>
+                      <p-table #gralBuyList [value]="transporte.articulos" [(selection)]="transporte.articulos_seleccionados" dataKey="articulo" [globalFilterFields]="['folio_compra']" showGridlines [resizableColumns]="true" 
+                        [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]">
+                        <ng-template #caption>
+                          <div class="flex" style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;" ngbDropdown>
+                            <p-iconfield iconPosition="left" class="ml-auto">
+                              <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                              <input pInputText type="text" (input)="gralBuyList.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+                            </p-iconfield>
+                          </div>
+                        </ng-template>
+                        <ng-template #header>
+                          <tr>
+                            <th pResizableColumn pSortableColumn="articulo">articulo&nbsp;<p-sortIcon field="articulo" /></th>
+                            <th pResizableColumn pSortableColumn="cantidad">cantidad registrada&nbsp;<p-sortIcon field="cantidad" /></th>
+                            <th pSortableColumn="unidad_medida">{{'uni_med' | translate}}&nbsp;<p-sortIcon field="unidad_medida" /></th>
+                          </tr>
+                        </ng-template>
+                        <ng-template #body let-cBuy let-rowIndex="rowIndex">
+                          <tr>
+                            <td>{{cBuy.articulo}}</td>
+                            <td>{{cBuy.cantidad}}</td>
+                            <td>{{cBuy.unidad_medida}}</td>
+                          </tr>
+                        </ng-template>
+                        <ng-template pTemplate="emptymessage">
+                          <tr>
+                            <td colspan="7" class="text-center py-4">
+                              <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                              <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                {{'no_rows' | translate}}
+                              </p>
+                            </td>
+                          </tr>
+                        </ng-template>
+                      </p-table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+
+        @if (!hito.arribo_autorizado) {
+          <div class="col-12 explain">
+            <h6 class="title">Autorizar llegada:</h6>
+          </div>
+
+          <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input-group">
+            <label for="fechaSalidaCompra" class="activeInput"><span class="obligatorio">Fecha de autorizaci&oacute;n</span></label>
+            <input class="validate datepicker" id="fechaSalidaCompra" name="fechaSalidaCompra" type="date" required (change)="select_fecha_auth($event.target,hito);">
+          </div>
+          <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input-group">
+            <label for="fechaSalidaCompra" class="activeInput"><span class="obligatorio">Tipo de autorizaci&oacute;n</span></label>
+            <p-select 
+              [options]="tiposAutorizaciones" 
+              id="tipo_auto_rizacion_l"
+              name="etapa_del_traslado" 
+              optionLabel="valor" 
+              optionValue="clave" 
+              appendTo="body" 
+              [placeholder]="'Selecciona el estatus actual' | translate" 
+              class="w-full" 
+              (onChange)="onAuthTipoChange($event.value,hito)">
+            </p-select>
+          </div>
+
+          @if (hito.new_auth_arribo_origen == 'externo') {
+            <div class="col-12 col-sm-12 col-md-3 col-lg-6 col-xl-4 col-xxl-4 input-group">
+              <label for="nombreDelOperadorLinea" class="activeInput"><span class="obligatorio">Nombre de quien autoriza</span></label>
+              <input id="nombreDelOperadorLinea" name="nombreDelOperadorLinea" class="validate" type="text" required (keyup)="autoriza_nombre_persona($event.target,hito);">
+            </div>
+          }
+
+          <div class="col-12 input-group">
+            <label for="especificacionesTransporte" class="activeInput">{{'observ' | translate}}</label>
+            <textarea class="validate" id="especificacionesTransporte" name="especificacionesTransporte" (keyup)="observaciones_autorizacion($event.target,hito);" minlength="5" style="max-height: 80px!important;"></textarea>
+          </div>
+          
+          <div class="col-12 field_file_drop">
+            <ngx-file-drop dropZoneLabel="Drop files here" (onFileDrop)="droppedTransito($event)" (onFileOver)="fileOverTransito($event)" (onFileLeave)="fileLeaveTransito($event)">
+              <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">                
+                <a class="btn btn_load_file" type="button" style="color: #0782d0 !important;" (click)="openFileSelector()">
+                  {{'load_files' | translate}} / {{'browse_files' | translate}}
+                </a>
+              </ng-template>
+            </ngx-file-drop>
+          
+            <p-table #docsList [value]="anexosTransitoFiles" [globalFilterFields]="['relativePath']" dataKey="id" [resizableColumns]="true" responsiveLayout="stack">
+              <ng-template #caption>
+                <div class="flex">
+                  <p-iconfield iconPosition="left" class="ml-auto">
+                    <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                    <input pInputText type="text" (input)="docsList.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+                  </p-iconfield>
+                </div>
+              </ng-template>
+              <ng-template #header>
+                <tr>
+                  <th>{{'file' | translate}}</th>
+                  <th class="ultimo"></th>
+                </tr>
+              </ng-template>
+              <ng-template #body let-item let-rowIndex="rowIndex">
+                <tr>
+                  <td><strong>{{ item.relativePath }}</strong></td>
+                  <td class="ultimo">
+                    <a class="btn btn_extend text-bg-danger rounded-3" (click)="deleteAnexosTransito(rowIndex);">
+                      <i class="fa-solid fa-xmark"></i>
+                    </a>
+                  </td>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td colspan="2" class="text-center py-4">
+                    <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                    <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                      {{'no_rows' | translate}}
+                    </p>
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+
+          <div class="col-12" style="display: flex !important;justify-content: end!important;margin-top: 5px!important;">
+            @if (!validate_autorizacion(hito)) {
+              <a class="btn btn_extend text-bg-success rounded-3 disabled" disabled aria-disabled="true">
+                <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+              </a>
+            } @else {
+              <a class="btn btn_extend text-bg-success rounded-3" (click)="registrarHitoAutorizacion(hito);">
+                <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+              </a>
+            }
+          </div>
+        }
+      </div>
+      @if ($index != (listado_unidades.length -1)) {
+        <p-divider/>
+      }
+    }
+  </div>
+</div>-->
+        
+

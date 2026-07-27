@@ -1,0 +1,158 @@
+<div class="col-12 row">
+  <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+    <label for="estMovFinanAcree" class="activeInput">{{'acree_name' | translate}}</label>
+    <p-select [options]="list_acreedores_general" id="estMovFinanAcree" name="estMovFinanAcree" [(ngModel)]="objectAcreedor" optionLabel="acr_titular" [filter]="true" [showClear]="true"
+      appendTo="body" filterBy="folio,acr_titular,nombre_comercial" [placeholder]="'opt_select' | translate" class="w-full md:w-56" (onChange)="selectAcreedor($event.value);">
+      <ng-template #selectedItem let-sacr>
+        <div class="flex items-center gap-2">
+          @if (sacr.nombre_comercial != '') {
+            <div>{{sacr.folio+' '+sacr.acr_titular+' ('+sacr.nombre_comercial+')'}}</div>
+          } @else {
+            <div>{{sacr.folio+' '+sacr.acr_titular}}</div>
+          }
+        </div>
+      </ng-template>
+      <ng-template let-lacr #item>
+        <div class="flex items-center gap-2">
+          @if (lacr.nombre_comercial != '') {
+            <div>{{lacr.folio+' '+lacr.acr_titular+' ('+lacr.nombre_comercial+')'}}</div>
+          } @else {
+            <div>{{lacr.folio+' '+lacr.acr_titular}}</div>
+          }
+        </div>
+      </ng-template>
+    </p-select>
+  </div>
+  <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+    <label for="estMovFinanPeriodo" class="activeInput">Periodo</label>
+    <p-datepicker id="estMovFinanPeriodo" name="estMovFinanPeriodo" [(ngModel)]="rangoPeriodoMovimientos" appendTo="body" dateFormat="dd/mm/yy" 
+      placeholder="dd/mm/aaaa" selectionMode="range" (onSelect)="seleccion_periodo_movim();"/>
+  </div>
+  <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3" style="display: flex !important; justify-content: start!important; margin-top: 5px!important;align-items: end;padding-left: 0;">
+    <a class="btn btn_extend text-bg-success rounded-3" [ngClass]="!validaAcreMovimPeriod ? 'disabled' : ''" [attr.disabled]="!validaAcreMovimPeriod ? true : null"
+      [attr.aria-disabled]="!validaAcreMovimPeriod ? true : null" (click)="verMovimientosAcreedor();">
+      <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+    </a>
+  </div>
+</div>
+
+@if (name_acreedor != '') {
+  <div class="col-12" style="display: flex;justify-content: end;padding: 0!important;margin-top: 20px!important;">
+    <a class="btn btn_extend bg-red-700" style="height: 25px !important; margin-right: 5px!important;" (click)="descargarPdfEstadoCuenta();">
+      descargar&nbsp;<i class="fa-solid fa-file-pdf"></i>
+    </a>
+    <a class="btn btn_extend bg-green-600 descarga_lista_excel" style="height: 25px !important;" (click)="descargarExcelEstadoCuenta();">
+      descargar&nbsp;<i class="fa-solid fa-file-excel"></i>
+    </a>
+  </div>
+  <div class="report-container grid p-3 bg-white border-bottom-1 border-300 row" id="reporte_estado_cuent_acreedor" #reporte_estado_cuent_acreedor>
+    <div class="col-6">
+      <span class="estado_cuenta text-gray-600 uppercase font-bold m-0">Estado de cuenta</span>
+      <div class="mt-4">
+        <span class="block font-bold text-sm">{{'acree_name' | translate}}</span>
+        <span class="text-xl font-mono">{{name_acreedor}}</span>
+      </div>
+    </div>
+    <div class="col-6 p-3 border-round">
+      <h3 class="text-sm uppercase border-bottom-1 border-400 pb-1">Resumen de Saldo</h3>
+
+      <div class="flex justify-content-between py-1">
+        <span>Saldo inicial</span>
+        <span class="font-mono">{{movimientos_saldo_inicial+" "+moneda_movimientos}}</span><!--{{saldoInicial | currency}}-->
+      </div>
+      <div class="flex justify-content-between py-1 text-green-600">
+        <span>Depósitos y adiciones</span>
+        <span class="font-mono">+ {{movimientos_deposito_acreedor+" "+moneda_movimientos}}</span><!--{{movimientos_deposito_acreedor | currency}}-->
+      </div>
+      <div class="flex justify-content-between py-1 text-red-600">
+        <span>Retiros y deducciones</span>
+        <span class="font-mono">- {{movimientos_retiro_acreedor+" "+moneda_movimientos}}</span><!--{{movimientos_retiro_acreedor | currency}}-->
+      </div>
+      <div class="flex justify-content-between py-2 mt-2 border-top-1 font-bold text-lg">
+        <span>Saldo final</span>
+        <span>{{saldo_acreedor+" "+moneda_movimientos}}</span><!--{{saldo_acreedor | currency}}-->
+      </div>
+
+    </div>
+    <div class="col-12">
+      <div class="bg-orange-100 p-2 mb-3">
+        <h3 class="m-0 text-sm uppercase orange-800">Registro de movimientos</h3>
+      </div>
+
+      <p-table #listCuentBanc [value]="acreedorMovimientos" dataKey="id" styleClass="p-datatable-sm custom-extract-table"
+        [globalFilterFields]="['folio_movimiento','fecha_movimiento','documento_anterior_asociado','parte_relacionada','mov_monto_debe_format','mov_monto_haber_format','mov_monto_saldo_format']">
+        <ng-template #caption>
+          <div class="flex">
+            <p-iconfield iconPosition="left" class="ml-auto">
+              <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+              <input pInputText type="text" (input)="listCuentBanc.filterGlobal($event.target.value, 'contains')"
+                placeholder="{{'bus_car' | translate}}" />
+            </p-iconfield>
+          </div>
+        </ng-template>
+        <ng-template #header>
+          <tr>
+            <th pResizableColumn pSortableColumn="folio_e_cuenta">folio&nbsp;<p-sortIcon field="folio_e_cuenta" /></th>
+            <th pResizableColumn pSortableColumn="fecha_contabilizacion">{{'fecha_cont' | translate}}&nbsp;<p-sortIcon field="fecha_contabilizacion" /></th>
+            <th pResizableColumn pSortableColumn="cancelacion_doc_anterior">{{'doc_ant' | translate}}&nbsp;<p-sortIcon field="cancelacion_doc_anterior" /></th>
+            <th pResizableColumn pSortableColumn="forma_pago_vinculada">{{'f_pago' | translate}}&nbsp;<p-sortIcon field="forma_pago_vinculada" /></th>
+            <th pResizableColumn pSortableColumn="forma_pago_cfdi">{{'f_m_pago_cfdi' | translate}}&nbsp;<p-sortIcon field="forma_pago_cfdi" /></th>
+            <th pResizableColumn pSortableColumn="observacionesPago">{{'observ' | translate}}&nbsp;<p-sortIcon field="observacionesPago" /></th>
+            <th pResizableColumn pSortableColumn="monto_pago">{{'total_import' | translate}}&nbsp;<p-sortIcon field="monto_pago" /></th>
+            <th pResizableColumn pSortableColumn="tipo_cambio_movimiento">{{'mon_tipo_cambio' | translate}}&nbsp;<p-sortIcon field="tipo_cambio_movimiento" /></th>
+            <th pResizableColumn pSortableColumn="estado_cuenta_debe_format">debe&nbsp;(-)&nbsp;<p-sortIcon field="estado_cuenta_debe_format" /></th>
+            <th pResizableColumn pSortableColumn="estado_cuenta_haber_format">haber&nbsp;(+)&nbsp;<p-sortIcon field="estado_cuenta_haber_format" /></th>
+            <th pResizableColumn pSortableColumn="estado_cuenta_saldo_format">saldo&nbsp;(=)&nbsp;<p-sortIcon field="estado_cuenta_saldo_format" /></th>
+          </tr>
+        </ng-template>
+        <ng-template #body let-estCuent>
+          <tr>
+            <td class="name">{{estCuent.folio_e_cuenta}}</td>
+            <td>{{ estCuent.fecha_contabilizacion | date: 'yyyy-MM-dd' }}</td>
+            <td>{{estCuent.cancelacion_doc_anterior}}</td>
+            <td>{{estCuent.forma_pago_vinculada}}</td>
+            <td>{{estCuent.f_m_pago_cfdi}}</td>
+            <td class="name">{{estCuent.observacionesPago}}</td>
+            
+            <td class="td_importes">{{estCuent.monto_movimiento}}</td>
+            <td class="td_importes">{{estCuent.tipo_cambio_movimiento}}</td>
+            
+            @if (estCuent.mov_monto_debe !== 0) {
+              <td class="td_importes">{{estCuent.mov_monto_debe_format}}</td>
+            } @else {
+              <td></td> 
+            }
+            
+            @if (estCuent.mov_monto_haber !== 0) {
+              <td class="td_importes">{{estCuent.mov_monto_haber_format}}</td>
+            } @else {
+              <td></td> 
+            }
+
+            <td class="td_importes">{{estCuent.mov_monto_saldo_format}}</td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="footer">
+          <tr>
+            <td class="td_importes" colspan="8"><strong>Totales</strong></td>
+            <td class="td_importes"><strong>{{movimientos_deposito_acreedor+" "+moneda_movimientos}}<!--{{ totalDebe | currency:'MXN':'symbol' }}--></strong></td>
+            <td class="td_importes"><strong>{{movimientos_retiro_acreedor+" "+moneda_movimientos}}<!--{{ totalHaber | currency:'MXN':'symbol' }}--></strong></td>
+            <td class="td_importes"><strong>{{saldo_acreedor+" "+moneda_movimientos}}<!--{{ totalSaldo | currency:'MXN':'symbol' }}--></strong></td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="8" class="text-center py-4">
+              <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+              <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                {{'no_rows' | translate}}
+              </p>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+} @else {
+  <p>{{'opt_select' | translate}}</p>
+}

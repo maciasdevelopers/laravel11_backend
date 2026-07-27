@@ -1,0 +1,207 @@
+@if (imp_sobre_nomina_form) {
+  <form class="formNominaImp" #formNominaImp="ngForm" autocomplete="off" name="formNominaImp" enctype="multipart/form-data" (ngSubmit)="validate_reporteISN_registro && isnReporteRegistro(formNominaImp);">
+    <div class="col-12 row" style="padding: 0!important;">
+      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+        <label for="contribNominaFechaPago" class="activeInput">{{'fecha_cont' | translate}}</label>
+        <input id="contribNominaFechaPago" type="date" name="contribNominaFechaPago" (change)="select_fecha_contabilizacion($event.target);">
+      </div>
+      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+        <label for="contribNominaFechaPresentacion" class="activeInput">Fecha de presentaci&oacute;n</label>
+        <input id="contribNominaFechaPresentacion" type="date" name="contribNominaFechaPresentacion" (change)="select_fecha_presentacion($event.target);">
+      </div>
+
+      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+        <label for="contribNominaFechaVencimiento" class="activeInput">Fecha de vencimiento</label>
+        <input id="contribNominaFechaVencimiento" type="date" name="contribNominaFechaVencimiento" (change)="select_fecha_vencimiento($event.target);">
+      </div>
+      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+        <label for="contribNominaEstado" class="activeInput">Estado</label>
+        <p-select [options]="fed_catalogo_activo" id="contribNominaEstado" name="contribNominaEstado" optionLabel="entidad" [filter]="true" appendTo="body" 
+          filterBy="entidad" [showClear]="true" [placeholder]="'opt_select' | translate" class="w-full md:w-56" (onChange)="changeEstadoNomina($event.value);">
+          <ng-template #selectedItem let-sel>
+            <div class="flex items-center gap-2"><div>{{sel.fed_est_mun_folio+' '+sel.fed_est_mun_entidad+' '+sel.fed_est_mun_rfc}}</div></div>
+          </ng-template>
+          <ng-template let-fed #item>
+            <div class="flex items-center gap-2"><div>{{fed.fed_est_mun_folio+' '+fed.fed_est_mun_entidad+' '+fed.fed_est_mun_rfc}}</div></div>
+          </ng-template>
+        </p-select>
+      </div>
+
+      <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-4 input-group">
+        <label for="contribNominaEjercicio" class="activeInput">Ejercicio</label>
+        <p-datepicker id="contribNominaEjercicio" name="contribNominaEjercicio" [(ngModel)]="ejercicio" view="year" dateFormat="yy" [placeholder]="'opt_select' | translate" [readonlyInput]="true" (onSelect)="selectEjercicio();"/>
+      </div>
+      <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-4 input-group">
+        <label for="contribNominaEjercicioPeriodo" class="activeInput">Periodo</label>
+        <!-- dateFormat="dd/mm/yy" placeholder="dd/mm/aaaa" selectionMode="range" -->
+        <p-datepicker id="contribNominaEjercicioPeriodo" [ngClass]="modelNominaImp.ejercicio == '' ? 'disabled' : ''" [disabled]="modelNominaImp.ejercicio == ''"
+          [attr.aria-disabled]="modelNominaImp.ejercicio == '' ? true : null" name="contribNominaEjercicioPeriodo" [(ngModel)]="periodo" view="month" [minDate]="min_ejercicio" [maxDate]="max_ejercicio"
+          selectionMode="range" dateFormat="MM/yy" [placeholder]="'opt_select' | translate" [readonlyInput]="true" (onSelect)="selectEjercicioPeriodo();"/>
+      </div>
+      <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 col-xxl-4 input-group">
+        <label for="contribNominaTipoDeclaracion" class="activeInput">Tipo de declaraci&oacute;n</label>
+        <p-select [options]="tipos_declaracion" id="contribNominaTipoDeclaracion" name="contribNominaTipoDeclaracion" optionLabel="tipo" [filter]="true" filterBy="tipo" 
+          [showClear]="true" [placeholder]="'opt_select' | translate" class="w-full md:w-56" (onChange)="changeTipoDeclaracion($event.value);">
+          <ng-template #selectedItem let-sel>
+            <div class="flex items-center gap-2"><div>{{sel.tipo}}</div></div>
+          </ng-template>
+          <ng-template let-reg #item>
+            <div class="flex items-center gap-2"><div>{{reg.tipo}}</div></div>
+          </ng-template>
+        </p-select>
+      </div>
+      
+      <ul class="list-group">
+        <li class="list-group-item disabled" aria-disabled="true">
+          <strong>Determinaci&oacute;n del impuesto</strong>
+        </li>
+        <li class="list-group-item row" style="padding: 0!important;">
+          <div class="col-9">A) Total de remuneraciones erogadas</div>
+          <div class="col-3">
+            <input id="total_remuneraciones_erogadas" type="number" class="input-monto" placeholder="$ 0.00" (keyup)="importeTotalRemuneracionesErogadas($event.target);calculando_totales();">
+          </div>
+        </li>
+        <li class="list-group-item row" style="padding: 0!important;">
+          <div class="col-8">B) % Sobre el total de remuneraciones erogadas </div>
+          <div class="col-2">
+            <input id="porcent_calc" type="number" class="input-monto" placeholder="0%" (keyup)="porcentageTRemuneracuinesErogadas($event.target);">
+          </div>
+          <div class="col-2">
+            <input id="porcent_sobre_total_remuneraciones_erogadas" type="number" class="input-monto" placeholder="$ 0.00" [value]="calculoPorcentageTREnrogadas" (keyup)="importePorcentSobreTotalRemuneracionesErogadas($event.target);calculando_totales();">
+          </div>
+        </li>
+        <li class="list-group-item row noneView" style="padding: 0!important;" id="impuesto_complementarias">
+          <div class="col-12">C) Complementarias</div>
+          <div class="col-12 row" style="padding-bottom: 0!important;">
+            <div class="col-9" style="padding: 0!important;">Impuesto a cargo</div>
+            <div class="col-3" style="padding: 0!important;">
+              <input id="complementarias_impuesto_a_cargo" type="number" class="input-monto" placeholder="$ 0.00" (keyup)="importeComplementariasImpuestoACargo($event.target);calculando_totales();">
+            </div>
+            <p-divider/>
+          </div>
+          <div class="col-12 row" style="padding-top: 0!important;">
+            <div class="col-9" style="padding: 0!important;">Saldo a favor</div>
+            <div class="col-3" style="padding: 0!important;">
+              <input id="complementarias_saldo_a_favor" type="number" class="input-monto" placeholder="$ 0.00" (keyup)="importeComplementariasSaldoAFavor($event.target);calculando_totales();">
+            </div>
+          </div>
+        </li>
+        <li class="list-group-item row" style="padding: 0!important;">
+          <div class="col-9">D) Impuesto actualizado</div>
+          <div class="col-3">
+            <input id="impuesto_actualizado" type="number" class="input-monto" placeholder="$ 0.00" (keyup)="importeImpuestoActualizado($event.target);calculando_totales();">
+          </div>
+        </li>
+        <li class="list-group-item row" style="padding: 0!important;">
+          <div class="col-9">E) Descuento</div>
+          <div class="col-3">
+            <input id="impuesto_descuento" type="number" class="input-monto" placeholder="$ 0.00" (keyup)="importeImpuestoDescuento($event.target);calculando_totales();">
+          </div>
+        </li>
+        <li class="list-group-item row" style="padding: 0!important;">
+          <div class="col-9">F) Recargos</div>
+          <div class="col-3">
+            <input id="impuesto_recargos" type="number" class="input-monto" placeholder="$ 0.00" (keyup)="importeImpuestoRecargos($event.target);calculando_totales();">
+          </div>
+        </li>
+        <li class="list-group-item row" style="padding: 0!important;">
+          <div class="col-9">G) Recargos condonados</div>
+          <div class="col-3">
+            <input id="impuesto_recargos_condonados" type="number" class="input-monto" placeholder="$ 0.00" (keyup)="importeImpuestoRecargosCondonados($event.target);calculando_totales();">
+          </div>
+        </li>
+        
+        <li class="list-group-item row" style="padding: 0!important;">
+          <div class="col-9">H) Subsidio no. de resoluci&oacute;n</div>
+          <div class="col-12 row" style="padding-bottom: 0!important;">
+            <div class="col-9" style="padding: 0!important;">H1) Sobre el impuesto a pagar</div>
+            <div class="col-3" style="padding: 0!important;">
+              <input id="subsi_n_resolu_impuesto_pagar" type="number" class="input-monto" placeholder="$ 0.00" (keyup)="importeSubsiNResoluImpuestoPagar($event.target);calculando_totales();">
+            </div>
+            <p-divider/>
+          </div>
+          <div class="col-12 row" style="padding-top: 0!important;">
+            <div class="col-9" style="padding: 0!important;">H2) Sobre recargos (%)</div>
+            <div class="col-3" style="padding: 0!important;">
+              <input id="subsi_n_resolu_recargos" type="number" class="input-monto" placeholder="$ 0.00" (keyup)="importeSubsiNResoluRecargos($event.target);calculando_totales();">
+            </div>
+          </div>
+        </li>
+
+        <li class="list-group-item row" style="padding: 0!important;">
+          <div class="col-9">I) Compensaci&oacute;n no. de resoluci&oacute;n</div>
+          <div class="col-12 row" style="padding-bottom: 0!important;">
+            <div class="col-9" style="padding: 0!important;">I1) Sobre el impuesto a pagar</div>
+            <div class="col-3" style="padding: 0!important;">
+              <input id="compensa_n_resolucion" type="number" class="input-monto" placeholder="$ 0.00" (keyup)="importeCompensaNResolucion($event.target);calculando_totales();">
+            </div>
+            <p-divider/>
+          </div>
+          <div class="col-12 row" style="padding-top: 0!important;">
+            <div class="col-9" style="padding: 0!important;">I2) Sobre recargos</div>
+            <div class="col-3" style="padding: 0!important;">
+              <input id="compensa_n_resolu_recargos" type="number" class="input-monto" placeholder="$ 0.00" (keyup)="importeCompensaNResolucionRecargos($event.target);calculando_totales();">
+            </div>
+          </div>
+        </li>
+
+        <li class="list-group-item row" style="padding: 0!important;">
+          <div class="col-9"><strong>J) Total a pagar</strong></div>
+          <div class="col-3">
+            <input id="impuesto_total_a_pagar" type="number" class="input-monto" placeholder="$ 0.00" (keyup)="importeImpuestoTotalAPagar($event.target);">
+          </div>
+        </li>
+        <li class="list-group-item row" style="padding: 0!important;">
+          <div class="col-9"><strong>K) Saldo a favor</strong></div>
+          <div class="col-3">
+            <input id="impuesto_saldo_a_favor" type="number" class="input-monto" placeholder="$ 0.00" (keyup)="importeImpuestoSaldoAFavor($event.target);">
+          </div>
+        </li>
+      </ul>
+      
+      <div class="col-12 input-group" style="margin-bottom: 10px!important;">
+        <label class="activeInput">{{'observ' | translate}}</label>
+        <textarea id="pago_large_observ" class="validate" (keyup)="keyupObservacionContribucionNomina($event.target);"></textarea>
+      </div>
+ 
+      <div class="col-12 field_file_drop">
+        <ngx-file-drop dropZoneLabel="Drop files here" (onFileDrop)="droppedImpNomina($event)" (onFileOver)="fileOverImpNomina($event)" (onFileLeave)="fileLeaveImpNomina($event)">
+          <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
+            <a class="btn btn_load_file" type="button" style="color: #0782d0 !important;" (click)="openFileSelector()">
+              {{'load_files' | translate}} / {{'browse_files' | translate}}
+            </a>
+          </ng-template>
+        </ngx-file-drop>
+        <table class="white centered" style="margin-top:5px!important;width: 100% !important;">
+          <thead>
+            <tr>
+              <th>{{'file' | translate}}</th>
+              <th class="ultimo"></th>
+            </tr>
+          </thead>
+          <tbody class="upload-name-style" *ngIf="filesImpNomina.length != 0">
+            <tr *ngFor="let item of filesImpNomina; index as i">
+              <td><strong>{{ item.relativePath }}</strong></td>
+              <td class="ultimo">
+                <a class="btn btn_extend text-bg-danger rounded-3"
+                  (click)="deleteAnexosImpNomina(i);">
+                  <i class="fa-solid fa-xmark"></i>
+                </a>
+              </td>
+            </tr>
+          </tbody>
+          <tbody *ngIf="filesImpNomina.length == 0">
+            <tr><td colspan="2">{{'no_rows' | translate}}</td></tr>
+          </tbody>
+        </table>
+      </div>
+ 
+      <div class="col-12" style="display: flex !important;justify-content: end!important;margin-top: 5px!important;">
+        <button class="btn btn_extend text-bg-success rounded-3" [ngClass]="!validate_reporteISN_registro ? 'disabled' : ''" 
+          [attr.disabled]="!validate_reporteISN_registro ? true : null" [attr.aria-disabled]="!validate_reporteISN_registro ? true : null">
+          <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+        </button>
+      </div>
+    </div>
+  </form>
+}

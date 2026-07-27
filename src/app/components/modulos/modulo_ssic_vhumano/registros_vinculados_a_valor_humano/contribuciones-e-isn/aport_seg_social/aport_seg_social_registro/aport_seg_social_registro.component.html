@@ -1,0 +1,255 @@
+
+@if (aportaciones_ssocial_form) {
+  <form class="formAportSegSocial" #formAportSegSocial="ngForm" autocomplete="off" name="formAportSegSocial" enctype="multipart/form-data" (ngSubmit)="validate_reporte_associal_registro && aportacionSegSocialReporteRegistro(formAportSegSocial);">
+    <div class="bloque">
+      <h6 class="bloque-header">Datos del patr&oacute;n o sujeto obligado registrados en el IMSS</h6>
+      <div class="col-12 row grid-container">
+        <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-4 col-xxl-4 input-group">
+          <label for="contribNominaFechaPago" class="activeInput">{{'fecha_cont' | translate}}</label>
+          <input id="contribNominaFechaPago" type="date" name="contribNominaFechaPago" (change)="changeFechaContabilizacion($event.target);">
+        </div>
+        <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-4 col-xxl-4 input-group">
+          <label for="contribNominaFechaPresentacion" class="activeInput">Fecha de presentaci&oacute;n</label>
+          <input id="contribNominaFechaPresentacion" type="date" name="contribNominaFechaPresentacion" (change)="changeFechaPresentacion($event.target);">
+        </div>
+        <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-4 col-xxl-4 input-group">
+          <label class="activeInput" for="new_nomina_rpimss">Registro Patronal:</label>
+          <p-select [options]="catalogo_registros_patronales" id="new_nomina_rpimss" [(ngModel)]="nomina_registro_patronal" optionValue="clave_registro_patronal_imss" name="new_nomina_rpimss" [ngClass]="nomina_registro_patronal ? 'correcto' : ''"
+            optionLabel="clave_registro_patronal_imss" [filter]="true" filterBy="clave_registro_patronal_imss" appendTo="body" [showClear]="true" 
+            [placeholder]="'opt_select' | translate" class="w-full md:w-56" (onChange)="changeNominaRPIMSS($event.value);">
+            <ng-template #selectedItem let-selectedOption>
+              <div class="flex items-center gap-2"><div>{{selectedOption.clave_registro_patronal_imss}}</div></div>
+            </ng-template>
+            <ng-template let-prov #item>
+              <div class="flex items-center gap-2"><div>{{prov.clave_registro_patronal_imss}}</div></div>
+            </ng-template>
+          </p-select>
+        </div>
+    
+        <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+          <label class="activeInput" for="periodo_imss">Per&iacute;odo que comprende el pago de seguros imss (Mes-Año):</label>
+          <p-datepicker id="periodo_imss" name="periodo_imss" [(ngModel)]="periodo_pago_seguros_imss" view="month" dateFormat="MM yy" [placeholder]="'opt_select' | translate" 
+            [readonlyInput]="true" (onSelect)="selectPeriodoPagoSegurosIMSS();"/>
+        </div>
+        <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+          <label class="activeInput" for="bimestre_rcv">Bimestre que comprende el pago rcv e infonavit:</label>
+          <p-datepicker id="bimestre_rcv" name="bimestre_rcv" [(ngModel)]="bimestre_pago_rcv_infonavit" view="month" selectionMode="range" dateFormat="MM/yy" 
+            [placeholder]="'opt_select' | translate" [readonlyInput]="true" (onSelect)="selectBimestrePagoRcv();"/>
+        </div>
+        <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+          <label class="activeInput" for="folio_sua">Folio sua:</label>
+          <input type="text" id="folio_sua" name="folio_sua" (keyup)="keyupFolioSUA($event.target);">
+        </div>
+        <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+          <label class="activeInput" for="clave_de_recepcion_de_archivo_de_pago">Clave de recepci&oacute;n de archivo de pago:</label>
+          <input type="text" id="clave_de_recepcion_de_archivo_de_pago" name="clave_de_recepcion_de_archivo_de_pago" (keyup)="keyupClaveRecepcionArchivoPago($event.target);">
+        </div>
+      </div>
+    </div>
+    
+    <div class="bloque row">
+      <h6 class="bloque-header">Informaci&oacute;n general de la propuesta</h6>
+      <div class="col-12 row grid-container">
+        <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input-group">
+          <label class="activeInput" for="fecha_limite_pago">Fecha L&iacute;mite de Pago:</label>
+          <input type="date" id="fecha_limite_pago" name="fecha_limite_pago" (change)="changePropuestaFechaLimitePago($event.target);">
+        </div>
+        
+        <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-8 col-xxl-8 input-group">
+          <label class="activeInput" for="linea_captura_sipare">Referencia de pago (L&iacute;nea de Captura SIPARE):</label>
+          <input type="text" id="linea_captura_sipare" name="linea_captura_sipare" (keyup)="keyupPropuestaReferenciaDEPagoLineaSIPARE($event.target);"><!-- value="C0X9Q3MH-4C91-2-65TL-5999-000FKCI-0000000-0000000-0000000-7UIL"-->
+        </div>
+        <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-4 col-xxl-4"></div>
+        <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-8 col-xxl-8 explain" style="margin-right: 0!important;">
+          <h6>Puedes pagar en tu portal bancario o descargarla desde SIPARE.</h6>
+        </div>
+    
+        <p-divider/>
+        <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input-group">
+          <label class="activeInput" for="s_m_g_d_f">S.M.G.D.F:</label>
+          <input type="number" id="s_m_g_d_f" name="s_m_g_d_f" (keyup)="keyupPropuestaSMGDF($event.target)">
+        </div>
+        <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input-group">
+          <label class="activeInput" for="fecha_salario_minimo_pago">Fecha SAL. MIN.:</label>
+          <input type="date" id="fecha_salario_minimo_pago" name="fecha_salario_minimo_pago" (change)="changePropuestaFechaSalarioMinimoPago($event.target);">
+        </div>
+        <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input-group">
+          <label class="activeInput" for="valor_uma">Valor UMA:</label>
+          <input type="number" id="valor_uma" name="valor_uma" (keyup)="keyupPropuestaValorUMA($event.target)">
+        </div>
+        <p-divider/>
+        <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input-group">
+          <label class="activeInput" for="num_de_cotizantes">No. de cotizantes:</label>
+          <input type="number" id="num_de_cotizantes" name="num_de_cotizantes" (keyup)="keyupPropuestaNumCotizantes($event.target)">
+        </div>
+        <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input-group">
+          <label class="activeInput" for="num_dias_a_cotizar">No. de d&iacute;as a cotizar:</label>
+          <input type="number" id="num_dias_a_cotizar" name="num_dias_a_cotizar" (keyup)="keyupPropuestaNumDiasCotizar($event.target)">
+        </div>
+        <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input-group">
+          <label class="activeInput" for="num_de_acreditados">No. de acreditados:</label>
+          <input type="number" id="num_de_acreditados" name="num_de_acreditados" (keyup)="keyupPropuestaNumAcreditados($event.target)">
+        </div>
+      </div>
+    </div>
+    
+    <div class="bloque">
+      <h6 class="bloque-header">Informaci&oacute;n detallada del importe total de cuotas</h6>
+      <div class="col-12 row">
+        <p-table [value]="desglose_total_cuotas" [responsiveLayout]="'scroll'" style="padding: 0!important;">
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Conceptos</th>
+              <th>Cuotas Patronales ($)</th>
+              <th>Cuotas Obreras ($)</th>
+              <th>Suma Total ($)</th>
+            </tr>
+          </ng-template>
+        
+          <ng-template pTemplate="body" let-row let-rowIndex="rowIndex">
+            <!-- fila tipo 'section' (encabezado de secci&oacute;n) -->
+            <tr *ngIf="row.type === 'section'">
+              <td colspan="4" class="section-header name"><strong>{{ row.label }}</strong></td>
+            </tr>
+        
+            <!-- fila tipo 'label' (texto simple sin inputs) -->
+            <tr *ngIf="row.type === 'label'">
+              <td class="name">{{ row.label }}</td>
+              <td colspan="3"></td>
+            </tr>
+        
+            <tr *ngIf="row.type === 'label_aport'">
+              <td></td>
+              <td class="td_importes">APORTACIONES PATRONALES</td>
+              <td class="td_importes">AMORTIZACI&Oacute;N DE CR&Eacute;DITO</td>
+              <td></td>
+            </tr>
+        
+            <!-- fila tipo 'input' (tiene inputs num&eacute;ricos) -->
+            <tr *ngIf="row.type === 'input'">
+              <td class="name" [innerHTML]="row.label"></td>
+        
+              <td>
+                <p-inputNumber
+                  #ctrlPatronal{{rowIndex}}
+                  [ngModel]="row.patronal"
+                  name="patronal-{{rowIndex}}"
+                  (onInput)="onCantidadChange(rowIndex, 'patronal', $event);"
+                  mode="decimal"
+                  placeholder="$ 0.00"
+                  [maxFractionDigits]="6"
+                  decimalSeparator="."
+                  thousandSeparator=","
+                  [useGrouping]="true"
+                  [min]="-9999999999">
+                </p-inputNumber>
+              </td>
+        
+              <td>
+                <p-inputNumber
+                  #ctrlObrera{{rowIndex}}
+                  [ngModel]="row.obrera"
+                  name="obrera-{{rowIndex}}"
+                  (onInput)="onCantidadChange(rowIndex, 'obrera', $event);"
+                  mode="decimal"
+                  placeholder="$ 0.00"
+                  [maxFractionDigits]="6"
+                  decimalSeparator="."
+                  thousandSeparator=","
+                  [useGrouping]="true"
+                  [min]="-9999999999">
+                </p-inputNumber>
+              </td>
+        
+              <td>
+                <p-inputNumber 
+                  #ctrlTotal{{rowIndex}}
+                  [ngModel]="row.total"
+                  name="total-{{rowIndex}}"
+                  (onInput)="onCantidadChange(rowIndex, 'total', $event);"
+                  mode="decimal"
+                  placeholder="$ 0.00"
+                  [maxFractionDigits]="6"
+                  decimalSeparator="."
+                  thousandSeparator=","
+                  [useGrouping]="true"
+                  [min]="-9999999999">
+                </p-inputNumber>
+              </td>
+            </tr>
+        
+            <!-- fila tipo 'subtotal' (calcula y muestra subtotal) -->
+            <tr *ngIf="row.type === 'subtotal'">
+              <td class="name"><strong>{{ row.label }}</strong></td>
+              <td class="td_importes">
+                <strong>{{ formatNumber(row.patronal) }}</strong>
+              </td>
+              <td class="td_importes">
+                <strong>{{ formatNumber(row.obrera) }}</strong>
+              </td>
+              <td class="td_importes">
+                <strong>{{ formatNumber(row.total) }}</strong>
+              </td>
+            </tr>
+          </ng-template>
+        
+          <ng-template pTemplate="footer">
+            <tr>
+              <td class="name"><strong>TOTAL A PAGAR</strong></td>
+              <td class="td_importes"><strong>{{ formatNumber(totales.patronal) }}</strong></td>
+              <td class="td_importes"><strong>{{ formatNumber(totales.obrera) }}</strong></td>
+              <td class="td_importes"><strong>{{ formatNumber(totales.total) }}</strong></td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+    <div class="bloque">
+      <h6 class="bloque-header">{{'observ' | translate}}</h6>
+      <div class="col-12 row grid-container">
+        <textarea id="pago_large_observ" name="pago_large_observ" class="validate" (keyup)="keyupObservacionApSegSocial($event.target);"></textarea>
+      </div>
+    </div>
+    <div class="bloque">
+      <h6 class="bloque-header">Documentos adjuntos</h6>
+      <div class="col-12 row grid-container">
+        <ngx-file-drop dropZoneLabel="Drop files here" (onFileDrop)="droppedApSegSocial($event)" (onFileOver)="fileOverApSegSocial($event)" (onFileLeave)="fileLeaveApSegSocial($event)">
+          <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
+            <a class="btn btn_load_file" type="button" style="color: #0782d0 !important;" (click)="openFileSelector()">
+              {{'load_files' | translate}} / {{'browse_files' | translate}}
+            </a>
+          </ng-template>
+        </ngx-file-drop>
+        <table class="white centered" style="margin-top:5px!important;width: 100% !important;">
+          <thead>
+            <tr>
+              <th>{{'file' | translate}}</th>
+              <th class="ultimo"></th>
+            </tr>
+          </thead>
+          <tbody class="upload-name-style" *ngIf="filesAporSSOCIAL.length != 0">
+            <tr *ngFor="let item of filesAporSSOCIAL; index as i">
+              <td><strong>{{ item.relativePath }}</strong></td>
+              <td class="ultimo">
+                <a class="btn btn_extend text-bg-danger rounded-3"
+                  (click)="deleteAnexosApSegSocial(i);">
+                  <i class="fa-solid fa-xmark"></i>
+                </a>
+              </td>
+            </tr>
+          </tbody>
+          <tbody *ngIf="filesAporSSOCIAL.length == 0">
+            <tr><td colspan="2">{{'no_rows' | translate}}</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+    <div class="col-12" style="display: flex !important;justify-content: end!important;margin-top: 5px!important;">
+      <button class="btn btn_extend text-bg-success rounded-3" [ngClass]="!validate_reporte_associal_registro ? 'disabled' : ''" 
+        [attr.disabled]="!validate_reporte_associal_registro ? true : null" [attr.aria-disabled]="!validate_reporte_associal_registro ? true : null">
+        <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+      </button>
+    </div>
+  </form>
+}

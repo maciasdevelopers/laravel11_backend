@@ -1,0 +1,547 @@
+<p-confirmpopup #cp>
+  <ng-template #headless let-message>
+    <div class="rounded p-4">
+      <i class="fa-solid fa-circle-info"></i>&nbsp;
+      <span>{{ message.message }}</span>
+      <div class="flex items-center gap-2 mt-4">
+        <p-button id="popUpAccept" class="accept" (onClick)="cp.onAccept()" [label]="popUpAccept" size="small" />
+        <p-button id="popUpReject" class="reject" (onClick)="cp.onReject()" [label]="popUpReject" [text]="true"
+          size="small" severity="secondary" />
+      </div>
+    </div>
+  </ng-template>
+</p-confirmpopup>
+
+@if (viewNewNominaFormulario) {
+<div class="col-12 row">
+  <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+    <label for="new_nomina_numero" class="activeInput">N&uacute;mero de n&oacute;mina</label>
+    <input id="new_nomina_numero" class="validate" #newNominaNumero name="new_nomina_numero" type="text"
+      (keyup)="keyupNominaNumero($event.target);">
+  </div>
+
+  <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+    <label class="activeInput">{{'fecha_cont' | translate}}</label>
+    <input id="fechaContabilizacionNomina" #newNominaFechaCont name="fechaContabilizacionNomina" type="date"
+      (change)="select_fecha_contabilizacion($event.target);">
+  </div>
+
+  <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-6 col-xxl-6 input-group">
+    <label class="activeInput">Importar n&oacute;mina (Excel)</label>
+    <input type="file" #inputNomina accept=".xlsx" (change)="cargarNominaExcel($event,$event.target)" />
+  </div>
+
+  <div class="col-12 input-group" style="margin-bottom: 10px!important;">
+    <label for="new_nomina_observaciones" class="activeInput">{{'observ' | translate}}</label>
+    <textarea id="new_nomina_observaciones" #newNominaObservaciones class="validate"
+      (keyup)="keyupObservacionNomina($event.target);"></textarea>
+  </div>
+
+  <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 col-xxl-3 input-group">
+    <label for="new_nomina_observaciones" class="activeInput">REGISTRO PATRONAL DEL IMSS</label>
+    <p-select [options]="catalogo_registros_patronales" id="new_nomina_rpimss" [(ngModel)]="nomina_registro_patronal"
+      optionValue="clave_registro_patronal_imss" name="new_nomina_rpimss"
+      [ngClass]="nomina_registro_patronal ? 'correcto' : ''" optionLabel="clave_registro_patronal_imss" [filter]="true"
+      filterBy="clave_registro_patronal_imss" appendTo="body" [showClear]="true"
+      [placeholder]="'opt_select' | translate" class="w-full md:w-56" (onChange)="changeNominaRPIMSS($event.value);">
+      <ng-template #selectedItem let-selectedOption>
+        <div class="flex items-center gap-2">
+          <div>{{selectedOption.clave_registro_patronal_imss}}</div>
+        </div>
+      </ng-template>
+      <ng-template let-prov #item>
+        <div class="flex items-center gap-2">
+          <div>{{prov.clave_registro_patronal_imss}}</div>
+        </div>
+      </ng-template>
+    </p-select>
+  </div>
+
+  <div class="col-12">
+    <p-table [value]="nomina_arreglo_vacio" dataKey="id" [paginator]="true" [rows]="10"
+      [rowsPerPageOptions]="[10,20,30,50,100]"
+      [globalFilterFields]="['token_establecimiento','estab_folio','estab_alias','estab_tipo','estab_desc','estab_encargado','aplica_ingresos','aplica_egresos','aplica_interno','aplica_almacen']">
+      <ng-template #header>
+        <tr>
+          <th>NOMBRE DEL TRABAJADOR</th>
+          <th>PERIODICIDAD</th>
+          <th>PERIODO DE PAGO</th>
+          <th>{{'mon_name' | translate}}</th>
+          <th>SALARIO DIARIO</th>
+          <th>SDI</th>
+          <th>DÍAS TRABAJADOS</th>
+          <th>FALTAS</th>
+          <th>SUELDO</th>
+          <th>HORAS EXTRAS DOBLES</th>
+          <th>AGUINALDO</th>
+          <th>HORAS EXTRAS TRIPLES</th>
+          <th>VACACIONES</th>
+          <th>PRIMA VACACIONAL</th>
+          <th>REPARTO DE UTILIDADES</th>
+          <th>DESPENSA*</th>
+          <th>PREMIOS DE ASISTENCIA</th>
+          <th>PREMIOS DE PUNTUALIDAD</th>
+          <th>PRIMA DOMINICAL</th>
+          <th>BNO EXTRA X COMISION OTRO EDO</th>
+          <th>INDEMNIZACION</th>
+          <th>PRIMA DE ANTIGUEDAD</th>
+          <th>OTRAS PERCEPCIONES</th>
+          <th>OTROS PAGOS</th>
+          <th>TOTAL PERCEPCIONES</th>
+
+          <th>ISR AJUSTADO POR SUBSIDIO</th>
+          <th>ISR</th>
+          <th>IMSS</th>
+          <th>CREDITO FONACOT</th>
+          <th>CREDITO INFONAVIT</th>
+          <th>SUBSIDIO PARA EL EMPLEO</th>
+
+          <!--<th>SUBS. PARA EL EMPLEO APLICADO</th>-->
+
+          <th>OTRAS DEDUCCIONES</th>
+          <th>TOTAL DEDUCCIONES</th>
+
+          <th>TOTAL EFECTIVO</th>
+          <th>TOTAL EN ESPECIE</th>
+          <th>NETO PAGADO</th>
+          <th>HORAS POR DIA</th>
+          <th>SALARIO POR HORA</th>
+          <!--<th>U.T. LABORADAS</th>-->
+          <th class="ultimo"></th>
+        </tr>
+      </ng-template>
+      <ng-template #body let-est>
+        <tr>
+          <!-- (change)="calculoTotalPercepciones();calculoTotalDeducciones();calculoTotalEfectivo();calculoNetoPagado();calculoSalarioPorHora();"-->
+          <td>
+            <div class="col-12 input-group">
+              <p-select [options]="list_nomina_empleados" id="new_nomina_empleado"
+                [ngClass]="modelNomina.registro_patronal === '' ? 'disabled' : ''"
+                [disabled]="modelNomina.registro_patronal === ''"
+                [attr.aria-disabled]="modelNomina.registro_patronal === '' ? true : null" [(ngModel)]="nomina_empleado"
+                name="new_nomina_empleado" optionLabel="nombre_completo" [filter]="true" filterBy="nombre_completo"
+                appendTo="body" [showClear]="true" [placeholder]="'opt_select' | translate" class="w-full md:w-56"
+                (onChange)="changeEmpleadoNomina($event.value);">
+                <ng-template #selectedItem let-selectedOption>
+                  <div class="flex items-center gap-2">
+                    <div>{{selectedOption.nombre_completo}}</div>
+                  </div>
+                </ng-template>
+                <ng-template let-prov #item>
+                  <div class="flex items-center gap-2">
+                    <div>{{prov.nombre_completo}}</div>
+                  </div>
+                </ng-template>
+              </p-select>
+            </div>
+          </td>
+          <td>{{modelNomina.periodicidad}}</td>
+          <td>
+            <div class="col-12 input-group">
+              <p-datepicker id="nomina_periodo_de" name="nomina_periodo_de" [(ngModel)]="rangoPeriodoNomina"
+                appendTo="body" dateFormat="dd/mm/yy" placeholder="dd/mm/aaaa" selectionMode="range"
+                (onSelect)="changeNominaPeriodo($event)" />
+            </div>
+          </td>
+          <td>{{modelNomina.moneda}}</td>
+          <td>{{modelNomina.salario_diario}}</td>
+          <td>{{modelNomina.salario_integrado}}</td>
+          <td><input id="new_nomina_dias_trabajados" class="validate" type="number" placeholder="$ 0.00"
+              name="new_nomina_dias_trabajados" (keyup)="keyupNominaDiasTrabajados($event.target);"></td>
+          <td><input id="new_nomina_faltas" class="validate" type="number" placeholder="$ 0.00" name="new_nomina_faltas"
+              (keyup)="keyupNominaFaltas($event.target);"></td>
+
+          <td><input id="new_nomina_sueldo" class="validate" type="number" placeholder="$ 0.00" name="new_nomina_sueldo"
+              (keyup)="keyupNominaSueldo($event.target);"></td>
+          <td><input id="new_nomina_horas_extras_dobles" class="validate" type="number" placeholder="$ 0.00"
+              name="new_nomina_horas_extras_dobles" (keyup)="keyupNominaHorasExtrasDobles($event.target);"></td>
+          <td><input id="new_nomina_aguinaldo" class="validate" type="number" placeholder="$ 0.00"
+              name="new_nomina_aguinaldo" (keyup)="keyupNominaAguinaldo($event.target);"></td>
+          <td><input id="new_nomina_horas_extras_triples" class="validate" type="number" placeholder="$ 0.00"
+              name="new_nomina_horas_extras_triples" (keyup)="keyupNominaHorasExtrasTriples($event.target);"></td>
+          <td><input id="new_nomina_vacaciones" class="validate" type="number" placeholder="$ 0.00"
+              name="new_nomina_vacaciones" (keyup)="keyupNominaVacaciones($event.target);"></td>
+          <td><input id="new_nomina_prima_vacacional" class="validate" type="number" placeholder="$ 0.00"
+              name="new_nomina_prima_vacacional" (keyup)="keyupNominaPrimaVacacional($event.target);"></td>
+          <td><input id="new_nomina_reparto_de_utilidades" class="validate" type="number" placeholder="$ 0.00"
+              name="new_nomina_reparto_de_utilidades" (keyup)="keyupNominaRepartoDeUtilidades($event.target);"></td>
+          <td><input id="new_nomina_despensa" class="validate" type="number" placeholder="$ 0.00"
+              name="new_nomina_despensa" (keyup)="keyupNominaDespensa($event.target);"></td>
+          <td><input id="new_nomina_premios_de_asistencia" class="validate" type="number" placeholder="$ 0.00"
+              name="new_nomina_premios_de_asistencia" (keyup)="keyupNominaPremiosAsistencia($event.target);"></td>
+          <td><input id="new_nomina_premios_de_puntualidad" class="validate" type="number" placeholder="$ 0.00"
+              name="new_nomina_premios_de_puntualidad" (keyup)="keyupNominaPremiosPuntualidad($event.target);"></td>
+          <td><input id="new_nomina_prima_dominical" class="validate" type="number" placeholder="$ 0.00"
+              name="new_nomina_prima_dominical" (keyup)="keyupNominaPrimaDominical($event.target);"></td>
+          <td><input id="new_nomina_bno_extra_x_comision_otro_edo" class="validate" type="number" placeholder="$ 0.00"
+              name="new_nomina_bno_extra_x_comision_otro_edo"
+              (keyup)="keyupNominaBnoExtraXComisionOtroEdo($event.target);"></td>
+          <td><input id="new_nomina_indemnizacion" class="validate" type="number" placeholder="$ 0.00"
+              name="new_nomina_indemnizacion" (keyup)="keyupNominaIndemnizacion($event.target);"></td>
+          <td><input id="new_nomina_prima_de_antiguedad" class="validate" type="number" placeholder="$ 0.00"
+              name="new_nomina_prima_de_antiguedad" (keyup)="keyupNominaPrimaAntiguedad($event.target);"></td>
+          <td><input id="new_nomina_otras_percepciones" class="validate" type="number" placeholder="$ 0.00"
+              name="new_nomina_otras_percepciones" (keyup)="keyupNominaOtrasPercepciones($event.target);"></td>
+          <td><input id="new_nomina_otros_pagos" class="validate" type="number" placeholder="$ 0.00"
+              name="new_nomina_otros_pagos" (keyup)="keyupNominaOtrasPercepciones($event.target);"></td>
+          <td><input id="new_nomina_total_percepciones" class="validate" type="number" placeholder="$ 0.00"
+              name="new_nomina_total_percepciones" (keyup)="keyupNominaTotalPercepciones($event.target);"
+              (change)="$event.stopPropagation();"></td>
+
+          <td><input id="new_nomina_isr_ajustado_por_subsidio" class="validate" type="number" placeholder="$ 0.00"
+              name="new_nomina_isr_ajustado_por_subsidio" (keyup)="keyupNominaIsrAjustadoPorSubsidio($event.target);">
+          </td>
+          <td><input id="new_nomina_total_isr" class="validate" type="number" placeholder="$ 0.00"
+              name="new_nomina_total_isr" (keyup)="keyupNominaTotalIsr($event.target);"></td>
+          <td><input id="new_nomina_total_imss" class="validate" type="number" placeholder="$ 0.00"
+              name="new_nomina_total_imss" (keyup)="keyupNominaTotalImss($event.target);"></td>
+          <td><input id="new_nomina_credito_fonacot" class="validate" type="number" placeholder="$ 0.00"
+              name="new_nomina_credito_fonacot" (keyup)="keyupNominaCreditoFonacot($event.target);"></td>
+          <td><input id="new_nomina_credito_infonavit" class="validate" type="number" placeholder="$ 0.00"
+              name="new_nomina_credito_infonavit" (keyup)="keyupNominaCreditoInfonavit($event.target);"></td>
+          <td><input id="new_nomina_subsidio_empleo" class="validate" type="number" placeholder="$ 0.00"
+              name="new_nomina_subsidio_empleo" (keyup)="keyupNominaSubsidioEmpleo($event.target);"></td>
+
+          <!--<td><input id="new_nomina_subsidio_empleo_aplicado" class="validate" type="number" placeholder="$ 0.00" name="new_nomina_subsidio_empleo_aplicado" (keyup)="keyupNominaSubsidioEmpleoAplicado($event.target);"></td>-->
+
+          <td><input id="new_nomina_otras_deducciones" class="validate" type="number" placeholder="$ 0.00"
+              name="new_nomina_otras_deducciones" (keyup)="keyupNominaOtrasDeducciones($event.target);"></td>
+          <td><input id="new_nomina_total_deducciones" class="validate" type="number" placeholder="$ 0.00"
+              name="new_nomina_total_deducciones"
+              (keyup)="keyupNominaTotalDeducciones($event.target);$event.stopPropagation();"
+              (change)="$event.stopPropagation();"></td>
+          <td><input id="new_nomina_total_efectivo" class="validate" type="number" placeholder="$ 0.00"
+              name="new_nomina_total_efectivo" (keyup)="keyupNominaTotalEfectivo($event.target);"
+              (change)="$event.stopPropagation();"></td>
+          <td><input id="new_nomina_total_en_especie" class="validate" type="number" placeholder="$ 0.00"
+              name="new_nomina_total_en_especie" (keyup)="keyupNominaTotalEnEspecie($event.target);"></td>
+          <td><input id="new_nomina_neto_pagado" class="validate" type="number" placeholder="$ 0.00"
+              name="new_nomina_neto_pagado" (keyup)="keyupNominaNetoPagado($event.target);"
+              (change)="$event.stopPropagation();"></td>
+          <td><input id="new_nomina_horas_por_dia" class="validate" type="number" placeholder="$ 0.00"
+              name="new_nomina_horas_por_dia" (keyup)="keyupNominaHorasPorDia($event.target);"></td>
+          <td><input id="new_nomina_salario_por_hora" class="validate" type="number" placeholder="$ 0.00"
+              name="new_nomina_salario_por_hora" (keyup)="keyupNominaSalarioPorHora($event.target);"
+              (change)="$event.stopPropagation();"></td>
+          <td class="ultimo">
+            <a class="btn btn_extend text-bg-success rounded-3" [ngClass]="!validaDatosNominaReport ? 'disabled' : ''"
+              [attr.disabled]="!validaDatosNominaReport ? true : null"
+              [attr.aria-disabled]="!validaDatosNominaReport ? true : null"
+              (click)="validaDatosNominaReport && agregaEmpleadoNomina();">
+              <i class="fa-regular fa-floppy-disk"></i> {{'save' | translate}}
+            </a>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+  <div class="col-12">
+    <p-table #listNewReporteTrabs [value]="lista_nomina_reportada" dataKey="nomina_clave" [paginator]="true" [rows]="10"
+      [rowsPerPageOptions]="[10,20,30,50,100]" [globalFilterFields]="nomina_busqueda_filtro">
+      <ng-template #caption>
+        <div class="flex"
+          style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;">
+          <p-iconfield iconPosition="left" class="ml-auto" style="margin:0!important;">
+            <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+            <input pInputText type="text" (input)="listNewReporteTrabs.filterGlobal($event.target.value, 'contains')"
+              placeholder="{{'bus_car' | translate}}" />
+          </p-iconfield>
+        </div>
+      </ng-template>
+      <ng-template #header>
+        <tr>
+          <th pSortableColumn="nomina_clave">CLAVE&nbsp;<p-sortIcon field="nomina_clave" /></th>
+          <th pSortableColumn="nomina_registro_patronal">REGISTRO PATRONAL DEL IMSS&nbsp;<p-sortIcon
+              field="nomina_registro_patronal" /></th>
+          <th pSortableColumn="nomina_empleado_nombre">NOMBRE DEL TRABAJADOR&nbsp;<p-sortIcon
+              field="nomina_empleado_nombre" /></th>
+          <th pSortableColumn="nomina_periodicidad">PERIODICIDAD&nbsp;<p-sortIcon field="nomina_periodicidad" /></th>
+          <th pSortableColumn="nomina_periodo_inicio" colspan="2">PERIODO DE PAGO&nbsp;<p-sortIcon
+              field="nomina_periodo_inicio" /></th>
+          <th pSortableColumn="nomina_moneda">{{'mon_name' | translate}}&nbsp;<p-sortIcon field="nomina_moneda" /></th>
+          <th pSortableColumn="nomina_empleado_cbankBanco">No. de cuenta&nbsp;<p-sortIcon
+              field="nomina_empleado_cbankBanco" /></th>
+          <th pSortableColumn="nomina_empleado_nss">NSS&nbsp;<p-sortIcon field="nomina_empleado_nss" /></th>
+          <th pSortableColumn="nomina_empleado_rfc">RFC&nbsp;<p-sortIcon field="nomina_empleado_rfc" /></th>
+          <th pSortableColumn="nomina_empleado_curp">CURP&nbsp;<p-sortIcon field="nomina_empleado_curp" /></th>
+          <th pSortableColumn="nomina_empleado_fecha_alta">FECHA DE ALTA&nbsp;<p-sortIcon
+              field="nomina_empleado_fecha_alta" /></th>
+          <th pSortableColumn="nomina_empleado_departamento">DEPARTAMENTO&nbsp;<p-sortIcon
+              field="nomina_empleado_departamento" /></th>
+          <th pSortableColumn="nomina_empleado_puesto">PUESTO&nbsp;<p-sortIcon field="nomina_empleado_puesto" /></th>
+          <th pSortableColumn="nomina_empleado_tipo_salario">TIPO DE SALARIO&nbsp;<p-sortIcon
+              field="nomina_empleado_tipo_salario" /></th>
+          <th pSortableColumn="nomina_salario_diario">SALARIO DIARIO&nbsp;<p-sortIcon field="nomina_salario_diario" />
+          </th>
+          <th pSortableColumn="nomina_salario_integrado">SDI&nbsp;<p-sortIcon field="nomina_salario_integrado" /></th>
+          <th pSortableColumn="nomina_dias_trabajados">DÍAS TRABAJADOS&nbsp;<p-sortIcon
+              field="nomina_dias_trabajados" /></th>
+          <th pSortableColumn="nomina_faltas">FALTAS&nbsp;<p-sortIcon field="nomina_faltas" /></th>
+          <th pSortableColumn="nomina_sueldo">SUELDO&nbsp;<p-sortIcon field="nomina_sueldo" /></th>
+          <th pSortableColumn="nomina_horas_extras_dobles">HORAS EXTRAS DOBLES&nbsp;<p-sortIcon
+              field="nomina_horas_extras_dobles" /></th>
+          <th pSortableColumn="nomina_aguinaldo">AGUINALDO&nbsp;<p-sortIcon field="nomina_aguinaldo" /></th>
+          <th pSortableColumn="nomina_horas_extras_triples">HORAS EXTRAS TRIPLES&nbsp;<p-sortIcon
+              field="nomina_horas_extras_triples" /></th>
+          <th pSortableColumn="nomina_vacaciones">VACACIONES&nbsp;<p-sortIcon field="nomina_vacaciones" /></th>
+          <th pSortableColumn="nomina_prima_vacacional">PRIMA VACACIONAL&nbsp;<p-sortIcon
+              field="nomina_prima_vacacional" /></th>
+          <th pSortableColumn="nomina_reparto_de_utilidades">REPARTO DE UTILIDADES&nbsp;<p-sortIcon
+              field="nomina_reparto_de_utilidades" /></th>
+          <th pSortableColumn="nomina_despensa">DESPENSA*&nbsp;<p-sortIcon field="nomina_despensa" /></th>
+          <th pSortableColumn="nomina_premios_de_asistencia">PREMIOS DE ASISTENCIA&nbsp;<p-sortIcon
+              field="nomina_premios_de_asistencia" /></th>
+          <th pSortableColumn="nomina_premios_de_puntualidad">PREMIOS DE PUNTUALIDAD&nbsp;<p-sortIcon
+              field="nomina_premios_de_puntualidad" /></th>
+          <th pSortableColumn="nomina_prima_dominical">PRIMA DOMINICAL&nbsp;<p-sortIcon
+              field="nomina_prima_dominical" /></th>
+          <th pSortableColumn="nomina_bno_extra_x_comision_otro_edo">BNO EXTRA X COMISION OTRO EDO&nbsp;<p-sortIcon
+              field="nomina_bno_extra_x_comision_otro_edo" /></th>
+          <th pSortableColumn="nomina_indemnizacion">INDEMNIZACION&nbsp;<p-sortIcon field="nomina_indemnizacion" /></th>
+          <th pSortableColumn="nomina_prima_de_antiguedad">PRIMA DE ANTIGUEDAD&nbsp;<p-sortIcon
+              field="nomina_prima_de_antiguedad" /></th>
+          <th pSortableColumn="nomina_otras_percepciones">OTRAS PERCEPCIONES&nbsp;<p-sortIcon
+              field="nomina_otras_percepciones" /></th>
+          <th pSortableColumn="nomina_otros_pagos">OTROS PAGOS&nbsp;<p-sortIcon field="nomina_otros_pagos" /></th>
+          <th pSortableColumn="nomina_total_percepciones">TOTAL PERCEPCIONES&nbsp;<p-sortIcon
+              field="nomina_total_percepciones" /></th>
+          <th pSortableColumn="nomina_isr_ajustado_por_subsidio">ISR AJUSTADO POR SUBSIDIO&nbsp;<p-sortIcon
+              field="nomina_isr_ajustado_por_subsidio" /></th>
+          <th pSortableColumn="nomina_total_isr">ISR&nbsp;<p-sortIcon field="nomina_total_isr" /></th>
+          <th pSortableColumn="nomina_total_imss">IMSS&nbsp;<p-sortIcon field="nomina_total_imss" /></th>
+          <th pSortableColumn="nomina_credito_fonacot">CREDITO FONACOT&nbsp;<p-sortIcon
+              field="nomina_credito_fonacot" /></th>
+          <th pSortableColumn="nomina_credito_infonavit">CREDITO INFONAVIT&nbsp;<p-sortIcon
+              field="nomina_credito_infonavit" /></th>
+          <th pSortableColumn="nomina_subsidio_empleo">SUBSIDIO PARA EL EMPLEO&nbsp;<p-sortIcon
+              field="nomina_subsidio_empleo" /></th>
+
+          <!--<t-h pSortableColumn="nomina_subsidio_empleo_aplicado">SUBS. PARA EL EMPLEO APLICADO&nbsp;<p-sortIcon field="nomina_subsidio_empleo_aplicado"/></th>-->
+
+          <th pSortableColumn="nomina_otras_deducciones">OTRAS DEDUCCIONES&nbsp;<p-sortIcon
+              field="nomina_otras_deducciones" /></th>
+          <th pSortableColumn="nomina_total_deducciones">TOTAL DEDUCCIONES&nbsp;<p-sortIcon
+              field="nomina_total_deducciones" /></th>
+          <th pSortableColumn="nomina_total_efectivo">TOTAL EFECTIVO&nbsp;<p-sortIcon field="nomina_total_efectivo" />
+          </th>
+          <th pSortableColumn="nomina_total_en_especie">TOTAL EN ESPECIE&nbsp;<p-sortIcon
+              field="nomina_total_en_especie" /></th>
+          <th pSortableColumn="nomina_neto_pagado">NETO PAGADO&nbsp;<p-sortIcon field="nomina_neto_pagado" /></th>
+          <th pSortableColumn="nomina_horas_por_dia">HORAS POR DIA&nbsp;<p-sortIcon field="nomina_horas_por_dia" /></th>
+          <th pSortableColumn="nomina_salario_por_hora">SALARIO POR HORA&nbsp;<p-sortIcon
+              field="nomina_salario_por_hora" /></th>
+          <th class="ultimo"></th>
+        </tr>
+      </ng-template>
+      <ng-template #body let-nom_list let-position="rowIndex">
+        <tr [ngClass]="nom_list.errores > 0 ? 'error' : ''" (focusout)="calculaNominaTotales();">
+          <td class="name">{{position +1}}</td>
+          <td class="name">{{nom_list.nomina_registro_patronal}}</td>
+          <td class="name">{{nom_list.nomina_empleado_nombre}}</td>
+          <td class="name">{{nom_list.nomina_periodicidad}}</td>
+
+          <td contenteditable="true"
+            (blur)="keyupNominaDesglosePeriodoInicio($event.target,nom_list.nomina_empleado_token);">
+            {{nom_list.nomina_periodo_inicio}}</td>
+          <td class="name" contenteditable="true"
+            (blur)="keyupNominaDesglosePeriodoFin($event.target,nom_list.nomina_empleado_token);">
+            {{nom_list.nomina_periodo_fin}}</td>
+          <td class="name">{{nom_list.nomina_moneda}}</td>
+          <td class="name">{{nom_list.nomina_empleado_cbankBanco+" "+nom_list.nomina_empleado_cbankCuenta}}</td>
+          <td class="name">{{nom_list.nomina_empleado_nss}}</td>
+          <td class="name">{{nom_list.nomina_empleado_rfc}}</td>
+          <td class="name">{{nom_list.nomina_empleado_curp}}</td>
+          <td class="name">{{nom_list.nomina_empleado_fecha_alta}}</td>
+          <td class="name">{{nom_list.nomina_empleado_departamento}}</td>
+          <td class="name">{{nom_list.nomina_empleado_puesto}}</td>
+          <td class="name">{{nom_list.nomina_empleado_tipo_salario}}</td>
+
+          <td class="td_importes" contenteditable="true"
+            (blur)="keyupNominaDesgloseSalarioDiario($event.target,nom_list.nomina_empleado_token);"
+            [textContent]="nom_list.nomina_salario_diario"></td>
+          <td class="td_importes" contenteditable="true"
+            (blur)="keyupNominaDesgloseSalarioIntegrado($event.target,nom_list.nomina_empleado_token);"
+            [textContent]="nom_list.nomina_salario_integrado"></td>
+          <td class="td_importes" contenteditable="true"
+            (blur)="keyupNominaDesgloseDiasTrabajados($event.target,nom_list.nomina_empleado_token);"
+            [textContent]="nom_list.nomina_dias_trabajados"></td>
+          <td class="td_importes" contenteditable="true"
+            (blur)="keyupNominaDesgloseFaltas($event.target,nom_list.nomina_empleado_token);"
+            [textContent]="nom_list.nomina_faltas"></td>
+          <td class="td_importes" contenteditable="true"
+            (blur)="keyupNominaDesgloseSueldo($event.target,nom_list.nomina_empleado_token);"
+            [textContent]="nom_list.nomina_sueldo"></td>
+          <td class="td_importes" contenteditable="true"
+            (blur)="keyupNominaDesgloseHoraExtrasDobles($event.target,nom_list.nomina_empleado_token);"
+            [textContent]="nom_list.nomina_horas_extras_dobles"></td>
+          <td class="td_importes" contenteditable="true"
+            (blur)="keyupNominaDesgloseAguinaldo($event.target,nom_list.nomina_empleado_token);"
+            [textContent]="nom_list.nomina_aguinaldo"></td>
+          <td class="td_importes" contenteditable="true"
+            (blur)="keyupNominaDesgloseHorasExtrasTriples($event.target,nom_list.nomina_empleado_token);"
+            [textContent]="nom_list.nomina_horas_extras_triples"></td>
+          <td class="td_importes" contenteditable="true"
+            (blur)="keyupNominaDesgloseVacaciones($event.target,nom_list.nomina_empleado_token);"
+            [textContent]="nom_list.nomina_vacaciones"></td>
+          <td class="td_importes" contenteditable="true"
+            (blur)="keyupNominaDesglosePrimaVacacional($event.target,nom_list.nomina_empleado_token);"
+            [textContent]="nom_list.nomina_prima_vacacional"></td>
+          <td class="td_importes" contenteditable="true"
+            (blur)="keyupNominaDesgloseRepartoDeUtilidades($event.target,nom_list.nomina_empleado_token);"
+            [textContent]="nom_list.nomina_reparto_de_utilidades"></td>
+          <td class="td_importes" contenteditable="true"
+            (blur)="keyupNominaDesgloseDespensa($event.target,nom_list.nomina_empleado_token);"
+            [textContent]="nom_list.nomina_despensa"></td>
+          <td class="td_importes" contenteditable="true"
+            (blur)="keyupNominaDesglosePremiosDeAsistencia($event.target,nom_list.nomina_empleado_token);"
+            [textContent]="nom_list.nomina_premios_de_asistencia"></td>
+          <td class="td_importes" contenteditable="true"
+            (blur)="keyupNominaDesglosePremiosDePuntualidad($event.target,nom_list.nomina_empleado_token);"
+            [textContent]="nom_list.nomina_premios_de_puntualidad"></td>
+          <td class="td_importes" contenteditable="true"
+            (blur)="keyupNominaDesglosePrimaDominical($event.target,nom_list.nomina_empleado_token);"
+            [textContent]="nom_list.nomina_prima_dominical"></td>
+          <td class="td_importes" contenteditable="true"
+            (blur)="keyupNominaDesgloseBnoExtraXComisionOtroDdo($event.target,nom_list.nomina_empleado_token);"
+            [textContent]="nom_list.nomina_bno_extra_x_comision_otro_edo"></td>
+          <td class="td_importes" contenteditable="true"
+            (blur)="keyupNominaDesgloseIndemnizacion($event.target,nom_list.nomina_empleado_token);"
+            [textContent]="nom_list.nomina_indemnizacion"></td>
+          <td class="td_importes" contenteditable="true"
+            (blur)="keyupNominaDesglosePrimaDeAntiguedad($event.target,nom_list.nomina_empleado_token);"
+            [textContent]="nom_list.nomina_prima_de_antiguedad"></td>
+          <td class="td_importes" contenteditable="true"
+            (blur)="keyupNominaDesgloseOtrasPercepciones($event.target,nom_list.nomina_empleado_token);"
+            [textContent]="nom_list.nomina_otras_percepciones"></td>
+          <td class="td_importes" contenteditable="true"
+            (blur)="keyupNominaDesgloseOtrosPagos($event.target,nom_list.nomina_empleado_token);"
+            [textContent]="nom_list.nomina_otros_pagos"></td>
+          <td class="td_importes" contenteditable="true"
+            (blur)="keyupNominaDesgloseTotalPercepciones($event.target,nom_list.nomina_empleado_token);"
+            [textContent]="nom_list.nomina_total_percepciones"></td>
+          <td class="td_importes" contenteditable="true"
+            (blur)="keyupNominaDesgloseIsrAjustadoXSubsidio($event.target,nom_list.nomina_empleado_token);"
+            [textContent]="nom_list.nomina_isr_ajustado_por_subsidio"></td>
+          <td class="td_importes" contenteditable="true"
+            (blur)="keyupNominaDesgloseTotalIsr($event.target,nom_list.nomina_empleado_token);"
+            [textContent]="nom_list.nomina_total_isr"></td>
+          <td class="td_importes" contenteditable="true"
+            (blur)="keyupNominaDesgloseTotalImss($event.target,nom_list.nomina_empleado_token);"
+            [textContent]="nom_list.nomina_total_imss"></td>
+          <td class="td_importes" contenteditable="true"
+            (blur)="keyupNominaDesgloseCreditoFonacot($event.target,nom_list.nomina_empleado_token);"
+            [textContent]="nom_list.nomina_credito_fonacot"></td>
+          <td class="td_importes" contenteditable="true"
+            (blur)="keyupNominaDesgloseCreditoInfonavit($event.target,nom_list.nomina_empleado_token);"
+            [textContent]="nom_list.nomina_credito_infonavit"></td>
+          <td class="td_importes" contenteditable="true"
+            (blur)="keyupNominaDesgloseSubsidioEmpleo($event.target,nom_list.nomina_empleado_token);"
+            [textContent]="nom_list.nomina_subsidio_empleo"></td>
+
+          <!--<td class="td_importes" contenteditable="true" (blur)="keyupNominaDesgloseSubsidioEmpleoAplicado($event.target,nom_list.nomina_empleado_token);" [textContent]="nom_list.nomina_subsidio_empleo_aplicado"></td>-->
+
+          <td class="td_importes" contenteditable="true"
+            (blur)="keyupNominaDesgloseOtrasDeducciones($event.target,nom_list.nomina_empleado_token);"
+            [textContent]="nom_list.nomina_otras_deducciones"></td>
+          <td class="td_importes" contenteditable="true"
+            (blur)="keyupNominaDesgloseTotalDeducciones($event.target,nom_list.nomina_empleado_token);"
+            [textContent]="nom_list.nomina_total_deducciones"></td>
+          <td class="td_importes" contenteditable="true"
+            (blur)="keyupNominaDesgloseTotalEfectivo($event.target,nom_list.nomina_empleado_token);"
+            [textContent]="nom_list.nomina_total_efectivo"></td>
+          <td class="td_importes" contenteditable="true"
+            (blur)="keyupNominaDesgloseTotalEspecie($event.target,nom_list.nomina_empleado_token);"
+            [textContent]="nom_list.nomina_total_en_especie"></td>
+          <td class="td_importes" contenteditable="true"
+            (blur)="keyupNominaDesgloseNetoPagado($event.target,nom_list.nomina_empleado_token);"
+            [textContent]="nom_list.nomina_neto_pagado"></td>
+          <td class="td_importes" contenteditable="true"
+            (blur)="keyupNominaDesgloseHorasXDia($event.target,nom_list.nomina_empleado_token);"
+            [textContent]="nom_list.nomina_horas_por_dia"></td>
+          <td class="td_importes" contenteditable="true"
+            (blur)="keyupNominaDesgloseSalarioXHora($event.target,nom_list.nomina_empleado_token);"
+            [textContent]="nom_list.nomina_salario_por_hora"></td>
+          <td class="ultimo">
+            <a class="btn btn_extend text-bg-danger rounded-3" (click)="deleteNominaPartida(nom_list.nomina_clave);">
+              <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+            </a>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="49" class="text-center py-4">
+            <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+            <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+              {{'no_rows' | translate}}
+            </p>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="footer">
+        <tr>
+          <td class="td_importes" colspan="15"><strong>Totales</strong></td>
+          <td class="td_importes"><strong>{{nomina_totales.salario_diario}}</strong></td>
+          <td class="td_importes"><strong>{{nomina_totales.salario_integrado}}</strong></td>
+          <td class="td_importes"><strong>{{nomina_totales.dias_trabajados}}</strong></td>
+          <td class="td_importes"><strong>{{nomina_totales.faltas}}</strong></td>
+          <td class="td_importes"><strong>{{nomina_totales.sueldo}}</strong></td>
+          <td class="td_importes"><strong>{{nomina_totales.horas_extras_dobles}}</strong></td>
+          <td class="td_importes"><strong>{{nomina_totales.aguinaldo}}</strong></td>
+          <td class="td_importes"><strong>{{nomina_totales.horas_extras_triples}}</strong></td>
+          <td class="td_importes"><strong>{{nomina_totales.vacaciones}}</strong></td>
+          <td class="td_importes"><strong>{{nomina_totales.prima_vacacional}}</strong></td>
+          <td class="td_importes"><strong>{{nomina_totales.reparto_de_utilidades}}</strong></td>
+          <td class="td_importes"><strong>{{nomina_totales.despensa}}</strong></td>
+          <td class="td_importes"><strong>{{nomina_totales.premios_de_asistencia}}</strong></td>
+          <td class="td_importes"><strong>{{nomina_totales.premios_de_puntualidad}}</strong></td>
+          <td class="td_importes"><strong>{{nomina_totales.prima_dominical}}</strong></td>
+          <td class="td_importes"><strong>{{nomina_totales.bno_extra_x_comision_otro_edo}}</strong></td>
+          <td class="td_importes"><strong>{{nomina_totales.indemnizacion}}</strong></td>
+          <td class="td_importes"><strong>{{nomina_totales.prima_de_antiguedad}}</strong></td>
+          <td class="td_importes"><strong>{{nomina_totales.otras_percepciones}}</strong></td>
+          <td class="td_importes"><strong>{{nomina_totales.otros_pagos}}</strong></td>
+          <td class="td_importes"><strong>{{nomina_totales.total_percepciones}}</strong></td>
+          <td class="td_importes"><strong>{{nomina_totales.isr_ajustado_por_subsidio}}</strong></td>
+          <td class="td_importes"><strong>{{nomina_totales.total_isr}}</strong></td>
+          <td class="td_importes"><strong>{{nomina_totales.total_imss}}</strong></td>
+          <td class="td_importes"><strong>{{nomina_totales.credito_fonacot}}</strong></td>
+          <td class="td_importes"><strong>{{nomina_totales.credito_infonavit}}</strong></td>
+          <td class="td_importes"><strong>{{nomina_totales.subsidio_empleo}}</strong></td>
+          <!--<td class="td_importes"><strong>{{nomina_totales.subsidio_empleo_aplicado}}</strong></td>-->
+          <td class="td_importes"><strong>{{nomina_totales.otras_deducciones}}</strong></td>
+          <td class="td_importes"><strong>{{nomina_totales.total_deducciones}}</strong></td>
+          <td class="td_importes"><strong>{{nomina_totales.total_efectivo}}</strong></td>
+          <td class="td_importes"><strong>{{nomina_totales.total_en_especie}}</strong></td>
+          <td class="td_importes"><strong>{{nomina_totales.neto_pagado}}</strong></td>
+
+          <td class="td_importes"><strong>{{nomina_totales.horas_por_dia}}</strong></td>
+          <td class="td_importes"><strong>{{nomina_totales.salario_por_hora}}</strong></td>
+          <!--<td class="td_importes"><strong>{{nomina_totales.u_t_laboradas}}</strong></td>-->
+          <td class="td_importes" colspan="3"></td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+  <p-divider />
+</div>
+<div class="col-12 row" style="display: flex;justify-content: end;padding-top: 0;padding-bottom: 0;">
+  <div style="width: max-content;padding: 0;">
+    <div class="btn-group lista_botones col" role="group" aria-label="Basic example">
+      <a class="btn btn_extend text-bg-success rounded-3" style="border-right: 2px white solid;"
+        [ngClass]="!validaRegistroNominaReport || existeBorrador ? 'disabled' : ''"
+        [attr.disabled]="!validaRegistroNominaReport || existeBorrador ? true : null"
+        [attr.aria-disabled]="!validaRegistroNominaReport || existeBorrador ? true : null"
+        (click)="(validaRegistroNominaReport && !existeBorrador) && guardarBorrador();">
+        <i class="fa-regular fa-floppy-disk" style="margin-left: 5px;"></i>&nbsp;{{'sav_borrad' | translate}}
+      </a>
+      <a class="btn btn_extend text-bg-success rounded-3" [ngClass]="!validaRegistroNominaReport ? 'disabled' : ''"
+        [attr.disabled]="!validaRegistroNominaReport ? true : null"
+        [attr.aria-disabled]="!validaRegistroNominaReport ? true : null"
+        (click)="validaRegistroNominaReport && registraNominaReporte();">
+        <i class="fa-regular fa-floppy-disk" style="margin-left: 5px;"></i>&nbsp;{{'sav_cam' | translate}}
+      </a>
+    </div>
+  </div>
+</div>
+}

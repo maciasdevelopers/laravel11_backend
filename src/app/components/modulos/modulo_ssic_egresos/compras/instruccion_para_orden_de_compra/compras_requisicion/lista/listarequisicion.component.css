@@ -1,0 +1,15 @@
+a.btn_caract{
+    height: 20px!important;
+    width: fit-content!important;
+    border-radius: 8px!important;
+    margin-top: 3px!important;
+    padding-left: 5px!important;
+    padding-right: 5px!important; 
+}
+
+a.btn_caract i{
+    margin-right: 5px!important; 
+    height: 20px!important;
+    width: 20px!important;
+    line-height: 20px!important;
+}

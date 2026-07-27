@@ -1,0 +1,168 @@
+<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco" #vContent>
+  <div class="contenido"><app-loader></app-loader>
+    <nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+    <div class="contenidoPagina">
+      <div class="listas_ps revanecer">
+        <div class="lista-div lista-divNoFlex">
+          <h4>LISTA DE PRECIOS</h4>
+          <p-tabs value="0">
+            <p-tablist>
+              <p-tab value="0">Cat&aacute;logo de listas de precios</p-tab>
+              <p-tab value="1">Listas de precios para productos</p-tab>
+              <p-tab value="2">Listas de precios para servicios</p-tab>
+            </p-tablist>
+            <p-tabpanels>
+              <p-tabpanel value="0"></p-tabpanel>
+              <p-tabpanel value="1">
+                <p-table [value]="arrayMercancias" [paginator]="true" [rows]="10"
+                  [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]">
+                  <ng-template #header>
+                    <tr>
+                      <th rowspan="2" class="ultimo"></th>
+                      <th rowspan="2" pSortableColumn="producto">Producto&nbsp;<p-sortIcon field="producto" /></th>
+                      <th rowspan="2" pSortableColumn="selectKardesx">precio kardex&nbsp;<p-sortIcon field="selectKardesx" /></th>
+                      <th rowspan="2" pSortableColumn="arrayListaPrecios">impuestos&nbsp;<p-sortIcon field="arrayListaPrecios" /></th>
+                      <th *ngFor="let pricelist of arrayListaPrecios;" class="thProrrt" colspan="3">{{pricelist.nombre_lista}}</th>
+                    </tr>
+                    <tr>
+                      <ng-container *ngFor="let pricelist of arrayListaPrecios">
+                        <th>Precio</th>
+                        <th>Impuesto</th>
+                        <th></th>
+                      </ng-container>
+                    </tr>
+                  </ng-template>
+                  <ng-template #body let-arrayProdVig>
+                    <tr>
+                      <td class="img_dat">
+                        <div class="col-12">
+                          <img class="circle optimizedImage" fill ngSrc="./assets/images/catalogos/default_producto.jpg" alt="">
+                        </div>
+                      </td>
+                      <td>{{arrayProdVig.clave+" "+arrayProdVig.clasificacion+" "+arrayProdVig.producto}}</td>
+                      <td>${{arrayProdVig.selectKardesx}}</td>
+                      <td class="ultimo">
+                        <a class="btn btnRow text-bg-success rounded-3 modal-trigger">
+                          <i class="fa-solid fa-info"></i>
+                        </a>
+                      </td>
+                      <td class="td_detalle" *ngFor="let preciosprod of arrayProdVig.arrayListaPrecios;index as pos2" [style]="preciosprod.content_color">
+                        <tr *ngIf="preciosprod.validate_button == true">
+                          <td class="dat-first">
+                            <input type="number" [value]="preciosprod.precio_detalle" (keyup)="validaPrecioLista($event.target,arrayProdVig.c_token,pos2);">
+                          </td>
+                          <td class="dat-first">
+                            <a class="btn bg-blue-300"><i class="fas fa-tags"></i>
+                              <span class="notificacion">{{preciosprod.retenciones}}</span>
+                            </a>
+                            ${{preciosprod.simulacion}}
+                          </td>
+                          <td class="dat-third ultimo">
+                            <button class="btn text-bg-success rounded-3"
+                              (click)="actualizaPrecioLista($event.target,preciosprod.token_lista_precios,preciosprod.tkn_detalle_lista,'pos1',pos2);">
+                              <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                          </td>
+                        </tr>
+                        <tr *ngIf="preciosprod.validate_button == false">
+                          <td class="dat-first">
+                            <input type="number" (keyup)="validaPrecioLista($event.target,arrayProdVig.c_token,pos2);">
+                          </td>
+                          <td class="dat-first">${{preciosprod.simulacion}}</td>
+                          <td class="dat-third ultimo">
+                            <button class="btn text-bg-success rounded-3"
+                              (click)="registraPrecioLista($event.target,arrayProdVig.c_token,preciosprod.token_lista_precios,pos2);">
+                              <i class="fa-solid fa-floppy-disk"></i>
+                            </button>
+                          </td>
+                        </tr>
+                      </td>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="emptymessage">
+                    <tr>
+                      <td colspan="5" class="text-center py-4">
+                        <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                        <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                          {{'no_rows' | translate}}
+                        </p>
+                      </td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+              </p-tabpanel>
+              <p-tabpanel value="2">
+                <p-table [value]="arrayServiciosVig" [paginator]="true" [rows]="10"
+                  [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]">
+                  <ng-template #header>
+                    <tr>
+                      <th rowspan="2" class="ultimo"></th>
+                      <th rowspan="2" pSortableColumn="servicio">servicio&nbsp;<p-sortIcon field="servicio" /></th>
+                      <th *ngFor="let pricelist of arrayListaPrecios;" class="thProrrt" colspan="3">{{pricelist.nombre_lista}}</th>
+                    </tr>
+                    <tr>
+                      <ng-container *ngFor="let pricelist of arrayListaPrecios">
+                        <th>Precio</th>
+                        <th>Simulacion</th>
+                        <th></th>
+                      </ng-container>
+                    </tr>
+                  </ng-template>
+                  <ng-template #body let-arraYsrvvig>
+                    <tr>
+                      <td class="img"><img src="{{arraYsrvvig.imagen}}" alt="Contact Person"></td>
+                      <td>{{arraYsrvvig.clave+" "+arraYsrvvig.clasificacion+" "+arraYsrvvig.servicio}}</td>
+                      <td class="td_detalle" *ngFor="let preciosserv of arraYsrvvig.arrayListaPrecios;index as pos2" [style]="preciosserv.content_color">
+                        <tr *ngIf="preciosserv.validate_button == true">
+                          <td class="dat-first"><input type="number" [value]="preciosserv.precio_detalle"
+                              (keyup)="validaServicioPrecioLista($event.target,arraYsrvvig.c_token,pos2);"></td>
+                          <td class="dat-second" *ngIf="preciosserv.impuestoArray.length > 0">
+                            <a class="btn btnRow text-bg-success rounded-3 modal-trigger"><i
+                                class="fa-solid fa-info"></i></a> ${{preciosserv.simulacion}}
+                          </td>
+                          <td class="dat-second" *ngIf="preciosserv.impuestoArray.length == 0">${{preciosserv.simulacion}}
+                          </td>
+    
+                          <td class="ultimo">
+                            <button
+                              (click)="actualizaPrecioLista($event.target,arraYsrvvig.c_token,preciosserv.token_lista_precios,preciosserv.tkn_detalle_lista,pos2);"
+                              class="btn text-bg-success rounded-3"><i class="fa-solid fa-pen-to-square"></i></button>
+                          </td>
+                        </tr>
+                        <tr *ngIf="preciosserv.validate_button == false">
+                          <td class="dat-first">
+                            <input type="number" (keyup)="validaServicioPrecioLista($event.target,arraYsrvvig.c_token,pos2);">
+                          </td>
+                          <td class="dat-second">${{preciosserv.simulacion}}</td>
+                          <td class="ultimo">
+                            <button *ngIf="preciosserv.precio_detalle == ''" disabled class="btn text-bg-success rounded-3">
+                              <i class="fa-solid fa-floppy-disk"></i>
+                            </button>
+                            <button class="btn text-bg-success rounded-3" *ngIf="preciosserv.precio_detalle != ''"
+                              (click)="registraServicioPrecioLista($event.target,arraYsrvvig.c_token,preciosserv.token_lista_precios,'pos1',pos2);"><i
+                                class="fa-solid fa-floppy-disk"></i></button>
+                          </td>
+                        </tr>
+                      </td>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="emptymessage">
+                    <tr>
+                      <td colspan="3" class="text-center py-4">
+                        <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                        <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                          {{'no_rows' | translate}}
+                        </p>
+                      </td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+              </p-tabpanel>
+            </p-tabpanels>
+          </p-tabs>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,55 @@
+.busqueda{
+    width: 100%;
+    background-color: #353535;
+    height: 35px;
+    margin: 1px;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-items: center;
+    justify-content: space-between;
+    align-items: center;
+    align-content: center;
+    padding: 3px;
+    border-radius: 8px;
+}
+
+.busqueda_navbar{
+    background-color: #353553!important;
+    border-radius: 25px;
+}
+
+.busqueda .col{
+    margin: 0!important;
+}
+
+.busqueda h6{
+    font-family: ubuntu, FontAwesome;
+    color: #d3d3d3!important;
+    height: 30px!important;
+    line-height: 30px!important;
+    width: 100%!important;
+    text-align: center!important;
+}
+
+.busqueda a{
+    font-family: ubuntu, FontAwesome;
+    background: #d3d3d3!important;
+    color: #353535;
+    height: 30px;
+    padding-left: 10px;
+    padding-right: 10px;
+    line-height: 30px;
+    box-shadow: 1px 1px 5px black;
+}
+
+.busqueda input.datsearch{
+    border-radius: 25px!important;
+}
+
+.busqueda .input-field{ 
+    width: 30%;
+    margin-top: 0;
+    height: 30px;
+    margin-bottom: 1px;
+}

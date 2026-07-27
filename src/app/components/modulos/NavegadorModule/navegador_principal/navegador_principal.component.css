@@ -1,0 +1,170 @@
+.btn_head_menu{
+  background-color: transparent!important;
+  border: none!important;
+}
+/*.dropdown:hover .dropdown-menu*/
+/*li.dropdown ul.dropdown-menu,.subMenuDrop{
+  display: none;
+  margin-top: .125em;
+}*/
+
+li.dropdown ul.dropdown-menu li{
+  padding: 2px !important;
+  font-family: lato;
+  font-size: smaller;
+  background-color: #d3d3d3 !important;
+  color: #666666 !important;
+}
+
+li.dropdown ul.dropdown-menu li a{
+  width: 100%;
+}
+
+/*.dropdown:hover .dropdown-menu, .dropend:hover > .subMenuDrop{
+  display: block;
+  margin-top: 0px;
+}*/
+
+.dropend:hover > .dropdown-menu{
+  position: absolute;
+  top: 0;
+  left: 100%;
+  margin-right: .125em;
+  display: block!important;
+}
+
+/* Estilos personalizados para p-treeselect en navbar oscura */
+.navbar-dark .p-treeselect .p-treeselect-label {
+  background-color: #343a40; /* Color de fondo acorde al bg-dark de Bootstrap */
+  color: #ffffff; /* Color de texto blanco para contraste */
+  border: 1px solid #495057; /* Borde acorde al esquema de colores */
+}
+
+.navbar-dark .p-treeselect .p-treeselect-panel {
+  background-color: #343a40; /* Fondo del panel desplegable */
+  color: #ffffff; /* Color de texto de las opciones */
+}
+
+.navbar-dark .p-treeselect .p-treeselect-item.p-highlight {
+  background-color: #495057; /* Fondo para ítems seleccionados */
+  color: #ffffff; /* Color de texto para ítems seleccionados */
+}
+
+.p-megamenu-overlay{
+  background-color: white;
+}
+
+.collapse_menu{
+  border-top: 1px solid gray;
+  background-color: #1f2937 !important;
+  color: white;
+}
+
+div.horaestSistemaMax{
+  padding: 0;
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+} 
+
+div.horaestSistemaMax h6.location{
+  font-size:12px; 
+  margin:0; 
+  text-align:center;
+  color: #ffff;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-weight: bold;
+}
+
+div.horaestSistemaMax h6.date_time {
+  font-size: 12px;
+  margin: 0;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: right;
+  padding-right: 5px;
+  border-right: 1px solid white;
+}
+
+div.horaestSistemaMax h6.date_time,
+div.horaestSistemaMax h6.local_date_time {
+  font-size: 12px;
+  margin: 0;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: right;
+}
+
+div.horaestSistemaMax h6.date_time{
+  padding-right: 5px;
+  border-right: 1px solid white;
+}
+
+div.horaestSistemaMax h6.date_time span.span_time,
+div.horaestSistemaMax h6.local_date_time span.span_time{
+  font-weight: bold; 
+  font-size: smaller; 
+  margin-top: 3px;
+}
+
+@media screen and (max-width: 991px) {
+  li.item_usuario{
+    display: none!important;
+  }
+  .inside_navbar .navbar-collapse {
+    display: none !important;
+  }
+}
+
+:host ::ng-deep .drawer-dark {
+  background-color: #1f2937 !important;
+  color: white !important;
+}
+
+:host ::ng-deep .drawer-dark .p-drawer-header {
+  background-color: #1f2937 !important;
+  color: white !important;
+}
+
+:host ::ng-deep .drawer-dark .p-drawer-content {
+  background-color: #1f2937 !important;
+  color: white !important;
+}
+
+.btn_drawer_menu {
+  background-color: transparent;
+  color: white;
+  border: none;
+  border-bottom: 1px solid #374151;
+  padding: 10px;
+  text-align: left;
+  width: 100%;
+}
+
+.btn_drawer_menu:hover {
+  background-color: #374151;
+  color: #c0a16b;
+}
+
+.drawer-submenu {
+  padding-left: 10px;
+}
+
+:host ::ng-deep .drawer-dark .p-tree {
+  background-color: transparent !important;
+  border: none !important;
+  color: white !important;
+}
+
+:host ::ng-deep .drawer-dark .p-tree .p-treenode-label {
+  color: white !important;
+}
+
+:host ::ng-deep .drawer-dark .p-tree .p-treenode-content:hover {
+  background-color: #374151 !important;
+}

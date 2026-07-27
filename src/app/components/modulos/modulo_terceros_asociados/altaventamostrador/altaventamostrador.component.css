@@ -1,0 +1,109 @@
+.card_main div.card-content {
+  justify-content: center!important;
+}
+
+div.seccion_table_contents {
+  box-shadow: 0 10px 15px rgba(92, 99, 105, .5) !important;
+  overflow: overlay;
+  margin-bottom: 10px !important;
+  padding: 0;
+  border-radius: 8px;
+}
+
+table.tabla_listas_ventas {
+  border-spacing: 0;
+  width: 100%;
+  border-radius: 8px;
+}
+
+.tabla_listas_ventas td,
+.tabla_listas_ventas th {
+  padding: 8px;
+  text-align: center;
+}
+
+.tabla_listas_ventas tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+.tabla_listas_ventas tr:hover {
+  background: #e8f2fd;
+  transition: all 0.1s ease-in-out;
+}
+
+.tabla_listas_ventas th:first-child {
+  border-radius: 8px 0 0 0!important;
+}
+
+.tabla_listas_ventas th:last-child {
+  border-radius: 0 8px 0 0!important;
+}
+
+.tabla_listas_ventas th:only-child {
+  border-radius: 8px 8px 0 0!important;
+}
+
+.tabla_listas_ventas tbody tr:last-child td:first-child{
+  border-radius: 0 0 0 8px!important;
+}
+
+.tabla_listas_ventas tbody tr:last-child td:last-child{
+  border-radius: 0 0 8px 0!important;
+}
+
+.tabla_listas_ventas th {
+  background-color: #00889f;
+  color: white;
+}
+
+#ticket {
+  font-family: Arial, Helvetica, sans-serif!important;
+  width: 80mm!important;
+  padding: 10px!important;
+  margin: auto!important;
+  visibility: visible;
+}
+
+#ticket *{
+  visibility: visible;
+}
+
+#ticket h2 {
+  text-align: center!important;
+  font-family: Lato!important;
+  margin: 0;
+}
+
+#ticket p {
+  text-align: center !important;
+  /*font-family: Lato !important;*/
+  margin: 0;
+  padding: 0;
+  height: 15px;
+  font-size: small;
+}
+
+#ticket table {
+  width: 100%!important;
+  border-collapse: collapse!important;
+}
+#ticket th,#ticket td {
+  text-align: left!important;
+  padding: 5px!important;
+  border-bottom: 1px solid #ddd!important;
+}
+
+@media print {
+  body * {
+      visibility: hidden;
+  }
+  #ticket, #ticket * {
+      visibility: visible;
+  }
+  #ticket {
+      margin: 0;
+      position: absolute;
+      left: 0;
+      top: 0;
+  }
+}

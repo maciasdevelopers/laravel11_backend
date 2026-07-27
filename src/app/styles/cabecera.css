@@ -1,0 +1,87 @@
+div.cabecera{
+  background-color: #d3d3d3;
+  border-radius: 8px;
+  color: #353535;
+  margin-bottom: 5px!important;
+}
+
+div.cabecera h6.title{
+  min-height: 15px;
+  line-height: 15px;
+  width: auto;
+  border-radius: 5px;
+  background-color: #353553!important;
+  color: #d3d3d3!important;
+  margin-left: 0;
+  margin-right: 0;
+  font-size: 12px;
+  font-size: 10pt;
+  font-weight: bold;
+}
+
+div.cabecera_white{
+  background-color: white!important;
+}
+
+div.cabecera_gray_light{
+  background-color: rgba(231,231,234,0.7)!important;
+}
+
+div.cabecera_black_light{
+  background-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+div.cabecera_dark{
+  background-color: rgba(2,10,94,0.7)!important;
+}
+
+div.cabecera_black{
+  background-color: rgba(0, 0, 0, 0.7)!important;
+}
+
+div.cabecera_transparent{
+  background-color: transparent!important;
+}
+
+div.cabecera_opacity{
+  background-color: rgba(0, 0, 0, 0.1)!important;
+}
+
+
+div.cabecera_dark h6,
+div.cabecera_black h6,
+div.cabecera_transparent h6{
+  color: #fff!important;
+}
+
+div.cabecera_dark h6.title,
+div.cabecera_black h6.title,
+div.cabecera_transparent h6.title{
+  background-color: transparent!important;
+}
+
+div.cabecera h6.content{
+  color: #353553;
+  font-size: 13px!important;
+  text-transform: lowercase;
+  margin: 0;
+}
+
+div.cabecera h6.contentMayus{
+  text-transform: uppercase!important;
+}
+
+div.cabecera h6.contentName{
+  text-transform: capitalize!important;
+}
+
+div.cabecera h6.contentBlack{
+  border-radius: 8px;
+  padding: 5px!important;
+  color: #fff!important;
+  font-weight: bold!important;
+}
+
+div.cabecera h6.contentInherit{
+  text-transform: inherit!important;
+}

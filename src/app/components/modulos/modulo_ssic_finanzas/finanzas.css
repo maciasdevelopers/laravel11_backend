@@ -1,0 +1,37 @@
+div.menuCat div.categoria div.item{
+    border-bottom: 5px inset #808080;
+}
+
+.listas_ps .lista-div, .listas_ps .fmAlta{border-left: 10px solid #808080;}
+
+/*Estructura general*/
+    /*h5 h6*/
+    .listas_ps h4,.listas_ps h5,.listas_ps h6{
+        color: #353535;
+
+    }
+/*inputs*/
+    .listas_ps .input-field label.active,
+    .listas_ps .input-field label.activeInput{
+        background-color: #D2CDCD;
+        color: #fff;
+    }
+    
+    .listas_ps .input-field label.activeSelect{
+        background-color: #D2CDCD;
+    }
+
+/*modal*/
+
+    div.open div.contenido div.modal-content div.form div.contenido-modal{
+        background: linear-gradient(180deg, rgba(169,168,168,1) 0%, rgba(138,138,138,1) 33%, rgba(102,102,102,1) 85%);
+    }
+
+/*radio buttons*/
+    .listas_ps p.radio label{
+        background-color: #C4BFBF;
+    }
+
+    .listas_ps p.radio label.disabled{
+        background-color: #C4BFBF;
+    }

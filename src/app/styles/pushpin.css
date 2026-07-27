@@ -1,0 +1,25 @@
+.block{
+  height: 100%;
+  margin: 0;
+  color: #e7e7ea;
+  border-radius: 8px;
+  box-shadow: 1px 1px 3px gray;
+  padding: 5px;
+}
+
+.block_simple{
+  border-radius: 0!important;
+  box-shadow: none!important;
+}
+
+.block span.header{
+	font-size: 20px;
+}
+
+.block h6.access_denied{
+	color: #e7e7ea;
+  font-weight: bold;
+  text-transform: initial;
+  font-family: 'Ubuntu';
+  text-align: left;
+}

@@ -1,0 +1,1100 @@
+<!--<p-confirmpopup #cp>
+  <ng-template #headless let-message>
+    <div class="rounded p-4">
+      <i class="fa-solid fa-circle-info"></i>&nbsp;
+      <span>{{ message.message }}</span>
+      <div class="flex items-center gap-2 mt-4">
+        <p-button id="popUpAccept" class="accept" (onClick)="cp.onAccept()" [label]="popUpAccept" size="small" />
+        <p-button id="popUpReject" class="reject" (onClick)="cp.onReject()" [label]="popUpReject" [text]="true"
+          size="small" severity="secondary" />
+      </div>
+    </div>
+  </ng-template>
+</p-confirmpopup>-->
+
+<bienvenido-component></bienvenido-component>
+<div id="vContent" class="marco" #vContent>
+  <div class="contenido">
+    <app-loader></app-loader>
+    <nav_principal_inside_app class="nav_class col-12"></nav_principal_inside_app>
+    <div class="contenidoPagina">
+      <div class="listas_ps revanecer">
+        <div class="lista-div lista-divNoFlex">
+          <h4>{{'menu_assimilated_salaries_analysis' | translate}}</h4>
+
+          <div class="col-12">
+            <div class="btn-group lista_botones col" role="group" arial-label="Basic example">
+              <a class="btn btn_extend bg-indigo-600"
+                (click)="listando_asimilados_reportes();listando_reportes_deleted_de_asimilados();">
+                <i class="fa-solid fa-rotate"></i>&nbsp;{{'list_updt' | translate}}
+              </a>
+              <a class="btn btn_extend bg-green-600 descarga_lista_excel" (click)="descargarPlantillaAsimilados();">
+                Descargar plantilla para carga masiva&nbsp;<i class="fa-solid fa-file-excel"></i>
+              </a>
+              <a class="btn btn_extend bg-green-600 descarga_lista_excel"
+                [ngClass]="list_asimilados_reportes.length == 0 ? 'disabled' : ''"
+                [attr.disabled]="list_asimilados_reportes.length == 0 ? true : null"
+                [attr.aria-disabled]="list_asimilados_reportes.length == 0 ? true : null"
+                (click)="list_asimilados_reportes.length > 0 && descarga_excel_asimilados_reportes();">
+                Descargar reporte de asimilados&nbsp;<i class="fa-solid fa-file-excel"></i>
+              </a>
+            </div>
+          </div>
+
+          <p-tabs value="0" scrollable>
+            <p-tablist>
+              <p-tab value="0">reportes de asimilados</p-tab>
+              <p-tab value="1" (click)="verReportesEliminados();listando_reportes_deleted_de_asimilados();">
+                <i class="fa-solid fa-trash"></i>&nbsp;reportes de asimilados eliminados
+              </p-tab>
+              <p-tab value="2"><i class="fa-solid fa-plus"></i>&nbsp;Nuevo reporte de asimilados</p-tab>
+            </p-tablist>
+            <p-tabpanels>
+              <p-tabpanel value="0">
+                <p-table #asimReps [value]="list_asimilados_reportes" showGridlines [resizableColumns]="true" [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }"
+                  [rowsPerPageOptions]="[10,20,30,50,100]"
+                  [globalFilterFields]="['asim_fecha_registro','asim_folio','asim_fecha_contabilizacion','asim_observaciones','asim_total_a_pagar','asim_pago','asim_saldo','asim_ord_pago_folio','asim_factura_doc_xml','asim_factura_doc_pdf']">
+                  <ng-template #caption>
+                    <div class="flex" style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;" ngbDropdown>
+                      <a class="btn btn_extend" [ngClass]="indicador_asim_rep_list == 'hoy' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_asimilados_reportes('hoy');">
+                        <i class="fa-solid fa-calendar-days"></i>&nbsp;Hoy
+                      </a>
+                      <a class="btn btn_extend" [ngClass]="indicador_asim_rep_list == 'esta_semana' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_asimilados_reportes('esta_semana');">
+                        <i class="fa-solid fa-calendar-days"></i>&nbsp;Esta semana
+                      </a>
+                      <a class="btn btn_extend" [ngClass]="indicador_asim_rep_list == 'este_mes' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_asimilados_reportes('este_mes');">
+                        <i class="fa-solid fa-calendar-days"></i>&nbsp;Este mes
+                      </a>
+                      <a class="btn btn_extend" [ngClass]="indicador_asim_rep_list == 'mes_anterior' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_asimilados_reportes('mes_anterior');">
+                        <i class="fa-solid fa-arrow-left"></i>&nbsp;mes anterior
+                      </a>
+                      <a id="menuDropAsimRepRangos" class="btn btn_extend" [ngClass]="indicador_asim_rep_list == 'otras_fechas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" ngbDropdownToggle>
+                        <i class="fa-solid fa-list-ul"></i>&nbsp;otras fechas
+                      </a>
+                      <div class="dropdown-menu-end menu-despegable" ngbDropdownMenu="menuDropAsimRepRangos" style="padding: 0!important; margin: 0!important; width: max-content!important; max-height: 400px; overflow-y: auto;">
+                        <div class="col-12 input-group">
+                          <label for="asim_rep_otras_fechas" class="activeInput">Periodo de fechas</label>
+                          <p-datepicker id="asim_rep_otras_fechas" name="asim_rep_otras_fechas" [(ngModel)]="rangoPeriodoListAsimRep" appendTo="body" dateFormat="dd/mm/yy" 
+                            placeholder="dd/mm/aaaa" selectionMode="range" (onSelect)="ver_asimilados_reportes('otras_fechas');" />
+                        </div>
+                      </div>
+                      <a class="btn btn_extend" [ngClass]="indicador_asim_rep_list == 'all_partidas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_asimilados_reportes('all_partidas');">
+                        <i class="fa-solid fa-list-ul"></i>&nbsp;todos los registros
+                      </a>
+                      <p-iconfield iconPosition="left" class="ml-auto">
+                        <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                        <input pInputText type="text" (input)="asimReps.filterGlobal($event.target.value, 'contains')"
+                          placeholder="{{'bus_car' | translate}}" />
+                      </p-iconfield>
+                    </div>
+                  </ng-template>
+                  <ng-template #header>
+                    <tr>
+                      <th rowspan="2" class="ultimo"></th>
+                      <th rowspan="2" pResizableColumn pSortableColumn="asim_folio">folio&nbsp;<p-sortIcon field="asim_folio" /></th>
+                      <th rowspan="2" pResizableColumn pSortableColumn="asim_fecha_contabilizacion">{{'fecha_cont' | translate}}&nbsp;<p-sortIcon field="asim_fecha_contabilizacion" /></th>
+                      <th colspan="5"><i class="fa-solid fa-money-check"></i>&nbsp;Orden de pago</th>
+                      <th rowspan="2"><i class="fa-solid fa-file-code"></i>&nbsp;{{'cfdi_xml_import' | translate}}</th>
+                      <th rowspan="2"><i class="fa-solid fa-file-pdf"></i>&nbsp;{{'cfdi_pdf_import' | translate}}</th>
+                      <th rowspan="2" class="ultimo"></th>
+                    </tr>
+                    <tr>
+                      <th pResizableColumn pSortableColumn="asim_total_a_pagar">reporte total&nbsp;<p-sortIcon field="asim_total_a_pagar" /></th>
+                      <th pResizableColumn pSortableColumn="asim_pago">pagado&nbsp;<p-sortIcon field="asim_pago" /></th>
+                      <th pResizableColumn pSortableColumn="asim_saldo">Saldo&nbsp;<p-sortIcon field="asim_saldo" /></th>
+                      <th pResizableColumn pSortableColumn="asim_ord_pago_folio">Orden de pago&nbsp;<p-sortIcon field="asim_ord_pago_folio" /></th>
+                      <th class="ultimo"></th>
+                    </tr>
+                  </ng-template>
+                  <ng-template #body let-asim_row>
+                    <tr>                      
+                      <td class="ultimo">
+                        <a class="btn bg-blue-600" (click)="verAsimiladosDesglose(asim_row.token_reporte_asim);">
+                          <i class="fa-solid fa-info"></i>
+                        </a>
+                      </td>
+                      <td>{{asim_row.asim_folio}}</td>
+                      <td>{{asim_row.asim_fecha_contabilizacion}}</td>
+                      <td class="td_importes">{{asim_row.asim_total_a_pagar}}</td>
+                      <td class="td_importes">{{asim_row.asim_pago}}</td>
+                      <td class="td_importes">{{asim_row.asim_saldo}}</td>
+                      <td>{{asim_row.asim_ord_pago_folio}}</td>
+                      <td class="ultimo">
+                        <a class="btn btn_extend text-bg-success rounded-3"
+                          [ngClass]="asim_row.asim_ord_pago_token == '' ? 'disabled' : ''"
+                          [attr.disabled]="asim_row.asim_ord_pago_token == '' ? true : null"
+                          [attr.aria-disabled]="asim_row.asim_ord_pago_token == '' ? true : null"
+                          (click)="asim_row.asim_ord_pago_token != '' && verReporteSeguimientoOrdenPago(asim_row.token_reporte_asim,asim_row.asim_ord_pago_token);">
+                          <i class="fa-solid fa-money-check-dollar"></i>&nbsp;Seguimiento
+                        </a>
+                      </td>
+                      <td>
+                        <a class="btn btn_extend text-bg-primary rounded-4" target="_blank"
+                          [ngClass]="asim_row.asim_factura_doc_xml == '' ? 'disabled' : ''"
+                          [attr.disabled]="asim_row.asim_factura_doc_xml == '' ? true : null"
+                          [attr.aria-disabled]="asim_row.asim_factura_doc_xml == '' ? true : null" [href]="asim_row.asim_url_doc_xml">
+                          <i class="fa-solid fa-code"></i>&nbsp;{{asim_row.asim_factura_doc_xml}}
+                        </a>
+                      </td>
+                      <td>
+                        <a class="btn btn_extend text-bg-danger rounded-3" target="_blank"
+                          [ngClass]="asim_row.asim_factura_doc_pdf == '' ? 'disabled' : ''"
+                          [attr.disabled]="asim_row.asim_factura_doc_pdf == '' ? true : null"
+                          [attr.aria-disabled]="asim_row.asim_factura_doc_pdf == '' ? true : null" [href]="asim_row.asim_url_doc_pdf">
+                          <i class="fa-solid fa-file-pdf"></i>&nbsp;{{asim_row.asim_factura_doc_pdf}}
+                        </a>
+                      </td>
+                      <td class="ultimo">
+                        <a class="btn btn_extend text-bg-danger rounded-3"
+                          [ngClass]="!asim_row.puede_eliminar ? 'disabled' : ''"
+                          [attr.disabled]="!asim_row.puede_eliminar ? true : null"
+                          [attr.aria-disabled]="!asim_row.puede_eliminar ? true : null"
+                          (click)="asim_row.puede_eliminar && deleteAsimReporte(asim_row.token_reporte_asim);">
+                          <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                        </a>
+                      </td>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="emptymessage">
+                    <tr>
+                      <td colspan="14" class="text-center py-4">
+                        <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                        <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                          {{'no_rows' | translate}}
+                        </p>
+                      </td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+              </p-tabpanel>
+              <p-tabpanel value="1">
+                <p-table #nomiElimReps [value]="list_asimilados_reportes_eliminados" showGridlines [resizableColumns]="true"
+                  [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }"
+                  [rowsPerPageOptions]="[10,20,30,50,100]"
+                  [globalFilterFields]="['asim_fecha_registro','asim_folio','asim_fecha_contabilizacion','asim_observaciones','asim_total_a_pagar','asim_pago','asim_saldo','asim_ord_pago_folio']">
+                  <ng-template #caption>
+                    <div class="flex">
+                      <p-iconfield iconPosition="left" class="ml-auto">
+                        <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                        <input pInputText type="text"
+                          (input)="nomiElimReps.filterGlobal($event.target.value, 'contains')"
+                          placeholder="{{'bus_car' | translate}}" />
+                      </p-iconfield>
+                    </div>
+                  </ng-template>
+                  <ng-template #header>
+                    <tr>
+                      <th rowspan="2" pResizableColumn pSortableColumn="asim_folio">folio&nbsp;<p-sortIcon field="asim_folio" /></th>
+                      <th rowspan="2" pResizableColumn pSortableColumn="asim_fecha_contabilizacion">{{'fecha_cont' | translate}}&nbsp;<p-sortIcon field="asim_fecha_contabilizacion" /></th>
+                      <th colspan="4"><i class="fa-solid fa-money-check"></i>&nbsp;Orden de pago</th>
+                      <th rowspan="2" class="ultimo"></th>
+                      <th rowspan="2" class="ultimo"></th>
+                    </tr>
+                    <tr>
+                      <th pResizableColumn pSortableColumn="asim_total_a_pagar">reporte total&nbsp;<p-sortIcon field="asim_total_a_pagar" /></th>
+                      <th pResizableColumn pSortableColumn="asim_pago">pagado&nbsp;<p-sortIcon field="asim_pago" /></th>
+                      <th pResizableColumn pSortableColumn="asim_saldo">Saldo&nbsp;<p-sortIcon field="asim_saldo" /></th>
+                      <th pResizableColumn pSortableColumn="asim_ord_pago_folio">Orden de pago&nbsp;<p-sortIcon field="asim_ord_pago_folio" /></th>
+                    </tr>
+                  </ng-template>
+                  <ng-template #body let-asim_row>
+                    <tr>
+                      <td>{{asim_row.asim_folio}}</td>
+                      <td>{{asim_row.asim_fecha_contabilizacion}}</td>
+                      <td class="td_importes">{{asim_row.asim_total_a_pagar}}</td>
+                      <td class="td_importes">{{asim_row.asim_pago}}</td>
+                      <td class="td_importes">{{asim_row.asim_saldo}}</td>
+                      <td>{{asim_row.asim_ord_pago_folio}}</td>
+                      <td class="ultimo">
+                        <a class="btn btn_extend text-bg-success rounded-3"
+                          (click)="restauraAsimiladoReporte(asim_row.token_reporte_asim);">
+                          <i class="fa-solid fa-trash-arrow-up"></i>&nbsp;{{'restore_row' | translate}}
+                        </a>
+                      </td>
+                      <td class="ultimo">
+                        <a class="btn btn_extend text-bg-danger rounded-3"
+                          (click)="deletePermanenteAsimiladoReporte(asim_row.token_reporte_asim);">
+                          <i class="fa-solid fa-eraser"></i>&nbsp;{{'delete_row' | translate}}
+                        </a>
+                      </td>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="emptymessage">
+                    <tr>
+                      <td colspan="8" class="text-center py-4">
+                        <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                        <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                          {{'no_rows' | translate}}
+                        </p>
+                      </td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+              </p-tabpanel>
+              <p-tabpanel value="2">
+                <vhumano_reportes_asimilados_nuevo_reporte></vhumano_reportes_asimilados_nuevo_reporte>
+              </p-tabpanel>
+            </p-tabpanels>
+          </p-tabs>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p-dialog header="Informaci&oacute;n de reporte de asimilados {{asimilados_detalle_folio}}" [(visible)]="ver_asimilados_seguimiento_pagos" [modal]="true" [style]="{ width: '50rem' }"
+  [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  <p-table #opgen [value]="asimilados_seguimiento_pagos" [globalFilterFields]="searchPagoGeneral" showGridlines
+    [resizableColumns]="true" [paginator]="true" [rows]="10" [tableStyle]="{ 'min-width': '50rem' }"
+    [rowsPerPageOptions]="[10,20,30,50,100]">
+    <ng-template #caption>
+      <div class="flex">
+        <p-iconfield iconPosition="left" class="ml-auto">
+          <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+          <input pInputText type="text" (input)="opgen.filterGlobal($event.target.value, 'contains')"
+            placeholder="{{'bus_car' | translate}}" />
+        </p-iconfield>
+      </div>
+    </ng-template>
+    <ng-template #header>
+      <tr>
+        <th rowspan="2" class="ultimo"></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="folio_ordenPago">folio&nbsp;<p-sortIcon field="folio_ordenPago" /></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="fecha_contabilizacion_orden_pago">{{'fecha_cont_pay_order' | translate}}&nbsp;<p-sortIcon field="fecha_contabilizacion_orden_pago" /></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="factura_relacionada_string">{{'doc_ant' | translate}}&nbsp;<p-sortIcon field="factura_relacionada_string" /></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="fecha_contabilizacion_doc_anterior">{{'fecha_cont_doc_ant' | translate}}&nbsp;<p-sortIcon field="fecha_contabilizacion_doc_anterior" /></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="orden_emisor_emp">{{'company_name' | translate}}&nbsp;<p-sortIcon field="orden_emisor_emp" /></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="autorizacion_pay">{{'autho_riza' | translate}}&nbsp;<p-sortIcon field="autorizacion_pay" /></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="fecha_autorizacion_pay">{{'date_autho_riza' | translate}}&nbsp;<p-sortIcon field="fecha_autorizacion_pay" /></th>
+        <th colspan="9" pResizableColumn>{{'payed' | translate}}</th>
+        <th rowspan="2" style="padding-left: 5px;padding-right: 5px;" pResizableColumn pSortableColumn="importe_total_inicial">{{'total_refund' | translate}}&nbsp;<p-sortIcon field="importe_total_inicial" /></th>
+        <th rowspan="2" style="padding-left: 5px;padding-right: 5px;" pResizableColumn pSortableColumn="importe_autorizado_inicial_format">{{'total_refund_auth' | translate}}&nbsp;<p-sortIcon field="importe_autorizado_inicial_format" /></th>
+        <th rowspan="2" style="padding-left: 5px;padding-right: 5px;" pResizableColumn pSortableColumn="importe_autorizado_final">{{'total_refund_auth_converse' | translate}}&nbsp;<p-sortIcon field="importe_autorizado_final" /></th>
+        <th rowspan="2" style="padding-left: 5px;padding-right: 5px;" pResizableColumn pSortableColumn="debe_format">DEBE&nbsp;<p-sortIcon field="debe_format" /></th>
+      </tr>
+      <tr>
+        <th pResizableColumn pSortableColumn="pago_anticipado">{{'prepayment' | translate}}&nbsp;<p-sortIcon field="pago_anticipado" /></th>
+        <th class="ultimo"></th>
+        <th class="noneView"></th>
+        <th pResizableColumn pSortableColumn="pago_realizado_folio">folio&nbsp;<p-sortIcon field="pago_realizado_folio" /></th>
+        <th pResizableColumn pSortableColumn="pago_realizado_fecha_contabilizacion">{{'fecha_cont' | translate}}&nbsp;<p-sortIcon field="pago_realizado_fecha_contabilizacion" /></th>
+        <!--<th pResizableColumn pSortableColumn="pago_realizado_proveedor_name">{{'prov' | translate}}&nbsp;<p-sortIcon field="pago_realizado_proveedor_name"/></th>-->
+        <!--<th pResizableColumn pSortableColumn="pago_realizado_acreedor_name">{{'acree_name' | translate}}&nbsp;<p-sortIcon field="pago_realizado_acreedor_name"/></th>-->
+        <th pResizableColumn pSortableColumn="pago_realizado_forma_pago_vinculada">{{'f_pago' | translate}}&nbsp;<p-sortIcon field="pago_realizado_forma_pago_vinculada" /></th>
+        <th pResizableColumn pSortableColumn="pago_realizado_forma_metodo_pago_cfdi">{{'f_m_pago_cfdi' | translate}}&nbsp;<p-sortIcon field="pago_realizado_forma_metodo_pago_cfdi" /></th>
+        <th pResizableColumn pSortableColumn="pago_realizado_monto">{{'total_import' | translate}}&nbsp;<p-sortIcon field="pago_realizado_monto" /></th>
+        <th pResizableColumn pSortableColumn="pago_realizado_tipo_cambio">{{'mon_tipo_cambio' | translate}}&nbsp;<p-sortIcon field="pago_realizado_tipo_cambio" /></th>
+        <th pResizableColumn pSortableColumn="pago_realizado_observaciones">{{'observ' | translate}}&nbsp;<p-sortIcon field="pago_realizado_observaciones" /></th>
+      </tr>
+    </ng-template>
+    <ng-template #body let-lPay>
+      <tr>
+        <td class="ultimo">
+          <a class="btn bg-red-700" [ngClass]="lPay.factura_relacionada_typo == '---' ? 'disabled' : ''"
+            [attr.disabled]="lPay.factura_relacionada_typo == '---' ? true : null"
+            [attr.aria-disabled]="lPay.factura_relacionada_typo == '---' ? true : null"
+            [attr.target]="lPay.factura_relacionada_typo != '---' ? '_blank' : null"
+            [attr.href]="lPay.factura_relacionada_typo != '---' ? (lPay.factura_relacionada_typo == 'compras' ? 'https://downloads.sos-mexico.com.mx/compras_pdf/'+lPay.factura_relacionada_token : 
+							(lPay.factura_relacionada_typo == 'ventas' ? 'https://downloads.sos-mexico.com.mx/ventas_pdf/'+lPay.factura_relacionada_token : 'https://downloads.sos-mexico.com.mx/reembolso_pdf/'+lPay.factura_relacionada_token)) : null">
+            <i class="fa-solid fa-file-pdf"></i>
+          </a>
+        </td>
+        <td>{{lPay.folio_ordenPago}}</td>
+        <td>{{lPay.fecha_contabilizacion_orden_pago}}</td>
+        <td class="name">{{lPay.factura_relacionada_string}}</td>
+        <td>{{lPay.fecha_contabilizacion_doc_anterior}}</td>
+        <td>{{lPay.orden_emisor_emp}}</td>
+        <td>{{lPay.autorizacion_pay_text}}</td>
+        <td>{{lPay.fecha_autorizacion_pay}}</td>
+        <td class="td_importes">{{lPay.pago_anticipado}}</td>
+        <td class="noneView">{{lPay.status_pago_date}}</td>
+
+        <td class="ultimo">
+          <p class="btn text-bg-success rounded-3" [ngClass]="lPay.status_pago == true ? 'disabled' : ''"
+            [attr.disabled]="lPay.status_pago == true ? true : null"
+            [attr.aria-disabled]="lPay.status_pago == true ? true : null"
+            style="width: 100%!important;border-radius: 25px!important;padding: 3px;">
+            <i class="fa-solid fa-check-double"></i>{{lPay.status_pago_date}}
+          </p>
+        </td>
+        <td>{{lPay.pago_realizado_folio}}</td>
+        <td>{{lPay.pago_realizado_fecha_contabilizacion}}</td>
+        <!--<td class="name">{{lPay.pago_realizado_proveedor_name}}</td>-->
+        <!--<td class="name">{{lPay.pago_realizado_acreedor_name}}</td>-->
+        <td class="name">{{lPay.pago_realizado_forma_pago_vinculada}}</td>
+        <td class="name">{{lPay.pago_realizado_forma_metodo_pago_cfdi}}</td>
+        <td class="td_importes">{{lPay.pago_realizado_monto}}</td>
+        <td class="td_importes">{{lPay.pago_realizado_tipo_cambio}}</td>
+        <td class="name">{{lPay.pago_realizado_observaciones}}</td>
+
+        <td class="td_importes">{{lPay.importe_total_inicial}}</td>
+        <td class="td_importes">{{lPay.importe_autorizado_inicial_format}}</td>
+        <td class="td_importes">{{lPay.importe_autorizado_final}}</td>
+        <td class="td_importes">{{lPay.debe_format}}</td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="22" class="text-center py-4">
+          <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+          <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+            {{'no_rows' | translate}}
+          </p>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <p-table #lpagos_realizados id="pagos_done_lista_general" [value]="asimilados_pagos_historial"
+    [globalFilterFields]="search_pagos_done" showGridlines [resizableColumns]="true" [paginator]="true" [rows]="10"
+    [tableStyle]="{ 'min-width': '50rem' }" [rowsPerPageOptions]="[10,20,30,50,100]">
+    <ng-template #caption>
+      <div class="flex">
+        <p-iconfield iconPosition="left" class="ml-auto">
+          <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+          <input pInputText type="text" (input)="lpagos_realizados.filterGlobal($event.target.value, 'contains')"
+            placeholder="{{'bus_car' | translate}}" />
+        </p-iconfield>
+      </div>
+    </ng-template>
+    <ng-template #header>
+      <tr>
+        <th rowspan="2" class="ultimo"></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="folio_pagos">folio&nbsp;<p-sortIcon field="folio_pagos" /></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="fecha_contabilizacion">{{'fecha_cont' | translate}}&nbsp;<p-sortIcon field="fecha_contabilizacion" /></th>
+        <th colspan="2">{{'doc_ant' | translate}}</th>
+        <th colspan="3">status</th>
+        <!--<th colspan="3">{{'ter_cero' | translate}}</th>-->
+        <!--<th colspan="3">financeado a</th>-->
+
+        <th rowspan="2" pResizableColumn pSortableColumn="medio_pago_vinculado">{{'f_pago' | translate}}&nbsp;<p-sortIcon field="medio_pago_vinculado" /></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="forma_metodo_pago_cfdi">{{'f_m_pago_cfdi' | translate}}&nbsp;<p-sortIcon field="forma_metodo_pago_cfdi" /></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="forma_metodo_pago_anticipos">medio de pago por anticipos&nbsp;<p-sortIcon field="forma_metodo_pago_anticipos" /></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="observacionesPago">{{'observ' | translate}}&nbsp;<p-sortIcon field="observacionesPago" /></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="p_moneda">{{'currency' | translate}}&nbsp;<p-sortIcon field="p_moneda" /></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="monto_pago_format">{{'total_import' | translate}}&nbsp;<p-sortIcon field="monto_pago_format" /></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="tipo_cambio_format">{{'mon_tipo_cambio' | translate}}&nbsp;<p-sortIcon field="tipo_cambio_format" /></th>
+        <th rowspan="2" pResizableColumn pSortableColumn="monto_pago_resultant">{{'total_import_resultant' | translate}}&nbsp;<p-sortIcon field="monto_pago_resultant" /></th>
+      </tr>
+      <tr>
+        <th pResizableColumn pSortableColumn="doc_anterior_folio">folio&nbsp;<p-sortIcon field="doc_anterior_folio" /></th>
+        <th pResizableColumn pSortableColumn="doc_anterior_fecha_contabilizacion">{{'fecha_cont' | translate}}&nbsp;<p-sortIcon field="doc_anterior_fecha_contabilizacion" /></th>
+        <th pResizableColumn pSortableColumn="pago_cancelado">status&nbsp;<p-sortIcon field="pago_cancelado" /></th>
+        <th pResizableColumn pSortableColumn="pago_folio_cancelacion">folio&nbsp;<p-sortIcon field="pago_folio_cancelacion" /></th>
+        <th pResizableColumn pSortableColumn="pago_fecha_contabilizacion_cancelacion">{{'fecha_cont' | translate}}&nbsp;<p-sortIcon field="pago_fecha_contabilizacion_cancelacion" /></th>
+        <!--<th pResizableColumn pSortableColumn="tercero_folio">folio&nbsp;<p-sortIcon field="tercero_folio"/></th>-->
+        <!--<th pResizableColumn pSortableColumn="tercero_name">{{'name' | translate}}&nbsp;<p-sortIcon field="tercero_name"/></th>-->
+        <!--<th pResizableColumn pSortableColumn="tercero_comercial_name">{{'comercial_name' | translate}}&nbsp;<p-sortIcon field="tercero_comercial_name"/></th>-->
+        <!--<th pResizableColumn pSortableColumn="financeadoa_folio">folio&nbsp;<p-sortIcon field="financeadoa_folio"/></th>-->
+        <!--<th pResizableColumn pSortableColumn="financeadoa_name">{{'name' | translate}}&nbsp;<p-sortIcon field="financeadoa_name"/></th>-->
+        <!--<th pResizableColumn pSortableColumn="financeadoa_comercial_name">{{'comercial_name' | translate}}&nbsp;<p-sortIcon field="financeadoa_comercial_name"/></th>-->
+      </tr>
+    </ng-template>
+    <ng-template #body let-payDone let-i="rowIndex">
+      <tr>
+        <td class="ultimo">
+          <!-- (click)="payDone.status_pago && pagos_realizados_desglose(payDone.token_pagos);"-->
+          <a class="btn text-bg-success rounded-3" [ngClass]="!payDone.status_pago ? 'disabled' : ''"
+            [attr.data-bs-toggle]="payDone.status_pago ? 'modal' : ''"
+            [attr.data-bs-target]="payDone.status_pago ? '#modalDesglosePagos' : ''">
+            <i class="fa-solid fa-file-invoice-dollar"></i>
+          </a>
+        </td>
+        <td>{{payDone.folio_pagos}}</td>
+        <td>{{payDone.fecha_contabilizacion}}</td>
+
+        <td class="name">{{payDone.doc_anterior_folio}}</td>
+        <td>{{payDone.doc_anterior_fecha_contabilizacion}}</td>
+
+        <td class="name">{{(payDone.pago_cancelado ? 'canceled_reg' : 'approved_reg') | translate}}</td>
+        <td class="name">{{payDone.pago_folio_cancelacion}}</td>
+        <td>{{payDone.pago_fecha_contabilizacion_cancelacion}}</td>
+
+        <!--<td class="name">{{payDone.tercero_folio}}</td>-->
+        <!--<td class="name">{{payDone.tercero_name}}</td>-->
+        <!--<td class="name">{{payDone.tercero_comercial_name}}</td>-->
+
+        <!--<td [ngClass]="payDone.orden_factura_relacionada_typo == 'anticipos' ? 'name' : ''">{{payDone.orden_factura_relacionada_typo == 'anticipos' ? payDone.financeadoa_folio : ''}}</td>-->
+        <!--<td [ngClass]="payDone.orden_factura_relacionada_typo == 'anticipos' ? 'name' : ''">{{payDone.orden_factura_relacionada_typo == 'anticipos' ? payDone.financeadoa_name : ''}}</td>-->
+        <!--<td [ngClass]="payDone.orden_factura_relacionada_typo == 'anticipos' ? 'name' : ''">{{payDone.orden_factura_relacionada_typo == 'anticipos' ? payDone.financeadoa_comercial_name : ''}}</td>-->
+
+        <td>{{payDone.medio_pago_vinculado}}</td>
+        <td class="name">{{payDone.forma_metodo_pago_cfdi}}</td>
+        <td [ngClass]="payDone.orden_factura_relacionada_typo == 'anticipos' ? 'name' : ''">
+          {{payDone.orden_factura_relacionada_typo == 'anticipos' ? payDone.forma_pago_pago : ''}}</td>
+        <td class="name">{{payDone.observacionesPago}}</td>
+        <td>{{payDone.p_moneda}}</td>
+        <td class="td_importes">{{payDone.monto_pago_format}}</td>
+        <td class="td_importes">{{payDone.tipo_cambio_format}}</td>
+        <td class="td_importes">{{payDone.monto_pago_resultant}}</td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="16" class="text-center py-4">
+          <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+          <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+            {{'no_rows' | translate}}
+          </p>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</p-dialog>
+
+<p-dialog header="Desglose de reporte de asimilados {{asimilados_detalle_folio}}" [(visible)]="ver_asimilados_desglose" [modal]="true" [style]="{ width: '50rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  @for (info_asim of asimilados_desglose_info; track info_asim.id; let i = $index) {
+    <div class="col-12 row">
+      @if (viewNewAsimiladoForm) {
+        <form class="formAsimReport" #formAsimReport="ngForm" [formGroup]="asimiladoForm" name="formAsimReport" enctype="multipart/form-data" (ngSubmit)="validaRegistroAsimiladosReport(info_asim.token_reporte_asim) && updateAsimiladoReporte(formAsimReport,info_asim.token_reporte_asim);">
+          <div class="col-12 row" style="padding: 0!important;">
+            <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4 input-group">
+              <label class="activeInput" for="newReportAsimFechaCont">{{'fecha_cont' | translate}}</label>
+              <input id="newReportAsimFechaCont" name="newReportAsimFechaCont" #newAsimFechaCont type="date" [value]="info_asim.asim_fecha_contabilizacion" (change)="select_fecha_contabilizacion($event.target);">
+            </div>
+            <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-4 col-xxl-4 explain" style="margin: 0!important;">
+              <h6 class="title"><i class="fa-solid fa-file-code"></i>&nbsp;{{'cfdi_xml_import' | translate}}</h6>
+              <h6 id="newReportAsimXML" class="content">{{info_asim.asim_factura_doc_xml}}</h6>
+            </div>
+            <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-4 col-xxl-4 explain" style="margin: 0!important;">
+              <h6 class="title"><i class="fa-solid fa-file-pdf"></i>&nbsp;{{'cfdi_pdf_import' | translate}}</h6>
+              <h6 id="newReportAsimPDF" class="content">{{info_asim.asim_factura_doc_pdf}}</h6>
+            </div>
+          </div>
+          <p-divider />
+          <div class="col-12 explain">
+            <h6 class="title">Informaci&oacute;n del CFDI</h6>
+          </div> 
+          @switch (resultXml) {
+            @case ('validoXml') {
+              <div class="col-12" style="padding: 5px!important;">
+                <p-accordion value="1">
+                  <p-accordion-panel value="0">
+                    <p-accordion-header>
+                      <ng-template #toggleicon let-active="active"><i class="fa-solid" [ngClass]="active ? 'fa-sort-up' : 'fa-sort-down'" style="margin-right: 3px!important;"></i></ng-template>
+                      <span class="flex items-center gap-2 w-full">Nodo Comprobante</span>
+                    </p-accordion-header>
+                    <p-accordion-content>
+                      <div class="col-12">
+                        @for (comp of dataCFDI_comprobante_obj | keyvalue: keepOrder; track $index) {
+                          <div [ngClass]="comp.key === 'sello' || comp.key === 'certificado' ? 'explain explain_column' : 'col-12 explain'">
+                            <h6 class="title">{{ formatLabel($any(comp.key)) }}</h6>
+                            <h6 class="content"
+                              [attr.style]="comp.key === 'sello' || comp.key === 'certificado' ? 'text-align: justify;word-wrap: break-word;max-width: 100%;' : ''">
+                              {{ comp.value }}</h6>
+                          </div>
+                        }
+                      </div>
+                    </p-accordion-content>
+                  </p-accordion-panel>
+                  <p-accordion-panel value="1">
+                    <p-accordion-header>
+                      <ng-template #toggleicon let-active="active"><i class="fa-solid" [ngClass]="active ? 'fa-sort-up' : 'fa-sort-down'" style="margin-right: 3px!important;"></i></ng-template>
+                      <span class="flex items-center gap-2 w-full">Nodo Emisor</span>
+                    </p-accordion-header>
+                    <p-accordion-content>
+                      <div class="col-12">
+                        @for (emi of dataCFDIEmisor_obj | keyvalue: keepOrder; track $index) {
+                          <div class="explain">
+                            <h6 class="title">{{ formatLabel($any(emi.key)) }}</h6>
+                            <h6 class="content">{{ emi.value }}</h6>
+                          </div>
+                        }
+                      </div>
+                    </p-accordion-content>
+                  </p-accordion-panel>
+                  <p-accordion-panel value="2">
+                    <p-accordion-header>
+                      <ng-template #toggleicon let-active="active"><i class="fa-solid" [ngClass]="active ? 'fa-sort-up' : 'fa-sort-down'" style="margin-right: 3px!important;"></i></ng-template>
+                      <span class="flex items-center gap-2 w-full">Nodo Receptor</span>
+                    </p-accordion-header>
+                    <p-accordion-content>
+                      <div class="col-12">
+                        @for (rec of dataCFDIReceptor_obj | keyvalue: keepOrder; track $index) {
+                          <div class="explain">
+                            <h6 class="title">{{ formatLabel($any(rec.key)) }}</h6>
+                            <h6 class="content">{{ rec.value }}</h6>
+                          </div>
+                        }
+                      </div>
+                    </p-accordion-content>
+                  </p-accordion-panel>
+                  <p-accordion-panel value="3">
+                    <p-accordion-header>
+                      <ng-template #toggleicon let-active="active"><i class="fa-solid" [ngClass]="active ? 'fa-sort-up' : 'fa-sort-down'" style="margin-right: 3px!important;"></i></ng-template>
+                      <span class="flex items-center gap-2 w-full">Conceptos registrados</span>
+                    </p-accordion-header>
+                    <p-accordion-content>
+                      <div class="col-12">
+                        <p-table #conceptCFDIList [value]="dataCFDI_conceptos" [globalFilterFields]="dataCFDIBuscarConcepto" dataKey="id" [resizableColumns]="true" responsiveLayout="stack">
+                          <ng-template #caption>
+                            <div class="flex">
+                              <p-iconfield iconPosition="left" class="ml-auto">
+                                <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                                <input pInputText type="text" (input)="conceptCFDIList.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+                              </p-iconfield>
+                            </div>
+                          </ng-template>
+                          <ng-template #header>
+                            <tr>
+                              <th class="ultimo" pSortableColumn="num_lista">&nbsp;<p-sortIcon field="num_lista" /></th>
+                              <th pSortableColumn="Descripcion">Concepto / Descripci&oacute;n&nbsp;<p-sortIcon field="Descripcion" /></th>
+                              <th pSortableColumn="Unidad">Unidad de Medida-SAT&nbsp;<p-sortIcon field="Unidad" /></th>
+                              <th pSortableColumn="ClaveProdServ">Cat&aacute;logo SAT&nbsp;<p-sortIcon field="ClaveProdServ" /></th>
+                              <th pSortableColumn="ValorUnitario">Valor unitario&nbsp;<p-sortIcon field="ValorUnitario" /></th>
+                              <th pSortableColumn="Cantidad">cantidad&nbsp;<p-sortIcon field="Cantidad" /></th>
+                              <th pSortableColumn="Descuento">descuento&nbsp;<p-sortIcon field="Descuento" /></th>
+                              <th pSortableColumn="Importe">subtotal&nbsp;<p-sortIcon field="Importe" /></th>
+                              <th pSortableColumn="Subtotal">Total&nbsp;<p-sortIcon field="Subtotal" /></th>
+                            </tr>
+                          </ng-template>
+                          <ng-template #body let-conceptList>
+                            <tr>
+                              <td>{{conceptList.num_lista}}</td>
+                              <td class="text_large">
+                                <p class="large_text">{{conceptList.Descripcion}}</p>
+                              </td>
+                              <td style="padding: 5px!important;height: 30px;">{{conceptList.Unidad}}</td>
+                              <td style="padding: 5px!important;height: 30px;">{{conceptList.ClaveProdServ}}</td>
+                              <td style="padding: 5px!important;height: 30px;">${{conceptList.ValorUnitario}}</td>
+                              <td style="padding: 5px!important;height: 30px;">{{conceptList.Cantidad}}</td>
+                              <td style="padding: 5px!important;height: 30px;">${{conceptList.Descuento}}</td>
+                              <td style="padding: 5px!important;height: 30px;">${{conceptList.Importe}}</td>
+                              <td style="padding: 5px!important;height: 30px;">${{conceptList.Subtotal}}</td>
+                            </tr>
+                          </ng-template>
+                          <ng-template pTemplate="emptymessage">
+                            <tr>
+                              <td colspan="17" class="text-center py-4">
+                                <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                                <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                  {{'no_rows' | translate}}
+                                </p>
+                              </td>
+                            </tr>
+                          </ng-template>
+                        </p-table>
+                      </div>
+                      <p-divider />
+                      <div class="col-12">
+                        <div class="col-12 explain">
+                          <h6 class="title">N&oacute;mina</h6>
+                        </div>
+                        <p-table [value]="asimilado_arreglo_vacio" dataKey="id" [paginator]="true" [rows]="10"
+                          [rowsPerPageOptions]="[10,20,30,50,100]"
+                          [globalFilterFields]="['token_establecimiento','estab_folio','estab_alias','estab_tipo','estab_desc','estab_encargado','aplica_ingresos','aplica_egresos','aplica_interno','aplica_almacen']">
+                          <ng-template #header>
+                            <tr>
+                              <th>PERIODO DE PAGO</th>
+                              <th>FECHA DE PAGO</th>
+                              <th>DÍAS PAGADOS</th>
+                              <th colspan="2">TOTAL PERCEPCIONES</th>
+                              <th colspan="2">TOTAL DEDUCCIONES</th>
+                            </tr>
+                          </ng-template>
+                          <ng-template #body let-est>
+                            <tr>
+                              <td>{{modelAsimilados.periodo_inicio+" - "+modelAsimilados.periodo_fin}}</td>
+                              <td>{{modelAsimilados.fecha_pago}}</td>
+                              <td>{{modelAsimilados.dias_pagados}}</td>
+                              <td>{{modelAsimilados.total_percepciones}}</td>
+                              <td class="ultimo">
+                                <a class="btn" [ngClass]="dataReceptor.length == 0 ? 'bg-blue-600 disabled' : (modelAsimilados.percepciones_servicio_token == '' ? 'bg-blue-600' : 'text-bg-success rounded-3')"
+                                  style="border-radius: 50%!important;" [attr.disabled]="dataReceptor.length == 0 ? true : null" [attr.aria-disabled]="dataReceptor.length == 0 ? true : null" 
+                                  (click)="dataReceptor.length > 0 && verConceptoXMLServicios();">
+                                  <i class="fa-solid" [ngClass]="modelAsimilados.percepciones_servicio_token == '' ? 'fa-eye' : 'fa-check-double'"></i>
+                                </a>
+                                
+                                <p-dialog header="CATALOGO DE SERVICIOS" [(visible)]="modelAsimilados.percepciones_window" [style]="{ width: '95%' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+                                  <div class="col-12">
+                                    <p-tabs value="0" scrollable>
+                                      <p-tablist>
+                                        <p-tab value="0">Cat&aacute;logo de servicios vinculados al proveedor</p-tab>
+                                        <p-tab value="1">Cat&aacute;logo general de servicios</p-tab>
+                                        <p-tab value="2">Guardar como servicio</p-tab>
+                                      </p-tablist>
+                                      <p-tabpanels>
+                                        <p-tabpanel value="0">
+                                          <p-table #prdVincLista [value]="serviciosVincLista" dataKey="id" [resizableColumns]="true" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]" responsiveLayout="stack"
+                                            [globalFilterFields]="['token_articulo','num_lista','identificador','clasificacion','sat','clave','concepto']">
+                                            <ng-template #caption>
+                                              <div class="flex">
+                                                <p-iconfield iconPosition="left" class="ml-auto">
+                                                  <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                                                  <input pInputText type="text"
+                                                    (input)="prdVincLista.filterGlobal($event.target.value, 'contains')"
+                                                    placeholder="{{'bus_car' | translate}}" />
+                                                </p-iconfield>
+                                              </div>
+                                            </ng-template>
+                                            <ng-template #header>
+                                              <tr>
+                                                <th class="ultimo"></th>
+                                                <th class="ultimo"></th>
+                                                <th pSortableColumn="identificador">identificador&nbsp;<p-sortIcon field="identificador" /></th>
+                                                <th pSortableColumn="clasificacion">Clasificaci&oacute;n&nbsp;<p-sortIcon field="clasificacion" /></th>
+                                                <th pSortableColumn="sat">Unidad de Medida-SAT&nbsp;<p-sortIcon field="sat" /></th>
+                                                <th pSortableColumn="clave">Cat&aacute;logo SAT&nbsp;<p-sortIcon field="clave" /></th>
+                                                <th pSortableColumn="concepto">Concepto / Descripci&oacute;n&nbsp;<p-sortIcon field="concepto" /></th>
+                                              </tr>
+                                            </ng-template>
+                                            <ng-template #body let-compProd>
+                                              <tr>
+                                                <td>
+                                                  <div class="form-check radio_check">
+                                                    <input class="form-check-input" type="radio" name="artCatSelect" [checked]="compProd.token_articulo == modelAsimilados.percepciones_servicio_token ? true : null"
+                                                      (click)="selecionaServicio(compProd.token_articulo);">
+                                                  </div>
+                                                </td>
+                                                <td class="img_dat">
+                                                  <div class="col-12"><img class="circle optimizedImage" fill ngSrc="{{compProd.imagen}}" alt=""></div>
+                                                </td>
+                                                <td class="name">{{compProd.identificador}}</td>
+                                                <td class="name">{{compProd.clasificacion}}</td>
+                                                <td class="name">{{compProd.sat}}</td>
+                                                <td class="name">{{compProd.clave}}</td>
+                                                <td class="name">{{compProd.concepto}}</td>
+                                              </tr>
+                                            </ng-template>
+                                            <ng-template pTemplate="emptymessage">
+                                              <tr>
+                                                <td colspan="7" class="text-center py-4">
+                                                  <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                                                  <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                                    {{'no_rows' | translate}}
+                                                  </p>
+                                                </td>
+                                              </tr>
+                                            </ng-template>
+                                          </p-table>
+                                        </p-tabpanel>
+                                        <p-tabpanel value="1">                                    
+                                          <p-table #prodServCatGral [value]="servCatGeneral" dataKey="listado" [resizableColumns]="true"
+                                            [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]" responsiveLayout="stack"
+                                            [globalFilterFields]="['num_lista','token_articulo','identificador','clasificacion','sat','clave','concepto']"
+                                            [expandedRowKeys]="expandRowsServicios" rowExpandMode="single">
+                                            <ng-template #caption>
+                                              <div class="flex">
+                                                <p-iconfield iconPosition="left" class="ml-auto">
+                                                  <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                                                  <input pInputText type="text"
+                                                    (input)="prodServCatGral.filterGlobal($event.target.value, 'contains')"
+                                                    placeholder="{{'bus_car' | translate}}" />
+                                                </p-iconfield>
+                                              </div>
+                                            </ng-template>
+                                            <ng-template #header>
+                                              <tr>
+                                                <th class="ultimo"></th>
+                                                <th class="ultimo"></th>
+                                                <th pSortableColumn="identificador">identificador&nbsp;<p-sortIcon field="identificador" /></th>
+                                                <th pSortableColumn="clasificacion">Clasificaci&oacute;n&nbsp;<p-sortIcon field="clasificacion" /></th>
+                                                <th pSortableColumn="sat">Unidad de Medida-SAT&nbsp;<p-sortIcon field="sat" /></th>
+                                                <th pSortableColumn="clave">Cat&aacute;logo SAT&nbsp;<p-sortIcon field="clave" /></th>
+                                                <th pSortableColumn="concepto">Concepto / Descripci&oacute;n&nbsp;<p-sortIcon field="concepto" /></th>
+                                              </tr>
+                                            </ng-template>
+                                            <ng-template #body let-lgProd let-i="rowIndex" let-expanded="expanded">
+                                              <tr>
+                                                <td>
+                                                  @if (lgProd.prov_relacionado_rfc == dataCFDI_emisor_Rfc) {
+                                                  <div class="form-check radio_check">
+                                                    <input class="form-check-input" type="radio" name="artCatSelect" [checked]="lgProd.token_articulo == modelAsimilados.percepciones_servicio_token ? true : null"
+                                                      (click)="seleccionaArticuloGralCompra(lgProd.token_articulo,lgProd.identificador);">
+                                                  </div>
+                                                  } @else {
+                                                  <a class="btn bg-blue-600" [pRowToggler]="lgProd">
+                                                    <i class="fa-solid" [ngClass]="expanded ? 'fa-angle-up' : 'fa-angle-down'"></i>
+                                                  </a>
+                                                  }
+                                                </td>
+                                                <td class="img_dat">
+                                                  <div class="col-12"><img class="circle optimizedImage" fill ngSrc="{{lgProd.imagen}}" alt=""></div>
+                                                </td>
+                                                <td class="name">{{lgProd.identificador}}</td>
+                                                <td class="name">{{lgProd.clasificacion}}</td>
+                                                <td class="name">{{lgProd.sat}}</td>
+                                                <td class="name">{{lgProd.clave}}</td>
+                                                <td class="name">{{lgProd.concepto}}</td>
+                                              </tr>
+                                            </ng-template>
+                                            <ng-template #expandedrow let-lgProd let-i="rowIndex">
+                                              <tr>
+                                                <td colspan="7">
+                                                  <div class="col-12 row">
+                                                    <div class="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-3 col-xxl-3">
+                                                      <div class="col-12 input-group">
+                                                        <label class="activeInput">Vincular a proveedor</label>
+                                                        <div class="form-check form-switch form-check-reverse switch_primario" style="justify-content: left;width: 100%!important;">
+                                                          <label class="form-check-label" for="flexSwitchCheckReverse">No</label>
+                                                          <input class="form-check-input selectSwitchProvProd" name="selectImpProd" type="checkbox" [checked]="lgProd.prov_relacionado_registrar" (click)="prov_relacionado_registrar($event.target,lgProd);">
+                                                          <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                                                        </div>
+                                                      </div>
+                                                      <div class="col-12 input-group">
+                                                        <label class="activeInput">Cuenta con clave alterna</label>
+                                                        <div class="form-check form-switch form-check-reverse switch_primario" style="justify-content: left;width: 100%!important;">
+                                                          <label class="form-check-label" for="flexSwitchCheckReverse">No</label>
+                                                          <input class="form-check-input selectSwitchProvProd" name="selectImpProd" type="checkbox" [checked]="lgProd.prov_relacionado_tiene_clave" (click)="decideHabilitaClave($event.target,lgProd);">
+                                                          <label class="form-check-label" for="flexSwitchCheckReverse">{{'yes' | translate}}</label>
+                                                        </div>
+                                                      </div>
+                                                      <div class="col-12 input-group">
+                                                        <label class="activeInput">Clave alterna (asignada por el proveedor)</label>
+                                                        <input class="claveServProvAlta txtClave validate" type="text" [ngClass]="!lgProd.prov_relacionado_tiene_clave ? 'disabled' : ''" [attr.disabled]="!lgProd.prov_relacionado_tiene_clave ? true : null"
+                                                          [attr.aria-disabled]="!lgProd.prov_relacionado_tiene_clave ? true : null" (keyup)="keyupProvProdClave($event.target,lgProd);" (keypress)="keypressProvProdClave($event);">
+                                                      </div>
+                                                    </div>
+                                                    <div class="col-12 col-sm-12 col-md-8 col-lg-8 col-xl-9 col-xxl-9"></div>
+                                                  </div>
+                                                  <div class="col-12 row">
+                                                    <div class="col-12 col-sm-12 col-md-6 col-lg-8 col-xl-8 col-xxl-9"></div>
+                                                    <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 col-xxl-3" style="display: flex !important;justify-content: end!important;">
+                                                      <a class="btn btn_extend text-bg-success rounded-3" type="submit"
+                                                        name="btnAltaProducto2" [ngClass]="!validaRegClaveProdPRV(lgProd) ? 'disabled' : ''"
+                                                        [attr.disabled]="!validaRegClaveProdPRV(lgProd) ? true : null"
+                                                        [attr.aria-disabled]="!validaRegClaveProdPRV(lgProd) ? true : null"
+                                                        (click)="validaRegClaveProdPRV(lgProd) && registraClaveProdPRV(lgProd);">
+                                                        <i class="fa-solid fa-floppy-disk" style="height: 15px!important;line-height: 15px!important;width: 15px!important;font-size: small!important;"></i>&nbsp;{{'sav_cam' | translate}}
+                                                      </a>
+                                                    </div>
+                                                  </div>
+                                                </td>
+                                              </tr>
+                                            </ng-template>
+                                            <ng-template pTemplate="emptymessage">
+                                              <tr>
+                                                <td colspan="7" class="text-center py-4">
+                                                  <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                                                  <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                                    {{'no_rows' | translate}}
+                                                  </p>
+                                                </td>
+                                              </tr>
+                                            </ng-template>
+                                          </p-table>
+                                        </p-tabpanel>
+                                        <p-tabpanel value="2">
+                                          <!--<app-invent-serv-compras-alta></app-invent-serv-compras-alta>-->
+                                        </p-tabpanel>
+                                      </p-tabpanels>
+                                    </p-tabs>
+                                  </div>
+                                  <div class="col-12 row" style="margin-top: 5px!important;">
+                                    <div class="col-12 col-sm-12 col-md-8 col-lg-8 col-xl-9 col-xxl-10"></div>
+                                    <div class="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-3 col-xxl-2" style="display: flex !important;justify-content: end!important;">
+                                      <div class="btn-group lista_botones col" role="group" aria-label="Basic example">
+                                        <a class="btn btn_extend bg-indigo-600"
+                                          [ngClass]="modelAsimilados.percepciones_servicio_token != '' ? 'disabled' : ''"
+                                          [attr.disabled]="modelAsimilados.percepciones_servicio_token != '' ? true : null"
+                                          [attr.aria-disabled]="modelAsimilados.percepciones_servicio_token != '' ? true : null"
+                                          (click)="cancelarArticuloAsim();">
+                                          <i class="fa-solid fa-xmark"></i>&nbsp;{{'swal_cancel' | translate}}
+                                        </a>
+                                        <a class="btn btn_extend bg-indigo-600"
+                                          [ngClass]="percepciones_servicio_save == '' ? 'disabled' : ''"
+                                          [attr.disabled]="percepciones_servicio_save == '' ? true : null"
+                                          [attr.aria-disabled]="percepciones_servicio_save == '' ? true : null"
+                                          (click)="guardaArticuloCompraXML();">
+                                          <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+                                        </a>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </p-dialog>
+                              </td>
+                              <td>{{modelAsimilados.total_deducciones}}</td>
+                              <td class="ultimo">
+                                <a class="btn" [ngClass]="activaBotonImpuestosClass()"
+                                  [attr.disabled]="!activaBotonImpuestosEnabled() ? true : null"
+                                  [attr.aria-disabled]="!activaBotonImpuestosEnabled() ? true : null"
+                                  (click)="activaBotonImpuestosEnabled() && verConceptoXMLImpuestos();">
+                                  <i class="fa-solid" [ngClass]="activaBotonImpuestosIcono()"></i>
+                                </a>
+                                
+                                <p-dialog header="Retenciones" [(visible)]="modelAsimilados.deducciones_window" [attr.position]="'bottom'" [modal]="true" [style]="{ width: '50rem' }" 
+                                  [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+                                  <div class="col-12 row">
+                                    <div class="col-12">
+                                      <p-table #impRetListOne [value]="dataCFDI_complemento_DeducConceptos" dataKey="id" [resizableColumns]="true" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]" responsiveLayout="stack"
+                                        [globalFilterFields]="['Base','Impuesto','TipoFactor','TasaOCuota','Importe','impuesto_relacion_nombre']" [expandedRowKeys]="expandedRowsRetenciones" rowExpandMode="single">
+                                        <ng-template #caption>
+                                          <div class="flex">
+                                            <p-iconfield iconPosition="left" class="ml-auto">
+                                              <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                                              <input pInputText type="text" (input)="impRetListOne.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+                                            </p-iconfield>
+                                          </div>
+                                        </ng-template>
+                                        <ng-template #header>
+                                          <tr>
+                                            <th style="width: 50px" class="ultimo"></th>
+                                            <th style="width: 100px" pSortableColumn="Clave">Clave&nbsp;<p-sortIcon field="Clave" /></th>
+                                            <th style="width: 100px" pSortableColumn="Concepto">Concepto&nbsp;<p-sortIcon field="Concepto" /></th>
+                                            <th style="width: 100px" pSortableColumn="Importe">Importe&nbsp;<p-sortIcon field="Importe" /></th>
+                                            <th style="width: 120px" pSortableColumn="TipoDeduccion">TipoDeduccion&nbsp;<p-sortIcon field="TipoDeduccion" /></th>
+                                          </tr>
+                                        </ng-template>
+                                        <ng-template #body let-ret let-i="rowIndex" let-expandReten="expanded">
+                                          <tr>
+                                            <td class="ultimo">
+                                              <a class="btn bg-blue-600" [pRowToggler]="ret">
+                                                <i class="fa-solid" [ngClass]="expandReten ? 'fa-angle-up' : 'fa-angle-down'"></i>
+                                              </a>
+                                            </td>
+                                            <td>{{ret.Clave}}</td>
+                                            <td>{{ret.Concepto}}</td>
+                                            <td>{{ret.Importe}}</td>
+                                            <td>{{ret.TipoDeduccion}}</td>
+                                          </tr>
+                                        </ng-template>
+                                        <ng-template #expandedrow let-ret let-i="rowIndex">
+                                          <tr>
+                                            <td colspan="5">
+                                              <div style="overflow-x: auto;">
+                                                <p-table #impRetCat [value]="impRetencionesCatalogo" [globalFilterFields]="dataCFDIBuscarRetenciones" dataKey="id" [resizableColumns]="true" 
+                                                  [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,30,50,100]" responsiveLayout="stack">
+                                                  <ng-template #caption>
+                                                    <div class="flex" style="display: flex!important;justify-content: end;align-items: center;flex-wrap: wrap;flex-direction: row!important;align-content: center;" ngbDropdown>
+                                                      <a class="btn btn_extend" [ngClass]="indicadorImpRetenciones == 'hoy' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_impuestos_catalogo_retenciones('hoy');">
+                                                        <i class="fa-solid fa-calendar-days"></i>&nbsp;Hoy
+                                                      </a>
+                                                      <a class="btn btn_extend" [ngClass]="indicadorImpRetenciones == 'esta_semana' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_impuestos_catalogo_retenciones('esta_semana');">
+                                                        <i class="fa-solid fa-calendar-days"></i>&nbsp;Esta semana
+                                                      </a>
+                                                      <a class="btn btn_extend" [ngClass]="indicadorImpRetenciones == 'este_mes' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_impuestos_catalogo_retenciones('este_mes');">
+                                                        <i class="fa-solid fa-calendar-days"></i>&nbsp;Este mes
+                                                      </a>
+                                                      <a class="btn btn_extend" [ngClass]="indicadorImpRetenciones == 'mes_anterior' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_impuestos_catalogo_retenciones('mes_anterior');">
+                                                        <i class="fa-solid fa-arrow-left"></i>&nbsp;mes anterior
+                                                      </a>
+                                                      <a id="menuDropImpRetenciones" class="btn btn_extend" [ngClass]="indicadorImpRetenciones == 'otras_fechas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" ngbDropdownToggle>
+                                                        <i class="fa-solid fa-list-ul"></i>&nbsp;otras fechas
+                                                      </a>
+                                                      <div class="dropdown-menu-end menu-despegable" ngbDropdownMenu="menuDropImpRetenciones" style="padding: 0!important; margin: 0!important; width: max-content!important; max-height: 400px; overflow-y: auto;">
+                                                        <div class="col-12 input-group">
+                                                          <label for="imp_retenciones_otras_fechas" class="activeInput">Periodo de fechas</label>
+                                                          <p-datepicker id="imp_retenciones_otras_fechas" name="imp_retenciones_otras_fechas" [(ngModel)]="rangoPeriodoImpRetenciones" appendTo="body" dateFormat="dd/mm/yy"
+                                                            placeholder="dd/mm/aaaa" selectionMode="range" (onSelect)="ver_impuestos_catalogo_retenciones('otras_fechas')" />
+                                                        </div>
+                                                      </div>
+                                                      <a class="btn btn_extend" [ngClass]="indicadorImpRetenciones == 'all_partidas' ? ' bg-indigo-600': ' bg-blue-600'" style="margin-right:5px!important;" (click)="ver_impuestos_catalogo_retenciones('all_partidas');">
+                                                        <i class="fa-solid fa-list-ul"></i>&nbsp;todos los registros
+                                                      </a>
+                                                      <p-iconfield iconPosition="left" class="ml-auto">
+                                                        <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                                                        <input pInputText type="text" (input)="impRetCat.filterGlobal($event.target.value, 'contains')" placeholder="{{'bus_car' | translate}}" />
+                                                      </p-iconfield>
+                                                    </div>
+                                                  </ng-template>
+                                                  <ng-template #header>
+                                                    <tr>
+                                                      <th class="ultimo"></th>
+                                                      <th pSortableColumn="folio_impuesto">folio&nbsp;<p-sortIcon field="folio_impuesto" /></th>
+                                                      <th pSortableColumn="abreviacion_impuesto">Abreviaci&oacute;n&nbsp;<p-sortIcon field="abreviacion_impuesto" /></th>
+                                                      <th pSortableColumn="concepto_impuesto">Concepto&nbsp;<p-sortIcon field="concepto_impuesto" /></th>
+                                                      <th pSortableColumn="modulo">M&oacute;dulo&nbsp;<p-sortIcon field="modulo" /></th>
+                                                      <th pSortableColumn="nivel_aplicacion">nivel de aplicaci&oacute;n&nbsp;<p-sortIcon field="nivel_aplicacion" /></th>
+                                                      <th pSortableColumn="catalogo_sat">clave sat&nbsp;<p-sortIcon field="catalogo_sat" /></th>
+                                                      <th pSortableColumn="tipo_impuesto">Tipo&nbsp;<p-sortIcon field="tipo_impuesto" /></th>
+                                                      <th pSortableColumn="exento">Exento&nbsp;<p-sortIcon field="exento" /></th>
+                                                      <th pSortableColumn="calculo">Tasa o cuota&nbsp;<p-sortIcon field="calculo" /></th>
+                                                      <th pSortableColumn="txtimporte">Importe del impuesto&nbsp;<p-sortIcon field="txtimporte" /></th>
+                                                      <th pSortableColumn="tipo_cambio">Tipo de cambio aplicado&nbsp;<p-sortIcon field="tipo_cambio" /></th>
+                                                      <th pSortableColumn="monedas_codigo">Moneda aplicada&nbsp;<p-sortIcon field="monedas_codigo" /></th>
+                                                      <th pSortableColumn="base_aplicable">Aplica sobre&nbsp;<p-sortIcon field="base_aplicable" /></th>
+                                                      <th pSortableColumn="desglose">Desglose&nbsp;<p-sortIcon field="desglose" /></th>
+                                                      <th pSortableColumn="gl_por_pagarcobrar">GL por pagar o cobrar&nbsp;<p-sortIcon field="gl_por_pagarcobrar" /></th>
+                                                      <th pSortableColumn="gl_pagada_o_cobrada">GL efectivamente pagada o cobrada&nbsp;<p-sortIcon field="gl_pagada_o_cobrada" /></th>
+                                                      <th pSortableColumn="observaciones">{{'observ' | translate}}&nbsp;<p-sortIcon field="observaciones" /></th>
+                                                    </tr>
+                                                  </ng-template>
+                                                  <ng-template #body let-impVig>
+                                                    <tr>
+                                                      <td>
+                                                        <div class="form-check radio_check">
+                                                          <input class="form-check-input" type="radio" name="imp_ret_selector" [value]="impVig.token_catalogo_impuesto"
+                                                            [checked]="impVig.token_catalogo_impuesto == modelAsimilados.deducciones_impuesto_token" (click)="selecciona_imp_retencion($event.target);">
+                                                        </div>
+                                                      </td>
+                                                      <td>{{impVig.folio_impuesto}}</td>
+                                                      <td class="td_names_rfc">{{impVig.abreviacion_impuesto}}</td>
+                                                      <td class="td_names_rfc">{{impVig.concepto_impuesto}}</td>
+                                                      <td>{{impVig.modulo}}</td>
+                                                      <td>{{impVig.nivel_aplicacion}}</td>
+                                                      <td>{{impVig.catalogo_sat}}</td>
+                                                      <td>{{impVig.tipo_impuesto}}</td>
+                                                      <td>{{impVig.exento | translate}}</td>
+                                                      <td>{{impVig.exento == 'yes' ? '---' : impVig.calculo}}</td>
+                                                      <td class="td_importes">{{impVig.exento == 'yes' ? '---' : impVig.txtimporte}}</td>
+                                                      <td class="td_importes">{{impVig.exento == 'yes' ? '---' : impVig.tipo_cambio}}</td>
+                                                      <td>{{impVig.exento == 'yes' ? '---' : impVig.monedas_codigo+" - "+impVig.monedas_moneda}}</td>
+                                                      <td>{{impVig.exento == 'yes' ? '---' : impVig.base_aplicable}}</td>
+                                                      <td>{{impVig.exento == 'yes' ? '---' : impVig.desglose | translate}}</td>
+                                                      <td>{{impVig.exento == 'yes' ? '---' : impVig.gl_por_pagarcobrar}}</td>
+                                                      <td>{{impVig.exento == 'yes' ? '---' : impVig.gl_pagada_o_cobrada}}</td>
+                                                      <td>{{impVig.observaciones}}</td>
+                                                    </tr>
+                                                  </ng-template>
+                                                  <ng-template pTemplate="emptymessage">
+                                                    <tr>
+                                                      <td colspan="18" class="text-center py-4">
+                                                        <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                                                        <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                                          {{'no_rows' | translate}}
+                                                        </p>
+                                                      </td>
+                                                    </tr>
+                                                  </ng-template>
+                                                </p-table>
+                                              </div>
+                                            </td>
+                                          </tr>
+                                        </ng-template>
+                                        <ng-template pTemplate="emptymessage">
+                                          <tr>
+                                            <td colspan="5" class="text-center py-4">
+                                              <i class="fa-solid fa-box-open" style="font-size: 2rem; color: #6b7280;"></i>
+                                              <p class="mt-2" style="font-size: 1.2rem; color: #374151;">
+                                                {{'no_rows' | translate}}
+                                              </p>
+                                            </td>
+                                          </tr>
+                                        </ng-template>
+                                      </p-table>
+      
+                                      <div class="col-12 row" style="margin-top: 5px!important;">
+                                        <div class="col-12 col-sm-12 col-md-8 col-lg-8 col-xl-9 col-xxl-10"></div>
+                                        <div class="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-3 col-xxl-2" style="display: flex !important;justify-content: end!important;">
+                                          <div class="btn-group lista_botones col" role="group" aria-label="Basic example">
+                                            <a class="btn btn_extend bg-indigo-600"
+                                              [ngClass]="modelAsimilados.deducciones_impuesto_token != '' ? 'disabled' : ''"
+                                              [attr.disabled]="modelAsimilados.deducciones_impuesto_token != '' ? true : null"
+                                              [attr.aria-disabled]="modelAsimilados.deducciones_impuesto_token != '' ? true : null"
+                                              (click)="imp_retencion_cancelar();">
+                                              <i class="fa-solid fa-xmark"></i>&nbsp;{{'swal_cancel' | translate}}
+                                            </a>
+                                            <a class="btn btn_extend bg-indigo-600"
+                                              [ngClass]="deducciones_impuesto_save == '' ? 'disabled' : ''"
+                                              [attr.disabled]="deducciones_impuesto_save == '' ? true : null"
+                                              [attr.aria-disabled]="deducciones_impuesto_save == '' ? true : null"
+                                              (click)="guarda_imp_retencion();">
+                                              <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+                                            </a>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </p-dialog>
+                              </td>
+                            </tr>
+                          </ng-template>
+                          <ng-template pTemplate="footer">
+                            <tr>
+                              <td colspan="5" class="td_importes"><strong>TOTAL</strong></td>
+                              <td class="td_importes"><strong>{{get_asimilado_total}}</strong></td>
+                              <td></td>
+                            </tr>
+                          </ng-template>
+                        </p-table>
+                      </div>
+                    </p-accordion-content>
+                  </p-accordion-panel>
+                  <p-accordion-panel value="4">
+                    <p-accordion-header>
+                      <ng-template #toggleicon let-active="active"><i class="fa-solid" [ngClass]="active ? 'fa-sort-up' : 'fa-sort-down'" style="margin-right: 3px!important;"></i></ng-template>
+                      <span class="flex items-center gap-2 w-full">Nodo Complemento</span>
+                    </p-accordion-header>
+                    <p-accordion-content>
+                      <div class="col-12 row">
+                        @for (last of dataCFDIComplemento_obj | keyvalue: keepOrder; track $index) {
+                          <div [ngClass]="last.key === 'SelloCFD' || last.key === 'SelloSAT' ? 'explain explain_column' : 'col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4 col-xxl-3 explain'">
+                            <h6 class="title">{{ formatLabel($any(last.key)) }}</h6>
+                            <h6 class="content" [ngClass]="last.key === 'SelloCFD' || last.key === 'SelloSAT' ? 'content_text_large' : ''">{{ last.value }}</h6>
+                          </div>
+                        }
+                      </div>
+                    </p-accordion-content>
+                  </p-accordion-panel>
+                  @if (dataCFDIRelacionados_obj.uuids?.length > 0) {
+                    <p-accordion-panel value="5">
+                      <p-accordion-header>
+                        <ng-template #toggleicon let-active="active"><i class="fa-solid" [ngClass]="active ? 'fa-sort-up' : 'fa-sort-down'" style="margin-right: 3px!important;"></i></ng-template>
+                        <span class="flex items-center gap-2 w-full">Nodo Cfdi relacionados</span>
+                      </p-accordion-header>
+                      <p-accordion-content>
+                        @for (rel of dataCFDIRelacionados_obj | keyvalue: keepOrder; track $index) {
+                          <div class="col-12">
+                            <div class="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-2 col-xxl-2 explain">
+                              <h6 class="title">{{ formatLabel($any(rel.key)) }}</h6>
+                              <h6 class="content">{{ rel.value }}</h6>
+                            </div>
+                          </div>
+                        }
+                      </p-accordion-content>
+                    </p-accordion-panel>
+                  }
+                </p-accordion>
+              </div>
+            }
+            @case ('errorXml') {
+              <p>CFDI Invalido.</p>
+            }
+            @default {
+              <p>Registre CFDI.</p>
+            }
+          }
+          <p-divider />
+          <div class="col-12 input-group" style="margin-bottom: 10px!important;">
+            <label for="new_asim_observaciones" class="activeInput">{{'observ' | translate}}</label>
+            <textarea id="new_asim_observaciones" #newAsimObservaciones class="validate" (keyup)="keyupObservacionReporte($event.target);">{{info_asim.asim_observaciones}}</textarea>
+          </div>
+          <p-divider />
+          <div class="col-12 field_file_drop">
+            <ngx-file-drop dropZoneLabel="Drop files here" (onFileDrop)="droppedAsimilados($event)" (onFileOver)="fileOverImpAsimilados($event)" (onFileLeave)="fileLeaveImpAsimilados($event)">
+              <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
+                <a class="btn btn_load_file" type="button" style="color: #0782d0 !important;" (click)="openFileSelector()">
+                  {{'load_files' | translate}} / {{'browse_files' | translate}}
+                </a>
+              </ng-template>
+            </ngx-file-drop>
+            <table class="white centered" style="margin-top:5px!important;width: 100% !important;">
+              <thead>
+                <tr>
+                  <th>{{'file' | translate}}</th>
+                  <th class="ultimo"></th>
+                </tr>
+              </thead>
+              <tbody class="upload-name-style" *ngIf="filesAsimilados.length != 0">
+                <tr *ngFor="let item of filesAsimilados; index as i">
+                  <td><strong>{{ item.relativePath }}</strong></td>
+                  <td class="ultimo">
+                    <a class="btn btn_extend text-bg-danger rounded-3"
+                      (click)="deleteAnexosAsimilados(i);">
+                      <i class="fa-solid fa-xmark"></i>
+                    </a>
+                  </td>
+                </tr>
+              </tbody>
+              <tbody *ngIf="filesAsimilados.length == 0">
+                <tr><td colspan="2">{{'no_rows' | translate}}</td></tr>
+              </tbody>
+            </table>
+          </div>
+          
+          <div class="col-12" style="display: flex !important;justify-content: end!important;margin-top: 5px!important;">
+            <button class="btn btn_extend text-bg-success rounded-3" [ngClass]="!validaRegistroAsimiladosReport(info_asim.token_reporte_asim) ? 'disabled' : ''" 
+              [attr.disabled]="!validaRegistroAsimiladosReport(info_asim.token_reporte_asim) ? true : null" [attr.aria-disabled]="!validaRegistroAsimiladosReport(info_asim.token_reporte_asim) ? true : null">
+              <i class="fa-regular fa-floppy-disk"></i>&nbsp;{{'sav_cam' | translate}}
+            </button>
+          </div>
+        </form>
+      }@else {
+
+      }
+    </div>
+  } @empty {
+    <div>No hay elementos</div>
+  }
+</p-dialog>
