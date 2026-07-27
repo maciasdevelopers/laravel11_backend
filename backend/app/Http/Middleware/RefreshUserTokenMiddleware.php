@@ -18,7 +18,7 @@ class RefreshUserTokenMiddleware{
    * @return \Symfony\Component\HttpFoundation\Response
    */
   public function handle(Request $request, Closure $next): Response{
-    $token = $request->cookie('code_inside');
+    $token = $request->cookie('code_inside') ?? $request->bearerToken();
   
     if (!$token) {
       return $next($request);
@@ -38,7 +38,7 @@ class RefreshUserTokenMiddleware{
     } catch (ExpiredException $e) {
       /**
        * Si el JWT expiró, intentamos recuperarlo manualmente para renovar
-       * siempre que la cookie de larga duración (4h) siga presente.
+       * siempre que el token original siga presente.
        */
       try {
         $tks = explode('.', $token);
@@ -82,6 +82,7 @@ class RefreshUserTokenMiddleware{
       );
 
       $response = $next($request);
+      $response->headers->set('X-Refreshed-Token', $newJwt);
       return $response->withCookie($cookie);
     }
   

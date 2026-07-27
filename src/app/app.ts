@@ -76,6 +76,10 @@ export class App implements OnInit {
     const token_usent = localStorage.getItem('user_code');
     this.user_code_token = token_usent;
     sessionStorage.setItem('inside_session_code', token_usent ?? '');
+    const moriahKey = localStorage.getItem('moriah_key');
+    if (moriahKey) {
+      sessionStorage.setItem('moriah_key', moriahKey);
+    }
     this.sentinela.tiempo_inactivo_contador();
 
     if (sessionStorage.length > 0) {
