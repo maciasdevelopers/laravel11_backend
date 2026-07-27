@@ -18,7 +18,7 @@ class RefreshEmpresaTokenMiddleware{
    * @return \Symfony\Component\HttpFoundation\Response
    */
   public function handle(Request $request, Closure $next): Response{
-    $token = $request->cookie('moriah_key');
+    $token = $request->cookie('moriah_key') ?? $request->header('X-Moriah-Key');
   
     if (!$token) {
       return $next($request);
@@ -35,7 +35,7 @@ class RefreshEmpresaTokenMiddleware{
     } catch (ExpiredException $e) {
       /**
        * Si el JWT expiró, intentamos recuperarlo manualmente para renovar
-       * siempre que la cookie de larga duración siga presente.
+       * siempre que el token original siga presente.
        */
       try {
         $tks = explode('.', $token);
@@ -82,6 +82,7 @@ class RefreshEmpresaTokenMiddleware{
       );
 
       $response = $next($request);
+      $response->headers->set('X-Refreshed-Moriah', $newJwt);
       return $response->withCookie($cookie);
     }
 
