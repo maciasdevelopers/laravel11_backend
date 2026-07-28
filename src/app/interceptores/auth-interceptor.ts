@@ -83,22 +83,26 @@ export class AuthInterceptor implements HttpInterceptor {
 
         if (error.status === 401) {
           mensajeCuerpo = error.error?.message || error.error?.error || 'Su sesión ha expirado o es inválida. Inicie sesión nuevamente.';
+
+          if (esRutaPublicaAuth) {
+            // Si es una ruta de autenticación pública, no hacemos clearing de sesión ni mostramos alerts, solo relanzamos el error
+            return throwError(() => error);
+          }
+
           sessionStorage.clear();
           localStorage.clear();
 
-          if (!esRutaPublicaAuth) {
-            // Mostrar SweetAlert elegante y redirigir
-            Swal.fire({
-              title: 'Sesión Expirada',
-              text: mensajeCuerpo,
-              icon: 'warning',
-              confirmButtonColor: '#388E3C',
-              confirmButtonText: 'Aceptar'
-            }).then(() => {
-              window.location.href = '/';
-            });
-            return throwError(() => error);
-          }
+          // Mostrar SweetAlert elegante y redirigir
+          Swal.fire({
+            title: 'Sesión Expirada',
+            text: mensajeCuerpo,
+            icon: 'warning',
+            confirmButtonColor: '#388E3C',
+            confirmButtonText: 'Aceptar'
+          }).then(() => {
+            window.location.href = '/';
+          });
+          return throwError(() => error);
         } else if (error.status === 403) {
           mensajeCuerpo = 'No tiene permisos para realizar esta acción.';
         } else if (error.status === 500) {
