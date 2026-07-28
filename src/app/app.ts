@@ -89,6 +89,22 @@ export class App implements OnInit {
       .subscribe(() => {
         this.notificaComprasPriodicasDia();
       });
+
+      // 💓 Heartbeat automático cada 10 minutos (600,000 ms) para mantener la sesión viva si el usuario está activo
+      interval(600000)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        const lastActividad = parseInt(localStorage.getItem("last_actividad") || '0', 10);
+        const currentTimestamp = Math.floor(Date.now() / 1000);
+        // Si el usuario se ha movido o interactuado en los últimos 10 minutos, lanzamos el heartbeat
+        if ((lastActividad + 600) >= currentTimestamp) {
+          console.log('💓 Enviando heartbeat automático de sesión contable para recargar tokens...');
+          this.sessionContext.recargarSesionHeartbeat().subscribe({
+            next: () => console.log('💓 Heartbeat de sesión completado de forma transparente.'),
+            error: (err) => console.error('Error en heartbeat de sesión:', err)
+          });
+        }
+      });
     }
   }
 

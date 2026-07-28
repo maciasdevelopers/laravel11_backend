@@ -235,6 +235,10 @@ Route::withoutMiddleware(['jwt.auth','refresh.user','refresh.moriah','moriah.con
 //Route::post("user_update_avatar",[MAIN_UsuarioController::class,"user_update_avatar"]);
 
 Route::middleware(['refresh.user','jwt.auth'])->group(function () {
+  Route::get("session_heartbeat", function () {
+    return response()->json(['status' => 'success', 'message' => 'Heartbeat ok']);
+  })->withoutMiddleware(['refresh.moriah','moriah.context','activity.log']);
+
   Route::get("modulos_de_acceso", [MAIN_SessionController::class, "getContextModulos"])->withoutMiddleware(['refresh.moriah','moriah.context','activity.log']);
   Route::get("settings_de_usuario", [MAIN_SessionController::class, "getContextUserSettings"])->withoutMiddleware(['refresh.moriah','moriah.context','activity.log']);
   Route::post("catalogo_empresas_vinculadas", [MAIN_SessionController::class, "catalogoEmpresasVinculadas"])->withoutMiddleware(['refresh.moriah','moriah.context','activity.log']);
