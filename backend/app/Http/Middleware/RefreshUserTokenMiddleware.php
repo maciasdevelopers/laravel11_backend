@@ -18,7 +18,8 @@ class RefreshUserTokenMiddleware{
    * @return \Symfony\Component\HttpFoundation\Response
    */
   public function handle(Request $request, Closure $next): Response{
-    $token = $request->cookie('code_inside') ?? $request->bearerToken();
+    // Priorizar header Authorization (bearerToken) sobre cookie
+    $token = $request->bearerToken() ?? $request->cookie('code_inside');
   
     if (!$token) {
       return $next($request);

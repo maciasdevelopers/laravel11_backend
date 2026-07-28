@@ -57,11 +57,10 @@ export class AuthInterceptor implements HttpInterceptor {
 
           if (refreshedMoriah) {
             console.log('Token de contexto de empresa refrescado automáticamente por el servidor');
-            sessionStorage.setItem('inside_session_code', refreshedMoriah);
-            localStorage.setItem('user_code', refreshedMoriah);
             sessionStorage.setItem('moriah_key', refreshedMoriah);
             localStorage.setItem('moriah_key', refreshedMoriah);
-          } else if (refreshedToken) {
+          }
+          if (refreshedToken) {
             console.log('Token de usuario refrescado automáticamente por el servidor');
             sessionStorage.setItem('inside_session_code', refreshedToken);
             localStorage.setItem('user_code', refreshedToken);

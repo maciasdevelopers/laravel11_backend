@@ -18,7 +18,8 @@ class RefreshEmpresaTokenMiddleware{
    * @return \Symfony\Component\HttpFoundation\Response
    */
   public function handle(Request $request, Closure $next): Response{
-    $token = $request->cookie('moriah_key') ?? $request->header('X-Moriah-Key');
+    // Priorizar header x-moriah-key/X-Moriah-Key sobre cookie
+    $token = $request->header('X-Moriah-Key') ?? $request->cookie('moriah_key');
   
     if (!$token) {
       return $next($request);
