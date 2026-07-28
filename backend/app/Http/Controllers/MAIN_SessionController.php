@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\User;
 use Illuminate\Support\Facades\Validator;
 use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Cookie;
 use App\Models\EmpresasModelo;
@@ -677,9 +678,27 @@ class MAIN_SessionController extends Controller{
   public function logoutUsuarioMain(Request $request){
     $userAuth = $request->get('user_auth');
 
-    if ($userAuth) {
+    if ($userAuth && !empty($userAuth->keter_davidic)) {
+      $userToken = $userAuth->keter_davidic;
+
+      // Intentamos extraer el contexto de la empresa (moriah_key) para limpiar su caché específica
+      $ctxJwt = $request->header('X-Moriah-Key') ?? $request->cookie('moriah_key');
+      if ($ctxJwt) {
+        try {
+          $decoded = JWT::decode($ctxJwt, new Key(config('services.jwt.secret'), 'HS256'));
+          if (!empty($decoded->empresa_token)) {
+            $empresaToken = $decoded->empresa_token;
+            // Limpia el caché usado por EnsureMalchutContext
+            Cache::forget("malchut_ctx:{$userToken}:{$empresaToken}");
+          }
+        } catch (\Exception $e) {
+          // Ignoramos errores de decodificación al expirar o ser inválido
+        }
+      }
+
+      // Limpia cualquier otro caché relacionado
       Cache::forget('malchut_ctx');
-      Cache::forget('user:' . $userAuth->keter_davidic);
+      Cache::forget('user:' . $userToken);
     }
   
     return response()->json(['status' => "success",'code' => 200,'message' => 'Sesión cerrada correctamente'])
