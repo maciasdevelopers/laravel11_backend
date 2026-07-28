@@ -57,11 +57,10 @@ export class AuthInterceptor implements HttpInterceptor {
 
           if (refreshedMoriah) {
             console.log('Token de contexto de empresa refrescado automáticamente por el servidor');
-            sessionStorage.setItem('inside_session_code', refreshedMoriah);
-            localStorage.setItem('user_code', refreshedMoriah);
             sessionStorage.setItem('moriah_key', refreshedMoriah);
             localStorage.setItem('moriah_key', refreshedMoriah);
-          } else if (refreshedToken) {
+          }
+          if (refreshedToken) {
             console.log('Token de usuario refrescado automáticamente por el servidor');
             sessionStorage.setItem('inside_session_code', refreshedToken);
             localStorage.setItem('user_code', refreshedToken);
@@ -78,7 +77,9 @@ export class AuthInterceptor implements HttpInterceptor {
         const esRutaPublicaAuth = req.url.includes('usuario_login_main') ||
                                   req.url.includes('verif_codigopass_ssic') ||
                                   req.url.includes('save_codigopass_ssic') ||
-                                  req.url.includes('reset_passwpord_ssic');
+                                  req.url.includes('reset_passwpord_ssic') ||
+                                  req.url.includes('usuario_recupera_user_empresa') ||
+                                  req.url.includes('/session/context');
 
         if (error.status === 401) {
           mensajeCuerpo = error.error?.message || error.error?.error || 'Su sesión ha expirado o es inválida. Inicie sesión nuevamente.';

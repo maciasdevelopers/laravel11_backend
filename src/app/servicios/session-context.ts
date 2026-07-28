@@ -25,6 +25,11 @@ export class SessionContextService {
     this.url = global.urlApi;
   }
 
+  recargarSesionHeartbeat(): Observable<any> {
+    const url_completa = this.url + 'session_heartbeat';
+    return this.http.get<any>(url_completa);
+  }
+
   empresa$(): Observable<any> {
     return this.empresaSubject.asObservable();
   }

@@ -875,8 +875,6 @@ export class NavegadorPrincipalComponent implements OnInit, OnDestroy {
           // Guardar token nuevo
           localStorage.setItem('user_code', context.large_token_access);
           sessionStorage.setItem('inside_session_code', context.large_token_access);
-          localStorage.setItem('moriah_key', context.large_token_access);
-          sessionStorage.setItem('moriah_key', context.large_token_access);
           this.sessionContext.setEmpresa(context);
           this.modalEmpresasVinculadasAlUsuarioVisible = false;
           // Opcional: refrescar app

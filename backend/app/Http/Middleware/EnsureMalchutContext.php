@@ -20,8 +20,8 @@ class EnsureMalchutContext{
   
     $userToken = $userAuth->keter_davidic;
   
-    // 2️⃣ Contexto empresa desde JWT (cookie o header X-Moriah-Key o bearerToken)
-    $ctxJwt = $request->cookie('moriah_key') ?? $request->header('X-Moriah-Key') ?? $request->bearerToken();
+    // 2️⃣ Contexto empresa desde JWT (Priorizar header x-moriah-key/X-Moriah-Key sobre cookie)
+    $ctxJwt = $request->header('X-Moriah-Key') ?? $request->cookie('moriah_key');
   
     if (!$ctxJwt) {
       return response()->json(['code' => 'EMPRESA_NO_SELECCIONADA','message' => 'Debe seleccionar una empresa'], 428);

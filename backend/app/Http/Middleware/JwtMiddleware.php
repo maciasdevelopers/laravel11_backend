@@ -13,8 +13,8 @@ use App\Models\User;
 
 class JwtMiddleware{
   public function handle(Request $request, Closure $next): Response{
-    // 1️⃣ OBTENER TOKEN DESDE COOKIE O HEADER AUTHORIZATION
-    $token = $request->cookie('code_inside') ?? $request->bearerToken();
+    // 1️⃣ OBTENER TOKEN DESDE HEADER AUTHORIZATION O COOKIE (Priorizar Header)
+    $token = $request->bearerToken() ?? $request->cookie('code_inside');
 
     if (!$token) {
       return response()->json(['error' => 'No autenticado'], 401);
