@@ -83,6 +83,7 @@ use App\Http\Controllers\VHUM_NominasController;
 use App\Http\Controllers\VHUM_AsimiladosController;
 use App\Http\Controllers\VHUM_ImpuestosSobreNominaController;
 use App\Http\Controllers\VHUM_IMSSController;
+use App\Http\Controllers\VHUM_SolicitudesCancelacionController;
 
 //contabilidad
 use App\Http\Controllers\CONT_CuentasContablesController;

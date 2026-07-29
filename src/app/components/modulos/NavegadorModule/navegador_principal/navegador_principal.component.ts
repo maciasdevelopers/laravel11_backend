@@ -491,7 +491,6 @@ export class NavegadorPrincipalComponent implements OnInit, OnDestroy {
               { key: '6-0-7', label: 'Acta administrativa laboral', link: './plataformas/ssic/valor_humano/acta_administrativa_laboral' },
               { key: '6-0-8', label: 'Descuentos a la nomina', link: './plataformas/ssic/valor_humano/descuentos_a_la_nomina' },
               { key: '6-0-9', label: 'Reembolsos', link: './plataformas/ssic/valor_humano/reembolsos' },
-              { key: '6-0-10', label: 'cancel_soli', link: './plataformas/ssic/valor_humano/solicitudes_de_cancelacion' },
             ]
           },
           {
@@ -508,6 +507,9 @@ export class NavegadorPrincipalComponent implements OnInit, OnDestroy {
               { key: '6-2-0', label: 'menu_payroll_analysis', link: './plataformas/ssic/valor_humano/analisis_de_nomina' },
               { key: '6-2-1', label: 'menu_assimilated_salaries_analysis', link: './plataformas/ssic/valor_humano/analisis_de_asimilados' }
             ]
+          },
+          {
+            key: '6-3', label: 'cancel_soli', link: './plataformas/ssic/valor_humano/solicitudes_de_cancelacion'
           },
           //{key:'0-0',label: 'Asistencias'},
           //{key:'0-0',label: 'Cálculo de nominas'},
